@@ -1,33 +1,69 @@
 <?xml version="1.0" ?>
-<!-- 
-    Build file for CsvJdbc. This uses ANT v1.2
-    Author: Jonathan Ackerman
-    Version: $Id: build.xml,v 1.8 2002/08/18 20:41:09 mmaraya Exp $
--->
 
-<project name="CsvJdbc" default="main" basedir=".">
-  <property name="psep"          value="${path.separator}"/>
-  <property name="fsep"          value="${file.separator}"/>  
-  <property name="name"          value="csvjdbc"/>
-  <property name="rel"           value="r0-8"/>
-  <property name="rel.name"      value="${name}-${rel}"/>  
-  <property name="javadoc.packagenames"  value="test.*,org.*"/>
-  <property name="build.dir"     value="..${fsep}build"/>  
-  <property name="src.dir"       value="..${fsep}src"/>
-  <property name="java.dir"      value="${src.dir}${fsep}java"/>
-  <property name="sql.dir"       value="${src.dir}${fsep}sql"/>
-  <property name="www.dir"       value="${src.dir}${fsep}www"/>
-  <property name="metadata.dir"  value="${src.dir}${fsep}meta"/>
-  <property name="doc.dir"       value="${src.dir}${fsep}doc"/>
-  <property name="lib.dir"       value="..${fsep}lib"/>
-  <property name="class.dir"     value="..${fsep}classes"/>
-  <property name="tmp.dir"       value="..${fsep}tmp"/>  
-  <property name="javadoc.dir"   value="..${fsep}javadoc"/>  
-  <property name="rel.dir"       value="..${fsep}release"/>
-  <property name="classpath"     value="."/>
+<!-- =====================================================================
+
+ Build file for CsvJdbc. This uses Apache Ant v1.5
+ 
+ Authors: Jonathan Ackerman, Michael Maraya
+ Version: $Id: build.xml,v 1.9 2002/08/25 03:29:39 mmaraya Exp $
+
+ CsvJdbc - a JDBC driver for CSV files
+ Copyright (C) 2001  Jonathan Ackerman
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+====================================================================== -->
+
+<project name="CsvJdbc" default="main">
+
+  <!-- =================================================================== -->
+  <!-- Project-wide properties and paths                                   -->
+  <!-- =================================================================== -->
+  <property name="name" value="csvjdbc"/>
+  <property name="rel" value="r0-8"/>
+  <property name="rel.name" value="${name}-${rel}"/>  
+  <property name="build.dir" value="../build"/> 
+  <property name="src.dir" value="../src"/>
+  <property name="java.dir" value="${src.dir}/java"/>
+  <property name="doc.dir" value="${src.dir}/doc"/>
+  <property name="lib.dir" value="../lib"/>
+  <property name="class.dir" value="../classes"/>
+  <property name="javadoc.dir" value="../javadoc"/> 
+  <property name="rel.dir" value="../release"/>
+  <property name="jar.file" value="${rel.dir}/${name}.jar"/>
+  <path id="classpath">
+    <pathelement path="."/>
+    <pathelement path="${class.dir}"/>
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>    
+
+  <!-- =================================================================== -->
+  <!-- Initialization target                                               -->
+  <!-- =================================================================== -->
+  <target name="init">        
+    <mkdir dir="${class.dir}"/>
+    <mkdir dir="${javadoc.dir}"/>
+    <mkdir dir="${rel.dir}"/>
+  </target>
   
-
-  <target name="main">
+  <!-- =================================================================== -->
+  <!-- Main target                                                         -->
+  <!-- =================================================================== -->
+  <target name="main" depends="init">
     <echo message="Build File for ${name} Release ${rel}"/>
     <echo message=""/>
     <echo message="Targets are:"/>
@@ -39,104 +75,78 @@
     <echo message="  javadoc  - Builds the javadoc for the system"/>    
     <echo message="  test     - Creates and runs the test programs. See lib\readme.txt"/>  
   </target>
-   
   
-  
-  <target name="init">        
-    <echo message="   JVM      : ${java.vm.info}"/>
-    <echo message="   Version  : ${java.vm.version}"/>
-    <echo message="   Java Home: ${java.home}"/>
-    <echo message="   Classpath: ${classpath}"/>
-    <echo message="   Path Separator : ${psep}"/>
-    <echo message="   File Separator : ${fsep}"/>    
-    <tstamp/>        
-  </target>
-  
-  
+  <!-- =================================================================== -->
+  <!-- Compile target                                                      -->
+  <!-- =================================================================== -->
   <target name="compile" depends="init">
-    <echo message="  Compiling..."/>
-    <mkdir dir="${class.dir}"/>
-    <javac srcdir="${java.dir}" destdir="${class.dir}" classpath="${classpath}">
+    <javac srcdir="${java.dir}" destdir="${class.dir}">
+      <classpath refid="classpath"/>
       <include name="org/**/*.java"/>
     </javac>
   </target>
+
+  <!-- =================================================================== -->
+  <!-- Jar target                                                          -->
+  <!-- =================================================================== -->
+  <target name="jar" depends="compile">
+    <jar destfile="${jar.file}">
+      <fileset dir="${class.dir}" includes="org/**/*.class"/>
+    </jar>
+  </target>  
   
-  
-  <target name="javadoc">
-    <delete dir="${javadoc.dir}"/>
-    <mkdir dir="${javadoc.dir}"/>
-    <javadoc packagenames="${javadoc.packagenames}"
+  <!-- =================================================================== -->
+  <!-- Javadoc target                                                      -->
+  <!-- =================================================================== -->
+  <target name="javadoc" depends="init">
+    <javadoc packagenames="test.*,org.*"
              sourcepath="${java.dir}"
-             classpath="${classpath}"
              destdir="${javadoc.dir}"
              author="true"
              version="true"
              private="true"
              doctitle="${name} java documentation (release ${rel})"
              windowtitle="${name} java documentation (release ${rel})"
-             bottom="Check out &lt;a href=&quot;http://csvjdbc.sourceforge.net&quot;&gt;http://csvjdbc.sourceforge.net&lt;/a&gt; for more info."/>
+             bottom="Check out &lt;a href=&quot;http://csvjdbc.sourceforge.net&quot;&gt;http://csvjdbc.sourceforge.net&lt;/a&gt; for more info.">
+      <classpath refid="classpath"/>
+    </javadoc>
   </target>
   
-  
+  <!-- =================================================================== -->
+  <!-- Clean target                                                        -->
+  <!-- =================================================================== -->
   <target name="clean">  
-    <delete dir="${tmp.dir}"/>
-    <delete dir="${rel.dir}"/>
     <delete dir="${class.dir}"/>
     <delete dir="${javadoc.dir}"/>
+    <delete dir="${rel.dir}"/>
   </target>
   
-  
-  <target name="jar" depends="compile">
-    <delete dir="${tmp.dir}"/>
-    <mkdir dir="${tmp.dir}"/>
-    <mkdir dir="${tmp.dir}${fsep}META-INF"/>
-      
-        
-    <copy todir="${tmp.dir}" >
-      <fileset dir="${class.dir}" >
-        <include name="org/**/*.class"/>
-      </fileset>
-    </copy>   
-       
-    <jar jarfile="${basedir}${fsep}${name}.jar" basedir="${tmp.dir}"/>
-    <move file="${basedir}${fsep}${name}.jar" todir="${tmp.dir}"/>
-  </target>  
-
-
+  <!-- =================================================================== -->
+  <!-- Test target                                                         -->
+  <!-- =================================================================== -->
   <target name="test" depends="compile">
-    <echo message="  Compiling Tests..."/>
-    <mkdir dir="${class.dir}"/>
-    <javac srcdir="${java.dir}" destdir="${class.dir}" classpath="${class.dir}${psep}${classpath}${psep}${lib.dir}${fsep}junit.jar">
+    <javac srcdir="${java.dir}" destdir="${class.dir}">
+      <classpath refid="classpath"/>
       <include name="test/**/*.java"/>
     </javac>
-    <echo message="  Running Tests..."/>
-    <java classname="test.org.relique.jdbc.csv.RunTests" fork="yes" failonerror="yes">
-      <arg value="..${fsep}src${fsep}testdata"/> 
-      <classpath>
-        <pathelement location="${lib.dir}${fsep}junit.jar"/>
-        <pathelement location="${classpath}"/>
-        <pathelement location="${class.dir}"/>
-      </classpath> 
+    <java classname="test.org.relique.jdbc.csv.RunTests" fork="yes" 
+          failonerror="yes">
+      <classpath refid="classpath"/>
+      <arg value="../src/testdata"/> 
     </java>
   </target>  
     
-  
-  <target name="release" depends="clean,test,jar">
-    <delete dir="${rel.dir}/relfiles"/>
-    <property name="full.rel.dir" value="${rel.dir}/relfiles/${rel.name}"/>
-    <mkdir dir="${full.rel.dir}"/>
-    
-    <copy file="${tmp.dir}${fsep}${name}.jar" todir="${full.rel.dir}"/>
-    
-    <copy todir="${full.rel.dir}" >
-      <fileset dir="${doc.dir}" >
-        <include name="**"/>
-      </fileset>
-    </copy>
-    
-    
-    <zip zipfile="${rel.dir}/${rel.name}.zip"
-         basedir="${rel.dir}/relfiles/"/>
+  <!-- =================================================================== -->
+  <!-- Release target                                                      -->
+  <!-- =================================================================== -->
+  <target name="release" depends="clean,test,jar,javadoc">
+    <zip destfile="${rel.dir}/${rel.name}.zip">
+      <zipfileset dir="${javadoc.dir}" includes="**/*" 
+                  prefix="${rel.name}/javadoc"/>
+      <zipfileset dir="${java.dir}" includes="**/*" prefix="${rel.name}/src"/>
+      <zipfileset dir="${rel.dir}" includes="*.jar" prefix="${rel.name}"/>
+      <zipfileset dir="${doc.dir}" includes="**" prefix="${rel.name}"/>
+    </zip>
   </target>
   
   
