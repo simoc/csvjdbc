@@ -2,7 +2,7 @@
 <!-- 
     Build file for CsvJdbc. This uses ANT v1.2
     Author: Jonathan Ackerman
-    Version: $Id: build.xml,v 1.7 2002/06/17 02:51:49 jackerm Exp $
+    Version: $Id: build.xml,v 1.8 2002/08/18 20:41:09 mmaraya Exp $
 -->
 
 <project name="CsvJdbc" default="main" basedir=".">
@@ -106,7 +106,7 @@
   <target name="test" depends="compile">
     <echo message="  Compiling Tests..."/>
     <mkdir dir="${class.dir}"/>
-    <javac srcdir="${java.dir}" destdir="${class.dir}" classpath="${classpath}${psep}${lib.dir}${fsep}junit.jar">
+    <javac srcdir="${java.dir}" destdir="${class.dir}" classpath="${class.dir}${psep}${classpath}${psep}${lib.dir}${fsep}junit.jar">
       <include name="test/**/*.java"/>
     </javac>
     <echo message="  Running Tests..."/>
