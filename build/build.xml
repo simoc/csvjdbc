@@ -2,7 +2,7 @@
 <!-- 
     Build file for CsvJdbc. This uses ANT v1.2
     Author: Jonathan Ackerman
-    Version: $Id: build.xml,v 1.4 2002/01/03 01:22:48 jackerm Exp $
+    Version: $Id: build.xml,v 1.5 2002/03/06 22:04:05 mmaraya Exp $
 -->
 
 <project name="CsvJdbc" default="main" basedir=".">
@@ -98,7 +98,8 @@
       </fileset>
     </copy>   
        
-    <jar jarfile="${tmp.dir}${fsep}${name}.jar" basedir="${tmp.dir}"/>
+    <jar jarfile="${basedir}${fsep}${name}.jar" basedir="${tmp.dir}"/>
+    <move file="${basedir}${fsep}${name}.jar" todir="${tmp.dir}"/>
   </target>  
 
 
