@@ -26,8 +26,9 @@ import java.util.*;
  * @author     Jonathan Ackerman
  * @author     Sander Brienen
  * @author     Stuart Mottram (fritto)
+ * @author     Jason Bedell
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.5 2002/01/01 23:04:26 jackerm Exp $
+ * @version    $Id: CsvReader.java,v 1.6 2002/06/17 02:53:15 jackerm Exp $
  */
 
 public class CsvReader
@@ -38,6 +39,8 @@ public class CsvReader
   private java.lang.String buf = null;
   private char separator = ',';
   private boolean suppressHeaders = false;
+  private String tableName;
+  private String fileName;
 
 
   /**
@@ -69,6 +72,7 @@ public class CsvReader
   {
     this.separator = separator;
     this.suppressHeaders = suppressHeaders;
+    this.fileName = fileName;
 
     input = new BufferedReader(new FileReader(fileName));
     if (this.suppressHeaders)
@@ -104,6 +108,20 @@ public class CsvReader
   }
 
 
+  public String getTableName() {
+      if(tableName != null)
+          return tableName;
+
+      int lastSlash = 0;
+      for(int i = fileName.length()-1; i >= 0; i--)
+          if(fileName.charAt(i) == '/' || fileName.charAt(i) == '\\') {
+            lastSlash = i;
+            break;
+          }
+      tableName = fileName.substring(lastSlash+1, fileName.length() - 4);
+      return tableName;
+  }
+
   /**
    * Get the value of the column at the specified index.
    *
@@ -116,7 +134,6 @@ public class CsvReader
   {
     return columns[columnIndex];
   }
-
 
   /**
    * Get value from column at specified name.
@@ -133,7 +150,7 @@ public class CsvReader
     columnName = columnName.toUpperCase();
     for (int loop = 0; loop < columnNames.length; loop++)
     {
-      if (columnName.equals(columnNames[loop]))
+      if (columnName.equals(columnNames[loop]) || columnName.equals(getTableName() + "." + columnNames[loop]))
       {
         return getColumn(loop);
       }

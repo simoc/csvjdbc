@@ -27,7 +27,7 @@ import java.util.Calendar;
  *
  * @author     Jonathan Ackerman
  * @created    25 November 2001
- * @version    $Id: CsvResultSet.java,v 1.4 2002/03/06 22:46:24 mmaraya Exp $
+ * @version    $Id: CsvResultSet.java,v 1.5 2002/06/17 02:53:16 jackerm Exp $
  */
 public class CsvResultSet implements ResultSet
 {
@@ -36,7 +36,7 @@ public class CsvResultSet implements ResultSet
   protected String[] columnNames;
   protected String tableName;
   protected ResultSetMetaData resultSetMetaData;
-
+  protected int lastIndexRead = -1;
 
   /**
    *Constructor for the CsvResultSet object
@@ -69,7 +69,7 @@ public class CsvResultSet implements ResultSet
    */
   public void setFetchDirection(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.setFetchDirection(int) Not Supported !");
   }
 
 
@@ -82,7 +82,7 @@ public class CsvResultSet implements ResultSet
    */
   public void setFetchSize(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet..setFetchSize(int) Not Supported !");
   }
 
 
@@ -98,7 +98,9 @@ public class CsvResultSet implements ResultSet
   {
     try
     {
-      return reader.getColumn(columnNames[columnIndex-1]);
+        String str = reader.getColumn(columnNames[columnIndex-1]);
+        lastIndexRead = columnIndex;
+        return str;
     }
     catch (Exception e)
     {
@@ -120,12 +122,8 @@ public class CsvResultSet implements ResultSet
     columnName = columnName.toUpperCase();
 
     for (int loop = 0; loop < columnNames.length; loop++)
-    {
-      if (columnName.equals(columnNames[loop]))
-      {
+      if (columnName.equals(columnNames[loop])) 
         return getString(loop+1);
-      }
-    }
 
     throw new SQLException("Column '" + columnName + "' not found.");
   }
@@ -154,7 +152,7 @@ public class CsvResultSet implements ResultSet
    */
   public boolean getBoolean(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getBoolean(int) Not Supported !");
   }
 
 
@@ -168,7 +166,7 @@ public class CsvResultSet implements ResultSet
    */
   public byte getByte(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getByte(int) Not Supported !");
   }
 
 
@@ -182,7 +180,7 @@ public class CsvResultSet implements ResultSet
    */
   public short getShort(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getShort(int) Not Supported !");
   }
 
 
@@ -196,7 +194,7 @@ public class CsvResultSet implements ResultSet
    */
   public int getInt(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getInt(int) Not Supported !");
   }
 
 
@@ -210,7 +208,7 @@ public class CsvResultSet implements ResultSet
    */
   public long getLong(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getLong(int) Not Supported !");
   }
 
 
@@ -224,7 +222,7 @@ public class CsvResultSet implements ResultSet
    */
   public float getFloat(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getFloat(int) Not Supported !");
   }
 
 
@@ -238,7 +236,7 @@ public class CsvResultSet implements ResultSet
    */
   public double getDouble(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getDouble(int) Not Supported !");
   }
 
 
@@ -253,7 +251,7 @@ public class CsvResultSet implements ResultSet
    */
   public BigDecimal getBigDecimal(int p0, int p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getBigDecimal(int,int) Not Supported !");
   }
 
 
@@ -267,7 +265,7 @@ public class CsvResultSet implements ResultSet
    */
   public byte[] getBytes(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getBytes(int) Not Supported !");
   }
 
 
@@ -281,7 +279,7 @@ public class CsvResultSet implements ResultSet
    */
   public Date getDate(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getDate(int) Not Supported !");
   }
 
 
@@ -295,7 +293,7 @@ public class CsvResultSet implements ResultSet
    */
   public Time getTime(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getTime(int) Not Supported !");
   }
 
 
@@ -309,7 +307,7 @@ public class CsvResultSet implements ResultSet
    */
   public Timestamp getTimestamp(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getTimeStamp(int) Not Supported !");
   }
 
 
@@ -323,7 +321,7 @@ public class CsvResultSet implements ResultSet
    */
   public InputStream getAsciiStream(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getAsciiStream(int) Not Supported !");
   }
 
 
@@ -337,7 +335,7 @@ public class CsvResultSet implements ResultSet
    */
   public InputStream getUnicodeStream(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getUnicodeStream(int) Not Supported !");
   }
 
 
@@ -351,7 +349,7 @@ public class CsvResultSet implements ResultSet
    */
   public InputStream getBinaryStream(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getBinaryStream(int) Not Supported !");
   }
 
 
@@ -365,7 +363,7 @@ public class CsvResultSet implements ResultSet
    */
   public boolean getBoolean(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getBoolean(String) Not Supported !");
   }
 
 
@@ -379,7 +377,7 @@ public class CsvResultSet implements ResultSet
    */
   public byte getByte(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getByte(String) Not Supported !");
   }
 
 
@@ -393,7 +391,7 @@ public class CsvResultSet implements ResultSet
    */
   public short getShort(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getShort(String) Not Supported !");
   }
 
 
@@ -407,7 +405,7 @@ public class CsvResultSet implements ResultSet
    */
   public int getInt(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getInt(String) Not Supported !");
   }
 
 
@@ -421,7 +419,7 @@ public class CsvResultSet implements ResultSet
    */
   public long getLong(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getLong(String) Not Supported !");
   }
 
 
@@ -435,7 +433,7 @@ public class CsvResultSet implements ResultSet
    */
   public float getFloat(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getFloat(String) Not Supported !");
   }
 
 
@@ -449,7 +447,7 @@ public class CsvResultSet implements ResultSet
    */
   public double getDouble(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getDouble(String) Not Supported !");
   }
 
 
@@ -464,7 +462,7 @@ public class CsvResultSet implements ResultSet
    */
   public BigDecimal getBigDecimal(String p0, int p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getBigDecimal(String, int) Not Supported !");
   }
 
 
@@ -478,7 +476,7 @@ public class CsvResultSet implements ResultSet
    */
   public byte[] getBytes(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getBytes(String) Not Supported !");
   }
 
 
@@ -492,7 +490,7 @@ public class CsvResultSet implements ResultSet
    */
   public Date getDate(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getDate(String) Not Supported !");
   }
 
 
@@ -506,7 +504,7 @@ public class CsvResultSet implements ResultSet
    */
   public Time getTime(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getTime(String) Not Supported !");
   }
 
 
@@ -520,7 +518,7 @@ public class CsvResultSet implements ResultSet
    */
   public Timestamp getTimestamp(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getTimeStamp(String) Not Supported !");
   }
 
 
@@ -534,7 +532,7 @@ public class CsvResultSet implements ResultSet
    */
   public InputStream getAsciiStream(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getAsciiStream(String) Not Supported !");
   }
 
 
@@ -548,7 +546,7 @@ public class CsvResultSet implements ResultSet
    */
   public InputStream getUnicodeStream(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getUnicodeStream(String) Not Supported !");
   }
 
 
@@ -562,7 +560,7 @@ public class CsvResultSet implements ResultSet
    */
   public InputStream getBinaryStream(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.geBinaryStream(String) Not Supported !");
   }
 
 
@@ -575,7 +573,7 @@ public class CsvResultSet implements ResultSet
    */
   public SQLWarning getWarnings() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getWarnings() Not Supported !");
   }
 
 
@@ -588,7 +586,7 @@ public class CsvResultSet implements ResultSet
    */
   public String getCursorName() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getCursorName() Not Supported !");
   }
 
 
@@ -620,7 +618,7 @@ public class CsvResultSet implements ResultSet
    */
   public Object getObject(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getObject(int) Not Supported !");
   }
 
 
@@ -634,7 +632,7 @@ public class CsvResultSet implements ResultSet
    */
   public Object getObject(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getObject(String) Not Supported !");
   }
 
 
@@ -648,7 +646,7 @@ public class CsvResultSet implements ResultSet
    */
   public Reader getCharacterStream(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getCharacterStream(int) Not Supported !");
   }
 
 
@@ -662,7 +660,7 @@ public class CsvResultSet implements ResultSet
    */
   public Reader getCharacterStream(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getCharacterStream(String) Not Supported !");
   }
 
 
@@ -676,7 +674,7 @@ public class CsvResultSet implements ResultSet
    */
   public BigDecimal getBigDecimal(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getBigDecimal(int) Not Supported !");
   }
 
 
@@ -690,7 +688,7 @@ public class CsvResultSet implements ResultSet
    */
   public BigDecimal getBigDecimal(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getBigDecimal(String) Not Supported !");
   }
 
 
@@ -703,7 +701,7 @@ public class CsvResultSet implements ResultSet
    */
   public boolean isBeforeFirst() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.isBeforeFirst() Not Supported !");
   }
 
 
@@ -716,7 +714,7 @@ public class CsvResultSet implements ResultSet
    */
   public boolean isAfterLast() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.isAfterLast() Not Supported !");
   }
 
 
@@ -729,7 +727,7 @@ public class CsvResultSet implements ResultSet
    */
   public boolean isFirst() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.isFirst() Not Supported !");
   }
 
 
@@ -742,7 +740,7 @@ public class CsvResultSet implements ResultSet
    */
   public boolean isLast() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.isLast() Not Supported !");
   }
 
 
@@ -755,7 +753,7 @@ public class CsvResultSet implements ResultSet
    */
   public int getRow() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getRow() Not Supported !");
   }
 
 
@@ -768,7 +766,7 @@ public class CsvResultSet implements ResultSet
    */
   public int getFetchDirection() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getFetchDirection() Not Supported !");
   }
 
 
@@ -781,7 +779,7 @@ public class CsvResultSet implements ResultSet
    */
   public int getFetchSize() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getFetchSize() Not Supported !");
   }
 
 
@@ -794,7 +792,7 @@ public class CsvResultSet implements ResultSet
    */
   public int getType() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getType() Not Supported !");
   }
 
 
@@ -807,7 +805,7 @@ public class CsvResultSet implements ResultSet
    */
   public int getConcurrency() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getConcurrency() Not Supported !");
   }
 
 
@@ -822,7 +820,7 @@ public class CsvResultSet implements ResultSet
    */
   public Object getObject(int p0, Map p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getObject(int,Map) Not Supported !");
   }
 
 
@@ -836,7 +834,7 @@ public class CsvResultSet implements ResultSet
    */
   public Ref getRef(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getRef(int) Not Supported !");
   }
 
 
@@ -850,7 +848,7 @@ public class CsvResultSet implements ResultSet
    */
   public Blob getBlob(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getBlob(int) Not Supported !");
   }
 
 
@@ -864,7 +862,7 @@ public class CsvResultSet implements ResultSet
    */
   public Clob getClob(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getClob(int) Not Supported !");
   }
 
 
@@ -878,7 +876,7 @@ public class CsvResultSet implements ResultSet
    */
   public Array getArray(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getArray(int) Not Supported !");
   }
 
 
@@ -893,7 +891,7 @@ public class CsvResultSet implements ResultSet
    */
   public Object getObject(String p0, Map p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getObject(String, Map) Not Supported !");
   }
 
 
@@ -907,7 +905,7 @@ public class CsvResultSet implements ResultSet
    */
   public Ref getRef(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getRef(String) Not Supported !");
   }
 
 
@@ -921,7 +919,7 @@ public class CsvResultSet implements ResultSet
    */
   public Blob getBlob(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getBlob(String) Not Supported !");
   }
 
 
@@ -935,7 +933,7 @@ public class CsvResultSet implements ResultSet
    */
   public Clob getClob(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getClob(String) Not Supported !");
   }
 
 
@@ -949,7 +947,7 @@ public class CsvResultSet implements ResultSet
    */
   public Array getArray(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getArray(String) Not Supported !");
   }
 
 
@@ -964,7 +962,7 @@ public class CsvResultSet implements ResultSet
    */
   public Date getDate(int p0, Calendar p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getDate(int, Calendar) Not Supported !");
   }
 
 
@@ -979,7 +977,7 @@ public class CsvResultSet implements ResultSet
    */
   public Date getDate(String p0, Calendar p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getDate(String, Calendar) Not Supported !");
   }
 
 
@@ -994,7 +992,7 @@ public class CsvResultSet implements ResultSet
    */
   public Time getTime(int p0, Calendar p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getTime(int, Calendar) Not Supported !");
   }
 
 
@@ -1009,7 +1007,7 @@ public class CsvResultSet implements ResultSet
    */
   public Time getTime(String p0, Calendar p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getTime(String, Calendar) Not Supported !");
   }
 
 
@@ -1024,7 +1022,7 @@ public class CsvResultSet implements ResultSet
    */
   public Timestamp getTimestamp(int p0, Calendar p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getTimestamp(int, Calendar) Not Supported !");
   }
 
 
@@ -1039,7 +1037,7 @@ public class CsvResultSet implements ResultSet
    */
   public Timestamp getTimestamp(String p0, Calendar p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.getTimestamp(String, Calendar) Not Supported !");
   }
 
 
@@ -1084,7 +1082,10 @@ public class CsvResultSet implements ResultSet
    */
   public boolean wasNull() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    if(lastIndexRead >= 0)
+        return getString(lastIndexRead).equals(null);
+    else
+        throw new SQLException("you must first call one of the getXXX methods on a column.");
   }
 
 
@@ -1096,7 +1097,7 @@ public class CsvResultSet implements ResultSet
    */
   public void clearWarnings() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.clearWarnings() Not Supported !");
   }
 
 
@@ -1110,7 +1111,7 @@ public class CsvResultSet implements ResultSet
    */
   public int findColumn(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.findColumn(String) Not Supported !");
   }
 
 
@@ -1122,7 +1123,7 @@ public class CsvResultSet implements ResultSet
    */
   public void beforeFirst() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.beforeFirst() Not Supported !");
   }
 
 
@@ -1134,7 +1135,7 @@ public class CsvResultSet implements ResultSet
    */
   public void afterLast() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.afterLast() Not Supported !");
   }
 
 
@@ -1147,7 +1148,7 @@ public class CsvResultSet implements ResultSet
    */
   public boolean first() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.first() Not Supported !");
   }
 
 
@@ -1160,7 +1161,7 @@ public class CsvResultSet implements ResultSet
    */
   public boolean last() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.last() Not Supported !");
   }
 
 
@@ -1174,7 +1175,7 @@ public class CsvResultSet implements ResultSet
    */
   public boolean absolute(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.absolute(int) Not Supported !");
   }
 
 
@@ -1188,7 +1189,7 @@ public class CsvResultSet implements ResultSet
    */
   public boolean relative(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.relative(int) Not Supported !");
   }
 
 
@@ -1201,7 +1202,7 @@ public class CsvResultSet implements ResultSet
    */
   public boolean previous() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.previous() Not Supported !");
   }
 
 
@@ -1214,7 +1215,7 @@ public class CsvResultSet implements ResultSet
    */
   public boolean rowUpdated() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.rowUpdated() Not Supported !");
   }
 
 
@@ -1227,7 +1228,7 @@ public class CsvResultSet implements ResultSet
    */
   public boolean rowInserted() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.rowInserted() Not Supported !");
   }
 
 
@@ -1240,7 +1241,7 @@ public class CsvResultSet implements ResultSet
    */
   public boolean rowDeleted() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.rowDeleted() Not Supported !");
   }
 
 
@@ -1253,7 +1254,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateNull(int p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updatedNull(int) Not Supported !");
   }
 
 
@@ -1267,7 +1268,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateBoolean(int p0, boolean p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateBoolean(int, boolean) Not Supported !");
   }
 
 
@@ -1281,7 +1282,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateByte(int p0, byte p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateByte(int, byte) Not Supported !");
   }
 
 
@@ -1295,7 +1296,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateShort(int p0, short p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateShort(int, short) Not Supported !");
   }
 
 
@@ -1309,7 +1310,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateInt(int p0, int p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateInt(int, int) Not Supported !");
   }
 
 
@@ -1323,7 +1324,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateLong(int p0, long p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateLong(int, long) Not Supported !");
   }
 
 
@@ -1337,7 +1338,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateFloat(int p0, float p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateFloat(int, float) Not Supported !");
   }
 
 
@@ -1351,7 +1352,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateDouble(int p0, double p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateDouble(int, double) Not Supported !");
   }
 
 
@@ -1365,7 +1366,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateBigDecimal(int p0, BigDecimal p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateBigDecimal(int, BigDecimal) Not Supported !");
   }
 
 
@@ -1379,7 +1380,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateString(int p0, String p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateString(int, String) Not Supported !");
   }
 
 
@@ -1393,7 +1394,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateBytes(int p0, byte[] p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateBytes(int, byte[]) Not Supported !");
   }
 
 
@@ -1407,7 +1408,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateDate(int p0, Date p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateDate(int, Date) Not Supported !");
   }
 
 
@@ -1421,7 +1422,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateTime(int p0, Time p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateTime(int, Time) Not Supported !");
   }
 
 
@@ -1435,7 +1436,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateTimestamp(int p0, Timestamp p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateTimestamp(int, Timestamp) Not Supported !");
   }
 
 
@@ -1450,7 +1451,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateAsciiStream(int p0, InputStream p1, int p2) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateAsciiStream(int, InputStream, int) Not Supported !");
   }
 
 
@@ -1465,7 +1466,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateBinaryStream(int p0, InputStream p1, int p2) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateBinaryStream(int, InputStream, int) Not Supported !");
   }
 
 
@@ -1480,7 +1481,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateCharacterStream(int p0, Reader p1, int p2) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateCharacterStream(int, Reader, int) Not Supported !");
   }
 
 
@@ -1495,7 +1496,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateObject(int p0, Object p1, int p2) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateObject(int, Object, int) Not Supported !");
   }
 
 
@@ -1509,7 +1510,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateObject(int p0, Object p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.udpateObject(int, Object) Not Supported !");
   }
 
 
@@ -1522,7 +1523,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateNull(String p0) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateNull(String) Not Supported !");
   }
 
 
@@ -1536,7 +1537,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateBoolean(String p0, boolean p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateBoolean(String, boolean) Not Supported !");
   }
 
 
@@ -1550,7 +1551,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateByte(String p0, byte p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateByte(String, byte) Not Supported !");
   }
 
 
@@ -1564,7 +1565,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateShort(String p0, short p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateShort(String, short) Not Supported !");
   }
 
 
@@ -1578,7 +1579,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateInt(String p0, int p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateInt(String, int) Not Supported !");
   }
 
 
@@ -1592,7 +1593,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateLong(String p0, long p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateLong(String, long) Not Supported !");
   }
 
 
@@ -1606,7 +1607,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateFloat(String p0, float p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateFloat(String, float) Not Supported !");
   }
 
 
@@ -1620,7 +1621,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateDouble(String p0, double p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateDouble(String, double) Not Supported !");
   }
 
 
@@ -1634,7 +1635,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateBigDecimal(String p0, BigDecimal p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateBigDecimal(String, BigDecimal) Not Supported !");
   }
 
 
@@ -1648,7 +1649,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateString(String p0, String p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateString(String, String) Not Supported !");
   }
 
 
@@ -1662,7 +1663,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateBytes(String p0, byte[] p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateBytes(String, byte[]) Not Supported !");
   }
 
 
@@ -1676,7 +1677,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateDate(String p0, Date p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateDate(String, Date) Not Supported !");
   }
 
 
@@ -1690,7 +1691,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateTime(String p0, Time p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateTime(String, Time) Not Supported !");
   }
 
 
@@ -1704,7 +1705,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateTimestamp(String p0, Timestamp p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateTimestamp(String, Timestamp) Not Supported !");
   }
 
 
@@ -1719,7 +1720,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateAsciiStream(String p0, InputStream p1, int p2) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateAsciiStream(String, InputStream, int) Not Supported !");
   }
 
 
@@ -1734,7 +1735,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateBinaryStream(String p0, InputStream p1, int p2) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateBinaryStream(String, InputStream, int) Not Supported !");
   }
 
 
@@ -1749,7 +1750,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateCharacterStream(String p0, Reader p1, int p2) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateCharacterStream(String, Reader, int)Not Supported !");
   }
 
 
@@ -1764,7 +1765,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateObject(String p0, Object p1, int p2) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateObject(String, Object, int) Not Supported !");
   }
 
 
@@ -1778,7 +1779,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateObject(String p0, Object p1) throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.updateObject(String, Object) Not Supported !");
   }
 
 
@@ -1790,7 +1791,7 @@ public class CsvResultSet implements ResultSet
    */
   public void insertRow() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.insertRow() Not Supported !");
   }
 
 
@@ -1802,7 +1803,7 @@ public class CsvResultSet implements ResultSet
    */
   public void updateRow() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.update() Not Supported !");
   }
 
 
@@ -1814,7 +1815,7 @@ public class CsvResultSet implements ResultSet
    */
   public void deleteRow() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.deleteRow() Not Supported !");
   }
 
 
@@ -1826,7 +1827,7 @@ public class CsvResultSet implements ResultSet
    */
   public void refreshRow() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.refreshRow() Not Supported !");
   }
 
 
@@ -1838,7 +1839,7 @@ public class CsvResultSet implements ResultSet
    */
   public void cancelRowUpdates() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.cancelRowUpdates() Not Supported !");
   }
 
 
@@ -1850,7 +1851,7 @@ public class CsvResultSet implements ResultSet
    */
   public void moveToInsertRow() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.moveToInsertRow() Not Supported !");
   }
 
 
@@ -1862,7 +1863,7 @@ public class CsvResultSet implements ResultSet
    */
   public void moveToCurrentRow() throws SQLException
   {
-    throw new SQLException("Not Supported !");
+    throw new SQLException("ResultSet.moveToeCurrentRow() Not Supported !");
   }
 }
 
