@@ -29,8 +29,9 @@ import java.util.Vector;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Gupta Chetan
+ * @author     Christoph Langer
  * @created    25 November 2001
- * @version    $Id: CsvStatement.java,v 1.9 2004/08/09 21:56:55 jackerm Exp $
+ * @version    $Id: CsvStatement.java,v 1.10 2005/01/08 21:30:14 jackerm Exp $
  */
 
 public class CsvStatement implements Statement
@@ -351,12 +352,12 @@ public class CsvStatement implements Statement
                                        connection.isSuppressHeaders(), connection.getCharset());
                 } else {
                   reader = new CsvReader(fileName, connection.getSeperator(),
-                                       connection.isSuppressHeaders(), connection.getCharset());
+                                       connection.isSuppressHeaders(), connection.getCharset(),connection.getQuotechar(),connection.getHeaderline());
                 }
             }
         catch (Exception e)
             {
-                throw new SQLException("Error reading data file. Message was: " + e);
+            throw new SQLException("Error reading data file. Message was: " + e);
             }
 
         CsvResultSet resultSet = new CsvResultSet(this,reader,

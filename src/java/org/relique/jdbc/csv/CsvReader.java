@@ -29,8 +29,9 @@ import java.sql.SQLException;
  * @author     Stuart Mottram (fritto)
  * @author     Jason Bedell
  * @author     Tomasz Skutnik
+ * @author     Christoph Langer
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.11 2004/04/09 11:17:13 gupta_chetan Exp $
+ * @version    $Id: CsvReader.java,v 1.12 2005/01/08 21:30:14 jackerm Exp $
  */
 
 public class CsvReader extends CSVReaderAdapter
@@ -49,7 +50,46 @@ public class CsvReader extends CSVReaderAdapter
     this(fileName, ',', false,null);
   }
 
-
+  /**
+   * Insert the method's description here.
+   *
+   * Creation date: (6-11-2001 15:02:42)
+   *
+   * @param  fileName                 java.lang.String
+   * @param  separator                char
+   * @param  suppressHeaders          boolean
+   * @param  quoteChar				  char
+   *    * @exception  java.lang.Exception  The exception description.
+   * @since
+   */
+  public CsvReader(String fileName, char separator, boolean suppressHeaders, String charset, char quoteChar, String headerLine)
+       throws java.lang.Exception
+  {
+      this.quoteChar=quoteChar;
+      this.headerLine=headerLine;
+      initialize(fileName, separator, suppressHeaders, charset);
+  }
+  
+  /**
+   * Insert the method's description here.
+   *
+   * Creation date: (6-11-2001 15:02:42)
+   *
+   * @param  fileName                 java.lang.String
+   * @param  separator                char
+   * @param  suppressHeaders          boolean
+   * @param  quoteChar				  char
+   *    * @exception  java.lang.Exception  The exception description.
+   * @since
+   */
+  public CsvReader(String fileName, char separator, boolean suppressHeaders, String charset, char quoteChar)
+       throws java.lang.Exception
+  {
+      this.quoteChar=quoteChar;
+      initialize(fileName, separator, suppressHeaders, charset);
+  }
+  
+  
   /**
    * Insert the method's description here.
    *
@@ -64,6 +104,21 @@ public class CsvReader extends CSVReaderAdapter
   public CsvReader(String fileName, char separator, boolean suppressHeaders, String charset)
        throws java.lang.Exception
   {
+    initialize(fileName, separator, suppressHeaders, charset);
+  }
+
+  /**
+ * @param fileName
+ * @param separator
+ * @param suppressHeaders
+ * @param charset
+ * @throws UnsupportedEncodingException
+ * @throws FileNotFoundException
+ * @throws IOException
+ * @throws SQLException
+ */
+private void initialize(String fileName, char separator, boolean suppressHeaders, String charset) throws UnsupportedEncodingException, FileNotFoundException, IOException, SQLException {
+
     this.separator = separator;
     this.suppressHeaders = suppressHeaders;
     this.fileName = fileName;
@@ -77,28 +132,30 @@ public class CsvReader extends CSVReaderAdapter
     // input = new BufferedReader(new FileReader(fileName));
     if (this.suppressHeaders)
     {
-      // No column names available. Read first data line and determine number of colums.
-      buf = input.readLine();
-      String[] data = parseCsvLine(buf);
-      columnNames = new String[data.length];
-      for (int i = 0; i < data.length; i++)
-      {
-        columnNames[i] = "COLUMN" + String.valueOf(i+1);
+      // column names specified by property are available. Read and use.
+      if (this.headerLine != null) {
+          columnNames = parseCsvLine(this.headerLine);          
+      } else {
+          // No column names available. Read first data line and determine number of colums.
+        buf = input.readLine();
+        String[] data = parseCsvLine(buf);
+        columnNames = new String[data.length];
+        for (int i = 0; i < data.length; i++)
+        {
+            columnNames[i] = "COLUMN" + String.valueOf(i+1);
+        }
+        data = null;
+        // throw away.
       }
-      data = null;
-      // throw away.
     }
     else
     {
       String headerLine = input.readLine();
       columnNames = parseCsvLine(headerLine);
     }
-  }
+}
 
-
-
-
-  /**
+/**
    *Description of the Method
    *
    * @return                Description of the Returned Value
@@ -157,23 +214,23 @@ public class CsvReader extends CSVReaderAdapter
     String orgLine = line;
     int currentPos = 0;
     int fullLine = 0;
-
+    
     while (fullLine == 0){
         currentPos = 0;
         line += separator;
         while (currentPos < line.length())
             {
                 char currentChar = line.charAt(currentPos);
-                if (value.length() == 0 && currentChar == '"' && !inQuotedString)
+                if (value.length() == 0 && currentChar == quoteChar && !inQuotedString)
                     {
                         currentPos++;
                         inQuotedString = true;
                         continue;
                     }
-                if (currentChar == '"')
+                if (currentChar == quoteChar)
                     {
                         char nextChar = line.charAt(currentPos + 1);
-                        if (nextChar == '"')
+                        if (nextChar == quoteChar)
                             {
                                 value += currentChar;
                                 currentPos++;

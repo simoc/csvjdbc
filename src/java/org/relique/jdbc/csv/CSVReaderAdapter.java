@@ -28,8 +28,9 @@ import java.sql.SQLException;
  * @author     Jason Bedell
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
+ * @author     Christoph Langer
  * @created    01 March 2004
- * @version    $Id: CSVReaderAdapter.java,v 1.2 2004/08/04 00:55:28 jackerm Exp $
+ * @version    $Id: CSVReaderAdapter.java,v 1.3 2005/01/08 21:30:14 jackerm Exp $
  */
 
 public abstract class CSVReaderAdapter
@@ -38,11 +39,13 @@ public abstract class CSVReaderAdapter
   protected String[] columns;
   protected java.lang.String buf = null;
   protected char separator = ',';
+  protected String headerLine = "";
   protected boolean suppressHeaders = false;
   protected String tableName;
   protected String fileName;
   protected String charset = null;
-
+  protected char quoteChar = '"';
+  
   /**
    *Gets the columnNames attribute of the CsvReader object
    *

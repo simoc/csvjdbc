@@ -38,7 +38,8 @@ import java.util.Vector;
  * @author     Sander Brienen
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
- * @version    $Id: CsvConnection.java,v 1.12 2004/08/09 05:03:05 jackerm Exp $
+ * @author     Christoph Langer
+ * @version    $Id: CsvConnection.java,v 1.13 2005/01/08 21:30:14 jackerm Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -50,6 +51,12 @@ public class CsvConnection implements Connection {
 
     /** Field separator to use */
     private char separator = CsvDriver.DEFAULT_SEPARATOR;
+
+    /** Field quotechar to use */
+    private char quotechar = CsvDriver.DEFAULT_QUOTECHAR;
+
+    /** Field headerline to use */
+    private String headerline = CsvDriver.DEFAULT_HEADERLINE; 
 
     /** Should headers be suppressed */
     private boolean suppressHeaders = CsvDriver.DEFAULT_SUPPRESS;
@@ -92,6 +99,14 @@ public class CsvConnection implements Connection {
             // set the separator character to be used
             if(info.getProperty(CsvDriver.SEPARATOR) != null) {
                 separator = info.getProperty(CsvDriver.SEPARATOR).charAt(0);
+            }
+            // set the quotechar character to be used
+            if(info.getProperty(CsvDriver.QUOTECHAR) != null) {
+                quotechar = info.getProperty(CsvDriver.QUOTECHAR).charAt(0);
+            }
+            // set the headerline to be used
+            if(info.getProperty(CsvDriver.HEADERLINE) != null) {
+                 headerline = info.getProperty(CsvDriver.HEADERLINE);
             }
             // set the header suppression flag
             if(info.getProperty(CsvDriver.SUPPRESS_HEADERS) != null) {
@@ -740,6 +755,22 @@ public class CsvConnection implements Connection {
         return separator;
     }
 
+    /**
+     * Accessor method for the headerline property
+     * @return current value for the headerline property
+     */
+    public String getHeaderline() {
+        return headerline;
+    }
+
+    /**
+     * Accessor method for the quotechar property
+     * @return current value for the quotechar property
+     */
+    public char getQuotechar() {
+        return quotechar;
+    }
+    
     /**
      * Accessor method for the suppressHeaders property
      * @return current value for the suppressHeaders property
