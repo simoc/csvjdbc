@@ -25,10 +25,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Savepoint;
-//import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
@@ -40,7 +38,7 @@ import java.util.Vector;
  * @author     Sander Brienen
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
- * @version    $Id: CsvConnection.java,v 1.10 2004/08/03 20:27:52 jackerm Exp $
+ * @version    $Id: CsvConnection.java,v 1.11 2004/08/04 00:54:23 jackerm Exp $
  */
 public class CsvConnection implements Connection {
 

@@ -1,8 +1,6 @@
 package test.org.relique.jdbc.csv;
 
 import junit.framework.*;
-import java.io.*;
-import java.sql.*;
 
 public class RunTests
 {

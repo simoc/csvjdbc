@@ -16,23 +16,7 @@
  */
 package org.relique.jdbc.csv;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.math.BigDecimal;
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Date;
-import java.sql.Ref;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.Statement;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.Map;
 
 /**
  * This class an abstract class that contains the common functionality 
@@ -45,7 +29,7 @@ import java.util.Map;
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
  * @created    01 March 2004
- * @version    $Id: CSVReaderAdapter.java,v 1.1 2004/04/09 11:17:13 gupta_chetan Exp $
+ * @version    $Id: CSVReaderAdapter.java,v 1.2 2004/08/04 00:55:28 jackerm Exp $
  */
 
 public abstract class CSVReaderAdapter
