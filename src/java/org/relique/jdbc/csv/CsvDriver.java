@@ -26,11 +26,15 @@ import java.io.File;
  * @author     Jonathan Ackerman
  * @author     Sander Brienen
  * @author     JD Evora
- * @version    $Id: CsvDriver.java,v 1.3 2001/12/02 00:25:05 jackerm Exp $
+ * @version    $Id: CsvDriver.java,v 1.4 2002/08/24 22:30:06 mmaraya Exp $
  */
 
 public class CsvDriver implements Driver
 {
+
+  public static final String DEFAULT_EXTENSION = ".csv";
+  public static final char DEFAULT_SEPARATOR = ',';
+  public static final boolean DEFAULT_SUPPRESS = false;
   public static final String FILE_EXTENSION="fileExtension";
   public static final String SEPARATOR="separator";
   public static final String SUPPRESS_HEADERS="suppressHeaders";

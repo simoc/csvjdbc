@@ -18,19 +18,23 @@ package org.relique.jdbc.csv;
 
 import java.sql.*;
 import java.io.File;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * This class implements the Statement interface for the CsvJdbc driver.
  *
  * @author     Jonathan Ackerman
  * @author     Sander Brienen
+ * @author     Michael Maraya
  * @created    25 November 2001
- * @version    $Id: CsvStatement.java,v 1.3 2001/12/02 00:25:05 jackerm Exp $
+ * @version    $Id: CsvStatement.java,v 1.4 2002/08/24 22:30:06 mmaraya Exp $
  */
 
 public class CsvStatement implements Statement
 {
   private CsvConnection connection;
+  private Vector resultSets = new Vector();
 
 
   /**
@@ -337,7 +341,11 @@ public class CsvStatement implements Statement
       throw new SQLException("Error reading data file. Message was: " + e);
     }
 
-    return new CsvResultSet(this,reader,parser.getTableName(),parser.getColumnNames());
+    CsvResultSet resultSet = new CsvResultSet(this, reader,
+            parser.getTableName(), parser.getColumnNames());
+    resultSets.add(resultSet);
+
+    return resultSet;
   }
 
 
@@ -356,12 +364,30 @@ public class CsvStatement implements Statement
 
 
   /**
-   *Description of the Method
+   * Releases this <code>Statement</code> object's database
+   * and JDBC resources immediately instead of waiting for
+   * this to happen when it is automatically closed.
+   * It is generally good practice to release resources as soon as
+   * you are finished with them to avoid tying up database
+   * resources.
+   * <P>
+   * Calling the method <code>close</code> on a <code>Statement</code>
+   * object that is already closed has no effect.
+   * <P>
+   * <B>Note:</B> A <code>Statement</code> object is automatically closed
+   * when it is garbage collected. When a <code>Statement</code> object is
+   * closed, its current <code>ResultSet</code> object, if one exists, is
+   * also closed.
    *
-   * @exception  SQLException  Description of Exception
-   * @since
+   * @exception SQLException if a database access error occurs
    */
-  public void close() throws SQLException { }
+  public void close() throws SQLException {
+      // close all result sets
+      for(Enumeration i = resultSets.elements(); i.hasMoreElements(); ) {
+          CsvResultSet resultSet = (CsvResultSet)i.nextElement();
+          resultSet.close();
+      }
+  }
 
 
   /**
