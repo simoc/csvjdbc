@@ -2,7 +2,7 @@
 <!-- 
     Build file for CsvJdbc. This uses ANT v1.2
     Author: Jonathan Ackerman
-    Version: $Id: build.xml,v 1.5 2002/03/06 22:04:05 mmaraya Exp $
+    Version: $Id: build.xml,v 1.6 2002/03/08 05:54:35 mmaraya Exp $
 -->
 
 <project name="CsvJdbc" default="main" basedir=".">
@@ -111,7 +111,7 @@
     </javac>
     <echo message="  Running Tests..."/>
     <java classname="test.org.relique.jdbc.csv.RunTests" fork="yes" failonerror="yes">
-      <arg value="..\src\testdata"/> 
+      <arg value="..${fsep}src${fsep}testdata"/> 
       <classpath>
         <pathelement location="${lib.dir}${fsep}junit.jar"/>
         <pathelement location="${classpath}"/>
