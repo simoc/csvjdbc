@@ -30,7 +30,7 @@ import java.util.Vector;
  * @author     Tomasz Skutnik
  * @author     Gupta Chetan
  * @created    25 November 2001
- * @version    $Id: CsvStatement.java,v 1.8 2004/08/09 21:36:54 jackerm Exp $
+ * @version    $Id: CsvStatement.java,v 1.9 2004/08/09 21:56:55 jackerm Exp $
  */
 
 public class CsvStatement implements Statement
@@ -360,7 +360,7 @@ public class CsvStatement implements Statement
             }
 
         CsvResultSet resultSet = new CsvResultSet(this,reader,
-                                                  parser.getTableName(), parser.getColumnNames(), this.isScrollable);
+                                                  parser.getTableName(), parser.getColumnNames(), this.isScrollable,parser.getWhereColumn(), parser.getWhereValue());
         resultSets.add(resultSet);
 
         return resultSet;

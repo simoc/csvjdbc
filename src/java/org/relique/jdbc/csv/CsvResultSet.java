@@ -36,7 +36,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.15 2004/08/05 23:43:13 jackerm Exp $
+ * @version    $Id: CsvResultSet.java,v 1.16 2004/08/09 21:56:55 jackerm Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -56,13 +56,18 @@ public class CsvResultSet implements ResultSet {
 
     /** Array of available columns for referenced table */
     protected String[] columnNames;
-
+    
     /** Last column name index read */
     protected int lastIndexRead = -1;
-
+    
+    /** Number of the column that is used on the where clause */
+    protected int whereColumn;
+    
+    /** String that is sought for on the where column */
+    protected String whereValue;
+    
     /** InputStream to keep track of */
     protected InputStream is;
-
     /**
      * Constructor for the CsvResultSet object
      *
@@ -73,11 +78,27 @@ public class CsvResultSet implements ResultSet {
      */
     protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
                            String tableName, String[] columnNames, int isScrollable) {
+    	this(statement,reader,tableName,columnNames,isScrollable,-1,null);
+    }
+    /**
+     * Constructor for the CsvResultSet object 
+     *
+     * @param statement Statement that produced this ResultSet
+     * @param reader Helper class that performs the actual file reads
+     * @param tableName Table referenced by the Statement
+     * @param columnNames Array of available columns for referenced table
+     * @param whereColumn The zero base number for the column
+     * @param whereValue The string to be sought for
+     */
+    protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
+            String tableName, String[] columnNames, int isScrollable, int whereColumn, String whereValue) {
         this.statement = statement;
         this.isScrollable = isScrollable;
         this.reader = reader;
         this.tableName = tableName;
         this.columnNames = columnNames;
+        this.whereColumn = whereColumn;
+        this.whereValue = whereValue;
         if(columnNames[0].equals("*")) {
             this.columnNames = reader.getColumnNames();
         }
@@ -100,7 +121,15 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public boolean next() throws SQLException {
-        return reader.next();
+    	boolean answer = false;
+    	answer = reader.next();
+    	//We have a where clause, honor it    	
+    	if(whereColumn>-1) {      		
+    		while(answer && !reader.getColumn(whereColumn).equals(whereValue)) {
+    			answer = reader.next();
+    		}
+    	}
+    	return answer;
     }
 
     /**

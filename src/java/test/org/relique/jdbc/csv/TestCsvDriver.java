@@ -27,7 +27,7 @@ import junit.framework.*;
  *
  * @author Jonathan Ackerman
  * @author JD Evora
- * @version $Id: TestCsvDriver.java,v 1.7 2004/08/09 21:37:29 jackerm Exp $
+ * @version $Id: TestCsvDriver.java,v 1.8 2004/08/09 21:56:55 jackerm Exp $
  */
 public class TestCsvDriver extends TestCase
 {
@@ -313,4 +313,47 @@ public class TestCsvDriver extends TestCase
 				fail("Unexpected Exception: " + e);
 			}
 		}
+		
+	/**
+	   * This creates several sentectes with were and tests they work
+	   */
+	  public void testWhereSimple() {
+	  	try {
+	  	  Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+	
+	      Statement stmt = conn.createStatement();
+	
+	      ResultSet results = stmt.executeQuery("SELECT ID,Name FROM sample4 WHERE ID=02");
+	      assertTrue(results.next());
+	      assertEquals("The name is wrong","Mauricio Hernandez",results.getString("Name"));
+	      assertEquals("The job is wrong","Project Manager",results.getString("Job"));
+	      assertTrue(!results.next());   
+	  	}
+	    catch(Exception e)
+	    {
+	      fail("Unexpected Exception: " + e);
+	    }
+	  }
+	  
+	  public void testWhereMultipleResult() {
+	  	try {
+	  	  Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+	
+	      Statement stmt = conn.createStatement();
+	
+	      
+	      ResultSet results = stmt.executeQuery("SELECT ID, Name, Job FROM sample4 WHERE Job = Project Manager");
+	      assertTrue(results.next());
+	      assertEquals("The ID is wrong","01",results.getString("ID"));
+	      assertTrue(results.next());
+	      assertEquals("The ID is wrong","02",results.getString("ID"));
+	      assertTrue(results.next());
+	      assertEquals("The ID is wrong","04",results.getString("ID"));
+	      assertTrue(!results.next());
+	  	}
+	    catch(Exception e)
+	    {
+	      fail("Unexpected Exception: " + e);
+	    }
+	  }
 }

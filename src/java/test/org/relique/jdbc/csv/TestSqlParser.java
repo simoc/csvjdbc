@@ -24,7 +24,7 @@ import junit.framework.*;
 /**This class is used to test the SqlParser class.
  *
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.2 2002/01/01 23:04:26 jackerm Exp $
+ * @version $Id: TestSqlParser.java,v 1.3 2004/08/09 21:56:55 jackerm Exp $
  */
 public class TestSqlParser extends TestCase
 {
@@ -56,4 +56,38 @@ public class TestSqlParser extends TestCase
       fail("Unexpected Exception:" + e);
     }
   }
+  /**
+   * Test that where conditions are handled correctly
+   */
+  public void testWhere() {
+  	try {
+		SqlParser parser = new SqlParser();
+		parser.parse("SELECT FLD_A, FLD_B FROM test WHERE FLD_A = 20");
+		assertEquals("Incorrect table name","test", parser.getTableName());
+		assertEquals("Incorrect WHERE column index",0, parser.getWhereColumn());
+		assertEquals("Incorrect WHERE value","20", parser.getWhereValue());
+		
+		parser.parse("SELECT FLD_A, FLD_B FROM test WHERE FLD_A = '20'");
+		assertEquals("Incorrect table name","test", parser.getTableName());
+		assertEquals("Incorrect WHERE column index",0, parser.getWhereColumn());
+		assertEquals("Incorrect WHERE value","20", parser.getWhereValue());
+		
+		parser.parse("SELECT FLD_A,FLD_B FROM test WHERE FLD_A =20");
+		assertEquals("Incorrect table name","test", parser.getTableName());
+		assertEquals("Incorrect WHERE column index",0, parser.getWhereColumn());
+		assertEquals("Incorrect WHERE value","20", parser.getWhereValue());
+		
+		parser.parse("SELECT FLD_A FROM test WHERE FLD_A=20");
+		assertEquals("Incorrect table name","test", parser.getTableName());
+		assertEquals("Incorrect WHERE column index",0, parser.getWhereColumn());
+		assertEquals("Incorrect WHERE value","20", parser.getWhereValue());
+		
+		parser.parse("SELECT FLD_A, FLD_B FROM test WHERE FLD_B='Test Me'");
+		assertEquals("Incorrect table name","test", parser.getTableName());
+		assertEquals("Incorrect WHERE column index",1, parser.getWhereColumn());
+		assertEquals("Incorrect WHERE value","Test Me", parser.getWhereValue());
+	} catch (Exception e) {
+		fail("Unexpected Exception:" + e);
+	}
+  }  
 }
