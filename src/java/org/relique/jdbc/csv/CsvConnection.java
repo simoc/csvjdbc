@@ -24,6 +24,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.Savepoint;
 //import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Enumeration;
@@ -39,7 +40,7 @@ import java.util.Vector;
  * @author     Sander Brienen
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
- * @version    $Id: CsvConnection.java,v 1.9 2004/04/09 11:17:13 gupta_chetan Exp $
+ * @version    $Id: CsvConnection.java,v 1.10 2004/08/03 20:27:52 jackerm Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -697,6 +698,22 @@ public class CsvConnection implements Connection {
     public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
         throw new UnsupportedOperationException("Connection.prepareStatement(String,String[]) unsupported");
     }
+    
+		public void releaseSavepoint(Savepoint savePoint) throws SQLException{
+			throw new UnsupportedOperationException("Connection.releaseSavepoint(Savepoint) unsupported");
+		}
+		
+		public void rollback(Savepoint savePoint) throws SQLException{
+			throw new UnsupportedOperationException("Connection.rollback(Savepoint) unsupported");
+		}
+		
+		public Savepoint setSavepoint() throws SQLException{
+			throw new UnsupportedOperationException("Connection.setSavepoint() unsupported");
+		}
+		
+		public Savepoint setSavepoint(String str) throws SQLException{
+			throw new UnsupportedOperationException("Connection.setSavepoint(String) unsupported");
+		} 
 
     //---------------------------------------------------------------------
     // Properties
@@ -741,5 +758,4 @@ public class CsvConnection implements Connection {
     protected String getCharset() {
         return charset;
     }
-
 }
