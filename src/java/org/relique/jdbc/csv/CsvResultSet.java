@@ -27,7 +27,7 @@ import java.util.Calendar;
  *
  * @author     Jonathan Ackerman
  * @created    25 November 2001
- * @version    $Id: CsvResultSet.java,v 1.3 2001/12/02 00:25:05 jackerm Exp $
+ * @version    $Id: CsvResultSet.java,v 1.4 2002/03/06 22:46:24 mmaraya Exp $
  */
 public class CsvResultSet implements ResultSet
 {
@@ -98,7 +98,7 @@ public class CsvResultSet implements ResultSet
   {
     try
     {
-      return reader.getColumn(columnNames[columnIndex]);
+      return reader.getColumn(columnNames[columnIndex-1]);
     }
     catch (Exception e)
     {
@@ -123,7 +123,7 @@ public class CsvResultSet implements ResultSet
     {
       if (columnName.equals(columnNames[loop]))
       {
-        return getString(loop);
+        return getString(loop+1);
       }
     }
 
