@@ -23,14 +23,19 @@
    <tr>
         <td valign="top">
         <p><font size="2" face="Arial"><b>Version 0.9</b><BR>
-        <i>Release date: 2003-01-17</i><BR><BR>
+        <i>Release date: 2003-01-20</i><BR><BR>
         <b>Notes:&nbsp;</b>Bug fixes and functionality improvements.<br><br>
         <b>Changes:&nbsp;</b>
         <ul>
-         <li>Retrieval of colum outside of allowed index should throw SQLException - Tomasz Skutnik</li>
+	 <li>Improved JavaDoc - Michael Maraya</li>
+	 <li>Improved exception handling - Michael Maraya</li>
+	 <li>Improved ResultSet & Statement Cleanups - Michael Maraya</li>
+	 <li>Preserve column heading case as described in the CSV file - Michael Maraya</li>
+	 <li>Completed code for getInt(int columnIndex), getInt(String columnName), getFloat(int columnIndex), getFloat(String columnName)  - Michael Maraya</li>
+         <li>Retrieval of column outside of allowed index should throw SQLException - Tomasz Skutnik</li>
          <li>Updates so that driver can support different input file encodings - Tomasz Skutnik</li>
          <li>Minor wasNull() method implementation improvement - Tomasz Skutnik</li>
-         <li>Made interface-compatibile with JDBC 3.0 so that CsvJdbc can compile under JDK1.4 - Tomasz Skutnik</li>
+         <!-- <li>Made interface-compatibile with JDBC 3.0 so that CsvJdbc can compile under JDK1.4 - Tomasz Skutnik</li> -->
         </ul><br></font></p><hr size="1" noshade>
         </td>
     </tr>
