@@ -27,7 +27,7 @@ import java.util.Calendar;
  *
  * @author     Jonathan Ackerman
  * @created    25 November 2001
- * @version    $Id: CsvResultSet.java,v 1.5 2002/06/17 02:53:16 jackerm Exp $
+ * @version    $Id: CsvResultSet.java,v 1.6 2002/08/15 14:53:18 mmaraya Exp $
  */
 public class CsvResultSet implements ResultSet
 {
@@ -122,7 +122,7 @@ public class CsvResultSet implements ResultSet
     columnName = columnName.toUpperCase();
 
     for (int loop = 0; loop < columnNames.length; loop++)
-      if (columnName.equals(columnNames[loop])) 
+      if (columnName.equals(columnNames[loop]))
         return getString(loop+1);
 
     throw new SQLException("Column '" + columnName + "' not found.");
@@ -185,16 +185,28 @@ public class CsvResultSet implements ResultSet
 
 
   /**
-   *Gets the int attribute of the CsvResultSet object
+   * Gets the value of the designated column in the current row
+   * of this <code>ResultSet</code> object as
+   * an <code>int</code> in the Java programming language.
    *
-   * @param  p0                Description of Parameter
-   * @return                   The int value
-   * @exception  SQLException  Description of Exception
-   * @since
+   * @param columnIndex the first column is 1, the second is 2, ...
+   * @return the column value; if the value is SQL <code>NULL</code>, the
+   * value returned is <code>0</code>
+   * @exception SQLException if a database access error occurs
    */
-  public int getInt(int p0) throws SQLException
+  public int getInt(int columnIndex) throws SQLException
   {
-    throw new SQLException("ResultSet.getInt(int) Not Supported !");
+      int val = 0;
+      try {
+          String str = reader.getColumn(columnNames[columnIndex-1]);
+          if(str != null) {
+              val = Integer.parseInt(str);
+          }
+          lastIndexRead = columnIndex;
+      } catch (Exception e) {
+        throw new SQLException(e.getMessage());
+      }
+      return val;
   }
 
 
@@ -213,16 +225,28 @@ public class CsvResultSet implements ResultSet
 
 
   /**
-   *Gets the float attribute of the CsvResultSet object
+   * Gets the value of the designated column in the current row
+   * of this <code>ResultSet</code> object as
+   * a <code>float</code> in the Java programming language.
    *
-   * @param  p0                Description of Parameter
-   * @return                   The float value
-   * @exception  SQLException  Description of Exception
-   * @since
+   * @param columnIndex the first column is 1, the second is 2, ...
+   * @return the column value; if the value is SQL <code>NULL</code>, the
+   * value returned is <code>0</code>
+   * @exception SQLException if a database access error occurs
    */
-  public float getFloat(int p0) throws SQLException
+  public float getFloat(int columnIndex) throws SQLException
   {
-    throw new SQLException("ResultSet.getFloat(int) Not Supported !");
+      float retval = 0F;
+      try {
+          String str = reader.getColumn(columnNames[columnIndex-1]);
+          if(str != null) {
+              retval = Float.parseFloat(str);
+          }
+          lastIndexRead = columnIndex;
+      } catch (Exception e) {
+        throw new SQLException(e.getMessage());
+      }
+      return retval;
   }
 
 
@@ -396,16 +420,23 @@ public class CsvResultSet implements ResultSet
 
 
   /**
-   *Gets the int attribute of the CsvResultSet object
+   * Gets the value of the designated column in the current row
+   * of this <code>ResultSet</code> object as
+   * an <code>int</code> in the Java programming language.
    *
-   * @param  p0                Description of Parameter
-   * @return                   The int value
-   * @exception  SQLException  Description of Exception
-   * @since
+   * @param columnName the SQL name of the column
+   * @return the column value; if the value is SQL <code>NULL</code>, the
+   * value returned is <code>0</code>
+   * @exception SQLException if a database access error occurs
    */
-  public int getInt(String p0) throws SQLException
+  public int getInt(String columnName) throws SQLException
   {
-    throw new SQLException("ResultSet.getInt(String) Not Supported !");
+      for(int i = 0; i < columnNames.length; i++) {
+        if(columnName.equalsIgnoreCase(columnNames[i])) {
+          return getInt(i+1);
+        }
+      }
+      throw new SQLException("Column '" + columnName + "' not found.");
   }
 
 
@@ -424,16 +455,23 @@ public class CsvResultSet implements ResultSet
 
 
   /**
-   *Gets the float attribute of the CsvResultSet object
+   * Gets the value of the designated column in the current row
+   * of this <code>ResultSet</code> object as
+   * a <code>float</code> in the Java programming language.
    *
-   * @param  p0                Description of Parameter
-   * @return                   The float value
-   * @exception  SQLException  Description of Exception
-   * @since
+   * @param columnName the SQL name of the column
+   * @return the column value; if the value is SQL <code>NULL</code>, the
+   * value returned is <code>0</code>
+   * @exception SQLException if a database access error occurs
    */
-  public float getFloat(String p0) throws SQLException
+  public float getFloat(String columnName) throws SQLException
   {
-    throw new SQLException("ResultSet.getFloat(String) Not Supported !");
+      for(int i = 0; i < columnNames.length; i++) {
+        if(columnName.equalsIgnoreCase(columnNames[i])) {
+          return getFloat(i+1);
+        }
+      }
+      throw new SQLException("Column '" + columnName + "' not found.");
   }
 
 
