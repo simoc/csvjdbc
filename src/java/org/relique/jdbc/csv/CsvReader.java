@@ -25,7 +25,7 @@ import java.util.*;
  * from a .csv file.
  *
  * @author Jonathan Ackerman
- * @version $Id: CsvReader.java,v 1.1 2001/01/23 09:17:48 jackerm Exp $
+ * @version $Id: CsvReader.java,v 1.2 2001/02/27 09:59:35 jackerm Exp $
  */
 public class CsvReader
 {
@@ -45,50 +45,74 @@ public class CsvReader
 
 
   // This code is ugly and slow, but it does work ! (I hope)
-  protected String[] parseCsvLine(String line)
+  //  well it didn't work the first time, maybe this will :)
+  protected String[] parseCsvLine(String line) throws Exception
   {
     Vector values = new Vector();
-    boolean inQuotes = false;
-    String value = "";
-    char lastChar = 0;
+    boolean inQuotedString=false;
+    String value="";
+    int currentPos =0;
 
-    for (int loop=0; loop < line.length();loop++)
+    line+=",";
+
+
+
+    while (currentPos < line.length())
     {
-      char currentChar = line.charAt(loop);
+      char currentChar = line.charAt(currentPos);
 
-      if (currentChar == ',')
+      if (value.length() == 0 && currentChar == '"' && !inQuotedString)
       {
-        if (inQuotes)
+        currentPos++;
+        inQuotedString=true;
+        continue;
+      }
+
+      if (currentChar == '"')
+      {
+        char nextChar = line.charAt(currentPos+1);
+        if (nextChar == '"')
         {
-          value += currentChar;
+          value+=currentChar;
+          currentPos++;
         }
         else
         {
+          if (!inQuotedString)
+            throw new Exception("Unexpected '\"' in position " + currentPos);
+
+          if (inQuotedString && nextChar != ',')
+            throw new Exception("Expecting ',' in position " + (currentPos+1));
+
           values.add(value);
           value="";
-        }
-      }
-      else if ( currentChar == '"')
-      {
-        if (lastChar == '"')
-        {
-          value += currentChar;
-        }
-        else
-        {
-          inQuotes = !inQuotes;
+          inQuotedString=false;
+
+          currentPos++;
         }
       }
       else
       {
-        value += currentChar;
+        if (currentChar == ',')
+        {
+          if (inQuotedString)
+          {
+            value+=currentChar;
+          }
+          else
+          {
+            values.add(value);
+            value="";
+          }
+        }
+        else
+        {
+          value+=currentChar;
+        }
       }
 
-      lastChar = currentChar;
+     currentPos++;
     }
-
-
-    values.add(value);
 
     String[] retVal = new String[values.size()];
     values.copyInto(retVal);

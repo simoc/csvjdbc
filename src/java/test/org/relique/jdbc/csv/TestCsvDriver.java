@@ -24,7 +24,7 @@ import java.sql.*;
 /**This class is used to test the CsvJdbc driver.
  *
  * @author Jonathan Ackerman
- * @version $Id: TestCsvDriver.java,v 1.1 2001/01/23 09:21:28 jackerm Exp $
+ * @version $Id: TestCsvDriver.java,v 1.2 2001/02/27 09:59:35 jackerm Exp $
  */
 public class TestCsvDriver
 {
@@ -41,11 +41,13 @@ public class TestCsvDriver
 
       Statement stmt = conn.createStatement();
 
-      ResultSet results = stmt.executeQuery("SELECT NAME,ID FROM sample");
+      ResultSet results = stmt.executeQuery("SELECT NAME,ID,EXTRA_FIELD FROM sample");
 
       while (results.next())
       {
-        System.out.println("ID= " + results.getString("ID") + "   NAME= " + results.getString("NAME"));
+        System.out.println("ID= " + results.getString("ID")
+                           + "   NAME= " + results.getString("NAME")
+                           + "   EXTRA_FIELD= " + results.getString("EXTRA_FIELD"));
       }
 
       results.close();

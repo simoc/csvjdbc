@@ -1,5 +1,7 @@
-ID,NAME
-A123,Jonathan Ackerman
-B234,Grady O'Neil
-C456,"Susan, Peter and Dave"
-D789,"Amelia ""meals"" Maurice"
+ID,NAME,EXTRA_FIELD
+Q123,"""S,""",F
+A123,Jonathan Ackerman,A
+B234,Grady O'Neil,B
+C456,"Susan, Peter and Dave",C
+D789,"Amelia ""meals"" Maurice",E
+X234,"Peter ""peg leg"", Jimmy & Samantha ""Sam""",G
