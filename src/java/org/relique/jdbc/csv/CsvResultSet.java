@@ -33,7 +33,7 @@ import java.sql.*;
  *
  * @author     Jonathan Ackerman
  * @author     Michael Maraya
- * @version    $Id: CsvResultSet.java,v 1.11 2002/09/04 17:02:13 mmaraya Exp $
+ * @version    $Id: CsvResultSet.java,v 1.12 2002/09/04 17:55:00 mmaraya Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -276,7 +276,7 @@ public class CsvResultSet implements ResultSet {
      */
     public BigDecimal getBigDecimal(int columnIndex, int scale)
             throws SQLException {
-        // let getBigDecimal(int handle this for now
+        // let getBigDecimal(int) handle this for now
         return getBigDecimal(columnIndex);
     }
 
@@ -569,8 +569,8 @@ public class CsvResultSet implements ResultSet {
      */
     public BigDecimal getBigDecimal(String columnName, int scale)
             throws SQLException {
-        String str = getString(columnName);
-        return (str == null) ? null : new BigDecimal(str);
+        // let getBigDecimal(String) handle this for now
+        return getBigDecimal(columnName);
     }
 
     /**
@@ -938,7 +938,7 @@ public class CsvResultSet implements ResultSet {
         String str = getString(columnIndex);
         if(str != null) {
             try {
-                BigDecimal bd = new BigDecimal(str);
+                retval = new BigDecimal(str);
             }
             catch (NumberFormatException e) {
                 throw new SQLException("Could not convert '" + str + "' to " +
@@ -964,7 +964,7 @@ public class CsvResultSet implements ResultSet {
         String str = getString(columnName);
         if(str != null) {
             try {
-                BigDecimal bd = new BigDecimal(str);
+                retval = new BigDecimal(str);
             }
             catch (NumberFormatException e) {
                 throw new SQLException("Could not convert '" + str + "' to " +
