@@ -1,11 +1,11 @@
-<?xml version="1.0" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- =====================================================================
 
  Build file for CsvJdbc. This uses Apache Ant v1.5
- 
+
  Authors: Jonathan Ackerman, Michael Maraya
- Version: $Id: build.xml,v 1.11 2002/08/26 14:15:43 mmaraya Exp $
+ Version: $Id: build.xml,v 1.12 2002/09/04 17:40:57 mmaraya Exp $
 
  CsvJdbc - a JDBC driver for CSV files
  Copyright (C) 2001  Jonathan Ackerman
@@ -28,19 +28,23 @@
 
 <project name="CsvJdbc" default="main">
 
+  <description>
+    Jakarta-Ant build file for CSVJDBC
+  </description>
+
   <!-- =================================================================== -->
   <!-- Project-wide properties and paths                                   -->
   <!-- =================================================================== -->
   <property name="name" value="csvjdbc"/>
   <property name="rel" value="r0-8"/>
-  <property name="rel.name" value="${name}-${rel}"/>  
-  <property name="build.dir" value="../build"/> 
+  <property name="rel.name" value="${name}-${rel}"/>
+  <property name="build.dir" value="../build"/>
   <property name="src.dir" value="../src"/>
   <property name="java.dir" value="${src.dir}/java"/>
   <property name="doc.dir" value="${src.dir}/doc"/>
   <property name="lib.dir" value="../lib"/>
   <property name="class.dir" value="../classes"/>
-  <property name="javadoc.dir" value="../javadoc"/> 
+  <property name="javadoc.dir" value="../javadoc"/>
   <property name="rel.dir" value="../release"/>
   <property name="jar.file" value="${rel.dir}/${name}.jar"/>
   <path id="classpath">
@@ -49,17 +53,17 @@
     <fileset dir="${lib.dir}">
       <include name="**/*.jar"/>
     </fileset>
-  </path>    
+  </path>
 
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
-  <target name="init">        
+  <target name="init">
     <mkdir dir="${class.dir}"/>
     <mkdir dir="${javadoc.dir}"/>
     <mkdir dir="${rel.dir}"/>
   </target>
-  
+
   <!-- =================================================================== -->
   <!-- Main target                                                         -->
   <!-- =================================================================== -->
@@ -70,12 +74,12 @@
     <echo message=""/>
     <echo message="  clean    - Cleans project for fresh build"/>
     <echo message="  compile  - Compiles all code"/>
-    <echo message="  jar      - Creates the jar file for the system"/>       
-    <echo message="  javadoc  - Builds the javadoc for the system"/>    
+    <echo message="  jar      - Creates the jar file for the system"/>
+    <echo message="  javadoc  - Builds the javadoc for the system"/>
     <echo message="  release  - Builds a release of the system"/>
-    <echo message="  test     - Creates and runs the test programs. See lib\readme.txt"/>  
+    <echo message="  test     - Creates and runs the test programs. See lib\readme.txt"/>
   </target>
-  
+
   <!-- =================================================================== -->
   <!-- Compile target                                                      -->
   <!-- =================================================================== -->
@@ -89,17 +93,17 @@
   <!-- =================================================================== -->
   <!-- Jar target                                                          -->
   <!-- =================================================================== -->
-  <target name="jar" depends="compile" 
+  <target name="jar" depends="compile"
           description="Creates the jar file for the system">
     <jar destfile="${jar.file}">
       <fileset dir="${class.dir}" includes="org/**/*.class"/>
     </jar>
-  </target>  
-  
+  </target>
+
   <!-- =================================================================== -->
   <!-- Javadoc target                                                      -->
   <!-- =================================================================== -->
-  <target name="javadoc" depends="init" 
+  <target name="javadoc" depends="init"
           description="Builds the javadoc for the system">
     <javadoc packagenames="test.*,org.*"
              sourcepath="${java.dir}"
@@ -113,49 +117,49 @@
       <classpath refid="classpath"/>
     </javadoc>
   </target>
-  
+
   <!-- =================================================================== -->
   <!-- Clean target                                                        -->
   <!-- =================================================================== -->
-  <target name="clean" description="Cleans project for fresh build">  
+  <target name="clean" description="Cleans project for fresh build">
     <delete dir="${class.dir}"/>
     <delete dir="${javadoc.dir}"/>
     <delete dir="${rel.dir}"/>
   </target>
-  
+
   <!-- =================================================================== -->
   <!-- Test target                                                         -->
   <!-- =================================================================== -->
-  <target name="test" depends="compile" 
+  <target name="test" depends="compile"
           description="Creates and runs the test programs. See lib\readme.txt">
     <javac srcdir="${java.dir}" destdir="${class.dir}">
       <classpath refid="classpath"/>
       <include name="test/**/*.java"/>
     </javac>
-    <java classname="test.org.relique.jdbc.csv.RunTests" fork="yes" 
+    <java classname="test.org.relique.jdbc.csv.RunTests" fork="yes"
           failonerror="yes">
       <classpath refid="classpath"/>
-      <arg value="../src/testdata"/> 
+      <arg value="../src/testdata"/>
     </java>
-  </target>  
-    
+  </target>
+
   <!-- =================================================================== -->
   <!-- Release target                                                      -->
   <!-- =================================================================== -->
-  <target name="release" depends="clean,test,jar,javadoc" 
+  <target name="release" depends="clean,test,jar,javadoc"
           description="Builds a release of the system">
     <zip destfile="${rel.dir}/${rel.name}.zip">
-      <zipfileset dir="${javadoc.dir}" includes="**/*" 
+      <zipfileset dir="${javadoc.dir}" includes="**/*"
                   prefix="${rel.name}/javadoc"/>
-      <zipfileset dir="${src.dir}" includes="**/*" 
+      <zipfileset dir="${src.dir}" includes="**/*"
                   prefix="${rel.name}/src/src"/>
-      <zipfileset dir="${build.dir}" includes="build.xml" 
+      <zipfileset dir="${build.dir}" includes="build.xml"
                   prefix="${rel.name}/src/build"/>
-      <zipfileset dir="${lib.dir}" includes="readme.txt" 
+      <zipfileset dir="${lib.dir}" includes="readme.txt"
                   prefix="${rel.name}/src/lib"/>
       <zipfileset dir="${rel.dir}" includes="*.jar" prefix="${rel.name}"/>
       <zipfileset dir="${doc.dir}" includes="**" prefix="${rel.name}"/>
     </zip>
   </target>
-  
-</project>  
+
+</project>
