@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Calendar;
@@ -32,7 +33,7 @@ import java.sql.*;
  *
  * @author     Jonathan Ackerman
  * @author     Michael Maraya
- * @version    $Id: CsvResultSet.java,v 1.8 2002/08/18 20:31:49 mmaraya Exp $
+ * @version    $Id: CsvResultSet.java,v 1.9 2002/08/24 16:50:12 mmaraya Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -885,6 +886,282 @@ public class CsvResultSet implements ResultSet {
 
     //--------------------------JDBC 2.0-----------------------------------
 
+    //---------------------------------------------------------------------
+    // Getters and Setters
+    //---------------------------------------------------------------------
+
+    /**
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a
+     * <code>java.io.Reader</code> object.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @return a <code>java.io.Reader</code> object that contains the column
+     * value; if the value is SQL <code>NULL</code>, the value returned is
+     * <code>null</code> in the Java programming language.
+     * @exception SQLException if a database access error occurs
+     */
+    public Reader getCharacterStream(int columnIndex) throws SQLException {
+        String str = getString(columnIndex);
+        return (str == null) ? null : new StringReader(str);
+    }
+
+    /**
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a
+     * <code>java.io.Reader</code> object.
+     *
+     * @param columnName the name of the column
+     * @return a <code>java.io.Reader</code> object that contains the column
+     * value; if the value is SQL <code>NULL</code>, the value returned is
+     * <code>null</code> in the Java programming language
+     * @exception SQLException if a database access error occurs
+     */
+    public Reader getCharacterStream(String columnName) throws SQLException {
+        String str = getString(columnName);
+        return (str == null) ? null : new StringReader(str);
+    }
+
+    /**
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a
+     * <code>java.math.BigDecimal</code> with full precision.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @return the column value (full precision);
+     * if the value is SQL <code>NULL</code>, the value returned is
+     * <code>null</code> in the Java programming language.
+     * @exception SQLException if a database access error occurs
+     */
+    public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
+        String str = getString(columnIndex);
+        return (str == null) ? null : new BigDecimal(str);
+    }
+
+    /**
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a
+     * <code>java.math.BigDecimal</code> with full precision.
+     *
+     * @param columnName the column name
+     * @return the column value (full precision);
+     * if the value is SQL <code>NULL</code>, the value returned is
+     * <code>null</code> in the Java programming language.
+     * @exception SQLException if a database access error occurs
+     */
+    public BigDecimal getBigDecimal(String columnName) throws SQLException {
+        String str = getString(columnName);
+        return (str == null) ? null : new BigDecimal(str);
+    }
+
+    //---------------------------------------------------------------------
+    // Traversal/Positioning
+    //---------------------------------------------------------------------
+
+    /**
+     * Retrieves whether the cursor is before the first row in
+     * this <code>ResultSet</code> object.
+     *
+     * @return <code>true</code> if the cursor is before the first row;
+     * <code>false</code> if the cursor is at any other position or the
+     * result set contains no rows
+     * @exception SQLException if a database access error occurs
+     */
+    public boolean isBeforeFirst() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.isBeforeFirst() unsupported");
+    }
+
+    /**
+     * Retrieves whether the cursor is after the last row in
+     * this <code>ResultSet</code> object.
+     *
+     * @return <code>true</code> if the cursor is after the last row;
+     * <code>false</code> if the cursor is at any other position or the
+     * result set contains no rows
+     * @exception SQLException if a database access error occurs
+     */
+    public boolean isAfterLast() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.isAfterLast() unsupported");
+    }
+
+    /**
+     * Retrieves whether the cursor is on the first row of
+     * this <code>ResultSet</code> object.
+     *
+     * @return <code>true</code> if the cursor is on the first row;
+     * <code>false</code> otherwise
+     * @exception SQLException if a database access error occurs
+     */
+    public boolean isFirst() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.isFirst() unsupported");
+    }
+
+    /**
+     * Retrieves whether the cursor is on the last row of
+     * this <code>ResultSet</code> object.
+     * Note: Calling the method <code>isLast</code> may be expensive
+     * because the JDBC driver
+     * might need to fetch ahead one row in order to determine
+     * whether the current row is the last row in the result set.
+     *
+     * @return <code>true</code> if the cursor is on the last row;
+     * <code>false</code> otherwise
+     * @exception SQLException if a database access error occurs
+     */
+    public boolean isLast() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.isLast() unsupported");
+    }
+
+    /**
+     * Moves the cursor to the front of
+     * this <code>ResultSet</code> object, just before the
+     * first row. This method has no effect if the result set contains no rows.
+     *
+     * @exception SQLException if a database access error
+     * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
+     */
+    public void beforeFirst() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.beforeFirst() unsupported");
+    }
+
+    /**
+     * Moves the cursor to the end of
+     * this <code>ResultSet</code> object, just after the
+     * last row. This method has no effect if the result set contains no rows.
+     * @exception SQLException if a database access error
+     * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
+     */
+    public void afterLast() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.afterLast() unsupported");
+    }
+
+    /**
+     * Moves the cursor to the first row in
+     * this <code>ResultSet</code> object.
+     *
+     * @return <code>true</code> if the cursor is on a valid row;
+     * <code>false</code> if there are no rows in the result set
+     * @exception SQLException if a database access error
+     * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
+     */
+    public boolean first() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.first() unsupported");
+    }
+
+    /**
+     * Moves the cursor to the last row in
+     * this <code>ResultSet</code> object.
+     *
+     * @return <code>true</code> if the cursor is on a valid row;
+     * <code>false</code> if there are no rows in the result set
+     * @exception SQLException if a database access error
+     * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
+     */
+    public boolean last() throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.last() unsupported");
+    }
+
+    /**
+     * Retrieves the current row number.  The first row is number 1, the
+     * second number 2, and so on.
+     *
+     * @return the current row number; <code>0</code> if there is no current row
+     * @exception SQLException if a database access error occurs
+     */
+    public int getRow() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.getRow() unsupported");
+    }
+
+    /**
+     * Moves the cursor to the given row number in
+     * this <code>ResultSet</code> object.
+     *
+     * <p>If the row number is positive, the cursor moves to
+     * the given row number with respect to the
+     * beginning of the result set.  The first row is row 1, the second
+     * is row 2, and so on.
+     *
+     * <p>If the given row number is negative, the cursor moves to
+     * an absolute row position with respect to
+     * the end of the result set.  For example, calling the method
+     * <code>absolute(-1)</code> positions the
+     * cursor on the last row; calling the method <code>absolute(-2)</code>
+     * moves the cursor to the next-to-last row, and so on.
+     *
+     * <p>An attempt to position the cursor beyond the first/last row in
+     * the result set leaves the cursor before the first row or after
+     * the last row.
+     *
+     * <p><B>Note:</B> Calling <code>absolute(1)</code> is the same
+     * as calling <code>first()</code>. Calling <code>absolute(-1)</code>
+     * is the same as calling <code>last()</code>.
+     *
+     * @param row the number of the row to which the cursor should move.
+     *        A positive number indicates the row number counting from the
+     *        beginning of the result set; a negative number indicates the
+     *        row number counting from the end of the result set
+     * @return <code>true</code> if the cursor is on the result set;
+     * <code>false</code> otherwise
+     * @exception SQLException if a database access error
+     * occurs, or the result set type is <code>TYPE_FORWARD_ONLY</code>
+     */
+    public boolean absolute(int row) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.absolute() unsupported");
+    }
+
+    /**
+     * Moves the cursor a relative number of rows, either positive or negative.
+     * Attempting to move beyond the first/last row in the
+     * result set positions the cursor before/after the
+     * the first/last row. Calling <code>relative(0)</code> is valid, but does
+     * not change the cursor position.
+     *
+     * <p>Note: Calling the method <code>relative(1)</code>
+     * is identical to calling the method <code>next()</code> and
+     * calling the method <code>relative(-1)</code> is identical
+     * to calling the method <code>previous()</code>.
+     *
+     * @param rows an <code>int</code> specifying the number of rows to
+     *        move from the current row; a positive number moves the cursor
+     *        forward; a negative number moves the cursor backward
+     * @return <code>true</code> if the cursor is on a row;
+     *         <code>false</code> otherwise
+     * @exception SQLException if a database access error occurs,
+     *            there is no current row, or the result set type is
+     *            <code>TYPE_FORWARD_ONLY</code>
+     */
+    public boolean relative(int rows) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.relative() unsupported");
+    }
+
+    /**
+     * Moves the cursor to the previous row in this
+     * <code>ResultSet</code> object.
+     *
+     * @return <code>true</code> if the cursor is on a valid row;
+     * <code>false</code> if it is off the result set
+     * @exception SQLException if a database access error
+     * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
+     */
+    public boolean previous() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.previous() unsupported");
+    }
+
+    //---------------------------------------------------------------------
+    // Properties
+    //---------------------------------------------------------------------
+
     /**
      * Gives a hint as to the direction in which the rows in this
      * <code>ResultSet</code> object will be processed. The initial value is
@@ -906,6 +1183,19 @@ public class CsvResultSet implements ResultSet {
     }
 
     /**
+     * Retrieves the fetch direction for this
+     * <code>ResultSet</code> object.
+     *
+     * @return the current fetch direction for this <code>ResultSet</code> object
+     * @exception SQLException if a database access error occurs
+     * @see #setFetchDirection
+     */
+    public int getFetchDirection() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.getFetchDirection() unsupported");
+    }
+
+    /**
      * Gives the JDBC driver a hint as to the number of rows that should
      * be fetched from the database when more rows are needed for this
      * <code>ResultSet</code> object. If the fetch size specified is zero,
@@ -924,6 +1214,419 @@ public class CsvResultSet implements ResultSet {
     }
 
     /**
+     * Retrieves the fetch size for this
+     * <code>ResultSet</code> object.
+     *
+     * @return the current fetch size for this <code>ResultSet</code> object
+     * @exception SQLException if a database access error occurs
+     * @see #setFetchSize
+     */
+    public int getFetchSize() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.getFetchSize() unsupported");
+    }
+
+    /**
+     * Retrieves the type of this <code>ResultSet</code> object.
+     * The type is determined by the <code>Statement</code> object
+     * that created the result set.
+     *
+     * @return <code>ResultSet.TYPE_FORWARD_ONLY</code>,
+     *         <code>ResultSet.TYPE_SCROLL_INSENSITIVE</code>,
+     *         or <code>ResultSet.TYPE_SCROLL_SENSITIVE</code>
+     * @exception SQLException if a database access error occurs
+     */
+    public int getType() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.getType() unsupported");
+    }
+
+    /**
+     * Retrieves the concurrency mode of this <code>ResultSet</code> object.
+     * The concurrency used is determined by the
+     * <code>Statement</code> object that created the result set.
+     *
+     * @return the concurrency type, either
+     *         <code>ResultSet.CONCUR_READ_ONLY</code>
+     *         or <code>ResultSet.CONCUR_UPDATABLE</code>
+     * @exception SQLException if a database access error occurs
+     */
+    public int getConcurrency() throws SQLException {
+        return CONCUR_READ_ONLY;
+    }
+
+    //---------------------------------------------------------------------
+    // Updates
+    //---------------------------------------------------------------------
+
+    /**
+     * Retrieves whether the current row has been updated.  The value returned
+     * depends on whether or not the result set can detect updates.
+     *
+     * @return <code>true</code> if both (1) the row has been visibly updated
+     *         by the owner or another and (2) updates are detected
+     * @exception SQLException if a database access error occurs
+     * @see DatabaseMetaData#updatesAreDetected
+     */
+    public boolean rowUpdated() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.rowUpdated() unsupported");
+    }
+
+    /**
+     * Retrieves whether the current row has had an insertion.
+     * The value returned depends on whether or not this
+     * <code>ResultSet</code> object can detect visible inserts.
+     *
+     * @return <code>true</code> if a row has had an insertion
+     * and insertions are detected; <code>false</code> otherwise
+     * @exception SQLException if a database access error occurs
+     *
+     * @see DatabaseMetaData#insertsAreDetected
+     */
+    public boolean rowInserted() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.rowInserted() unsupported");
+    }
+
+    /**
+     * Retrieves whether a row has been deleted.  A deleted row may leave
+     * a visible "hole" in a result set.  This method can be used to
+     * detect holes in a result set.  The value returned depends on whether
+     * or not this <code>ResultSet</code> object can detect deletions.
+     *
+     * @return <code>true</code> if a row was deleted and deletions are detected;
+     * <code>false</code> otherwise
+     * @exception SQLException if a database access error occurs
+     *
+     * @see DatabaseMetaData#deletesAreDetected
+     */
+    public boolean rowDeleted() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.rowDeleted() unsupported");
+    }
+
+    /**
+     * Gives a nullable column a null value.
+     *
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code>
+     * or <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateNull(int columnIndex) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateNull() unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>boolean</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateBoolean(int columnIndex, boolean x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateBoolean() unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>byte</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateByte(int columnIndex, byte x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateByte() unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>short</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateShort(int columnIndex, short x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateShort() unsupported");
+    }
+
+    /**
+     * Updates the designated column with an <code>int</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateInt(int columnIndex, int x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateInt() unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>long</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateLong(int columnIndex, long x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateLong(int, long) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>float</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateFloat(int columnIndex, float x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateFloat(int, float) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>double</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateDouble(int columnIndex, double x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateDouble(int, double) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>java.math.BigDecimal</code>
+     * value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateBigDecimal(int columnIndex, BigDecimal x)
+            throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateBigDecimal(int, BigDecimal) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>String</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateString(int columnIndex, String x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateString(int, String) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>byte</code> array value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateBytes(int columnIndex, byte[] x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateBytes(int, byte[]) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>java.sql.Date</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateDate(String columnIndex, Date x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateDate(String, Date) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>java.sql.Time</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateTime(int columnIndex, Time x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateTime(int, Time) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>java.sql.Timestamp</code>
+     * value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateTimestamp(int columnIndex, Timestamp x)
+            throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateTimestamp(int, Timestamp) unsupported");
+    }
+
+    /**
+     * Updates the designated column with an ascii stream value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @param length the length of the stream
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateAsciiStream(int columnIndex, InputStream x, int length)
+            throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.updateAsciiStream " +
+                "(int, InputStream, int) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a binary stream value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @param length the length of the stream
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateBinaryStream(int columnIndex, InputStream x, int length)
+           throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.updateBinaryStream" +
+                "(int, InputStream, int) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a character stream value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @param length the length of the stream
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateCharacterStream(int columnIndex, Reader x, int length)
+            throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.updateCharacterStr" +
+                "eam(int, Reader, int) unsupported");
+    }
+
+    /**
+     * Updates the designated column with an <code>Object</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @param scale for <code>java.sql.Types.DECIMA</code>
+     *  or <code>java.sql.Types.NUMERIC</code> types,
+     *  this is the number of digits after the decimal point.  For all other
+     *  types this value will be ignored.
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateObject(int columnIndex, Object x, int scale)
+            throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.udpateObject(int, Object) unsupported");
+    }
+
+    /**
+     * Updates the designated column with an <code>Object</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateObject(int columnIndex, Object x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateObject(int, Object, int) unsupported");
+    }
+
+    /**
      * Retrieves the <code>Statement</code> object that produced this
      * <code>ResultSet</code> object.
      * If the result set was generated some other way, such as by a
@@ -939,180 +1642,6 @@ public class CsvResultSet implements ResultSet {
         return statement;
     }
 
-
-    /**
-     *Gets the characterStream attribute of the CsvResultSet object
-     *
-     * @param  p0                Description of Parameter
-     * @return                   The characterStream value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public Reader getCharacterStream(int p0) throws SQLException
-    {
-        throw new SQLException("ResultSet.getCharacterStream(int) Not Supported !");
-    }
-
-
-    /**
-     *Gets the characterStream attribute of the CsvResultSet object
-     *
-     * @param  p0                Description of Parameter
-     * @return                   The characterStream value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public Reader getCharacterStream(String p0) throws SQLException
-    {
-        throw new SQLException("ResultSet.getCharacterStream(String) Not Supported !");
-    }
-
-
-    /**
-     *Gets the bigDecimal attribute of the CsvResultSet object
-     *
-     * @param  p0                Description of Parameter
-     * @return                   The bigDecimal value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public BigDecimal getBigDecimal(int p0) throws SQLException
-    {
-        throw new SQLException("ResultSet.getBigDecimal(int) Not Supported !");
-    }
-
-
-    /**
-     *Gets the bigDecimal attribute of the CsvResultSet object
-     *
-     * @param  p0                Description of Parameter
-     * @return                   The bigDecimal value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public BigDecimal getBigDecimal(String p0) throws SQLException
-    {
-        throw new SQLException("ResultSet.getBigDecimal(String) Not Supported !");
-    }
-
-
-    /**
-     *Gets the beforeFirst attribute of the CsvResultSet object
-     *
-     * @return                   The beforeFirst value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public boolean isBeforeFirst() throws SQLException
-    {
-        throw new SQLException("ResultSet.isBeforeFirst() Not Supported !");
-    }
-
-
-    /**
-     *Gets the afterLast attribute of the CsvResultSet object
-     *
-     * @return                   The afterLast value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public boolean isAfterLast() throws SQLException
-    {
-        throw new SQLException("ResultSet.isAfterLast() Not Supported !");
-    }
-
-
-    /**
-     *Gets the first attribute of the CsvResultSet object
-     *
-     * @return                   The first value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public boolean isFirst() throws SQLException
-    {
-        throw new SQLException("ResultSet.isFirst() Not Supported !");
-    }
-
-
-    /**
-     *Gets the last attribute of the CsvResultSet object
-     *
-     * @return                   The last value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public boolean isLast() throws SQLException
-    {
-        throw new SQLException("ResultSet.isLast() Not Supported !");
-    }
-
-
-    /**
-     *Gets the row attribute of the CsvResultSet object
-     *
-     * @return                   The row value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public int getRow() throws SQLException
-    {
-        throw new SQLException("ResultSet.getRow() Not Supported !");
-    }
-
-
-    /**
-     *Gets the fetchDirection attribute of the CsvResultSet object
-     *
-     * @return                   The fetchDirection value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public int getFetchDirection() throws SQLException
-    {
-        throw new SQLException("ResultSet.getFetchDirection() Not Supported !");
-    }
-
-
-    /**
-     *Gets the fetchSize attribute of the CsvResultSet object
-     *
-     * @return                   The fetchSize value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public int getFetchSize() throws SQLException
-    {
-        throw new SQLException("ResultSet.getFetchSize() Not Supported !");
-    }
-
-
-    /**
-     *Gets the type attribute of the CsvResultSet object
-     *
-     * @return                   The type value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public int getType() throws SQLException
-    {
-        throw new SQLException("ResultSet.getType() Not Supported !");
-    }
-
-
-    /**
-     *Gets the concurrency attribute of the CsvResultSet object
-     *
-     * @return                   The concurrency value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public int getConcurrency() throws SQLException
-    {
-        throw new SQLException("ResultSet.getConcurrency() Not Supported !");
-    }
-
-
     /**
      *Gets the object attribute of the CsvResultSet object
      *
@@ -1124,7 +1653,8 @@ public class CsvResultSet implements ResultSet {
      */
     public Object getObject(int p0, Map p1) throws SQLException
     {
-        throw new SQLException("ResultSet.getObject(int,Map) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getObject(int,Map) unsupported");
     }
 
 
@@ -1138,7 +1668,8 @@ public class CsvResultSet implements ResultSet {
      */
     public Ref getRef(int p0) throws SQLException
     {
-        throw new SQLException("ResultSet.getRef(int) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getRef(int) unsupported");
     }
 
 
@@ -1152,7 +1683,8 @@ public class CsvResultSet implements ResultSet {
      */
     public Blob getBlob(int p0) throws SQLException
     {
-        throw new SQLException("ResultSet.getBlob(int) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getBlob(int) unsupported");
     }
 
 
@@ -1166,7 +1698,8 @@ public class CsvResultSet implements ResultSet {
      */
     public Clob getClob(int p0) throws SQLException
     {
-        throw new SQLException("ResultSet.getClob(int) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getClob(int) unsupported");
     }
 
 
@@ -1180,7 +1713,8 @@ public class CsvResultSet implements ResultSet {
      */
     public Array getArray(int p0) throws SQLException
     {
-        throw new SQLException("ResultSet.getArray(int) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getArray(int) unsupported");
     }
 
 
@@ -1195,7 +1729,8 @@ public class CsvResultSet implements ResultSet {
      */
     public Object getObject(String p0, Map p1) throws SQLException
     {
-        throw new SQLException("ResultSet.getObject(String, Map) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getObject(String, Map) unsupported");
     }
 
 
@@ -1209,7 +1744,8 @@ public class CsvResultSet implements ResultSet {
      */
     public Ref getRef(String p0) throws SQLException
     {
-        throw new SQLException("ResultSet.getRef(String) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getRef(String) unsupported");
     }
 
 
@@ -1223,7 +1759,8 @@ public class CsvResultSet implements ResultSet {
      */
     public Blob getBlob(String p0) throws SQLException
     {
-        throw new SQLException("ResultSet.getBlob(String) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getBlob(String) unsupported");
     }
 
 
@@ -1237,7 +1774,8 @@ public class CsvResultSet implements ResultSet {
      */
     public Clob getClob(String p0) throws SQLException
     {
-        throw new SQLException("ResultSet.getClob(String) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getClob(String) unsupported");
     }
 
 
@@ -1251,7 +1789,8 @@ public class CsvResultSet implements ResultSet {
      */
     public Array getArray(String p0) throws SQLException
     {
-        throw new SQLException("ResultSet.getArray(String) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getArray(String) unsupported");
     }
 
 
@@ -1266,7 +1805,8 @@ public class CsvResultSet implements ResultSet {
      */
     public Date getDate(int p0, Calendar p1) throws SQLException
     {
-        throw new SQLException("ResultSet.getDate(int, Calendar) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getDate(int, Calendar) unsupported");
     }
 
 
@@ -1281,7 +1821,8 @@ public class CsvResultSet implements ResultSet {
      */
     public Date getDate(String p0, Calendar p1) throws SQLException
     {
-        throw new SQLException("ResultSet.getDate(String, Calendar) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getDate(String, Calendar) unsupported");
     }
 
 
@@ -1296,7 +1837,8 @@ public class CsvResultSet implements ResultSet {
      */
     public Time getTime(int p0, Calendar p1) throws SQLException
     {
-        throw new SQLException("ResultSet.getTime(int, Calendar) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getTime(int, Calendar) unsupported");
     }
 
 
@@ -1311,7 +1853,8 @@ public class CsvResultSet implements ResultSet {
      */
     public Time getTime(String p0, Calendar p1) throws SQLException
     {
-        throw new SQLException("ResultSet.getTime(String, Calendar) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getTime(String, Calendar) unsupported");
     }
 
 
@@ -1326,7 +1869,8 @@ public class CsvResultSet implements ResultSet {
      */
     public Timestamp getTimestamp(int p0, Calendar p1) throws SQLException
     {
-        throw new SQLException("ResultSet.getTimestamp(int, Calendar) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getTimestamp(int, Calendar) unsupported");
     }
 
 
@@ -1341,292 +1885,9 @@ public class CsvResultSet implements ResultSet {
      */
     public Timestamp getTimestamp(String p0, Calendar p1) throws SQLException
     {
-        throw new SQLException("ResultSet.getTimestamp(String, Calendar) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.getTimestamp(String, Calendar) unsupported");
     }
-
-
-    /**
-     *Description of the Method
-     *
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void beforeFirst() throws SQLException
-    {
-        throw new SQLException("ResultSet.beforeFirst() Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void afterLast() throws SQLException
-    {
-        throw new SQLException("ResultSet.afterLast() Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @return                   Description of the Returned Value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public boolean first() throws SQLException
-    {
-        throw new SQLException("ResultSet.first() Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @return                   Description of the Returned Value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public boolean last() throws SQLException
-    {
-        throw new SQLException("ResultSet.last() Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @return                   Description of the Returned Value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public boolean absolute(int p0) throws SQLException
-    {
-        throw new SQLException("ResultSet.absolute(int) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @return                   Description of the Returned Value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public boolean relative(int p0) throws SQLException
-    {
-        throw new SQLException("ResultSet.relative(int) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @return                   Description of the Returned Value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public boolean previous() throws SQLException
-    {
-        throw new SQLException("ResultSet.previous() Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @return                   Description of the Returned Value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public boolean rowUpdated() throws SQLException
-    {
-        throw new SQLException("ResultSet.rowUpdated() Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @return                   Description of the Returned Value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public boolean rowInserted() throws SQLException
-    {
-        throw new SQLException("ResultSet.rowInserted() Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @return                   Description of the Returned Value
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public boolean rowDeleted() throws SQLException
-    {
-        throw new SQLException("ResultSet.rowDeleted() Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateNull(int p0) throws SQLException
-    {
-        throw new SQLException("ResultSet.updatedNull(int) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateBoolean(int p0, boolean p1) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateBoolean(int, boolean) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateByte(int p0, byte p1) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateByte(int, byte) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateShort(int p0, short p1) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateShort(int, short) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateInt(int p0, int p1) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateInt(int, int) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateLong(int p0, long p1) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateLong(int, long) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateFloat(int p0, float p1) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateFloat(int, float) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateDouble(int p0, double p1) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateDouble(int, double) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateBigDecimal(int p0, BigDecimal p1) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateBigDecimal(int, BigDecimal) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateString(int p0, String p1) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateString(int, String) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateBytes(int p0, byte[] p1) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateBytes(int, byte[]) Not Supported !");
-    }
-
 
     /**
      *Description of the Method
@@ -1638,109 +1899,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateDate(int p0, Date p1) throws SQLException
     {
-        throw new SQLException("ResultSet.updateDate(int, Date) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateTime(int p0, Time p1) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateTime(int, Time) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateTimestamp(int p0, Timestamp p1) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateTimestamp(int, Timestamp) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @param  p2                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateAsciiStream(int p0, InputStream p1, int p2) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateAsciiStream(int, InputStream, int) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @param  p2                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateBinaryStream(int p0, InputStream p1, int p2) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateBinaryStream(int, InputStream, int) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @param  p2                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateCharacterStream(int p0, Reader p1, int p2) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateCharacterStream(int, Reader, int) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @param  p2                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateObject(int p0, Object p1, int p2) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateObject(int, Object, int) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateObject(int p0, Object p1) throws SQLException
-    {
-        throw new SQLException("ResultSet.udpateObject(int, Object) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateDate(int, Date) unsupported");
     }
 
 
@@ -1753,7 +1913,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateNull(String p0) throws SQLException
     {
-        throw new SQLException("ResultSet.updateNull(String) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateNull(String) unsupported");
     }
 
 
@@ -1767,7 +1928,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateBoolean(String p0, boolean p1) throws SQLException
     {
-        throw new SQLException("ResultSet.updateBoolean(String, boolean) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateBoolean(String, boolean) unsupported");
     }
 
 
@@ -1781,7 +1943,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateByte(String p0, byte p1) throws SQLException
     {
-        throw new SQLException("ResultSet.updateByte(String, byte) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateByte(String, byte) unsupported");
     }
 
 
@@ -1795,7 +1958,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateShort(String p0, short p1) throws SQLException
     {
-        throw new SQLException("ResultSet.updateShort(String, short) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateShort(String, short) unsupported");
     }
 
 
@@ -1809,7 +1973,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateInt(String p0, int p1) throws SQLException
     {
-        throw new SQLException("ResultSet.updateInt(String, int) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateInt(String, int) unsupported");
     }
 
 
@@ -1823,7 +1988,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateLong(String p0, long p1) throws SQLException
     {
-        throw new SQLException("ResultSet.updateLong(String, long) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateLong(String, long) unsupported");
     }
 
 
@@ -1837,7 +2003,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateFloat(String p0, float p1) throws SQLException
     {
-        throw new SQLException("ResultSet.updateFloat(String, float) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateFloat(String, float) unsupported");
     }
 
 
@@ -1851,7 +2018,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateDouble(String p0, double p1) throws SQLException
     {
-        throw new SQLException("ResultSet.updateDouble(String, double) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateDouble(String, double) unsupported");
     }
 
 
@@ -1865,7 +2033,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateBigDecimal(String p0, BigDecimal p1) throws SQLException
     {
-        throw new SQLException("ResultSet.updateBigDecimal(String, BigDecimal) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateBigDecimal(String, BigDecimal) unsupported");
     }
 
 
@@ -1879,7 +2048,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateString(String p0, String p1) throws SQLException
     {
-        throw new SQLException("ResultSet.updateString(String, String) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateString(String, String) unsupported");
     }
 
 
@@ -1893,21 +2063,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateBytes(String p0, byte[] p1) throws SQLException
     {
-        throw new SQLException("ResultSet.updateBytes(String, byte[]) Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateDate(String p0, Date p1) throws SQLException
-    {
-        throw new SQLException("ResultSet.updateDate(String, Date) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateBytes(String, byte[]) unsupported");
     }
 
 
@@ -1921,7 +2078,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateTime(String p0, Time p1) throws SQLException
     {
-        throw new SQLException("ResultSet.updateTime(String, Time) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateTime(String, Time) unsupported");
     }
 
 
@@ -1935,7 +2093,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateTimestamp(String p0, Timestamp p1) throws SQLException
     {
-        throw new SQLException("ResultSet.updateTimestamp(String, Timestamp) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateTimestamp(String, Timestamp) unsupported");
     }
 
 
@@ -1950,7 +2109,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateAsciiStream(String p0, InputStream p1, int p2) throws SQLException
     {
-        throw new SQLException("ResultSet.updateAsciiStream(String, InputStream, int) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateAsciiStream(String, InputStream, int) unsupported");
     }
 
 
@@ -1965,7 +2125,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateBinaryStream(String p0, InputStream p1, int p2) throws SQLException
     {
-        throw new SQLException("ResultSet.updateBinaryStream(String, InputStream, int) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateBinaryStream(String, InputStream, int) unsupported");
     }
 
 
@@ -1980,7 +2141,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateCharacterStream(String p0, Reader p1, int p2) throws SQLException
     {
-        throw new SQLException("ResultSet.updateCharacterStream(String, Reader, int)Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateCharacterStream(String, Reader, int)Not Supported !");
     }
 
 
@@ -1995,7 +2157,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateObject(String p0, Object p1, int p2) throws SQLException
     {
-        throw new SQLException("ResultSet.updateObject(String, Object, int) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateObject(String, Object, int) unsupported");
     }
 
 
@@ -2009,7 +2172,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateObject(String p0, Object p1) throws SQLException
     {
-        throw new SQLException("ResultSet.updateObject(String, Object) Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.updateObject(String, Object) unsupported");
     }
 
 
@@ -2021,7 +2185,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void insertRow() throws SQLException
     {
-        throw new SQLException("ResultSet.insertRow() Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.insertRow() unsupported");
     }
 
 
@@ -2033,7 +2198,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void updateRow() throws SQLException
     {
-        throw new SQLException("ResultSet.update() Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.update() unsupported");
     }
 
 
@@ -2045,7 +2211,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void deleteRow() throws SQLException
     {
-        throw new SQLException("ResultSet.deleteRow() Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.deleteRow() unsupported");
     }
 
 
@@ -2057,7 +2224,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void refreshRow() throws SQLException
     {
-        throw new SQLException("ResultSet.refreshRow() Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.refreshRow() unsupported");
     }
 
 
@@ -2069,7 +2237,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void cancelRowUpdates() throws SQLException
     {
-        throw new SQLException("ResultSet.cancelRowUpdates() Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.cancelRowUpdates() unsupported");
     }
 
 
@@ -2081,7 +2250,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void moveToInsertRow() throws SQLException
     {
-        throw new SQLException("ResultSet.moveToInsertRow() Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.moveToInsertRow() unsupported");
     }
 
 
@@ -2093,7 +2263,8 @@ public class CsvResultSet implements ResultSet {
      */
     public void moveToCurrentRow() throws SQLException
     {
-        throw new SQLException("ResultSet.moveToeCurrentRow() Not Supported !");
+        throw new UnsupportedOperationException(
+                "ResultSet.moveToeCurrentRow() unsupported");
     }
 
     /**
