@@ -2,10 +2,10 @@
 
 <!-- =====================================================================
 
- Build file for CsvJdbc. This uses Apache Ant v1.5
+ Build file for CsvJdbc. Built using Ant 1.6.1
 
  Authors: Jonathan Ackerman, Michael Maraya
- Version: $Id: build.xml,v 1.15 2004/08/06 01:24:13 jackerm Exp $
+ Version: $Id: build.xml,v 1.16 2004/08/09 23:29:02 jackerm Exp $
 
  CsvJdbc - a JDBC driver for CSV files
  Copyright (C) 2001  Jonathan Ackerman
@@ -158,7 +158,7 @@
       <zipfileset dir="${lib.dir}" includes="readme.txt"
                   prefix="${rel.name}/src/lib"/>
       <zipfileset dir="${rel.dir}" includes="*.jar" prefix="${rel.name}"/>
-      <zipfileset dir="${doc.dir}" includes="**" prefix="${rel.name}"/>
+      <zipfileset dir="${doc.dir}" includes="**" excludes="*.gif" prefix="${rel.name}"/>
     </zip>
   </target>
 
