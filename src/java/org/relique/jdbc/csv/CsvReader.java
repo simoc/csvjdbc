@@ -26,7 +26,7 @@ import java.util.*;
  * @author     Jonathan Ackerman
  * @author     Sander Brienen
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.3 2001/12/01 22:35:13 jackerm Exp $
+ * @version    $Id: CsvReader.java,v 1.4 2001/12/02 00:25:05 jackerm Exp $
  */
 
 public class CsvReader
@@ -35,7 +35,7 @@ public class CsvReader
   private String[] columnNames;
   private String[] columns;
   private java.lang.String buf = null;
-  private char seperator = ',';
+  private char separator = ',';
   private boolean suppressHeaders = false;
 
 
@@ -66,7 +66,7 @@ public class CsvReader
   public CsvReader(String fileName, char seperator, boolean suppressHeaders)
        throws java.lang.Exception
   {
-    this.seperator = seperator;
+    this.separator = separator;
     this.suppressHeaders = suppressHeaders;
 
     input = new BufferedReader(new FileReader(fileName));
@@ -191,22 +191,15 @@ public class CsvReader
   }
 
 
+  // This code is ugly and slow, but it does work ! (I hope)
   //  well it didn't work the first time, maybe this will :)
-  /**
-   *Description of the Method
-   *
-   * @param  line           Description of Parameter
-   * @return                Description of the Returned Value
-   * @exception  Exception  Description of Exception
-   * @since
-   */
   protected String[] parseCsvLine(String line) throws Exception
   {
     Vector values = new Vector();
     boolean inQuotedString = false;
     String value = "";
     int currentPos = 0;
-    line += seperator;
+    line += separator;
     while (currentPos < line.length())
     {
       char currentChar = line.charAt(currentPos);
@@ -230,9 +223,9 @@ public class CsvReader
           {
             throw new Exception("Unexpected '\"' in position " + currentPos);
           }
-          if (inQuotedString && nextChar != seperator)
+          if (inQuotedString && nextChar != separator)
           {
-            throw new Exception("Expecting " + seperator + " in position " + (currentPos + 1));
+            throw new Exception("Expecting " + separator + " in position " + (currentPos + 1));
           }
           values.add(value);
           value = "";
@@ -242,7 +235,7 @@ public class CsvReader
       }
       else
       {
-        if (currentChar == seperator)
+        if (currentChar == separator)
         {
           if (inQuotedString)
           {
@@ -265,6 +258,5 @@ public class CsvReader
     values.copyInto(retVal);
     return retVal;
   }
-  // This code is ugly and slow, but it does work ! (I hope)
 }
 

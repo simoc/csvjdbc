@@ -26,15 +26,15 @@ import java.util.Hashtable;
  * @author     Jonathan Ackerman
  * @author     Sander Brienen
  * @created    25 November 2001
- * @version    $Id: CsvConnection.java,v 1.2 2001/12/01 22:35:13 jackerm Exp $
+ * @version    $Id: CsvConnection.java,v 1.3 2001/12/02 00:25:05 jackerm Exp $
  */
 
 public class CsvConnection implements Connection
 {
   private String filePath = null;
-  private java.lang.String extension = ".csv";
-  private char seperator;
-  private boolean suppressHeaders;
+  private String fileExtension = ".csv";
+  private char separator='\'';
+  private boolean suppressHeaders=false;
 
 
   /**
@@ -63,28 +63,16 @@ public class CsvConnection implements Connection
     this.filePath = filePath;
 
     // check for properties
-    char sep = ',';
-    boolean suph = false;
-    String ext = ".csv";
-    if (info.containsKey("seperator"))
+    if (info != null)
     {
-      sep = ((Character)info.get("seperator")).charValue();
+      fileExtension = info.getProperty(CsvDriver.FILE_EXTENSION,fileExtension);
+      separator     = info.getProperty(CsvDriver.SEPARATOR,new Character(separator).toString()).charAt(0);
+      suppressHeaders = Boolean.valueOf(info.getProperty(CsvDriver.SUPPRESS_HEADERS,String.valueOf(suppressHeaders))).booleanValue();
     }
-    if (info.containsKey("suppressHeaders"))
-    {
-      suph = ((Boolean)info.get("suppressHeaders")).booleanValue();
-    }
-    if (info.containsKey("extension"))
-    {
-      ext = (String)info.get("extension");
-    }
-
-    DriverManager.println("CsvJdbc - CsvConnection() - seperator=" + String.valueOf(seperator));
-    this.seperator = sep;
-    DriverManager.println("CsvJdbc - CsvConnection() - suppressHeaders=" + String.valueOf(suppressHeaders));
-    this.suppressHeaders = suph;
-    DriverManager.println("CsvJdbc - CsvConnection() - extension=" + ext);
-    this.extension = ext;
+    DriverManager.println("CsvJdbc - CsvConnection() - filePath=" + filePath +
+                                                    " - file extension=" + fileExtension +
+                                                    " - separator=" + separator +
+                                                    " - suppress headers="+suppressHeaders);
   }
 
 
@@ -413,7 +401,7 @@ public class CsvConnection implements Connection
    */
   protected String getExtension()
   {
-    return extension;
+    return fileExtension;
   }
 
 
@@ -427,7 +415,7 @@ public class CsvConnection implements Connection
    */
   protected char getSeperator()
   {
-    return seperator;
+    return separator;
   }
 
 

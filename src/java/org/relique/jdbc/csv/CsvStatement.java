@@ -25,7 +25,7 @@ import java.io.File;
  * @author     Jonathan Ackerman
  * @author     Sander Brienen
  * @created    25 November 2001
- * @version    $Id: CsvStatement.java,v 1.2 2001/12/01 22:35:13 jackerm Exp $
+ * @version    $Id: CsvStatement.java,v 1.3 2001/12/02 00:25:05 jackerm Exp $
  */
 
 public class CsvStatement implements Statement
@@ -313,16 +313,20 @@ public class CsvStatement implements Statement
     {
       throw new SQLException("Syntax Error. " + e.getMessage());
     }
+
     String fileName = connection.getFilePath() + parser.getTableName() + connection.getExtension();
     File checkFile = new File(fileName);
+
     if (!checkFile.exists())
     {
       throw new SQLException("Cannot open data file '" + fileName + "'  !");
     }
+
     if (!checkFile.canRead())
     {
       throw new SQLException("Data file '" + fileName + "'  not readable !");
     }
+
     CsvReader reader;
     try
     {
@@ -332,7 +336,8 @@ public class CsvStatement implements Statement
     {
       throw new SQLException("Error reading data file. Message was: " + e);
     }
-    return new CsvResultSet(this, reader, parser.getColumnNames());
+
+    return new CsvResultSet(this,reader,parser.getTableName(),parser.getColumnNames());
   }
 
 

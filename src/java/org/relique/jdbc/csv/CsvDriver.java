@@ -25,12 +25,15 @@ import java.io.File;
  *
  * @author     Jonathan Ackerman
  * @author     Sander Brienen
- * @created    25 November 2001
- * @version    $Id: CsvDriver.java,v 1.2 2001/12/01 22:35:13 jackerm Exp $
+ * @author     JD Evora
+ * @version    $Id: CsvDriver.java,v 1.3 2001/12/02 00:25:05 jackerm Exp $
  */
 
 public class CsvDriver implements Driver
 {
+  public static final String FILE_EXTENSION="fileExtension";
+  public static final String SEPARATOR="separator";
+  public static final String SUPPRESS_HEADERS="suppressHeaders";
   private final static String URL_PREFIX = "jdbc:relique:csv:";
   private Properties info = null;
 

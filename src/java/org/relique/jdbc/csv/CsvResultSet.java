@@ -27,28 +27,15 @@ import java.util.Calendar;
  *
  * @author     Jonathan Ackerman
  * @created    25 November 2001
- * @version    $Id: CsvResultSet.java,v 1.2 2001/12/01 22:35:13 jackerm Exp $
+ * @version    $Id: CsvResultSet.java,v 1.3 2001/12/02 00:25:05 jackerm Exp $
  */
 public class CsvResultSet implements ResultSet
 {
-  /**
-   *Description of the Field
-   *
-   * @since
-   */
   protected CsvStatement statement;
-  /**
-   *Description of the Field
-   *
-   * @since
-   */
   protected CsvReader reader;
-  /**
-   *Description of the Field
-   *
-   * @since
-   */
   protected String[] columnNames;
+  protected String tableName;
+  protected ResultSetMetaData resultSetMetaData;
 
 
   /**
@@ -59,10 +46,11 @@ public class CsvResultSet implements ResultSet
    * @param  columnNames  Description of Parameter
    * @since
    */
-  protected CsvResultSet(CsvStatement statement, CsvReader reader, String[] columnNames)
+  protected CsvResultSet(CsvStatement statement, CsvReader reader, String tableName,String[] columnNames)
   {
     this.statement = statement;
     this.reader = reader;
+    this.tableName = tableName;
     this.columnNames = columnNames;
 
     if (columnNames[0].equals("*"))
@@ -611,9 +599,14 @@ public class CsvResultSet implements ResultSet
    * @exception  SQLException  Description of Exception
    * @since
    */
-  public ResultSetMetaData getMetaData() throws SQLException
-  {
-    throw new SQLException("Not Supported !");
+   public ResultSetMetaData getMetaData() throws SQLException
+   {
+     if (resultSetMetaData == null)
+     {
+       resultSetMetaData = new CsvResultSetMetaData(tableName,columnNames);
+     }
+
+     return resultSetMetaData;
   }
 
 
