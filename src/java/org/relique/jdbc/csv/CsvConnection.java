@@ -37,7 +37,7 @@ import java.util.Hashtable;
  * @author     Jonathan Ackerman
  * @author     Sander Brienen
  * @author     Michael Maraya
- * @version    $Id: CsvConnection.java,v 1.5 2002/08/24 22:30:06 mmaraya Exp $
+ * @version    $Id: CsvConnection.java,v 1.6 2002/08/24 23:37:30 mmaraya Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -55,6 +55,9 @@ public class CsvConnection implements Connection {
 
     /** Collection of all created Statements */
     private Vector statements = new Vector();
+
+    /** Stores whether this Connection is closed or not */
+    private boolean closed;
 
     /**
      * Creates a new CsvConnection that takes the supplied path
@@ -295,257 +298,360 @@ public class CsvConnection implements Connection {
             CsvStatement statement = (CsvStatement)i.nextElement();
             statement.close();
         }
+        // set this Connection as closed
+        closed = true;
     }
 
+    /**
+     * Retrieves whether this <code>Connection</code> object has been
+     * closed.  A connection is closed if the method <code>close</code>
+     * has been called on it or if certain fatal errors have occurred.
+     * This method is guaranteed to return <code>true</code> only when
+     * it is called after the method <code>Connection.close</code> has
+     * been called.
+     * <P>
+     * This method generally cannot be called to determine whether a
+     * connection to a database is valid or invalid.  A typical client
+     * can determine that a connection is invalid by catching any
+     * exceptions that might be thrown when an operation is attempted.
+     *
+     * @return <code>true</code> if this <code>Connection</code> object
+     *         is closed; <code>false</code> if it is still open
+     * @exception SQLException if a database access error occurs
+     */
+    public boolean isClosed() throws SQLException {
+      return closed;
+    }
 
-  /**
-   *Sets the readOnly attribute of the CsvConnection object
-   *
-   * @param  readOnly          The new readOnly value
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
-  public void setReadOnly(boolean readOnly) throws SQLException { }
+    /**
+     * Retrieves a <code>DatabaseMetaData</code> object that contains
+     * metadata about the database to which this
+     * <code>Connection</code> object represents a connection.
+     * The metadata includes information about the database's
+     * tables, its supported SQL grammar, its stored
+     * procedures, the capabilities of this connection, and so on.
+     *
+     * @return a <code>DatabaseMetaData</code> object for this
+     *         <code>Connection</code> object
+     * @exception SQLException if a database access error occurs
+     */
+    public DatabaseMetaData getMetaData() throws SQLException {
+        throw new UnsupportedOperationException(
+                "Connection.getMetaData() unsupported");
+    }
 
+    /**
+     * Puts this connection in read-only mode as a hint to the driver to enable
+     * database optimizations.
+     *
+     * <P><B>Note:</B> This method cannot be called during a transaction.
+     *
+     * @param readOnly <code>true</code> enables read-only mode;
+     *        <code>false</code> disables it
+     * @exception SQLException if a database access error occurs or this
+     *            method is called during a transaction
+     */
+    public void setReadOnly(boolean readOnly) throws SQLException {
+        throw new UnsupportedOperationException(
+                "Connection.setReadOnly(boolean) unsupported");
+    }
 
-  /**
-   *Sets the catalog attribute of the CsvConnection object
-   *
-   * @param  catalog           The new catalog value
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
-  public void setCatalog(String catalog) throws SQLException { }
+    /**
+     * Retrieves whether this <code>Connection</code>
+     * object is in read-only mode.
+     *
+     * @return <code>true</code> if this <code>Connection</code> object
+     *         is read-only; <code>false</code> otherwise
+     * @exception SQLException if a database access error occurs
+     */
+    public boolean isReadOnly() throws SQLException {
+        return true;
+    }
 
+    /**
+     * Sets the given catalog name in order to select
+     * a subspace of this <code>Connection</code> object's database
+     * in which to work.
+     * <P>
+     * If the driver does not support catalogs, it will
+     * silently ignore this request.
+     *
+     * @param catalog the name of a catalog (subspace in this
+     *        <code>Connection</code> object's database) in which to work
+     * @exception SQLException if a database access error occurs
+     * @see #getCatalog
+     */
+    public void setCatalog(String catalog) throws SQLException {
+        // silently ignore this request
+    }
 
-  /**
-   *Sets the transactionIsolation attribute of the CsvConnection object
-   *
-   * @param  level             The new transactionIsolation value
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
-  public void setTransactionIsolation(int level) throws SQLException { }
+    /**
+     * Retrieves this <code>Connection</code> object's current catalog name.
+     *
+     * @return the current catalog name or <code>null</code> if there is none
+     * @exception SQLException if a database access error occurs
+     * @see #setCatalog
+     */
+    public String getCatalog() throws SQLException {
+        return null;
+    }
 
+    /**
+     * Attempts to change the transaction isolation level for this
+     * <code>Connection</code> object to the one given.
+     * The constants defined in the interface <code>Connection</code>
+     * are the possible transaction isolation levels.
+     * <P>
+     * <B>Note:</B> If this method is called during a transaction, the result
+     * is implementation-defined.
+     *
+     * @param level one of the following <code>Connection</code> constants:
+     *        <code>Connection.TRANSACTION_READ_UNCOMMITTED</code>,
+     *        <code>Connection.TRANSACTION_READ_COMMITTED</code>,
+     *        <code>Connection.TRANSACTION_REPEATABLE_READ</code>, or
+     *        <code>Connection.TRANSACTION_SERIALIZABLE</code>.
+     *        (Note that <code>Connection.TRANSACTION_NONE</code> cannot be used
+     *        because it specifies that transactions are not supported.)
+     * @exception SQLException if a database access error occurs
+     *            or the given parameter is not one of the <code>Connection</code>
+     *            constants
+     * @see DatabaseMetaData#supportsTransactionIsolationLevel
+     * @see #getTransactionIsolation
+     */
+    public void setTransactionIsolation(int level) throws SQLException {
+        throw new UnsupportedOperationException(
+                "Connection.setTransactionIsolation(int) unsupported");
+    }
 
-  /**
-   *Sets the typeMap attribute of the CsvConnection object
-   *
-   * @param  map               The new typeMap value
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
-  public void setTypeMap(Map map) throws SQLException { }
+    /**
+     * Retrieves this <code>Connection</code> object's current
+     * transaction isolation level.
+     *
+     * @return the current transaction isolation level, which will be one
+     *         of the following constants:
+     *        <code>Connection.TRANSACTION_READ_UNCOMMITTED</code>,
+     *        <code>Connection.TRANSACTION_READ_COMMITTED</code>,
+     *        <code>Connection.TRANSACTION_REPEATABLE_READ</code>,
+     *        <code>Connection.TRANSACTION_SERIALIZABLE</code>, or
+     *        <code>Connection.TRANSACTION_NONE</code>.
+     * @exception SQLException if a database access error occurs
+     * @see #setTransactionIsolation
+     */
+    public int getTransactionIsolation() throws SQLException {
+      return Connection.TRANSACTION_NONE;
+    }
 
+    /**
+     * Retrieves the first warning reported by calls on this
+     * <code>Connection</code> object.  If there is more than one
+     * warning, subsequent warnings will be chained to the first one
+     * and can be retrieved by calling the method
+     * <code>SQLWarning.getNextWarning</code> on the warning
+     * that was retrieved previously.
+     * <P>
+     * This method may not be
+     * called on a closed connection; doing so will cause an
+     * <code>SQLException</code> to be thrown.
+     *
+     * <P><B>Note:</B> Subsequent warnings will be chained to this
+     * SQLWarning.
+     *
+     * @return the first <code>SQLWarning</code> object or <code>null</code>
+     *         if there are none
+     * @exception SQLException if a database access error occurs or
+     *            this method is called on a closed connection
+     * @see SQLWarning
+     */
+    public SQLWarning getWarnings() throws SQLException {
+        throw new UnsupportedOperationException(
+                "Connection.getWarnings() unsupported");
+    }
 
-  /**
-   *Gets the closed attribute of the CsvConnection object
-   *
-   * @return                   The closed value
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
-  public boolean isClosed() throws SQLException
-  {
-    return false;
-  }
+    /**
+     * Clears all warnings reported for this <code>Connection</code> object.
+     * After a call to this method, the method <code>getWarnings</code>
+     * returns <code>null</code> until a new warning is
+     * reported for this <code>Connection</code> object.
+     *
+     * @exception SQLException if a database access error occurs
+     */
+    public void clearWarnings() throws SQLException {
+        throw new UnsupportedOperationException(
+                "Connection.getWarnings() unsupported");
+    }
 
+    //--------------------------JDBC 2.0-----------------------------
 
-  /**
-   *Gets the metaData attribute of the CsvConnection object
-   *
-   * @return                   The metaData value
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
-  public DatabaseMetaData getMetaData() throws SQLException
-  {
-    throw new SQLException("NYI");
-  }
+    /**
+     * Creates a <code>Statement</code> object that will generate
+     * <code>ResultSet</code> objects with the given type and concurrency.
+     * This method is the same as the <code>createStatement</code> method
+     * above, but it allows the default result set
+     * type and concurrency to be overridden.
+     *
+     * @param resultSetType a result set type; one of
+     *        <code>ResultSet.TYPE_FORWARD_ONLY</code>,
+     *        <code>ResultSet.TYPE_SCROLL_INSENSITIVE</code>, or
+     *        <code>ResultSet.TYPE_SCROLL_SENSITIVE</code>
+     * @param resultSetConcurrency a concurrency type; one of
+     *        <code>ResultSet.CONCUR_READ_ONLY</code> or
+     *        <code>ResultSet.CONCUR_UPDATABLE</code>
+     * @return a new <code>Statement</code> object that will generate
+     *         <code>ResultSet</code> objects with the given type and
+     *         concurrency
+     * @exception SQLException if a database access error occurs
+     *         or the given parameters are not <code>ResultSet</code>
+     *         constants indicating type and concurrency
+     */
+    public Statement createStatement(int resultSetType, int resultSetConcurrency)
+            throws SQLException {
+        throw new UnsupportedOperationException(
+                "Connection.createStatement(int, int) unsupported");
+    }
 
+    /**
+     * Creates a <code>PreparedStatement</code> object that will generate
+     * <code>ResultSet</code> objects with the given type and concurrency.
+     * This method is the same as the <code>prepareStatement</code> method
+     * above, but it allows the default result set
+     * type and concurrency to be overridden.
+     *
+     * @param sql a <code>String</code> object that is the SQL statement to
+     *            be sent to the database; may contain one or more ? IN
+     *            parameters
+     * @param resultSetType a result set type; one of
+     *         <code>ResultSet.TYPE_FORWARD_ONLY</code>,
+     *         <code>ResultSet.TYPE_SCROLL_INSENSITIVE</code>, or
+     *         <code>ResultSet.TYPE_SCROLL_SENSITIVE</code>
+     * @param resultSetConcurrency a concurrency type; one of
+     *         <code>ResultSet.CONCUR_READ_ONLY</code> or
+     *         <code>ResultSet.CONCUR_UPDATABLE</code>
+     * @return a new PreparedStatement object containing the
+     * pre-compiled SQL statement that will produce <code>ResultSet</code>
+     * objects with the given type and concurrency
+     * @exception SQLException if a database access error occurs
+     *         or the given parameters are not <code>ResultSet</code>
+     *         constants indicating type and concurrency
+     */
+    public PreparedStatement prepareStatement(String sql, int resultSetType,
+            int resultSetConcurrency) throws SQLException {
+        throw new UnsupportedOperationException(
+                "Connection.prepareStatement(String, int, int) unsupported");
+    }
 
-  /**
-   *Gets the readOnly attribute of the CsvConnection object
-   *
-   * @return                   The readOnly value
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
-  public boolean isReadOnly() throws SQLException
-  {
-    // always reexpecting ;adonly
-    return true;
-  }
+    /**
+     * Creates a <code>CallableStatement</code> object that will generate
+     * <code>ResultSet</code> objects with the given type and concurrency.
+     * This method is the same as the <code>prepareCall</code> method
+     * above, but it allows the default result set
+     * type and concurrency to be overridden.
+     *
+     * @param sql a <code>String</code> object that is the SQL statement to
+     *            be sent to the database; may contain on or more ? parameters
+     * @param resultSetType a result set type; one of
+     *         <code>ResultSet.TYPE_FORWARD_ONLY</code>,
+     *         <code>ResultSet.TYPE_SCROLL_INSENSITIVE</code>, or
+     *         <code>ResultSet.TYPE_SCROLL_SENSITIVE</code>
+     * @param resultSetConcurrency a concurrency type; one of
+     *         <code>ResultSet.CONCUR_READ_ONLY</code> or
+     *         <code>ResultSet.CONCUR_UPDATABLE</code>
+     * @return a new <code>CallableStatement</code> object containing the
+     * pre-compiled SQL statement that will produce <code>ResultSet</code>
+     * objects with the given type and concurrency
+     * @exception SQLException if a database access error occurs
+     *         or the given parameters are not <code>ResultSet</code>
+     *         constants indicating type and concurrency
+     */
+    public CallableStatement prepareCall(String sql, int resultSetType,
+            int resultSetConcurrency) throws SQLException {
+        throw new UnsupportedOperationException(
+                "Connection.prepareCall(String, int, int) unsupported");
+    }
 
+    /**
+     * Retrieves the <code>Map</code> object associated with this
+     * <code>Connection</code> object.
+     * Unless the application has added an entry, the type map returned
+     * will be empty.
+     *
+     * @return the <code>java.util.Map</code> object associated
+     *         with this <code>Connection</code> object
+     * @exception SQLException if a database access error occurs
+     * @see #setTypeMap
+     */
+    public Map getTypeMap() throws SQLException {
+        throw new UnsupportedOperationException(
+                "Connection.getTypeMap() unsupported");
+    }
 
-  /**
-   *Gets the catalog attribute of the CsvConnection object
-   *
-   * @return                   The catalog value
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
-  public String getCatalog() throws SQLException
-  {
-    return null;
-  }
+    /**
+     * Installs the given <code>TypeMap</code> object as the type map for
+     * this <code>Connection</code> object.  The type map will be used for the
+     * custom mapping of SQL structured types and distinct types.
+     *
+     * @param map the <code>java.util.Map</code> object to install
+     *        as the replacement for this <code>Connection</code>
+     *        object's default type map
+     * @exception SQLException if a database access error occurs or
+     *        the given parameter is not a <code>java.util.Map</code>
+     *        object
+     * @see #getTypeMap
+     */
+    public void setTypeMap(Map map) throws SQLException {
+        throw new UnsupportedOperationException(
+                "Connection.setTypeMap(Map) unsupported");
+    }
 
+    //--------------------------JDBC 3.0-----------------------------
 
-  /**
-   *Gets the transactionIsolation attribute of the CsvConnection object
-   *
-   * @return                   The transactionIsolation value
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
-  public int getTransactionIsolation() throws SQLException
-  {
-    return Connection.TRANSACTION_NONE;
-  }
+    //---------------------------------------------------------------------
+    // Properties
+    //---------------------------------------------------------------------
 
+    /**
+     * Accessor method for the path property
+     * @return current value for the path property
+     */
+    protected String getPath() {
+        return path;
+    }
 
-  /**
-   *Gets the warnings attribute of the CsvConnection object
-   *
-   * @return                   The warnings value
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
-  public SQLWarning getWarnings() throws SQLException
-  {
-    return null;
-  }
+    /**
+     * Accessor method for the extension property
+     * @return current value for the extension property
+     */
+    protected String getExtension() {
+        return extension;
+    }
 
+    /**
+     * Accessor method for the separator property
+     * @return current value for the separator property
+     */
+    protected char getSeperator() {
+        return separator;
+    }
 
-  /**
-   *Gets the typeMap attribute of the CsvConnection object
-   *
-   * @return                   The typeMap value
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
-  public Map getTypeMap() throws SQLException
-  {
-    return new Hashtable();
-  }
+    /**
+     * Accessor method for the suppressHeaders property
+     * @return current value for the suppressHeaders property
+     */
+    protected boolean isSuppressHeaders() {
+        return suppressHeaders;
+    }
 
-
-  /**
-   *Description of the Method
-   *
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
-  public void clearWarnings() throws SQLException { }
-
-
-  /**
-   *Description of the Method
-   *
-   * @param  resultSetType         Description of Parameter
-   * @param  resultSetConcurrency  Description of Parameter
-   * @return                       Description of the Returned Value
-   * @exception  SQLException      Description of Exception
-   * @since
-   */
-  public Statement createStatement(int resultSetType, int resultSetConcurrency)
-       throws SQLException
-  {
-    throw new SQLException("Not Supported !");
-  }
-
-
-  /**
-   *Description of the Method
-   *
-   * @param  sql                   Description of Parameter
-   * @param  resultSetType         Description of Parameter
-   * @param  resultSetConcurrency  Description of Parameter
-   * @return                       Description of the Returned Value
-   * @exception  SQLException      Description of Exception
-   * @since
-   */
-  public PreparedStatement prepareStatement(
-      String sql,
-      int resultSetType,
-      int resultSetConcurrency)
-       throws SQLException
-  {
-    throw new SQLException("Not Supported !");
-  }
-
-
-  /**
-   *Description of the Method
-   *
-   * @param  sql                   Description of Parameter
-   * @param  resultSetType         Description of Parameter
-   * @param  resultSetConcurrency  Description of Parameter
-   * @return                       Description of the Returned Value
-   * @exception  SQLException      Description of Exception
-   * @since
-   */
-  public CallableStatement prepareCall(
-      String sql,
-      int resultSetType,
-      int resultSetConcurrency)
-       throws SQLException
-  {
-    throw new SQLException("Not Supported !");
-  }
-
-
-  /**
-   *Gets the filePath attribute of the CsvConnection object
-   *
-   * @return    The filePath value
-   * @since
-   */
-  protected String getFilePath()
-  {
-    return path;
-  }
-
-
-  /**
-   * Insert the method's description here.
-   *
-   * Creation date: (14-11-2001 8:49:37)
-   *
-   * @return    java.lang.String
-   * @since
-   */
-  protected String getExtension()
-  {
-    return extension;
-  }
-
-
-  /**
-   * Insert the method's description here.
-   *
-   * Creation date: (13-11-2001 10:49:00)
-   *
-   * @return    char
-   * @since
-   */
-  protected char getSeperator()
-  {
-    return separator;
-  }
-
-
-  /**
-   * Insert the method's description here.
-   *
-   * Creation date: (13-11-2001 10:49:00)
-   *
-   * @return    boolean
-   * @since
-   */
-  protected boolean isSuppressHeaders()
-  {
-    return suppressHeaders;
-  }
+    /**
+     * Changes the holdability of <code>ResultSet</code> objects
+     * created using this <code>Connection</code> object to the given
+     * holdability.
+     *
+     * @param holdability a <code>ResultSet</code> holdability constant; one of
+     *        <code>ResultSet.HOLD_CURSORS_OVER_COMMIT</code> or
+     *        <code>ResultSet.CLOSE_CURSORS_AT_COMMIT</code>
+     * @throws SQLException if a database access occurs, the given parameter
+     *         is not a <code>ResultSet</code> constant indicating holdability,
+     *         or the given holdability is not supported
+     * @see #getHoldability
+     * @see ResultSet
+     */
 }
-
