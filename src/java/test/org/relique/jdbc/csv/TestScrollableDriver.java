@@ -4,10 +4,19 @@ import java.sql.*;
 import junit.framework.TestCase;
 
 public class TestScrollableDriver extends TestCase
-{
+{ 
   public static final String SAMPLE_FILES_LOCATION_PROPERTY="sample.files.location";
   private String filePath;
-
+  
+	/**
+	 * Create a test that will execute the method named on the parameter.
+	 * This just wraps a call to the parent method.
+	 */
+	public TestScrollableDriver(String method) 
+	{
+		super(method);
+	}
+  
   protected void setUp()
   {
     filePath=System.getProperty(SAMPLE_FILES_LOCATION_PROPERTY);
