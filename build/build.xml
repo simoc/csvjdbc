@@ -2,14 +2,14 @@
 <!-- 
     Build file for CsvJdbc. This uses ANT v1.2
     Author: Jonathan Ackerman
-    Version: $Id: build.xml,v 1.1 2001/01/23 09:07:28 jackerm Exp $
+    Version: $Id: build.xml,v 1.2 2001/05/24 07:29:05 jackerm Exp $
 -->
 
 <project name="CsvJdbc" default="main" basedir=".">
   <property name="psep"          value="${path.separator}"/>
   <property name="fsep"          value="${file.separator}"/>  
   <property name="name"          value="csvjdbc"/>
-  <property name="rel"           value="r0-5"/>
+  <property name="rel"           value="r0-6"/>
   <property name="rel.name"      value="${name}-${rel}"/>
   <property name="classpath"     value="."/>
   <property name="javadoc.packagenames"  value="test.*,org.*"/>
