@@ -18,6 +18,7 @@ package org.relique.jdbc.csv;
 
 import java.io.*;
 import java.util.*;
+import java.sql.SQLException;
 
 /**
  * This class is a helper class that handles the reading and parsing of data
@@ -28,7 +29,7 @@ import java.util.*;
  * @author     Stuart Mottram (fritto)
  * @author     Jason Bedell
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.6 2002/06/17 02:53:15 jackerm Exp $
+ * @version    $Id: CsvReader.java,v 1.7 2002/08/18 20:29:16 mmaraya Exp $
  */
 
 public class CsvReader
@@ -145,7 +146,7 @@ public class CsvReader
    * @since
    */
 
-  public String getColumn(String columnName) throws Exception
+  public String getColumn(String columnName) throws SQLException
   {
     columnName = columnName.toUpperCase();
     for (int loop = 0; loop < columnNames.length; loop++)
@@ -155,7 +156,7 @@ public class CsvReader
         return getColumn(loop);
       }
     }
-    throw new Exception("Column '" + columnName + "' not found.");
+    throw new SQLException("Column '" + columnName + "' not found.");
   }
 
 
@@ -166,25 +167,24 @@ public class CsvReader
    * @exception  Exception  Description of Exception
    * @since
    */
-  public boolean next() throws Exception
-  {
+  public boolean next() throws SQLException {
     columns = new String[columnNames.length];
-    String dataLine;
-    if (suppressHeaders && (buf != null))
-    {
-      // The buffer is not empty yet, so use this first.
-      dataLine = buf;
-      buf = null;
-    }
-    else
-    {
-      // read new line of data from input.
-      dataLine = input.readLine();
-    }
-    if (dataLine == null)
-    {
-      input.close();
-      return false;
+    String dataLine = null;
+    try {
+        if (suppressHeaders && (buf != null)) {
+          // The buffer is not empty yet, so use this first.
+          dataLine = buf;
+          buf = null;
+        } else {
+          // read new line of data from input.
+          dataLine = input.readLine();
+        }
+        if (dataLine == null) {
+          input.close();
+          return false;
+        }
+    } catch (IOException e) {
+        throw new SQLException(e.toString());
     }
     columns = parseCsvLine(dataLine);
     return true;
@@ -211,7 +211,7 @@ public class CsvReader
 
   // This code updated with code by Stuart Mottram to handle line breaks in fields
   // see bug #492063
-  protected String[] parseCsvLine(String line) throws Exception
+  protected String[] parseCsvLine(String line) throws SQLException
   {
     Vector values = new Vector();
     boolean inQuotedString = false;
@@ -244,11 +244,11 @@ public class CsvReader
                             {
                                 if (!inQuotedString)
                                     {
-                                        throw new Exception("Unexpected '\"' in position " + currentPos + ". Line=" + orgLine);
+                                        throw new SQLException("Unexpected '\"' in position " + currentPos + ". Line=" + orgLine);
                                     }
                                 if (inQuotedString && nextChar != separator)
                                     {
-                                        throw new Exception("Expecting " + separator + " in position " + (currentPos + 1) + ". Line=" + orgLine);
+                                        throw new SQLException("Expecting " + separator + " in position " + (currentPos + 1) + ". Line=" + orgLine);
                                     }
                                 values.add(value);
                                 value = "";
@@ -280,7 +280,11 @@ public class CsvReader
         if (inQuotedString){
             // Remove extra , added at start
             value = value.substring(0,value.length()-1);
-            line = input.readLine();
+            try {
+                line = input.readLine();
+            } catch (IOException e) {
+                throw new SQLException(e.toString());
+            }
         } else {
             fullLine = 1;
         }
