@@ -5,7 +5,7 @@
  Build file for CsvJdbc. This uses Apache Ant v1.5
  
  Authors: Jonathan Ackerman, Michael Maraya
- Version: $Id: build.xml,v 1.10 2002/08/25 15:44:59 mmaraya Exp $
+ Version: $Id: build.xml,v 1.11 2002/08/26 14:15:43 mmaraya Exp $
 
  CsvJdbc - a JDBC driver for CSV files
  Copyright (C) 2001  Jonathan Ackerman
@@ -117,8 +117,7 @@
   <!-- =================================================================== -->
   <!-- Clean target                                                        -->
   <!-- =================================================================== -->
-  <target name="clean" depends="init" 
-          description="Cleans project for fresh build">  
+  <target name="clean" description="Cleans project for fresh build">  
     <delete dir="${class.dir}"/>
     <delete dir="${javadoc.dir}"/>
     <delete dir="${rel.dir}"/>
