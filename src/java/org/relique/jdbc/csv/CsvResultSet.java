@@ -36,7 +36,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.14 2004/04/09 11:17:13 gupta_chetan Exp $
+ * @version    $Id: CsvResultSet.java,v 1.15 2004/08/05 23:43:13 jackerm Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -844,8 +844,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Object getObject(int columnIndex) throws SQLException {
-        throw new UnsupportedOperationException(
-                "ResultSet.getObject(int) unsupported");
+        return getString(columnIndex);
     }
 
     /**
@@ -875,8 +874,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Object getObject(String columnName) throws SQLException {
-        throw new UnsupportedOperationException(
-                "ResultSet.getObject(String) unsupported");
+        return getString(columnName);
     }
 
     /**
