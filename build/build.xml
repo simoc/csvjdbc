@@ -1,0 +1,124 @@
+<?xml version="1.0" ?>
+<!-- 
+    Build file for CsvJdbc. This uses ANT v1.2
+    Author: Jonathan Ackerman
+    Version: $Id: build.xml,v 1.1 2001/01/23 09:07:28 jackerm Exp $
+-->
+
+<project name="CsvJdbc" default="main" basedir=".">
+  <property name="psep"          value="${path.separator}"/>
+  <property name="fsep"          value="${file.separator}"/>  
+  <property name="name"          value="csvjdbc"/>
+  <property name="rel"           value="r0-5"/>
+  <property name="rel.name"      value="${name}-${rel}"/>
+  <property name="classpath"     value="."/>
+  <property name="javadoc.packagenames"  value="test.*,org.*"/>
+  <property name="build.dir"     value="..${fsep}build"/>  
+  <property name="src.dir"       value="..${fsep}src"/>
+  <property name="java.dir"      value="${src.dir}${fsep}java"/>
+  <property name="sql.dir"       value="${src.dir}${fsep}sql"/>
+  <property name="www.dir"       value="${src.dir}${fsep}www"/>
+  <property name="metadata.dir"  value="${src.dir}${fsep}meta"/>
+  <property name="doc.dir"       value="${src.dir}${fsep}doc"/>
+  <property name="lib.dir"       value="..${fsep}lib"/>
+  <property name="class.dir"     value="..${fsep}classes"/>
+  <property name="tmp.dir"       value="..${fsep}tmp"/>  
+  <property name="javadoc.dir"   value="..${fsep}javadoc"/>  
+  <property name="rel.dir"       value="..${fsep}release"/>
+  
+
+  <target name="main">
+    <echo message="Build File for ${name} Release ${rel}"/>
+    <echo message=""/>
+    <echo message="Targets are:"/>
+    <echo message=""/>
+    <echo message="  clean    - Cleans project for fresh build"/>
+    <echo message="  compile  - Compiles all code"/>
+    <echo message="  jar      - Creates the jar file for the system"/>
+    <echo message="  release  - Builds a release of the system"/>
+    <echo message="  javadoc  - Builds the javadoc for the system"/>    
+  </target>
+   
+  
+  
+  <target name="init">        
+    <echo message="   JVM      : ${java.vm.info}"/>
+    <echo message="   Version  : ${java.vm.version}"/>
+    <echo message="   Java Home: ${java.home}"/>
+    <echo message="   Classpath: ${classpath}"/>
+    <echo message="   Path Separator : ${psep}"/>
+    <echo message="   File Separator : ${fsep}"/>    
+    <tstamp/>        
+  </target>
+  
+  
+  <target name="compile" depends="init">
+    <echo message="  Compiling..."/>
+    <mkdir dir="${class.dir}"/>
+    <javac srcdir="${java.dir}" destdir="${class.dir}" classpath="${classpath}">
+      <include name="**/*.java"/>
+    </javac>
+  </target>
+  
+  
+  <target name="javadoc">
+    <delete dir="${javadoc.dir}"/>
+    <mkdir dir="${javadoc.dir}"/>
+    <javadoc packagenames="${javadoc.packagenames}"
+             sourcepath="${java.dir}"
+             classpath="${classpath}"
+             destdir="${javadoc.dir}"
+             author="true"
+             version="true"
+             private="true"
+             doctitle="${name} java documentation (release ${rel})"
+             windowtitle="${name} java documentation (release ${rel})"
+             bottom="Check out &lt;a href=&quot;http://csvjdbc.sourceforge.net&quot;&gt;http://csvjdbc.sourceforge.net&lt;/a&gt; for more info."/>
+  </target>
+  
+  
+  <target name="clean">  
+    <delete dir="${tmp.dir}"/>
+    <delete dir="${rel.dir}"/>
+    <delete dir="${class.dir}"/>
+    <delete dir="${javadoc.dir}"/>
+  </target>
+  
+  
+  <target name="jar" depends="compile">
+    <delete dir="${tmp.dir}"/>
+    <mkdir dir="${tmp.dir}"/>
+    <mkdir dir="${tmp.dir}${fsep}META-INF"/>
+      
+        
+    <copy todir="${tmp.dir}" >
+      <fileset dir="${class.dir}" >
+        <include name="org/**/*.class"/>
+      </fileset>
+    </copy>   
+       
+    <jar jarfile="${tmp.dir}${fsep}${name}.jar" basedir="${tmp.dir}"/>
+  </target>  
+  
+    
+  
+  <target name="release" depends="clean,jar">
+    <delete dir="${rel.dir}/relfiles"/>
+    <property name="full.rel.dir" value="${rel.dir}/relfiles/${rel.name}"/>
+    <mkdir dir="${full.rel.dir}"/>
+    
+    <copy file="${tmp.dir}${fsep}${name}.jar" todir="${full.rel.dir}"/>
+    
+    <copy todir="${full.rel.dir}" >
+      <fileset dir="${doc.dir}" >
+        <include name="**"/>
+      </fileset>
+    </copy>
+    
+    
+    <zip zipfile="${rel.dir}/${rel.name}.zip"
+         basedir="${rel.dir}/relfiles/"/>
+  </target>
+  
+  
+</project>  

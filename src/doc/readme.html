@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<title>CsvJdbc Readme</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<table border="0" cellpadding="2" cellspacing="1">
+    <tr>
+        <td><font face="Arial"><img src="CsvJdbcLogo.jpg" width="182" height="108" alt="The CsvJdbc Logo"></font></td>
+        <td><h1><font face="Arial">CsvJdbc - a JDBC driver for
+        CSV files</font></h1>
+        </td>
+    </tr>
+</tbale>
+<table border="0" cellpadding="2" cellspacing="1">
+    <tr>
+        <td valign="top"><font face="arial"><b>About</b></font><hr
+        size="1" noshade>
+        <p><font size="2" face="Arial">CsvJdbc is a simple read-only
+        JDBC driver that uses Comma Separated Value (CSV) files
+        as database tables. It is ideal for writing data
+        importing programs. </font></p><p></p>
+        </td>
+    </tr>
+    <tr>
+        
+        <td valign="top"><font face="arial"><b>How is it used</b></font><hr
+        size="1" noshade>
+        <p><font size="2" face="Arial">The CsvJDBC driver is used
+        just like any other JDBC driver.</p>
+  
+        <p><font size="2" face="Arial">The driver class is <b>org.relique.jdbc.csv.CsvDriver</b>
+        The connection URL is <b>jdbc:relique:csv:<i>csvdir</i></b>, where <i>csvdir</i> is the directory in which the .csv files are found.</font></p>
+
+ <p><font size="2" face="Arial">This example code shows
+        how the driver is used. </font></p>
+        <pre><font size="2">
+import java.sql.*;
+
+public class DemoDriver
+{
+  public static void main(String[] args)
+  {
+    try
+    {
+      // load the driver into memory
+      Class.forName(&quot;org.relique.jdbc.csv.CsvDriver&quot;);
+
+      // create a connection. The first command line parameter is assumed to
+      //  be the directory in which the .csv files are held
+      Connection conn = DriverManager.getConnection(&quot;jdbc:relique:csv:&quot; + args[0] );
+
+      // create a Statement object to execute the query with
+      Statement stmt = conn.createStatement();
+
+      // Select the ID and NAME columns from sample.csv
+      ResultSet results = stmt.executeQuery(&quot;SELECT ID,NAME FROM sample&quot;);
+
+      // dump out the results
+      while (results.next())
+      {
+        System.out.println(&quot;ID= &quot; + results.getString(&quot;ID&quot;) + &quot;   NAME= &quot; + results.getString(&quot;NAME&quot;));
+      }
+
+      // clean up
+      results.close();
+      stmt.close();
+      conn.close();
+    }
+    catch(Exception e)
+    {
+      System.out.println(&quot;Oops-&gt; &quot; + e);
+    }
+  }
+}
+</font></pre>
+        <p></p></td>
+    </tr>
+    <tr>
+        <td valign="top"><font face="arial"><b>More Information</b></font><hr
+        size="1" noshade>
+        <p><font size="2" face="Arial">The latest version of the
+        software can be found at </font><a
+        href="http://www.sourceforge.net/projects/csvjdbc"><font
+        size="2" face="Arial">http://www.sourceforge.net/projects/csvjdbc</font></a><font
+        size="2" face="Arial">. </font></p>
+        </td>
+    </tr>
+</table>
+
+<p><font size="1" face="Arial"><i>Last modified: $Id: index.html,v
+1.1 2001/01/22 10:17:30 jackerm Exp $</i></font><font
+face="Arial"> </font></p>
+</body>
+</html>
