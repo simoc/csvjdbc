@@ -30,21 +30,12 @@ import java.sql.SQLException;
  * @author     Jason Bedell
  * @author     Tomasz Skutnik
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.10 2003/01/16 09:04:29 tskutnik Exp $
+ * @version    $Id: CsvReader.java,v 1.11 2004/04/09 11:17:13 gupta_chetan Exp $
  */
 
-public class CsvReader
+public class CsvReader extends CSVReaderAdapter
 {
   private BufferedReader input;
-  private String[] columnNames;
-  private String[] columns;
-  private java.lang.String buf = null;
-  private char separator = ',';
-  private boolean suppressHeaders = false;
-  private String tableName;
-  private String fileName;
-  private String charset = null;
-
 
   /**
    *Constructor for the CsvReader object
@@ -105,70 +96,6 @@ public class CsvReader
   }
 
 
-  /**
-   *Gets the columnNames attribute of the CsvReader object
-   *
-   * @return    The columnNames value
-   * @since
-   */
-  public String[] getColumnNames()
-  {
-    return columnNames;
-  }
-
-
-  public String getTableName() {
-      if(tableName != null)
-          return tableName;
-
-      int lastSlash = 0;
-      for(int i = fileName.length()-1; i >= 0; i--)
-          if(fileName.charAt(i) == '/' || fileName.charAt(i) == '\\') {
-            lastSlash = i;
-            break;
-          }
-      tableName = fileName.substring(lastSlash+1, fileName.length() - 4);
-      return tableName;
-  }
-
-  /**
-   * Get the value of the column at the specified index.
-   *
-   * @param  columnIndex  Description of Parameter
-   * @return              The column value
-   * @since
-   */
-
-  public String getColumn(int columnIndex) throws SQLException
-  {
-      if (columnIndex >= columns.length)
-      {
-          return null;
-      }
-      return columns[columnIndex];
-  }
-
-  /**
-   * Get value from column at specified name.
-   * If the column name is not found, throw an error.
-   *
-   * @param  columnName     Description of Parameter
-   * @return                The column value
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
-
-  public String getColumn(String columnName) throws SQLException
-  {
-    for (int loop = 0; loop < columnNames.length; loop++)
-    {
-      if (columnName.equalsIgnoreCase(columnNames[loop]) || columnName.equalsIgnoreCase(getTableName() + "." + columnNames[loop]))
-      {
-        return getColumn(loop);
-      }
-    }
-    throw new SQLException("Column '" + columnName + "' not found.");
-  }
 
 
   /**

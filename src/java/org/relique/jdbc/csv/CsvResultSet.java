@@ -35,7 +35,8 @@ import java.util.Map;
  * @author     Jonathan Ackerman
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
- * @version    $Id: CsvResultSet.java,v 1.13 2003/01/16 09:05:09 tskutnik Exp $
+ * @author     Chetan Gupta
+ * @version    $Id: CsvResultSet.java,v 1.14 2004/04/09 11:17:13 gupta_chetan Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -45,8 +46,10 @@ public class CsvResultSet implements ResultSet {
     /** Statement that produced this ResultSet */
     protected CsvStatement statement;
 
+    protected int isScrollable = ResultSet.TYPE_SCROLL_SENSITIVE;
+    
     /** Helper class that performs the actual file reads */
-    protected CsvReader reader;
+    protected CSVReaderAdapter reader;
 
     /** Table referenced by the Statement */
     protected String tableName;
@@ -68,9 +71,10 @@ public class CsvResultSet implements ResultSet {
      * @param tableName Table referenced by the Statement
      * @param columnNames Array of available columns for referenced table
      */
-    protected CsvResultSet(CsvStatement statement, CsvReader reader,
-                           String tableName, String[] columnNames) {
+    protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
+                           String tableName, String[] columnNames, int isScrollable) {
         this.statement = statement;
+        this.isScrollable = isScrollable;
         this.reader = reader;
         this.tableName = tableName;
         this.columnNames = columnNames;
@@ -993,8 +997,12 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public boolean isBeforeFirst() throws SQLException {
-        throw new UnsupportedOperationException(
+        if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+        	return reader.isBeforeFirst();
+        } else {
+          throw new UnsupportedOperationException(
                 "ResultSet.isBeforeFirst() unsupported");
+        }
     }
 
     /**
@@ -1007,8 +1015,12 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public boolean isAfterLast() throws SQLException {
-        throw new UnsupportedOperationException(
+        if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+        	return reader.isAfterLast();
+        } else {
+          throw new UnsupportedOperationException(
                 "ResultSet.isAfterLast() unsupported");
+        }
     }
 
     /**
@@ -1020,8 +1032,12 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public boolean isFirst() throws SQLException {
-        throw new UnsupportedOperationException(
+        if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+        	return reader.isFirst();
+        } else {
+          throw new UnsupportedOperationException(
                 "ResultSet.isFirst() unsupported");
+        }
     }
 
     /**
@@ -1037,8 +1053,12 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public boolean isLast() throws SQLException {
-        throw new UnsupportedOperationException(
+        if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+        	return reader.isLast();
+        } else {
+          throw new UnsupportedOperationException(
                 "ResultSet.isLast() unsupported");
+        }
     }
 
     /**
@@ -1050,8 +1070,12 @@ public class CsvResultSet implements ResultSet {
      * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
      */
     public void beforeFirst() throws SQLException {
-        throw new UnsupportedOperationException(
+        if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+        	reader.beforeFirst();
+        } else {
+          throw new UnsupportedOperationException(
                 "ResultSet.beforeFirst() unsupported");
+        }
     }
 
     /**
@@ -1062,8 +1086,12 @@ public class CsvResultSet implements ResultSet {
      * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
      */
     public void afterLast() throws SQLException {
-        throw new UnsupportedOperationException(
+        if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+        	reader.afterLast();
+        } else {
+          throw new UnsupportedOperationException(
                 "ResultSet.afterLast() unsupported");
+        }
     }
 
     /**
@@ -1076,8 +1104,12 @@ public class CsvResultSet implements ResultSet {
      * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
      */
     public boolean first() throws SQLException {
-        throw new UnsupportedOperationException(
+        if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+        	return reader.first();
+        } else {
+          throw new UnsupportedOperationException(
                 "ResultSet.first() unsupported");
+        }
     }
 
     /**
@@ -1090,7 +1122,11 @@ public class CsvResultSet implements ResultSet {
      * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
      */
     public boolean last() throws SQLException {
-        throw new UnsupportedOperationException("ResultSet.last() unsupported");
+        if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+        	return reader.last();
+        } else {
+          throw new UnsupportedOperationException("ResultSet.last() unsupported");
+        }
     }
 
     /**
@@ -1101,8 +1137,12 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public int getRow() throws SQLException {
-        throw new UnsupportedOperationException(
+        if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+        	return reader.getRow();
+        } else {
+          throw new UnsupportedOperationException(
                 "ResultSet.getRow() unsupported");
+        }
     }
 
     /**
@@ -1139,8 +1179,12 @@ public class CsvResultSet implements ResultSet {
      * occurs, or the result set type is <code>TYPE_FORWARD_ONLY</code>
      */
     public boolean absolute(int row) throws SQLException {
-        throw new UnsupportedOperationException(
-                "ResultSet.absolute() unsupported");
+        if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+        	return reader.absolute(row);
+        } else {
+	        throw new UnsupportedOperationException(
+	                "ResultSet.absolute() unsupported");
+        }
     }
 
     /**
@@ -1165,8 +1209,12 @@ public class CsvResultSet implements ResultSet {
      *            <code>TYPE_FORWARD_ONLY</code>
      */
     public boolean relative(int rows) throws SQLException {
-        throw new UnsupportedOperationException(
+        if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+        	return reader.relative(rows);
+        } else {
+          throw new UnsupportedOperationException(
                 "ResultSet.relative() unsupported");
+        }
     }
 
     /**
@@ -1179,8 +1227,12 @@ public class CsvResultSet implements ResultSet {
      * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
      */
     public boolean previous() throws SQLException {
-        throw new UnsupportedOperationException(
+        if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+        	return reader.previous();
+        } else {
+          throw new UnsupportedOperationException(
                 "ResultSet.previous() unsupported");
+        }
     }
 
     //---------------------------------------------------------------------
@@ -1263,8 +1315,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public int getType() throws SQLException {
-        throw new UnsupportedOperationException(
-                "ResultSet.getType() unsupported");
+        return isScrollable;
     }
 
     /**
@@ -2096,7 +2147,7 @@ public class CsvResultSet implements ResultSet {
      * or the result set is not updatable
      */
     public void moveToCurrentRow() throws SQLException {
-        throw new UnsupportedOperationException(
+          throw new UnsupportedOperationException(
                 "ResultSet.moveToeCurrentRow() unsupported");
     }
 

@@ -28,15 +28,17 @@ import java.util.Vector;
  * @author     Sander Brienen
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
+ * @author     Gupta Chetan
  * @created    25 November 2001
- * @version    $Id: CsvStatement.java,v 1.6 2003/01/16 09:05:50 tskutnik Exp $
+ * @version    $Id: CsvStatement.java,v 1.7 2004/04/09 11:17:13 gupta_chetan Exp $
  */
 
 public class CsvStatement implements Statement
 {
     private CsvConnection connection;
     private Vector resultSets = new Vector();
-
+    
+    protected int isScrollable = ResultSet.TYPE_SCROLL_INSENSITIVE;
 
     /**
      *Constructor for the CsvStatement object
@@ -44,10 +46,12 @@ public class CsvStatement implements Statement
      * @param  connection  Description of Parameter
      * @since
      */
-    protected CsvStatement(CsvConnection connection)
+    protected CsvStatement(CsvConnection connection, int isScrollable)
     {
         DriverManager.println("CsvJdbc - CsvStatement() - connection=" + connection);
+        DriverManager.println("CsvJdbc - CsvStatement() - Asked for " + (isScrollable==ResultSet.TYPE_SCROLL_SENSITIVE?"Scrollable":"Not Scrollable"));
         this.connection = connection;
+        this.isScrollable = isScrollable;
     }
 
 
@@ -281,7 +285,7 @@ public class CsvStatement implements Statement
      */
     public int getResultSetType() throws SQLException
     {
-        throw new SQLException("Not Supported !");
+        return this.isScrollable;
     }
 
 
@@ -332,19 +336,24 @@ public class CsvStatement implements Statement
                 throw new SQLException("Data file '" + fileName + "'  not readable !");
             }
 
-        CsvReader reader;
+        CSVReaderAdapter reader;
         try
             {
-                reader = new CsvReader(fileName, connection.getSeperator(),
+                if (isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE){
+                  reader = new CSVScrollableReader(fileName, connection.getSeperator(),
                                        connection.isSuppressHeaders(), connection.getCharset());
+                } else {
+                  reader = new CsvReader(fileName, connection.getSeperator(),
+                                       connection.isSuppressHeaders(), connection.getCharset());
+                }
             }
         catch (Exception e)
             {
                 throw new SQLException("Error reading data file. Message was: " + e);
             }
 
-        CsvResultSet resultSet = new CsvResultSet(this, reader,
-                                                  parser.getTableName(), parser.getColumnNames());
+        CsvResultSet resultSet = new CsvResultSet(this,reader,
+                                                  parser.getTableName(), parser.getColumnNames(), this.isScrollable);
         resultSets.add(resultSet);
 
         return resultSet;

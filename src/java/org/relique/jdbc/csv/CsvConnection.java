@@ -39,7 +39,7 @@ import java.util.Vector;
  * @author     Sander Brienen
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
- * @version    $Id: CsvConnection.java,v 1.8 2003/01/20 09:44:53 jackerm Exp $
+ * @version    $Id: CsvConnection.java,v 1.9 2004/04/09 11:17:13 gupta_chetan Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -122,7 +122,7 @@ public class CsvConnection implements Connection {
      * @exception SQLException if a database access error occurs
      */
     public Statement createStatement() throws SQLException {
-        CsvStatement statement = new CsvStatement(this);
+        CsvStatement statement = new CsvStatement(this, java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE);
         statements.add(statement);
         return statement;
     }
@@ -497,6 +497,7 @@ public class CsvConnection implements Connection {
      * This method is the same as the <code>createStatement</code> method
      * above, but it allows the default result set
      * type and concurrency to be overridden.
+     * Now also supports <code>ResultSet.TYPE_SCROLL_SENSITIVE</code> 
      *
      * @param resultSetType a result set type; one of
      *        <code>ResultSet.TYPE_FORWARD_ONLY</code>,
@@ -514,8 +515,9 @@ public class CsvConnection implements Connection {
      */
     public Statement createStatement(int resultSetType, int resultSetConcurrency)
             throws SQLException {
-        throw new UnsupportedOperationException(
-                "Connection.createStatement(int, int) unsupported");
+        CsvStatement statement = new CsvStatement(this, resultSetType);
+        statements.add(statement);
+        return statement;
     }
 
     /**
