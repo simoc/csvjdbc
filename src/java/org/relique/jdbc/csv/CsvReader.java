@@ -28,8 +28,9 @@ import java.sql.SQLException;
  * @author     Sander Brienen
  * @author     Stuart Mottram (fritto)
  * @author     Jason Bedell
+ * @author     Tomasz Skutnik
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.9 2002/09/04 17:03:23 mmaraya Exp $
+ * @version    $Id: CsvReader.java,v 1.10 2003/01/16 09:04:29 tskutnik Exp $
  */
 
 public class CsvReader
@@ -42,6 +43,7 @@ public class CsvReader
   private boolean suppressHeaders = false;
   private String tableName;
   private String fileName;
+  private String charset = null;
 
 
   /**
@@ -53,7 +55,7 @@ public class CsvReader
    */
   public CsvReader(String fileName) throws Exception
   {
-    this(fileName, ',', false);
+    this(fileName, ',', false,null);
   }
 
 
@@ -68,14 +70,20 @@ public class CsvReader
    * @exception  java.lang.Exception  The exception description.
    * @since
    */
-  public CsvReader(String fileName, char separator, boolean suppressHeaders)
+  public CsvReader(String fileName, char separator, boolean suppressHeaders, String charset)
        throws java.lang.Exception
   {
     this.separator = separator;
     this.suppressHeaders = suppressHeaders;
     this.fileName = fileName;
+    this.charset = charset;
 
-    input = new BufferedReader(new FileReader(fileName));
+    if (charset != null) {
+        input = new BufferedReader(new InputStreamReader(new FileInputStream(fileName),charset));
+    } else {
+        input = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
+    }
+    // input = new BufferedReader(new FileReader(fileName));
     if (this.suppressHeaders)
     {
       // No column names available. Read first data line and determine number of colums.
@@ -131,9 +139,13 @@ public class CsvReader
    * @since
    */
 
-  public String getColumn(int columnIndex)
+  public String getColumn(int columnIndex) throws SQLException
   {
-    return columns[columnIndex];
+      if (columnIndex >= columns.length)
+      {
+          return null;
+      }
+      return columns[columnIndex];
   }
 
   /**
