@@ -26,7 +26,7 @@ import junit.framework.*;
  *
  * @author Jonathan Ackerman
  * @author JD Evora
- * @version $Id: TestCsvDriver.java,v 1.4 2002/01/01 23:04:26 jackerm Exp $
+ * @version $Id: TestCsvDriver.java,v 1.5 2004/04/09 11:25:12 gupta_chetan Exp $
  */
 public class TestCsvDriver extends TestCase
 {
@@ -41,6 +41,8 @@ public class TestCsvDriver extends TestCase
   protected void setUp()
   {
     filePath=System.getProperty(SAMPLE_FILES_LOCATION_PROPERTY);
+    if (filePath == null)
+    	filePath=RunTests.DEFAULT_FILEPATH;
     assertNotNull("Sample files location property not set !", filePath);
 
     // load CSV driver
