@@ -24,12 +24,13 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.Hashtable;
 
 /**
  * This class implements the Connection interface for the CsvJdbc driver.
@@ -37,7 +38,8 @@ import java.util.Hashtable;
  * @author     Jonathan Ackerman
  * @author     Sander Brienen
  * @author     Michael Maraya
- * @version    $Id: CsvConnection.java,v 1.6 2002/08/24 23:37:30 mmaraya Exp $
+ * @author     Tomasz Skutnik
+ * @version    $Id: CsvConnection.java,v 1.7 2003/01/16 09:02:26 tskutnik Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -55,6 +57,9 @@ public class CsvConnection implements Connection {
 
     /** Collection of all created Statements */
     private Vector statements = new Vector();
+
+    /** Charset that should be used to read the files */
+    private String charset = null;
 
     /** Stores whether this Connection is closed or not */
     private boolean closed;
@@ -93,6 +98,10 @@ public class CsvConnection implements Connection {
             if(info.getProperty(CsvDriver.SUPPRESS_HEADERS) != null) {
                 suppressHeaders = Boolean.valueOf(info.getProperty(
                         CsvDriver.SUPPRESS_HEADERS)).booleanValue();
+            }
+            // default charset
+            if (info.getProperty(CsvDriver.CHARSET) != null) {
+                charset = info.getProperty(CsvDriver.CHARSET);
             }
         }
     }
@@ -603,6 +612,87 @@ public class CsvConnection implements Connection {
     }
 
     //--------------------------JDBC 3.0-----------------------------
+    /**
+     * Changes the holdability of <code>ResultSet</code> objects
+     * created using this <code>Connection</code> object to the given
+     * holdability.
+     *
+     * @param holdability a <code>ResultSet</code> holdability constant; one of
+     *        <code>ResultSet.HOLD_CURSORS_OVER_COMMIT</code> or
+     *        <code>ResultSet.CLOSE_CURSORS_AT_COMMIT</code>
+     * @throws SQLException if a database access occurs, the given parameter
+     *         is not a <code>ResultSet</code> constant indicating holdability,
+     *         or the given holdability is not supported
+     * @since 1.4
+     * @see #getHoldability
+     * @see java.sql.ResultSet
+     */
+    public void setHoldability(int holdability) throws SQLException {
+        throw new UnsupportedOperationException("Connection.setHoldability(int) unsupported");
+    }
+
+    /**
+     * Retrieves the current holdability of ResultSet objects created
+     * using this Connection object.
+     *
+     * @return the holdability, one of <code>ResultSet.HOLD_CURSORS_OVER_COMMIT</code> or
+     * <code>ResultSet.CLOSE_CURSORS_AT_COMMIT</code>
+     * @throws SQLException if a database access occurs
+     * @since 1.4
+     * @see #setHoldability
+     * @see java.sql.ResultSet
+     */
+    public int getHoldability() throws SQLException {
+        throw new UnsupportedOperationException("Connection.getHoldability() unsupported");
+    }
+
+    public Savepoint setSavepoint() throws SQLException {
+        throw new UnsupportedOperationException("Connection.setSavepoint() unsupported");
+    }
+
+    public Savepoint setSavepoint(String name) throws SQLException {
+        throw new UnsupportedOperationException("Connection.setSavepoint(String) unsupported");
+    }
+
+    public void rollback(Savepoint savepoint) throws SQLException {
+        throw new UnsupportedOperationException("Connection.rollback(Savepoint) unsupported");
+    }
+
+    public void releaseSavepoint(Savepoint savepoint) throws SQLException {
+        throw new UnsupportedOperationException("Connection.releaseSavepoint(Savepoint) unsupported");
+    }
+
+    public Statement createStatement(int resultSetType,
+                                     int resultSetConcurrency,
+                                     int resultSetHoldability) throws SQLException {
+        throw new UnsupportedOperationException("Connection.createStatement(int,int,int) unsupported");
+    }
+
+    public PreparedStatement prepareStatement(String sql,
+                                      int resultSetType,
+                                      int resultSetConcurrency,
+                                      int resultSetHoldability) throws SQLException {
+        throw new UnsupportedOperationException("Connection.prepareStatement(String,int,int,int) unsupported");
+    }
+
+    public CallableStatement prepareCall(String sql,
+                                         int resultSetType,
+                                         int resultSetConcurrency,
+                                         int resultSetHoldability) throws SQLException {
+        throw new UnsupportedOperationException("Connection.prepareCall(String,int,int,int) unsupported");
+    }
+
+    public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException {
+        throw new UnsupportedOperationException("Connection.prepareStatement(String,int) unsupported");
+    }
+
+    public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
+        throw new UnsupportedOperationException("Connection.prepareStatement(String,int[]) unsupported");
+    }
+
+    public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
+        throw new UnsupportedOperationException("Connection.prepareStatement(String,String[]) unsupported");
+    }
 
     //---------------------------------------------------------------------
     // Properties
@@ -641,17 +731,11 @@ public class CsvConnection implements Connection {
     }
 
     /**
-     * Changes the holdability of <code>ResultSet</code> objects
-     * created using this <code>Connection</code> object to the given
-     * holdability.
-     *
-     * @param holdability a <code>ResultSet</code> holdability constant; one of
-     *        <code>ResultSet.HOLD_CURSORS_OVER_COMMIT</code> or
-     *        <code>ResultSet.CLOSE_CURSORS_AT_COMMIT</code>
-     * @throws SQLException if a database access occurs, the given parameter
-     *         is not a <code>ResultSet</code> constant indicating holdability,
-     *         or the given holdability is not supported
-     * @see #getHoldability
-     * @see ResultSet
+     * Accessor method for the charset property
+     * @return current value for the suppressHeaders property
      */
+    protected String getCharset() {
+        return charset;
+    }
+
 }
