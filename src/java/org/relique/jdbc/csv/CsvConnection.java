@@ -26,14 +26,14 @@ import java.util.Hashtable;
  * @author     Jonathan Ackerman
  * @author     Sander Brienen
  * @created    25 November 2001
- * @version    $Id: CsvConnection.java,v 1.3 2001/12/02 00:25:05 jackerm Exp $
+ * @version    $Id: CsvConnection.java,v 1.4 2002/01/01 23:04:26 jackerm Exp $
  */
 
 public class CsvConnection implements Connection
 {
   private String filePath = null;
   private String fileExtension = ".csv";
-  private char separator='\'';
+  private char separator=',';
   private boolean suppressHeaders=false;
 
 

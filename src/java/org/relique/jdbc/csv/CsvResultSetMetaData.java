@@ -24,7 +24,7 @@ import java.sql.Types;
  *
  * @author     Jonathan Ackerman
  * @author     JD Evora
- * @version    $Id: CsvResultSetMetaData.java,v 1.3 2001/12/02 00:25:05 jackerm Exp $
+ * @version    $Id: CsvResultSetMetaData.java,v 1.4 2002/01/01 23:04:26 jackerm Exp $
  */
 public class CsvResultSetMetaData implements ResultSetMetaData
 {
@@ -177,7 +177,8 @@ public class CsvResultSetMetaData implements ResultSetMetaData
    */
   public String getColumnLabel(int column) throws SQLException
   {
-    return columnNames[column];
+    // SQL column numbers start at 1
+    return columnNames[column-1];
   }
 
 
@@ -189,7 +190,8 @@ public class CsvResultSetMetaData implements ResultSetMetaData
    */
   public String getColumnName(int column) throws SQLException
   {
-    return columnNames[column];
+    // SQL column numbers start at 1
+    return columnNames[column-1];
   }
 
 
@@ -240,7 +242,6 @@ public class CsvResultSetMetaData implements ResultSetMetaData
   public String getColumnTypeName(int column) throws SQLException
   {
     return String.class.getName();
-    // ??
   }
 
 

@@ -25,8 +25,9 @@ import java.util.*;
  *
  * @author     Jonathan Ackerman
  * @author     Sander Brienen
+ * @author     Stuart Mottram (fritto)
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.4 2001/12/02 00:25:05 jackerm Exp $
+ * @version    $Id: CsvReader.java,v 1.5 2002/01/01 23:04:26 jackerm Exp $
  */
 
 public class CsvReader
@@ -63,7 +64,7 @@ public class CsvReader
    * @exception  java.lang.Exception  The exception description.
    * @since
    */
-  public CsvReader(String fileName, char seperator, boolean suppressHeaders)
+  public CsvReader(String fileName, char separator, boolean suppressHeaders)
        throws java.lang.Exception
   {
     this.separator = separator;
@@ -78,7 +79,7 @@ public class CsvReader
       columnNames = new String[data.length];
       for (int i = 0; i < data.length; i++)
       {
-        columnNames[i] = "COLUMN" + String.valueOf(i);
+        columnNames[i] = "COLUMN" + String.valueOf(i+1);
       }
       data = null;
       // throw away.
@@ -191,68 +192,82 @@ public class CsvReader
   }
 
 
-  // This code is ugly and slow, but it does work ! (I hope)
-  //  well it didn't work the first time, maybe this will :)
+  // This code updated with code by Stuart Mottram to handle line breaks in fields
+  // see bug #492063
   protected String[] parseCsvLine(String line) throws Exception
   {
     Vector values = new Vector();
     boolean inQuotedString = false;
     String value = "";
+    String orgLine = line;
     int currentPos = 0;
-    line += separator;
-    while (currentPos < line.length())
-    {
-      char currentChar = line.charAt(currentPos);
-      if (value.length() == 0 && currentChar == '"' && !inQuotedString)
-      {
-        currentPos++;
-        inQuotedString = true;
-        continue;
-      }
-      if (currentChar == '"')
-      {
-        char nextChar = line.charAt(currentPos + 1);
-        if (nextChar == '"')
-        {
-          value += currentChar;
-          currentPos++;
+    int fullLine = 0;
+
+    while (fullLine == 0){
+        currentPos = 0;
+        line += separator;
+        while (currentPos < line.length())
+            {
+                char currentChar = line.charAt(currentPos);
+                if (value.length() == 0 && currentChar == '"' && !inQuotedString)
+                    {
+                        currentPos++;
+                        inQuotedString = true;
+                        continue;
+                    }
+                if (currentChar == '"')
+                    {
+                        char nextChar = line.charAt(currentPos + 1);
+                        if (nextChar == '"')
+                            {
+                                value += currentChar;
+                                currentPos++;
+                            }
+                        else
+                            {
+                                if (!inQuotedString)
+                                    {
+                                        throw new Exception("Unexpected '\"' in position " + currentPos + ". Line=" + orgLine);
+                                    }
+                                if (inQuotedString && nextChar != separator)
+                                    {
+                                        throw new Exception("Expecting " + separator + " in position " + (currentPos + 1) + ". Line=" + orgLine);
+                                    }
+                                values.add(value);
+                                value = "";
+                                inQuotedString = false;
+                                currentPos++;
+                            }
+                    }
+                else
+                    {
+                        if (currentChar == separator)
+                            {
+                                if (inQuotedString)
+                                    {
+                                        value += currentChar;
+                                    }
+                                else
+                                    {
+                                        values.add(value);
+                                        value = "";
+                                    }
+                            }
+                        else
+                            {
+                                value += currentChar;
+                            }
+                    }
+                currentPos++;
+            }
+        if (inQuotedString){
+            // Remove extra , added at start
+            value = value.substring(0,value.length()-1);
+            line = input.readLine();
+        } else {
+            fullLine = 1;
         }
-        else
-        {
-          if (!inQuotedString)
-          {
-            throw new Exception("Unexpected '\"' in position " + currentPos);
-          }
-          if (inQuotedString && nextChar != separator)
-          {
-            throw new Exception("Expecting " + separator + " in position " + (currentPos + 1));
-          }
-          values.add(value);
-          value = "";
-          inQuotedString = false;
-          currentPos++;
-        }
-      }
-      else
-      {
-        if (currentChar == separator)
-        {
-          if (inQuotedString)
-          {
-            value += currentChar;
-          }
-          else
-          {
-            values.add(value);
-            value = "";
-          }
-        }
-        else
-        {
-          value += currentChar;
-        }
-      }
-      currentPos++;
+
     }
     String[] retVal = new String[values.size()];
     values.copyInto(retVal);

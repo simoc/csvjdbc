@@ -18,29 +18,30 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package test.org.relique.jdbc.csv;
 
-import java.io.*;
 import java.sql.*;
 import java.util.Properties;
+import junit.framework.*;
 
 /**This class is used to test the CsvJdbc driver.
  *
  * @author Jonathan Ackerman
  * @author JD Evora
- * @version $Id: TestCsvDriver.java,v 1.3 2001/12/02 00:25:05 jackerm Exp $
+ * @version $Id: TestCsvDriver.java,v 1.4 2002/01/01 23:04:26 jackerm Exp $
  */
-public class TestCsvDriver
+public class TestCsvDriver extends TestCase
 {
-  public static void main(String[] args)
-  {
-    // check that path was passed to application
-    if (args.length != 1)
-    {
-      System.out.println("Please specify path to sample folders !");
-      System.exit(1);
-    }
+  public static final String SAMPLE_FILES_LOCATION_PROPERTY="sample.files.location";
+  private String filePath;
 
-    // get the driver manager to log to sysout
-    DriverManager.setLogWriter( new PrintWriter(System.out));
+  public TestCsvDriver(String name)
+  {
+    super(name);
+  }
+
+  protected void setUp()
+  {
+    filePath=System.getProperty(SAMPLE_FILES_LOCATION_PROPERTY);
+    assertNotNull("Sample files location property not set !", filePath);
 
     // load CSV driver
     try
@@ -49,76 +50,50 @@ public class TestCsvDriver
     }
     catch (ClassNotFoundException e)
     {
-      System.out.println("Oops, the driver is not in the CLASSPATH -> " + e);
-      System.exit(1);
+      fail("Driver is not in the CLASSPATH -> " + e);
     }
 
-    // do simple test
-    defaultValues(args[0]);
-
-    // do simple test with properties
-    withProperties(args[0]);
-
-    // do meta data test
-    displayMetadata(args[0]);
-
-    // test suppress headers test
-    //testSupressHeaders(args[0]);
   }
 
-  private static void defaultValues(String filePath)
+  public void testWithDefaultValues()
   {
-     System.out.println("------------------------------------------------------");
-     System.out.println("TESTING THE DRIVER WITH THE DEFAULT VALUES");
-     try
-      {
-        Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath );
-
-        Statement stmt = conn.createStatement();
-
-        ResultSet results = stmt.executeQuery("SELECT NAME,ID,EXTRA_FIELD FROM sample");
-
-        while (results.next())
-        {
-          System.out.println("ID= " + results.getString("ID")
-                             + "   NAME= " + results.getString("NAME")
-                             + "   EXTRA_FIELD= " + results.getString("EXTRA_FIELD"));
-        }
-
-        results.close();
-        stmt.close();
-        conn.close();
-      }
-      catch(Exception e)
-      {
-        System.out.println("Oops -> " + e);
-      }
-  }
-
-  private static void  withProperties(String filePath)
-  {
-    System.out.println("------------------------------------------------------");
-    System.out.println("TESTING THE DRIVER WITH THE PARAMETERS SUPPLIED BY A PROPERTIES FILE");
-  // Tests the .txt extension and the ; separator
     try
     {
-      Properties pro = new Properties();
-      pro.put("fileExtension",".txt");
-      pro.put("separator",";");
-
-      Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath,pro);
+      Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath );
 
       Statement stmt = conn.createStatement();
 
-      ResultSet results = stmt.executeQuery("SELECT ID,NAME,EXTRA_FIELD FROM sample");
+      ResultSet results = stmt.executeQuery("SELECT NAME,ID,EXTRA_FIELD FROM sample");
 
-      while (results.next())
-      {
-        System.out.println("ID= " + results.getString("ID")
-                           + "   NAME= " + results.getString("NAME")
-                           + "   EXTRA_FIELD= " + results.getString("EXTRA_FIELD"));
-      }
+      results.next();
+      assertTrue("Incorrect ID Value",results.getString("ID").equals("Q123"));
+      assertTrue("Incorrect NAME Value",results.getString("NAME").equals("\"S,\""));
+      assertTrue("Incorrect EXTRA_FIELD Value",results.getString("EXTRA_FIELD").equals("F"));
 
+      results.next();
+      assertTrue("Incorrect ID Value",results.getString("ID").equals("A123"));
+      assertTrue("Incorrect NAME Value",results.getString("NAME").equals("Jonathan Ackerman"));
+      assertTrue("Incorrect EXTRA_FIELD Value",results.getString("EXTRA_FIELD").equals("A"));
+
+      results.next();
+      assertTrue("Incorrect ID Value",results.getString("ID").equals("B234"));
+      assertTrue("Incorrect NAME Value",results.getString("NAME").equals("Grady O'Neil"));
+      assertTrue("Incorrect EXTRA_FIELD Value",results.getString("EXTRA_FIELD").equals("B"));
+
+      results.next();
+      assertTrue("Incorrect ID Value",results.getString("ID").equals("C456"));
+      assertTrue("Incorrect NAME Value",results.getString("NAME").equals("Susan, Peter and Dave"));
+      assertTrue("Incorrect EXTRA_FIELD Value",results.getString("EXTRA_FIELD").equals("C"));
+
+      results.next();
+      assertTrue("Incorrect ID Value",results.getString("ID").equals("D789"));
+      assertTrue("Incorrect NAME Value",results.getString("NAME").equals("Amelia \"meals\" Maurice"));
+      assertTrue("Incorrect EXTRA_FIELD Value",results.getString("EXTRA_FIELD").equals("E"));
+
+      results.next();
+      assertTrue("Incorrect ID Value",results.getString("ID").equals("X234"));
+      assertTrue("Incorrect NAME Value",results.getString("NAME").equals("Peter \"peg leg\", Jimmy & Samantha \"Sam\""));
+      assertTrue("Incorrect EXTRA_FIELD Value",results.getString("EXTRA_FIELD").equals("G"));
 
       results.close();
       stmt.close();
@@ -126,14 +101,66 @@ public class TestCsvDriver
     }
     catch(Exception e)
     {
-      System.out.println("Oops -> " + e);
+      fail("Unexpected Exception: " + e);
     }
   }
 
-  private static void displayMetadata(String filePath)
+  public void testWithProperties()
   {
-   System.out.println("------------------------------------------------------");
-   System.out.println("TESTING THE METADATA");
+    try
+    {
+      Properties props = new Properties();
+      props.put("fileExtension",".txt");
+      props.put("separator",";");
+
+      Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath,props);
+
+      Statement stmt = conn.createStatement();
+
+      ResultSet results = stmt.executeQuery("SELECT NAME,ID,EXTRA_FIELD FROM sample");
+
+      results.next();
+      assertTrue("Incorrect ID Value",results.getString("ID").equals("Q123"));
+      assertTrue("Incorrect NAME Value",results.getString("NAME").equals("\"S;\""));
+      assertTrue("Incorrect EXTRA_FIELD Value",results.getString("EXTRA_FIELD").equals("F"));
+
+      results.next();
+      assertTrue("Incorrect ID Value",results.getString("ID").equals("A123"));
+      assertTrue("Incorrect NAME Value",results.getString("NAME").equals("Jonathan Ackerman"));
+      assertTrue("Incorrect EXTRA_FIELD Value",results.getString("EXTRA_FIELD").equals("A"));
+
+      results.next();
+      assertTrue("Incorrect ID Value",results.getString("ID").equals("B234"));
+      assertTrue("Incorrect NAME Value",results.getString("NAME").equals("Grady O'Neil"));
+      assertTrue("Incorrect EXTRA_FIELD Value",results.getString("EXTRA_FIELD").equals("B"));
+
+      results.next();
+      assertTrue("Incorrect ID Value",results.getString("ID").equals("C456"));
+      assertTrue("Incorrect NAME Value",results.getString("NAME").equals("Susan; Peter and Dave"));
+      assertTrue("Incorrect EXTRA_FIELD Value",results.getString("EXTRA_FIELD").equals("C"));
+
+      results.next();
+      assertTrue("Incorrect ID Value",results.getString("ID").equals("D789"));
+      assertTrue("Incorrect NAME Value",results.getString("NAME").equals("Amelia \"meals\" Maurice"));
+      assertTrue("Incorrect EXTRA_FIELD Value",results.getString("EXTRA_FIELD").equals("E"));
+
+      results.next();
+      assertTrue("Incorrect ID Value",results.getString("ID").equals("X234"));
+      assertTrue("Incorrect NAME Value",results.getString("NAME").equals("Peter \"peg leg\"; Jimmy & Samantha \"Sam\""));
+      assertTrue("Incorrect EXTRA_FIELD Value",results.getString("EXTRA_FIELD").equals("G"));
+
+      results.close();
+      stmt.close();
+      conn.close();
+    }
+    catch(Exception e)
+    {
+      fail("Unexpected Exception: " + e);
+    }
+  }
+
+  public void testMetadata()
+  {
    try
     {
       Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
@@ -142,13 +169,13 @@ public class TestCsvDriver
 
       ResultSet results = stmt.executeQuery("SELECT * FROM sample");
 
-      ResultSetMetaData rsm = results.getMetaData();
+      ResultSetMetaData metadata = results.getMetaData();
 
-      System.out.println("The table '"+rsm.getTableName(0)+"' has the columns:");
-      for(int i=0;i<rsm.getColumnCount ();i++)
-      {
-       System.out.println("\t"+rsm.getColumnName(i));
-      }
+      assertTrue("Incorrect Table Name",metadata.getTableName(0).equals("sample"));
+
+      assertTrue("Incorrect Column Name 1",metadata.getColumnName(1).equals("ID"));
+      assertTrue("Incorrect Column Name 2",metadata.getColumnName(2).equals("NAME"));
+      assertTrue("Incorrect Column Name 3",metadata.getColumnName(3).equals("EXTRA_FIELD"));
 
       results.close();
       stmt.close();
@@ -156,10 +183,98 @@ public class TestCsvDriver
     }
     catch(Exception e)
     {
-      System.out.println("Oops -> " + e);
-      e.printStackTrace(System.out);
+      fail("Unexpected Exception: " + e);
+    }
+  }
+
+  public void testMetadataWithSupressedHeaders()
+  {
+    try
+    {
+      Properties props = new Properties();
+      props.put("suppressHeaders","true");
+
+      Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath,props);
+
+      Statement stmt = conn.createStatement();
+
+      ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+
+      ResultSetMetaData metadata = results.getMetaData();
+
+      assertTrue("Incorrect Table Name",metadata.getTableName(0).equals("sample"));
+
+      assertTrue("Incorrect Column Name 1",metadata.getColumnName(1).equals("COLUMN1"));
+      assertTrue("Incorrect Column Name 2",metadata.getColumnName(2).equals("COLUMN2"));
+      assertTrue("Incorrect Column Name 3",metadata.getColumnName(3).equals("COLUMN3"));
+
+      results.close();
+      stmt.close();
+      conn.close();
+    }
+    catch(Exception e)
+    {
+      fail("Unexpected Exception: " + e);
     }
   }
 
 
+  public void testWithSuppressedHeaders()
+  {
+    try
+    {
+      Properties props = new Properties();
+      props.put("suppressHeaders","true");
+
+      Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath,props );
+
+      Statement stmt = conn.createStatement();
+
+      ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+
+      // header is now treated as normal data line
+      results.next();
+      assertTrue("Incorrect COLUMN1 Value",results.getString("COLUMN1").equals("ID"));
+      assertTrue("Incorrect COLUMN2 Value",results.getString("COLUMN2").equals("NAME"));
+      assertTrue("Incorrect COLUMN3 Value",results.getString("COLUMN3").equals("EXTRA_FIELD"));
+
+      results.next();
+      assertTrue("Incorrect COLUMN1 Value",results.getString("COLUMN1").equals("Q123"));
+      assertTrue("Incorrect COLUMN2 Value",results.getString("COLUMN2").equals("\"S,\""));
+      assertTrue("Incorrect COLUMN3 Value",results.getString("COLUMN3").equals("F"));
+
+      results.next();
+      assertTrue("Incorrect COLUMN1 Value",results.getString("COLUMN1").equals("A123"));
+      assertTrue("Incorrect COLUMN2 Value",results.getString("COLUMN2").equals("Jonathan Ackerman"));
+      assertTrue("Incorrect COLUMN3 Value",results.getString("COLUMN3").equals("A"));
+
+      results.next();
+      assertTrue("Incorrect COLUMN1 Value",results.getString("COLUMN1").equals("B234"));
+      assertTrue("Incorrect COLUMN2 Value",results.getString("COLUMN2").equals("Grady O'Neil"));
+      assertTrue("Incorrect COLUMN3 Value",results.getString("COLUMN3").equals("B"));
+
+      results.next();
+      assertTrue("Incorrect COLUMN1 Value",results.getString("COLUMN1").equals("C456"));
+      assertTrue("Incorrect COLUMN2 Value",results.getString("COLUMN2").equals("Susan, Peter and Dave"));
+      assertTrue("Incorrect COLUMN3 Value",results.getString("COLUMN3").equals("C"));
+
+      results.next();
+      assertTrue("Incorrect COLUMN1 Value",results.getString("COLUMN1").equals("D789"));
+      assertTrue("Incorrect COLUMN2 Value",results.getString("COLUMN2").equals("Amelia \"meals\" Maurice"));
+      assertTrue("Incorrect COLUMN3 Value",results.getString("COLUMN3").equals("E"));
+
+      results.next();
+      assertTrue("Incorrect COLUMN1 Value",results.getString("COLUMN1").equals("X234"));
+      assertTrue("Incorrect COLUMN2 Value",results.getString("COLUMN2").equals("Peter \"peg leg\", Jimmy & Samantha \"Sam\""));
+      assertTrue("Incorrect COLUMN3 Value",results.getString("COLUMN3").equals("G"));
+
+      results.close();
+      stmt.close();
+      conn.close();
+    }
+    catch(Exception e)
+    {
+      fail("Unexpected Exception: " + e);
+    }
+  }
 }
