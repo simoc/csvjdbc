@@ -27,7 +27,7 @@ import java.util.Calendar;
  *
  * @author     Jonathan Ackerman
  * @created    25 November 2001
- * @version    $Id: CsvResultSet.java,v 1.6 2002/08/15 14:53:18 mmaraya Exp $
+ * @version    $Id: CsvResultSet.java,v 1.7 2002/08/18 01:38:15 mmaraya Exp $
  */
 public class CsvResultSet implements ResultSet
 {
