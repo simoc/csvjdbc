@@ -24,16 +24,18 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.Calendar;
+import java.net.URL;
 import java.sql.*;
+import java.util.Calendar;
+import java.util.Map;
 
 /**
  * This class implements the ResultSet interface for the CsvJdbc driver.
  *
  * @author     Jonathan Ackerman
  * @author     Michael Maraya
- * @version    $Id: CsvResultSet.java,v 1.12 2002/09/04 17:55:00 mmaraya Exp $
+ * @author     Tomasz Skutnik
+ * @version    $Id: CsvResultSet.java,v 1.13 2003/01/16 09:05:09 tskutnik Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -130,7 +132,7 @@ public class CsvResultSet implements ResultSet {
      */
     public boolean wasNull() throws SQLException {
         if(lastIndexRead >= 0) {
-            return getString(lastIndexRead).equals(null);
+            return getString(lastIndexRead) == null;
         } else {
             throw new SQLException("No previous getter method called");
         }
@@ -154,6 +156,9 @@ public class CsvResultSet implements ResultSet {
         // perform pre-accessor method processing
         preAccessor(columnIndex);
         // use CsvReader.getColumn(String) to retrieve the column
+        if (columnIndex < 1 || columnIndex > columnNames.length) {
+            throw new SQLException("Column not found: invalid index: "+columnIndex);
+        }
         return reader.getColumn(columnNames[columnIndex-1]);
     }
 
@@ -2438,6 +2443,50 @@ public class CsvResultSet implements ResultSet {
                 preAccessor(i+1);
             }
         }
+    }
+
+    //---------------------------------------------------------------------
+    // JDBC 3.0
+    //---------------------------------------------------------------------
+
+    public URL getURL(int columnIndex) throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.getURL(int) unsupported");
+    }
+
+    public URL getURL(String columnName) throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.getURL(String) unsupported");
+    }
+
+    public void updateRef(int columnIndex, Ref x) throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.updateRef(int,java.sql.Ref) unsupported");
+    }
+
+    public void updateRef(String columnName, Ref x) throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.updateRef(String,java.sql.Ref) unsupported");
+    }
+
+    public void updateBlob(int columnIndex, Blob x) throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.updateBlob(int,java.sql.Blob) unsupported");
+    }
+
+    public void updateBlob(String columnName, Blob x) throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.updateBlob(String,java.sql.Blob) unsupported");
+    }
+
+    public void updateClob(int columnIndex, Clob x) throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.updateClob(int,java.sql.Clob) unsupported");
+    }
+
+    public void updateClob(String columnName, Clob x) throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.updateClob(String,java.sql.Clob) unsupported");
+    }
+
+    public void updateArray(int columnIndex, Array x) throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.updateArray(int,java.sql.Array) unsupported");
+    }
+
+    public void updateArray(String columnName, Array x) throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.updateArray(String,java.sql.Array) unsupported");
     }
 
 }
