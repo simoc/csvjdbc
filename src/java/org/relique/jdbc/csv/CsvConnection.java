@@ -24,7 +24,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.sql.Savepoint;
+//import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -39,7 +39,7 @@ import java.util.Vector;
  * @author     Sander Brienen
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
- * @version    $Id: CsvConnection.java,v 1.7 2003/01/16 09:02:26 tskutnik Exp $
+ * @version    $Id: CsvConnection.java,v 1.8 2003/01/20 09:44:53 jackerm Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -646,6 +646,7 @@ public class CsvConnection implements Connection {
         throw new UnsupportedOperationException("Connection.getHoldability() unsupported");
     }
 
+    /* Removed since this only builds under JDK 1.4
     public Savepoint setSavepoint() throws SQLException {
         throw new UnsupportedOperationException("Connection.setSavepoint() unsupported");
     }
@@ -661,6 +662,7 @@ public class CsvConnection implements Connection {
     public void releaseSavepoint(Savepoint savepoint) throws SQLException {
         throw new UnsupportedOperationException("Connection.releaseSavepoint(Savepoint) unsupported");
     }
+     */
 
     public Statement createStatement(int resultSetType,
                                      int resultSetConcurrency,
