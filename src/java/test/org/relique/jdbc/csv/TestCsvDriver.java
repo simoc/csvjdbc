@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package test.org.relique.jdbc.csv;
 
+import java.io.*;
 import java.sql.*;
 import java.util.Properties;
 import junit.framework.*;
@@ -26,7 +27,7 @@ import junit.framework.*;
  *
  * @author Jonathan Ackerman
  * @author JD Evora
- * @version $Id: TestCsvDriver.java,v 1.6 2004/08/06 00:02:02 jackerm Exp $
+ * @version $Id: TestCsvDriver.java,v 1.7 2004/08/09 21:37:29 jackerm Exp $
  */
 public class TestCsvDriver extends TestCase
 {
@@ -281,4 +282,35 @@ public class TestCsvDriver extends TestCase
       fail("Unexpected Exception: " + e);
     }
   }
+  
+	  public void testRelativePath()
+		{
+			try
+			{
+				// break up file path to test relative paths
+				String parentPath = new File(filePath).getParent();
+				String subPath = new File(filePath).getName();
+				
+				Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + parentPath );
+
+				Statement stmt = conn.createStatement();
+
+				ResultSet results = stmt.executeQuery("SELECT NAME,ID,EXTRA_FIELD FROM ." + 
+				                                      File.separator + subPath + 
+				                                      File.separator + "sample");
+
+				results.next();
+				assertTrue("Incorrect ID Value",results.getString("ID").equals("Q123"));
+				assertTrue("Incorrect NAME Value",results.getString("NAME").equals("\"S,\""));
+				assertTrue("Incorrect EXTRA_FIELD Value",results.getString("EXTRA_FIELD").equals("F"));
+				
+				results.close();
+				stmt.close();
+				conn.close();
+			}
+			catch(Exception e)
+			{
+				fail("Unexpected Exception: " + e);
+			}
+		}
 }
