@@ -2,16 +2,15 @@
 <!-- 
     Build file for CsvJdbc. This uses ANT v1.2
     Author: Jonathan Ackerman
-    Version: $Id: build.xml,v 1.3 2002/01/01 23:04:26 jackerm Exp $
+    Version: $Id: build.xml,v 1.4 2002/01/03 01:22:48 jackerm Exp $
 -->
 
 <project name="CsvJdbc" default="main" basedir=".">
   <property name="psep"          value="${path.separator}"/>
   <property name="fsep"          value="${file.separator}"/>  
   <property name="name"          value="csvjdbc"/>
-  <property name="rel"           value="r0-6"/>
-  <property name="rel.name"      value="${name}-${rel}"/>
-  <property name="classpath"     value="."/>
+  <property name="rel"           value="r0-7"/>
+  <property name="rel.name"      value="${name}-${rel}"/>  
   <property name="javadoc.packagenames"  value="test.*,org.*"/>
   <property name="build.dir"     value="..${fsep}build"/>  
   <property name="src.dir"       value="..${fsep}src"/>
@@ -25,6 +24,7 @@
   <property name="tmp.dir"       value="..${fsep}tmp"/>  
   <property name="javadoc.dir"   value="..${fsep}javadoc"/>  
   <property name="rel.dir"       value="..${fsep}release"/>
+  <property name="classpath"     value="."/>
   
 
   <target name="main">
@@ -34,9 +34,10 @@
     <echo message=""/>
     <echo message="  clean    - Cleans project for fresh build"/>
     <echo message="  compile  - Compiles all code"/>
-    <echo message="  jar      - Creates the jar file for the system"/>
+    <echo message="  jar      - Creates the jar file for the system"/>       
     <echo message="  release  - Builds a release of the system"/>
     <echo message="  javadoc  - Builds the javadoc for the system"/>    
+    <echo message="  test     - Creates and runs the test programs. See lib\readme.txt"/>  
   </target>
    
   
@@ -99,10 +100,27 @@
        
     <jar jarfile="${tmp.dir}${fsep}${name}.jar" basedir="${tmp.dir}"/>
   </target>  
-  
+
+
+  <target name="test" depends="compile">
+    <echo message="  Compiling Tests..."/>
+    <mkdir dir="${class.dir}"/>
+    <javac srcdir="${java.dir}" destdir="${class.dir}" classpath="${classpath}${psep}${lib.dir}${fsep}junit.jar">
+      <include name="test/**/*.java"/>
+    </javac>
+    <echo message="  Running Tests..."/>
+    <java classname="test.org.relique.jdbc.csv.RunTests" fork="yes" failonerror="yes">
+      <arg value="..\src\testdata"/> 
+      <classpath>
+        <pathelement location="${lib.dir}${fsep}junit.jar"/>
+        <pathelement location="${classpath}"/>
+        <pathelement location="${class.dir}"/>
+      </classpath> 
+    </java>
+  </target>  
     
   
-  <target name="release" depends="clean,jar">
+  <target name="release" depends="clean,test,jar">
     <delete dir="${rel.dir}/relfiles"/>
     <property name="full.rel.dir" value="${rel.dir}/relfiles/${rel.name}"/>
     <mkdir dir="${full.rel.dir}"/>

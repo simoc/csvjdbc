@@ -22,7 +22,8 @@ public class RunTests
     // get the driver manager to log to sysout
     //DriverManager.setLogWriter( new PrintWriter(System.out));
 
-    // kick off the tests
-    junit.textui.TestRunner.run(suite());
+    // kick off the tests. Note call main() instead of run() so that error codes
+    // are returned so that they can be trapped by ant
+    junit.textui.TestRunner.main(new String[]{"test.org.relique.jdbc.csv.RunTests"});
   }
 }
