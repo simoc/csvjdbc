@@ -29,7 +29,7 @@ import java.sql.SQLException;
  * @author     Stuart Mottram (fritto)
  * @author     Jason Bedell
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.7 2002/08/18 20:29:16 mmaraya Exp $
+ * @version    $Id: CsvReader.java,v 1.8 2002/08/25 02:35:20 mmaraya Exp $
  */
 
 public class CsvReader
@@ -63,7 +63,7 @@ public class CsvReader
    * Creation date: (6-11-2001 15:02:42)
    *
    * @param  fileName                 java.lang.String
-   * @param  seperator                char
+   * @param  separator                char
    * @param  suppressHeaders          boolean
    * @exception  java.lang.Exception  The exception description.
    * @since
@@ -142,7 +142,7 @@ public class CsvReader
    *
    * @param  columnName     Description of Parameter
    * @return                The column value
-   * @exception  Exception  Description of Exception
+   * @exception  SQLException  Description of Exception
    * @since
    */
 
@@ -164,7 +164,7 @@ public class CsvReader
    *Description of the Method
    *
    * @return                Description of the Returned Value
-   * @exception  Exception  Description of Exception
+   * @exception  SQLException  Description of Exception
    * @since
    */
   public boolean next() throws SQLException {
