@@ -30,7 +30,7 @@ import java.util.Vector;
  * @author     Tomasz Skutnik
  * @author     Gupta Chetan
  * @created    25 November 2001
- * @version    $Id: CsvStatement.java,v 1.7 2004/04/09 11:17:13 gupta_chetan Exp $
+ * @version    $Id: CsvStatement.java,v 1.8 2004/08/09 21:36:54 jackerm Exp $
  */
 
 public class CsvStatement implements Statement
@@ -323,7 +323,14 @@ public class CsvStatement implements Statement
                 throw new SQLException("Syntax Error. " + e.getMessage());
             }
 
+			  DriverManager.println("Connection Path: " + connection.getPath());
+			  DriverManager.println("Parser Table Name: " + parser.getTableName()); 
+			  DriverManager.println("Connection Extension: " + connection.getExtension());
+        
         String fileName = connection.getPath() + parser.getTableName() + connection.getExtension();
+        
+			  DriverManager.println("CSV file name: " + fileName);
+        
         File checkFile = new File(fileName);
 
         if (!checkFile.exists())
