@@ -26,7 +26,7 @@ import junit.framework.*;
  *
  * @author Jonathan Ackerman
  * @author JD Evora
- * @version $Id: TestCsvDriver.java,v 1.5 2004/04/09 11:25:12 gupta_chetan Exp $
+ * @version $Id: TestCsvDriver.java,v 1.6 2004/08/06 00:02:02 jackerm Exp $
  */
 public class TestCsvDriver extends TestCase
 {
@@ -169,15 +169,17 @@ public class TestCsvDriver extends TestCase
 
       Statement stmt = conn.createStatement();
 
-      ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+      ResultSet results = stmt.executeQuery("SELECT * FROM sample3");
 
       ResultSetMetaData metadata = results.getMetaData();
 
-      assertTrue("Incorrect Table Name",metadata.getTableName(0).equals("sample"));
+      assertTrue("Incorrect Table Name",metadata.getTableName(0).equals("sample3"));
 
-      assertTrue("Incorrect Column Name 1",metadata.getColumnName(1).equals("ID"));
-      assertTrue("Incorrect Column Name 2",metadata.getColumnName(2).equals("NAME"));
-      assertTrue("Incorrect Column Name 3",metadata.getColumnName(3).equals("EXTRA_FIELD"));
+      assertTrue("Incorrect Column Name 1",metadata.getColumnName(1).equals("column 1"));
+      assertTrue("Incorrect Column Name 2",metadata.getColumnName(2).equals("column \"2\" two"));
+      assertTrue("Incorrect Column Name 3",metadata.getColumnName(3).equals("Column 3"));     
+			assertTrue("Incorrect Column Name 4",metadata.getColumnName(4).equals("CoLuMn4"));
+			assertTrue("Incorrect Column Name 5",metadata.getColumnName(5).equals("COLumn5 "));
 
       results.close();
       stmt.close();
