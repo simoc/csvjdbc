@@ -28,7 +28,7 @@ import java.util.Vector;
  * @author     Sander Brienen
  * @author     Michael Maraya
  * @created    25 November 2001
- * @version    $Id: CsvStatement.java,v 1.4 2002/08/24 22:30:06 mmaraya Exp $
+ * @version    $Id: CsvStatement.java,v 1.5 2002/08/24 23:38:53 mmaraya Exp $
  */
 
 public class CsvStatement implements Statement
@@ -318,7 +318,7 @@ public class CsvStatement implements Statement
       throw new SQLException("Syntax Error. " + e.getMessage());
     }
 
-    String fileName = connection.getFilePath() + parser.getTableName() + connection.getExtension();
+    String fileName = connection.getPath() + parser.getTableName() + connection.getExtension();
     File checkFile = new File(fileName);
 
     if (!checkFile.exists())
