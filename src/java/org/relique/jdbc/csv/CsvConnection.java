@@ -38,7 +38,7 @@ import java.util.Vector;
  * @author     Sander Brienen
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
- * @version    $Id: CsvConnection.java,v 1.11 2004/08/04 00:54:23 jackerm Exp $
+ * @version    $Id: CsvConnection.java,v 1.12 2004/08/09 05:03:05 jackerm Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -344,8 +344,7 @@ public class CsvConnection implements Connection {
      * @exception SQLException if a database access error occurs
      */
     public DatabaseMetaData getMetaData() throws SQLException {
-        throw new UnsupportedOperationException(
-                "Connection.getMetaData() unsupported");
+        return new CsvDatabaseMetaData(this);
     }
 
     /**
