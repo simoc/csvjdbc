@@ -113,6 +113,49 @@ public class DemoDriver
          </pre>
 	        <p></p></td>
     </tr>
+      <tr>
+	        <td valign="top"><font face="arial"><b>Scrollable ResultSets</b></font><hr
+	        size="1" noshade>
+	        <p><font size="2" face="Arial">The driver also now supports scrollable result sets.</p>
+
+         <p><font size="2" face="Arial">This following example code shows
+         how these are used. </font></p>
+         <pre><font size="2">  ...
+
+  Connection conn = Drivermanager.getConnection(&quot;jdbc:relique:csv:&quot; + args[0],props)
+
+  Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+
+  ResultSet results = stmt.executeQuery(&quot;SELECT ID,NAME FROM sample&quot;);
+
+  resulst.next();
+  ...
+  results.first();
+  ...
+  results.previous();
+  ...
+  results.relative(2);
+  ...
+  results.absolute(2);
+  ...</font>
+         </pre>
+	        <p></p></td>
+    </tr>
+    <tr>
+        <td valign="top"><font face="arial"><b>FAQ</b></font><hr
+        size="1" noshade>
+        <p>
+         <font size="2" face="Arial">
+         <dl>
+          <dt><b>Does the driver support UPDATE and DELETE statements ?</b></dt>
+          <dd>No the driver does not. It is a read-only driver and as such only supports the SELECT statement.<br><br></dd>
+          <dt><b>Does the driver support WHERE and ORDER BY clauses ?</b></dt>
+          <dd>The driver does not support the ORDER BY clause. It does support the WHERE clause but only for a single field and only for the equals function. The field must be part of the SELECT statement.<br><br></dd>
+         </dl>
+         </font>
+        </p>
+        </td>
+    </tr>
     <tr>
         <td valign="top"><font face="arial"><b>More Information</b></font><hr
         size="1" noshade>
