@@ -33,7 +33,7 @@ import java.sql.*;
  *
  * @author     Jonathan Ackerman
  * @author     Michael Maraya
- * @version    $Id: CsvResultSet.java,v 1.10 2002/08/24 18:26:55 mmaraya Exp $
+ * @version    $Id: CsvResultSet.java,v 1.11 2002/09/04 17:02:13 mmaraya Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -276,8 +276,8 @@ public class CsvResultSet implements ResultSet {
      */
     public BigDecimal getBigDecimal(int columnIndex, int scale)
             throws SQLException {
-        String str = getString(columnIndex);
-        return (str == null) ? null : new BigDecimal(str);
+        // let getBigDecimal(int handle this for now
+        return getBigDecimal(columnIndex);
     }
 
     /**
@@ -934,8 +934,18 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
+        BigDecimal retval = null;
         String str = getString(columnIndex);
-        return (str == null) ? null : new BigDecimal(str);
+        if(str != null) {
+            try {
+                BigDecimal bd = new BigDecimal(str);
+            }
+            catch (NumberFormatException e) {
+                throw new SQLException("Could not convert '" + str + "' to " +
+                                       "a java.math.BigDecimal object");
+            }
+        }
+        return retval;
     }
 
     /**
@@ -950,8 +960,18 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public BigDecimal getBigDecimal(String columnName) throws SQLException {
+        BigDecimal retval = null;
         String str = getString(columnName);
-        return (str == null) ? null : new BigDecimal(str);
+        if(str != null) {
+            try {
+                BigDecimal bd = new BigDecimal(str);
+            }
+            catch (NumberFormatException e) {
+                throw new SQLException("Could not convert '" + str + "' to " +
+                                       "a java.math.BigDecimal object");
+            }
+        }
+        return retval;
     }
 
     //---------------------------------------------------------------------
