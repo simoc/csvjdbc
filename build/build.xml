@@ -5,7 +5,7 @@
  Build file for CsvJdbc. This uses Apache Ant v1.5
 
  Authors: Jonathan Ackerman, Michael Maraya
- Version: $Id: build.xml,v 1.13 2002/09/29 23:22:17 jackerm Exp $
+ Version: $Id: build.xml,v 1.14 2004/08/03 20:27:14 jackerm Exp $
 
  CsvJdbc - a JDBC driver for CSV files
  Copyright (C) 2001  Jonathan Ackerman
@@ -36,7 +36,7 @@
   <!-- Project-wide properties and paths                                   -->
   <!-- =================================================================== -->
   <property name="name" value="csvjdbc"/>
-  <property name="rel" value="r0-9"/>
+  <property name="rel" value="r1-0"/>
   <property name="rel.name" value="${name}-${rel}"/>
   <property name="build.dir" value="../build"/>
   <property name="src.dir" value="../src"/>
