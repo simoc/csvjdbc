@@ -5,7 +5,7 @@
  Build file for CsvJdbc. This uses Apache Ant v1.5
 
  Authors: Jonathan Ackerman, Michael Maraya
- Version: $Id: build.xml,v 1.12 2002/09/04 17:40:57 mmaraya Exp $
+ Version: $Id: build.xml,v 1.13 2002/09/29 23:22:17 jackerm Exp $
 
  CsvJdbc - a JDBC driver for CSV files
  Copyright (C) 2001  Jonathan Ackerman
@@ -36,7 +36,7 @@
   <!-- Project-wide properties and paths                                   -->
   <!-- =================================================================== -->
   <property name="name" value="csvjdbc"/>
-  <property name="rel" value="r0-8"/>
+  <property name="rel" value="r0-9"/>
   <property name="rel.name" value="${name}-${rel}"/>
   <property name="build.dir" value="../build"/>
   <property name="src.dir" value="../src"/>
@@ -95,7 +95,7 @@
   <!-- =================================================================== -->
   <target name="jar" depends="compile"
           description="Creates the jar file for the system">
-    <jar destfile="${jar.file}">
+    <jar jarfile="${jar.file}">
       <fileset dir="${class.dir}" includes="org/**/*.class"/>
     </jar>
   </target>
@@ -148,7 +148,7 @@
   <!-- =================================================================== -->
   <target name="release" depends="clean,test,jar,javadoc"
           description="Builds a release of the system">
-    <zip destfile="${rel.dir}/${rel.name}.zip">
+    <zip zipfile="${rel.dir}/${rel.name}.zip">
       <zipfileset dir="${javadoc.dir}" includes="**/*"
                   prefix="${rel.name}/javadoc"/>
       <zipfileset dir="${src.dir}" includes="**/*"
