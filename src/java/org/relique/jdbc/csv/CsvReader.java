@@ -29,7 +29,7 @@ import java.sql.SQLException;
  * @author     Stuart Mottram (fritto)
  * @author     Jason Bedell
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.8 2002/08/25 02:35:20 mmaraya Exp $
+ * @version    $Id: CsvReader.java,v 1.9 2002/09/04 17:03:23 mmaraya Exp $
  */
 
 public class CsvReader
@@ -92,7 +92,7 @@ public class CsvReader
     else
     {
       String headerLine = input.readLine();
-      columnNames = parseCsvLine(headerLine.toUpperCase());
+      columnNames = parseCsvLine(headerLine);
     }
   }
 
@@ -148,10 +148,9 @@ public class CsvReader
 
   public String getColumn(String columnName) throws SQLException
   {
-    columnName = columnName.toUpperCase();
     for (int loop = 0; loop < columnNames.length; loop++)
     {
-      if (columnName.equals(columnNames[loop]) || columnName.equals(getTableName() + "." + columnNames[loop]))
+      if (columnName.equalsIgnoreCase(columnNames[loop]) || columnName.equalsIgnoreCase(getTableName() + "." + columnNames[loop]))
       {
         return getColumn(loop);
       }
