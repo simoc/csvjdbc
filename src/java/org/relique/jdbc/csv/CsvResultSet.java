@@ -33,7 +33,7 @@ import java.sql.*;
  *
  * @author     Jonathan Ackerman
  * @author     Michael Maraya
- * @version    $Id: CsvResultSet.java,v 1.9 2002/08/24 16:50:12 mmaraya Exp $
+ * @version    $Id: CsvResultSet.java,v 1.10 2002/08/24 18:26:55 mmaraya Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -328,8 +328,8 @@ public class CsvResultSet implements ResultSet {
 
     /**
      * Retrieves the value of the designated column in the current row
-     * of this <code>ResultSet</code> object as
-     * a <code>java.sql.Timestamp</code> object in the Java programming language.
+     * of this <code>ResultSet</code> object as a
+     * <code>java.sql.Timestamp</code> object in the Java programming language.
      *
      * @param columnIndex the first column is 1, the second is 2, ...
      * @return the column value; if the value is SQL <code>NULL</code>, the
@@ -745,8 +745,8 @@ public class CsvResultSet implements ResultSet {
      *
      * @return the first <code>SQLWarning</code> object reported or
      *         <code>null</code> if there are none
-     * @exception SQLException if a database access error occurs or this method is
-     *            called on a closed result set
+     * @exception SQLException if a database access error occurs or this method
+     *            is called on a closed result set
      */
     public SQLWarning getWarnings() throws SQLException {
         throw new UnsupportedOperationException(
@@ -876,8 +876,8 @@ public class CsvResultSet implements ResultSet {
      *
      * @param columnName the name of the column
      * @return the column index of the given column name
-     * @exception SQLException if the <code>ResultSet</code> object
-     * does not contain <code>columnName</code> or a database access error occurs
+     * @exception SQLException if the <code>ResultSet</code> object does
+     * not contain <code>columnName</code> or a database access error occurs
      */
     public int findColumn(String columnName) throws SQLException {
         throw new UnsupportedOperationException(
@@ -1186,7 +1186,8 @@ public class CsvResultSet implements ResultSet {
      * Retrieves the fetch direction for this
      * <code>ResultSet</code> object.
      *
-     * @return the current fetch direction for this <code>ResultSet</code> object
+     * @return the current fetch direction for this <code>ResultSet</code>
+     *         object
      * @exception SQLException if a database access error occurs
      * @see #setFetchDirection
      */
@@ -1295,8 +1296,8 @@ public class CsvResultSet implements ResultSet {
      * detect holes in a result set.  The value returned depends on whether
      * or not this <code>ResultSet</code> object can detect deletions.
      *
-     * @return <code>true</code> if a row was deleted and deletions are detected;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if a row was deleted and deletions are
+     *         detected; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      *
      * @see DatabaseMetaData#deletesAreDetected
@@ -1496,9 +1497,9 @@ public class CsvResultSet implements ResultSet {
      * @param x the new column value
      * @exception SQLException if a database access error occurs
      */
-    public void updateDate(String columnIndex, Date x) throws SQLException {
+    public void updateDate(int columnIndex, Date x) throws SQLException {
         throw new UnsupportedOperationException(
-                "ResultSet.updateDate(String, Date) unsupported");
+                "ResultSet.updateDate(int, Date) unsupported");
     }
 
     /**
@@ -1627,6 +1628,454 @@ public class CsvResultSet implements ResultSet {
     }
 
     /**
+     * Updates the designated column with a <code>null</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateNull(String columnName) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateNull(String) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>boolean</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateBoolean(String columnName, boolean x)
+            throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateBoolean(String, boolean) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>byte</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateByte(String columnName, byte x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateByte(String, byte) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>short</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateShort(String columnName, short x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateShort(String, short) unsupported");
+    }
+
+    /**
+     * Updates the designated column with an <code>int</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateInt(String columnName, int x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateInt(String, int) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>long</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateLong(String columnName, long x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateLong(String, long) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>float	</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateFloat(String columnName, float x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateFloat(String, float) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>double</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateDouble(String columnName, double x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateDouble(String, double) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>java.sql.BigDecimal</code>
+     * value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateBigDecimal(String columnName, BigDecimal x)
+            throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateBigDecimal(String, BigDecimal) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>String</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateString(String columnName, String x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateString(String, String) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a byte array value.
+     *
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code>
+     * or <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateBytes(String columnName, byte[] x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateBytes(String, byte[]) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>java.sql.Date</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateDate(String columnName, Date x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateDate(String, Date) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>java.sql.Time</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateTime(String columnName, Time x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateTime(String, Time) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a <code>java.sql.Timestamp</code>
+     * value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateTimestamp(String columnName, Timestamp x)
+            throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateTimestamp(String, Timestamp) unsupported");
+    }
+
+    /**
+     * Updates the designated column with an ascii stream value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @param length the length of the stream
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateAsciiStream(String columnName, InputStream x, int length)
+            throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.updateAsciiStream" +
+                "(String, InputStream, int) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a binary stream value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @param length the length of the stream
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateBinaryStream(String columnName, InputStream x, int length)
+            throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.updateBinaryStream" +
+                "(String, InputStream, int) unsupported");
+    }
+
+    /**
+     * Updates the designated column with a character stream value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param reader the <code>java.io.Reader</code> object containing
+     *        the new column value
+     * @param length the length of the stream
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateCharacterStream(String columnName, Reader reader,
+            int length) throws SQLException {
+        throw new UnsupportedOperationException("ResultSet.updateCharacterStr" +
+                "eam(String, Reader, int) unsupported");
+    }
+
+    /**
+     * Updates the designated column with an <code>Object</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @param scale for <code>java.sql.Types.DECIMAL</code>
+     *  or <code>java.sql.Types.NUMERIC</code> types,
+     *  this is the number of digits after the decimal point.  For all other
+     *  types this value will be ignored.
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateObject(String columnName, Object x, int scale)
+            throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateObject(String, Object, int) unsupported");
+    }
+
+    /**
+     * Updates the designated column with an <code>Object</code> value.
+     * The updater methods are used to update column values in the
+     * current row or the insert row.  The updater methods do not
+     * update the underlying database; instead the <code>updateRow</code> or
+     * <code>insertRow</code> methods are called to update the database.
+     *
+     * @param columnName the name of the column
+     * @param x the new column value
+     * @exception SQLException if a database access error occurs
+     */
+    public void updateObject(String columnName, Object x) throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateObject(String, Object) unsupported");
+    }
+
+    /**
+     * Inserts the contents of the insert row into this
+     * <code>ResultSet</code> object and into the database.
+     * The cursor must be on the insert row when this method is called.
+     *
+     * @exception SQLException if a database access error occurs,
+     * if this method is called when the cursor is not on the insert row,
+     * or if not all of non-nullable columns in
+     * the insert row have been given a value
+     */
+    public void insertRow() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.insertRow() unsupported");
+    }
+
+    /**
+     * Updates the underlying database with the new contents of the
+     * current row of this <code>ResultSet</code> object.
+     * This method cannot be called when the cursor is on the insert row.
+     *
+     * @exception SQLException if a database access error occurs or
+     * if this method is called when the cursor is on the insert row
+     */
+    public void updateRow() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.updateRow() unsupported");
+    }
+
+    /**
+     * Deletes the current row from this <code>ResultSet</code> object
+     * and from the underlying database.  This method cannot be called when
+     * the cursor is on the insert row.
+     *
+     * @exception SQLException if a database access error occurs
+     * or if this method is called when the cursor is on the insert row
+     */
+    public void deleteRow() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.deleteRow() unsupported");
+    }
+
+    /**
+     * Refreshes the current row with its most recent value in
+     * the database.  This method cannot be called when
+     * the cursor is on the insert row.
+     *
+     * <P>The <code>refreshRow</code> method provides a way for an
+     * application to
+     * explicitly tell the JDBC driver to refetch a row(s) from the
+     * database.  An application may want to call <code>refreshRow</code> when
+     * caching or prefetching is being done by the JDBC driver to
+     * fetch the latest value of a row from the database.  The JDBC driver
+     * may actually refresh multiple rows at once if the fetch size is
+     * greater than one.
+     *
+     * <P> All values are refetched subject to the transaction isolation
+     * level and cursor sensitivity.  If <code>refreshRow</code> is called after
+     * calling an updater method, but before calling
+     * the method <code>updateRow</code>, then the
+     * updates made to the row are lost.  Calling the method
+     * <code>refreshRow</code> frequently will likely slow performance.
+     *
+     * @exception SQLException if a database access error
+     * occurs or if this method is called when the cursor is on the insert row
+     */
+    public void refreshRow() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.refreshRow() unsupported");
+    }
+
+    /**
+     * Cancels the updates made to the current row in this
+     * <code>ResultSet</code> object.
+     * This method may be called after calling an
+     * updater method(s) and before calling
+     * the method <code>updateRow</code> to roll back
+     * the updates made to a row.  If no updates have been made or
+     * <code>updateRow</code> has already been called, this method has no
+     * effect.
+     *
+     * @exception SQLException if a database access error
+     *            occurs or if this method is called when the cursor is
+     *            on the insert row
+     */
+    public void cancelRowUpdates() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.cancelRowUpdates() unsupported");
+    }
+
+    /**
+     * Moves the cursor to the insert row.  The current cursor position is
+     * remembered while the cursor is positioned on the insert row.
+     *
+     * The insert row is a special row associated with an updatable
+     * result set.  It is essentially a buffer where a new row may
+     * be constructed by calling the updater methods prior to
+     * inserting the row into the result set.
+     *
+     * Only the updater, getter,
+     * and <code>insertRow</code> methods may be
+     * called when the cursor is on the insert row.  All of the columns in
+     * a result set must be given a value each time this method is
+     * called before calling <code>insertRow</code>.
+     * An updater method must be called before a
+     * getter method can be called on a column value.
+     *
+     * @exception SQLException if a database access error occurs
+     * or the result set is not updatable
+     */
+    public void moveToInsertRow() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.moveToInsertRow() unsupported");
+    }
+
+    /**
+     * Moves the cursor to the remembered cursor position, usually the
+     * current row.  This method has no effect if the cursor is not on
+     * the insert row.
+     *
+     * @exception SQLException if a database access error occurs
+     * or the result set is not updatable
+     */
+    public void moveToCurrentRow() throws SQLException {
+        throw new UnsupportedOperationException(
+                "ResultSet.moveToeCurrentRow() unsupported");
+    }
+
+    /**
      * Retrieves the <code>Statement</code> object that produced this
      * <code>ResultSet</code> object.
      * If the result set was generated some other way, such as by a
@@ -1643,629 +2092,300 @@ public class CsvResultSet implements ResultSet {
     }
 
     /**
-     *Gets the object attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as an <code>Object</code>
+     * in the Java programming language.
+     * If the value is an SQL <code>NULL</code>,
+     * the driver returns a Java <code>null</code>.
+     * This method uses the given <code>Map</code> object
+     * for the custom mapping of the
+     * SQL structured or distinct type that is being retrieved.
      *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @return                   The object value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param i the first column is 1, the second is 2, ...
+     * @param map a <code>java.util.Map</code> object that contains the mapping
+     * from SQL type names to classes in the Java programming language
+     * @return an <code>Object</code> in the Java programming language
+     * representing the SQL value
+     * @exception SQLException if a database access error occurs
      */
-    public Object getObject(int p0, Map p1) throws SQLException
-    {
+    public Object getObject(int i, Map map) throws SQLException {
         throw new UnsupportedOperationException(
-                "ResultSet.getObject(int,Map) unsupported");
+                "ResultSet.getObject(int, Map) unsupported");
     }
 
-
     /**
-     *Gets the ref attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a <code>Ref</code> object
+     * in the Java programming language.
      *
-     * @param  p0                Description of Parameter
-     * @return                   The ref value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param i the first column is 1, the second is 2, ...
+     * @return a <code>Ref</code> object representing an SQL <code>REF</code>
+     *         value
+     * @exception SQLException if a database access error occurs
      */
-    public Ref getRef(int p0) throws SQLException
-    {
+    public Ref getRef(int i) throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getRef(int) unsupported");
     }
 
-
     /**
-     *Gets the blob attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a <code>Blob</code> object
+     * in the Java programming language.
      *
-     * @param  p0                Description of Parameter
-     * @return                   The blob value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param i the first column is 1, the second is 2, ...
+     * @return a <code>Blob</code> object representing the SQL
+     *         <code>BLOB</code> value in the specified column
+     * @exception SQLException if a database access error occurs
      */
-    public Blob getBlob(int p0) throws SQLException
-    {
+    public Blob getBlob(int i) throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getBlob(int) unsupported");
     }
 
-
     /**
-     *Gets the clob attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a <code>Clob</code> object
+     * in the Java programming language.
      *
-     * @param  p0                Description of Parameter
-     * @return                   The clob value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param i the first column is 1, the second is 2, ...
+     * @return a <code>Clob</code> object representing the SQL
+     *         <code>CLOB</code> value in the specified column
+     * @exception SQLException if a database access error occurs
      */
-    public Clob getClob(int p0) throws SQLException
-    {
+    public Clob getClob(int i) throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getClob(int) unsupported");
     }
 
-
     /**
-     *Gets the array attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as an <code>Array</code> object
+     * in the Java programming language.
      *
-     * @param  p0                Description of Parameter
-     * @return                   The array value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param i the first column is 1, the second is 2, ...
+     * @return an <code>Array</code> object representing the SQL
+     *         <code>ARRAY</code> value in the specified column
+     * @exception SQLException if a database access error occurs
      */
-    public Array getArray(int p0) throws SQLException
-    {
+    public Array getArray(int i) throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getArray(int) unsupported");
     }
 
-
     /**
-     *Gets the object attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as an <code>Object</code>
+     * in the Java programming language.
+     * If the value is an SQL <code>NULL</code>,
+     * the driver returns a Java <code>null</code>.
+     * This method uses the specified <code>Map</code> object for
+     * custom mapping if appropriate.
      *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @return                   The object value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param colName the name of the column from which to retrieve the value
+     * @param map a <code>java.util.Map</code> object that contains the mapping
+     * from SQL type names to classes in the Java programming language
+     * @return an <code>Object</code> representing the SQL value in the
+     *         specified column
+     * @exception SQLException if a database access error occurs
      */
-    public Object getObject(String p0, Map p1) throws SQLException
-    {
+    public Object getObject(String colName, Map map) throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getObject(String, Map) unsupported");
     }
 
-
     /**
-     *Gets the ref attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a <code>Ref</code> object
+     * in the Java programming language.
      *
-     * @param  p0                Description of Parameter
-     * @return                   The ref value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param colName the column name
+     * @return a <code>Ref</code> object representing the SQL <code>REF</code>
+     *         value in the specified column
+     * @exception SQLException if a database access error occurs
      */
-    public Ref getRef(String p0) throws SQLException
-    {
+    public Ref getRef(String colName) throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getRef(String) unsupported");
     }
 
-
     /**
-     *Gets the blob attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a <code>Blob</code> object
+     * in the Java programming language.
      *
-     * @param  p0                Description of Parameter
-     * @return                   The blob value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param colName the name of the column from which to retrieve the value
+     * @return a <code>Blob</code> object representing the SQL <code>BLOB</code>
+     *         value in the specified column
+     * @exception SQLException if a database access error occurs
      */
-    public Blob getBlob(String p0) throws SQLException
-    {
+    public Blob getBlob(String colName) throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getBlob(String) unsupported");
     }
 
-
     /**
-     *Gets the clob attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a <code>Clob</code> object
+     * in the Java programming language.
      *
-     * @param  p0                Description of Parameter
-     * @return                   The clob value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param colName the name of the column from which to retrieve the value
+     * @return a <code>Clob</code> object representing the SQL <code>CLOB</code>
+     * value in the specified column
+     * @exception SQLException if a database access error occurs
      */
-    public Clob getClob(String p0) throws SQLException
-    {
+    public Clob getClob(String colName) throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getClob(String) unsupported");
     }
 
-
     /**
-     *Gets the array attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as an <code>Array</code> object
+     * in the Java programming language.
      *
-     * @param  p0                Description of Parameter
-     * @return                   The array value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param colName the name of the column from which to retrieve the value
+     * @return an <code>Array</code> object representing the SQL
+     *         <code>ARRAY</code> value in the specified column
+     * @exception SQLException if a database access error occurs
      */
-    public Array getArray(String p0) throws SQLException
-    {
+    public Array getArray(String colName) throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getArray(String) unsupported");
     }
 
-
     /**
-     *Gets the date attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a <code>java.sql.Date</code>
+     * object in the Java programming language.
+     * This method uses the given calendar to construct an appropriate
+     * millisecond value for the date if the underlying database does not store
+     * timezone information.
      *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @return                   The date value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param cal the <code>java.util.Calendar</code> object
+     * to use in constructing the date
+     * @return the column value as a <code>java.sql.Date</code> object;
+     * if the value is SQL <code>NULL</code>,
+     * the value returned is <code>null</code> in the Java programming language
+     * @exception SQLException if a database access error occurs
      */
-    public Date getDate(int p0, Calendar p1) throws SQLException
-    {
+    public Date getDate(int columnIndex, Calendar cal) throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getDate(int, Calendar) unsupported");
     }
 
-
     /**
-     *Gets the date attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a <code>java.sql.Date</code>
+     * object in the Java programming language.
+     * This method uses the given calendar to construct an appropriate
+     * millisecond value for the date if the underlying database does not store
+     * timezone information.
      *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @return                   The date value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param columnName the SQL name of the column from which to retrieve the
+     *                   value
+     * @param cal the <code>java.util.Calendar</code> object
+     * to use in constructing the date
+     * @return the column value as a <code>java.sql.Date</code> object;
+     * if the value is SQL <code>NULL</code>,
+     * the value returned is <code>null</code> in the Java programming language
+     * @exception SQLException if a database access error occurs
      */
-    public Date getDate(String p0, Calendar p1) throws SQLException
-    {
+    public Date getDate(String columnName, Calendar cal) throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getDate(String, Calendar) unsupported");
     }
 
-
     /**
-     *Gets the time attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a <code>java.sql.Time</code>
+     * object in the Java programming language.
+     * This method uses the given calendar to construct an appropriate
+     * millisecond value for the time if the underlying database does not store
+     * timezone information.
      *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @return                   The time value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param cal the <code>java.util.Calendar</code> object
+     * to use in constructing the time
+     * @return the column value as a <code>java.sql.Time</code> object;
+     * if the value is SQL <code>NULL</code>,
+     * the value returned is <code>null</code> in the Java programming language
+     * @exception SQLException if a database access error occurs
      */
-    public Time getTime(int p0, Calendar p1) throws SQLException
-    {
+    public Time getTime(int columnIndex, Calendar cal) throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getTime(int, Calendar) unsupported");
     }
 
-
     /**
-     *Gets the time attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a <code>java.sql.Time</code>
+     * object in the Java programming language.
+     * This method uses the given calendar to construct an appropriate
+     * millisecond value for the time if the underlying database does not store
+     * timezone information.
      *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @return                   The time value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param columnName the SQL name of the column
+     * @param cal the <code>java.util.Calendar</code> object
+     * to use in constructing the time
+     * @return the column value as a <code>java.sql.Time</code> object;
+     * if the value is SQL <code>NULL</code>,
+     * the value returned is <code>null</code> in the Java programming language
+     * @exception SQLException if a database access error occurs
      */
-    public Time getTime(String p0, Calendar p1) throws SQLException
-    {
+    public Time getTime(String columnName, Calendar cal) throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getTime(String, Calendar) unsupported");
     }
 
-
     /**
-     *Gets the timestamp attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a
+     * <code>java.sql.Timestamp</code> object in the Java programming language.
+     * This method uses the given calendar to construct an appropriate
+     * millisecond value for the timestamp if the underlying database does not
+     * store timezone information.
      *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @return                   The timestamp value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param columnIndex the first column is 1, the second is 2, ...
+     * @param cal the <code>java.util.Calendar</code> object
+     * to use in constructing the timestamp
+     * @return the column value as a <code>java.sql.Timestamp</code> object;
+     * if the value is SQL <code>NULL</code>,
+     * the value returned is <code>null</code> in the Java programming language
+     * @exception SQLException if a database access error occurs
      */
-    public Timestamp getTimestamp(int p0, Calendar p1) throws SQLException
-    {
+    public Timestamp getTimestamp(int columnIndex, Calendar cal)
+            throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getTimestamp(int, Calendar) unsupported");
     }
 
-
     /**
-     *Gets the timestamp attribute of the CsvResultSet object
+     * Retrieves the value of the designated column in the current row
+     * of this <code>ResultSet</code> object as a <code>java.sql.Time</code>
+     * object in the Java programming language.
+     * This method uses the given calendar to construct an appropriate
+     * millisecond value for the time if the underlying database does not store
+     * timezone information.
      *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @return                   The timestamp value
-     * @exception  SQLException  Description of Exception
-     * @since
+     * @param columnName the SQL name of the column
+     * @param cal the <code>java.util.Calendar</code> object
+     * to use in constructing the time
+     * @return the column value as a <code>java.sql.Time</code> object;
+     * if the value is SQL <code>NULL</code>,
+     * the value returned is <code>null</code> in the Java programming language
+     * @exception SQLException if a database access error occurs
      */
-    public Timestamp getTimestamp(String p0, Calendar p1) throws SQLException
-    {
+    public Timestamp getTimestamp(String columnName, Calendar cal)
+           throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getTimestamp(String, Calendar) unsupported");
     }
 
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateDate(int p0, Date p1) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateDate(int, Date) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateNull(String p0) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateNull(String) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateBoolean(String p0, boolean p1) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateBoolean(String, boolean) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateByte(String p0, byte p1) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateByte(String, byte) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateShort(String p0, short p1) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateShort(String, short) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateInt(String p0, int p1) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateInt(String, int) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateLong(String p0, long p1) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateLong(String, long) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateFloat(String p0, float p1) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateFloat(String, float) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateDouble(String p0, double p1) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateDouble(String, double) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateBigDecimal(String p0, BigDecimal p1) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateBigDecimal(String, BigDecimal) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateString(String p0, String p1) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateString(String, String) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateBytes(String p0, byte[] p1) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateBytes(String, byte[]) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateTime(String p0, Time p1) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateTime(String, Time) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateTimestamp(String p0, Timestamp p1) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateTimestamp(String, Timestamp) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @param  p2                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateAsciiStream(String p0, InputStream p1, int p2) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateAsciiStream(String, InputStream, int) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @param  p2                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateBinaryStream(String p0, InputStream p1, int p2) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateBinaryStream(String, InputStream, int) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @param  p2                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateCharacterStream(String p0, Reader p1, int p2) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateCharacterStream(String, Reader, int)Not Supported !");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @param  p2                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateObject(String p0, Object p1, int p2) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateObject(String, Object, int) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @param  p0                Description of Parameter
-     * @param  p1                Description of Parameter
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateObject(String p0, Object p1) throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.updateObject(String, Object) unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void insertRow() throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.insertRow() unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void updateRow() throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.update() unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void deleteRow() throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.deleteRow() unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void refreshRow() throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.refreshRow() unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void cancelRowUpdates() throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.cancelRowUpdates() unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void moveToInsertRow() throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.moveToInsertRow() unsupported");
-    }
-
-
-    /**
-     *Description of the Method
-     *
-     * @exception  SQLException  Description of Exception
-     * @since
-     */
-    public void moveToCurrentRow() throws SQLException
-    {
-        throw new UnsupportedOperationException(
-                "ResultSet.moveToeCurrentRow() unsupported");
-    }
+    //---------------------------------------------------------------------
+    // CSV JDBC private helper methods
+    //---------------------------------------------------------------------
 
     /**
      * Perform pre-accessor method processing
