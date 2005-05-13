@@ -30,18 +30,15 @@ import java.util.Vector;
  *This class Class provides facility to navigate on the Result Set.
  *
  * @author     Chetan Gupta
- * @version    $Id: CSVScrollableReader.java,v 1.1 2004/04/09 11:17:13 gupta_chetan Exp $
+ * @version    $Id: CSVScrollableReader.java,v 1.2 2005/05/13 02:14:34 gupta_chetan Exp $
  */
 public class CSVScrollableReader extends CSVReaderAdapter {
   //---------------------------------------------------------------------
   // Traversal/Positioning
   //---------------------------------------------------------------------
   private static final int FIRST_RECORD = 0;
-  private ArrayList alRecordNos = null;
-  private int recordMappedToNo = FIRST_RECORD - 1;
-  private ArrayList alRecordsArray = null;
+  private ArrayList alRecords = null;
   private int iRecordNo = 0;
-  private int iRecordArrayNo = 0;
 
   /**
    *Constructor for the CsvReader object
@@ -51,8 +48,11 @@ public class CSVScrollableReader extends CSVReaderAdapter {
    * @since
    */
   public CSVScrollableReader(String fileName) throws Exception {
-    this(fileName, ',', false, null);
+    this(fileName, ',', false, null,
+    		'"', "",
+    		-1, null);
   }
+
 
   /**
    * Can be put in adpater apart from the last line
@@ -68,245 +68,62 @@ public class CSVScrollableReader extends CSVReaderAdapter {
    * @since
    */
   public CSVScrollableReader(
-    String fileName, char separator, boolean suppressHeaders, String charset)
-    throws java.lang.Exception {
+    String fileName, char separator, boolean suppressHeaders, String charset, 
+    char quoteChar, String headerLine,
+	int whereColumn, String whereValue)
+    		throws java.lang.Exception {
 
-    BufferedReader input = null;
-    String buf = null;
+  	super(fileName, separator, suppressHeaders, charset, quoteChar, headerLine);
 
-    this.separator = separator;
-    this.suppressHeaders = suppressHeaders;
-    this.fileName = fileName;
-    this.charset = charset;
-
-    if (charset != null) {
-      input =
-        new BufferedReader(
-          new InputStreamReader(new FileInputStream(fileName), charset));
-    } else {
-      input =
-        new BufferedReader(
-          new InputStreamReader(new FileInputStream(fileName)));
-    }
-
-    // input = new BufferedReader(new FileReader(fileName));
-    if (this.suppressHeaders) {
-      // No column names available. Read first data line and determine number of colums.
-      buf = input.readLine();
-
-      String[] data = parseCsvLine(buf);
-      columnNames = new String[data.length];
-
-      for (int i = 0; i < data.length; i++) {
-        columnNames[i] = "COLUMN" + String.valueOf(i + 1);
-      }
-
-      data = null;
-
-      // throw away.
-    } else {
-      String headerLine = input.readLine();
-      columnNames = parseCsvLine(headerLine);
-    }
-
-    loopAndFetchData(input, buf);
-    fillRecordNoMapping();
+    loopAndFetchData(input, buf, whereColumn, whereValue);
     iRecordNo = FIRST_RECORD - 1;
-    iRecordArrayNo = FIRST_RECORD - 1;
   }
 
-  /*
-   * Can be improved a lot,
-   *         a) lazy loading
-   *    b) integrate it with loopAndFetchData
-   */
-  private void fillRecordNoMapping() throws SQLException {
-    alRecordNos = new ArrayList();
-    iRecordNo = FIRST_RECORD - 1;
-    iRecordArrayNo = FIRST_RECORD - 1;
-
-    //Map the records in two step 
-    //1) Add the first record
-    if (alRecordsArray.size() > 1) {
-      alRecordNos.add(0, new Integer(0));
-    }
-
-    //2) After next the record No will be the last of previous record and 1 less then next record so, we only add the last record
-    //Add rest of the records after checking that its not the last records
-    for (
-      int i = 1;
-        readDataFirstTime() && ((alRecordsArray.size() - 1) > iRecordArrayNo);
-        i++) {
-      alRecordNos.add(i, new Integer(iRecordArrayNo + 1));
-    }
-  }
-
-  private boolean readDataFirstTime() throws SQLException {
-    columns = new String[columnNames.length];
-
+  private void loopAndFetchData(BufferedReader input, String buf, int whereColumn, String whereValue) throws SQLException {
+    alRecords = new ArrayList();
     String dataLine = null;
-    iRecordArrayNo++;
-
-    if (
-      (iRecordArrayNo < FIRST_RECORD)
-        || (iRecordArrayNo >= alRecordsArray.size())) {
-      return false;
-    }
-
-    dataLine = (String) alRecordsArray.get(iRecordArrayNo);
-    columns = parseCsvLine(dataLine);
-
-    return true;
-  }
-
-  /**
-   *Description of the Method
-   *
-   * @return                Description of the Returned Value
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
-  private boolean loopAndFetchData(BufferedReader input, String buf)
-    throws SQLException {
-    alRecordsArray = new ArrayList();
-
-    while (true) {
-      columns = new String[columnNames.length];
-
-      String dataLine = null;
-
-      try {
-        if (suppressHeaders && (buf != null)) {
-          // The buffer is not empty yet, so use this first.
-          dataLine = buf;
-          buf = null;
-        } else {
-          // read new line of data from input.
-          dataLine = input.readLine();
-        }
-
-        if (dataLine == null) {
-          input.close();
-
-          return false;
-        }
-      } catch (IOException e) {
+    try {
+	    while (true) {
+	        columns = new String[columnNames.length];
+	        dataLine = null;
+	        if (suppressHeaders && (buf != null)) {
+	          // The buffer is not empty yet, so use this first.
+	          dataLine = buf;
+	          buf = null;
+	        } else {
+	          // read new line of data from input.
+	          dataLine = input.readLine();
+	        }
+	        if (dataLine == null) {
+	          break;
+	        }
+	        columns = parseCsvLine(dataLine);
+	        if ( (whereColumn == -1) || // if no where clause
+	        		( (whereColumn != -1) && (columns[whereColumn].equals(whereValue))) // or satisfies where clause
+	        		) {
+		        alRecords.add(columns);
+	        } else {
+	        	//System.out.println("Skipping: " + columns[0]);
+	        	continue;
+	        }
+	    } 
+    } catch (IOException e) {
         throw new SQLException(e.toString());
-      }
-
-      alRecordsArray.add(dataLine);
+    } finally {
+    	try {
+			input.close();
+		} catch (IOException e) {}
     }
   }
-
-  // This code updated with code by Stuart Mottram to handle line breaks in fields
-  // see bug #492063
-  protected String[] parseCsvLine(String line) throws SQLException {
-    Vector values = new Vector();
-    boolean inQuotedString = false;
-    String value = "";
-    String orgLine = line;
-    int currentPos = 0;
-    int fullLine = 0;
-
-    while (fullLine == 0) {
-      currentPos = 0;
-      line += separator;
-
-      while (currentPos < line.length()) {
-//        System.out.println("=currentPos == " + currentPos);
-        char currentChar = line.charAt(currentPos);
-
-        if ((value.length() == 0) && (currentChar == '"') && !inQuotedString) {
-
-//          System.out.println("\n\n\n == ");
-//          System.out.println("-currentChar == " + currentChar);
-//          System.out.println("-currentPos == " + currentPos);
-//          System.out.println("-line == " + line);
-//          System.out.println("-inQuotedString == " + inQuotedString);
-
-          currentPos++;
-          inQuotedString = true;
-
-          continue;
-        }
-
-        if (currentChar == '"') {
-          char nextChar = line.charAt(currentPos + 1);
-
-          if (nextChar == '"') {
-            value += currentChar;
-            currentPos++;
-          } else {
-            if (!inQuotedString) {
-              throw new SQLException(
-                "Unexpected '\"' in position " + currentPos + ". Line="
-                + orgLine);
-            }
-
-            if (inQuotedString && (nextChar != separator)) {
-/*          System.out.println("\n\n\n == ");
-              System.out.println("currentChar == " + currentChar);
-          System.out.println("currentPos == " + currentPos);
-          System.out.println("line == " + line);
-              System.out.println("nextChar == " + nextChar);
-              System.out.println("inQuotedString == " + inQuotedString);
- */
-              throw new SQLException(
-                "Expecting " + separator + " in position " + (currentPos + 1)
-                + ". Line=" + orgLine);
-            }
-
-            values.add(value);
-            value = "";
-            inQuotedString = false;
-            currentPos++;
-          }
-        } else {
-          if (currentChar == separator) {
-            if (inQuotedString) {
-              value += currentChar;
-            } else {
-              values.add(value);
-              value = "";
-            }
-          } else {
-            value += currentChar;
-          }
-        }
-
-        currentPos++;
-      }
-
-      if (inQuotedString) {
-        // Remove extra , added at start
-        value = value.substring(0, value.length() - 1);
-
-        try {
-          //Changed By Chetan
-          //# line = input.readLine();
-          line = (String) alRecordsArray.get(++iRecordArrayNo);
-
-          //#} catch (IOException e) {
-          //#  throw new SQLException(e.toString());
-        } finally {
-        }
-      } else {
-        fullLine = 1;
-      }
-    }
-
-    String[] retVal = new String[values.size()];
-    values.copyInto(retVal);
-
-    return retVal;
-  }
-
+  
   /**
    * Method close.
    */
   public void close() {
-    alRecordNos = null;
-    alRecordsArray = null;
+    alRecords = null;
+    try {
+		input.close();
+	} catch (IOException e) {}
   }
 
   /**
@@ -360,7 +177,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
    * @exception SQLException if a database access error occurs
    */
   public boolean isAfterLast() throws SQLException {
-    return (getRecordNo() >= alRecordNos.size());
+    return (getRecordNo() >= alRecords.size());
   }
 
   /**
@@ -388,7 +205,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
    * @exception SQLException if a database access error occurs
    */
   public boolean isLast() throws SQLException {
-    return (getRecordNo() == (alRecordNos.size() - 1)); //as its 0 is considered
+    return (getRecordNo() == (alRecords.size() - 1)); //as its 0 is considered
   }
 
   /**
@@ -411,7 +228,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
    * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
    */
   public void afterLast() throws SQLException {
-    iRecordNo = alRecordNos.size();
+    iRecordNo = alRecords.size();
   }
 
   /**
@@ -439,7 +256,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
    * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
    */
   public boolean last() throws SQLException {
-    iRecordNo = (alRecordNos.size() - 1);
+    iRecordNo = (alRecords.size() - 1);
 
     return readData();
   }
@@ -453,7 +270,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
    */
   public int getRow() throws SQLException {
     return (((getRecordNo() < FIRST_RECORD)
-    || (getRecordNo() >= alRecordNos.size())) ? 0 : (getRecordNo() + 1));
+    || (getRecordNo() >= alRecords.size())) ? 0 : (getRecordNo() + 1));
   }
 
   /**
@@ -493,7 +310,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
     if (row >= 0) {
       iRecordNo = row - 1;
     } else {
-      iRecordNo = alRecordNos.size() + (row); //Note row is negative here so it will be subtracted
+      iRecordNo = alRecords.size() + (row); //Note row is negative here so it will be subtracted
     }
 
     return readData();
@@ -539,8 +356,8 @@ public class CSVScrollableReader extends CSVReaderAdapter {
   private int getRecordNo() {
     if (iRecordNo < FIRST_RECORD) {
       iRecordNo = FIRST_RECORD - 1;
-    } else if (iRecordNo >= alRecordNos.size()) {
-      iRecordNo = alRecordNos.size();
+    } else if (iRecordNo >= alRecords.size()) {
+      iRecordNo = alRecords.size();
     }
 
     return iRecordNo;
@@ -552,14 +369,11 @@ public class CSVScrollableReader extends CSVReaderAdapter {
     String dataLine = null;
 
     if (
-      (getRecordNo() < FIRST_RECORD) || (getRecordNo() >= alRecordNos.size())) {
+      (getRecordNo() < FIRST_RECORD) || (getRecordNo() >= alRecords.size())) {
       return false;
     }
 
-    // read new line of data from input.
-    iRecordArrayNo = ((Integer) alRecordNos.get(iRecordNo)).intValue();
-    dataLine = (String) alRecordsArray.get(iRecordArrayNo);
-    columns = parseCsvLine(dataLine);
+    columns = (String[])alRecords.get(iRecordNo);
 
     return true;
   }
