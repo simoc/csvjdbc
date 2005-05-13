@@ -27,7 +27,8 @@ import junit.framework.*;
  *
  * @author Jonathan Ackerman
  * @author JD Evora
- * @version $Id: TestCsvDriver.java,v 1.8 2004/08/09 21:56:55 jackerm Exp $
+ * @author Chetan Gupta
+ * @version $Id: TestCsvDriver.java,v 1.9 2005/05/13 02:19:32 gupta_chetan Exp $
  */
 public class TestCsvDriver extends TestCase
 {
@@ -314,7 +315,7 @@ public class TestCsvDriver extends TestCase
 			}
 		}
 		
-	/**
+	  /**
 	   * This creates several sentectes with were and tests they work
 	   */
 	  public void testWhereSimple() {
@@ -356,4 +357,21 @@ public class TestCsvDriver extends TestCase
 	      fail("Unexpected Exception: " + e);
 	    }
 	  }
+
+	  /**
+	   * This returns no results with where and tests if this still works
+	   */
+	  public void testWhereNoResults() {
+	  	try {
+	  	  Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+	      Statement stmt = conn.createStatement();
+	      ResultSet results = stmt.executeQuery("SELECT ID,Name FROM sample4 WHERE ID=05");
+	      assertFalse(results.next());   
+	  	}
+	    catch(Exception e)
+	    {
+	      fail("Unexpected Exception: " + e);
+	    }
+	  }
+	  
 }
