@@ -1,8 +1,31 @@
+/*
+CsvJdbc - a JDBC driver for CSV files
+Copyright (C) 2001  Jonathan Ackerman
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
 package test.org.relique.jdbc.csv;
 
 import java.sql.*;
 import junit.framework.TestCase;
 
+/**This class is used to test the CsvJdbc Scrollable driver.
+*
+* @author Chetan Gupta
+* @version $Id: TestScrollableDriver.java,v 1.3 2005/05/13 02:21:02 gupta_chetan Exp $
+*/
 public class TestScrollableDriver extends TestCase
 { 
   public static final String SAMPLE_FILES_LOCATION_PROPERTY="sample.files.location";
@@ -267,4 +290,81 @@ public class TestScrollableDriver extends TestCase
       fail("Unexpected Exception:" + e);
     }
   }
+
+  /**
+   * This checks for the scenario when due to where clause no rows are returned.
+   */
+  public void testWhereNoResults() {
+  	try {
+  	  Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+      // create a Statement object to execute the query with
+      Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+
+      ResultSet results = stmt.executeQuery("SELECT ID,Name FROM sample4 WHERE ID=05");
+      assertFalse("There are some junk records found", results.next());
+      results.last();
+      results.absolute(0);
+      assertNull("Invalid Id", results.getString("ID"));
+      assertNull("Invalid Name", results.getString("NAME"));
+      assertTrue("Is not last", results.isLast());
+      results.absolute(0);
+      results.previous();
+      assertTrue("Is not before first", results.isBeforeFirst());
+
+  	}
+    catch(Exception e)
+    {
+      fail("Unexpected Exception: " + e);
+    }
+  }
+
+  /**
+   * This tests for the scenario with where clause.
+   */
+  public void testWhereMultipleResult() {
+  	try {
+  	  Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+
+      Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+
+      
+      ResultSet results = stmt.executeQuery("SELECT ID, Name, Job FROM sample4 WHERE Job = Project Manager");
+      assertTrue(results.next());
+      assertEquals("The ID is wrong","01",results.getString("ID"));
+      assertTrue(results.next());
+      assertEquals("The ID is wrong","02",results.getString("ID"));
+      assertTrue(results.next());
+      assertEquals("The ID is wrong","04",results.getString("ID"));
+      assertTrue(results.first());
+      assertEquals("The ID is wrong when using first","01",results.getString("ID"));
+
+      assertTrue(results.absolute(3));
+      assertEquals("The ID is wrong","04",results.getString("ID"));
+     
+      assertTrue(results.last());
+      assertEquals("The ID is wrong","04",results.getString("ID"));
+      assertFalse("It has records after last", results.next());
+      assertTrue("Is not after Last", results.isAfterLast());
+      assertTrue(results.previous());
+      assertTrue(results.previous());
+      assertEquals("The ID is wrong","02",results.getString("ID"));
+      assertTrue(results.relative(0));
+      assertEquals("The ID is wrong","02",results.getString("ID"));
+      assertTrue(results.relative(1));
+      assertEquals("The ID is wrong","04",results.getString("ID"));
+      assertTrue("Is not last", results.isLast());
+      assertTrue(results.relative(-2));
+      assertEquals("The ID is wrong","01",results.getString("ID"));
+      assertTrue("Is not first", results.isFirst());
+      results.previous();
+      assertTrue("Is not before first", results.isBeforeFirst());
+
+  	}
+    catch(Exception e)
+    {
+      fail("Unexpected Exception: " + e);
+    }
+  }
+
+
 }
