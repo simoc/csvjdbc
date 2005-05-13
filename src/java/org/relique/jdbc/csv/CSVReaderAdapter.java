@@ -16,7 +16,14 @@
  */
 package org.relique.jdbc.csv;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.util.Vector;
 
 /**
  * This class an abstract class that contains the common functionality 
@@ -30,11 +37,13 @@ import java.sql.SQLException;
  * @author     Chetan Gupta
  * @author     Christoph Langer
  * @created    01 March 2004
- * @version    $Id: CSVReaderAdapter.java,v 1.3 2005/01/08 21:30:14 jackerm Exp $
+ * @version    $Id: CSVReaderAdapter.java,v 1.4 2005/05/13 02:08:13 gupta_chetan Exp $
  */
 
 public abstract class CSVReaderAdapter
 {
+  protected BufferedReader input;
+
   protected String[] columnNames;
   protected String[] columns;
   protected java.lang.String buf = null;
@@ -46,6 +55,49 @@ public abstract class CSVReaderAdapter
   protected String charset = null;
   protected char quoteChar = '"';
   
+  public CSVReaderAdapter () {
+  	
+  }
+  
+  public CSVReaderAdapter (String fileName, char separator, boolean suppressHeaders, String charset, char quoteChar, String headerLine) throws UnsupportedEncodingException, FileNotFoundException, IOException, SQLException {
+  	    this.separator = separator;
+  	    this.suppressHeaders = suppressHeaders;
+  	    this.fileName = fileName;
+  	    this.charset = charset;
+  	    this.quoteChar = quoteChar;
+  	    this.headerLine = headerLine;
+
+  	    if (charset != null) {
+  	        input = new BufferedReader(new InputStreamReader(new FileInputStream(fileName),charset));
+  	    } else {
+  	        input = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
+  	    }
+  	    // input = new BufferedReader(new FileReader(fileName));
+  	    if (this.suppressHeaders)
+  	    {
+  	      // column names specified by property are available. Read and use.
+  	      if (this.headerLine != null) {
+  	          columnNames = parseCsvLine(this.headerLine);          
+  	      } else {
+  	          // No column names available. Read first data line and determine number of colums.
+  	        buf = input.readLine();
+  	        String[] data = parseCsvLine(buf);
+  	        columnNames = new String[data.length];
+  	        for (int i = 0; i < data.length; i++)
+  	        {
+  	            columnNames[i] = "COLUMN" + String.valueOf(i+1);
+  	        }
+  	        data = null;
+  	        // throw away.
+  	      }
+  	    }
+  	    else
+  	    {
+  	      String tmpHeaderLine = input.readLine();
+  	      columnNames = parseCsvLine(tmpHeaderLine);
+  	    }
+  	}	
+
   /**
    *Gets the columnNames attribute of the CsvReader object
    *
@@ -117,7 +169,92 @@ public abstract class CSVReaderAdapter
 
   public abstract void close();
   
-  protected abstract String[] parseCsvLine(String line) throws SQLException;
+//  protected abstract String[] parseCsvLine(String line) throws SQLException;
+  // This code updated with code by Stuart Mottram to handle line breaks in fields
+  // see bug #492063
+  protected String[] parseCsvLine(String line) throws SQLException
+  {
+    Vector values = new Vector();
+    boolean inQuotedString = false;
+    String value = "";
+    String orgLine = line;
+    int currentPos = 0;
+    int fullLine = 0;
+    
+    while (fullLine == 0){
+        currentPos = 0;
+        line += separator;
+        while (currentPos < line.length())
+            {
+                char currentChar = line.charAt(currentPos);
+                if (value.length() == 0 && currentChar == quoteChar && !inQuotedString)
+                    {
+                        currentPos++;
+                        inQuotedString = true;
+                        continue;
+                    }
+                if (currentChar == quoteChar)
+                    {
+                        char nextChar = line.charAt(currentPos + 1);
+                        if (nextChar == quoteChar)
+                            {
+                                value += currentChar;
+                                currentPos++;
+                            }
+                        else
+                            {
+                                if (!inQuotedString)
+                                    {
+                                        throw new SQLException("Unexpected '" + quoteChar + "' in position " + currentPos + ". Line=" + orgLine);
+                                    }
+                                if (inQuotedString && nextChar != separator)
+                                    {
+                                        throw new SQLException("Expecting " + separator + " in position " + (currentPos + 1) + ". Line=" + orgLine);
+                                    }
+                                values.add(value);
+                                value = "";
+                                inQuotedString = false;
+                                currentPos++;
+                            }
+                    }
+                else
+                    {
+                        if (currentChar == separator)
+                            {
+                                if (inQuotedString)
+                                    {
+                                        value += currentChar;
+                                    }
+                                else
+                                    {
+                                        values.add(value);
+                                        value = "";
+                                    }
+                            }
+                        else
+                            {
+                                value += currentChar;
+                            }
+                    }
+                currentPos++;
+            }
+        if (inQuotedString){
+            // Remove extra , added at start
+            value = value.substring(0,value.length()-1);
+          	try {
+            	line = input.readLine();
+            } catch (IOException e) {
+                throw new SQLException(e.toString());
+            }
+        } else {
+            fullLine = 1;
+        }
+
+    }
+    String[] retVal = new String[values.size()];
+    values.copyInto(retVal);
+    return retVal;
+  }
 
     //---------------------------------------------------------------------
     // Traversal/Positioning
