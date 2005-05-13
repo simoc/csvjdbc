@@ -28,10 +28,10 @@ import java.util.Vector;
  * @author     Sander Brienen
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
- * @author     Gupta Chetan
+ * @author     Chetan Gupta
  * @author     Christoph Langer
  * @created    25 November 2001
- * @version    $Id: CsvStatement.java,v 1.10 2005/01/08 21:30:14 jackerm Exp $
+ * @version    $Id: CsvStatement.java,v 1.11 2005/05/13 02:16:02 gupta_chetan Exp $
  */
 
 public class CsvStatement implements Statement
@@ -349,7 +349,10 @@ public class CsvStatement implements Statement
             {
                 if (isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE){
                   reader = new CSVScrollableReader(fileName, connection.getSeperator(),
-                                       connection.isSuppressHeaders(), connection.getCharset());
+                                       connection.isSuppressHeaders(), connection.getCharset()
+                                       ,connection.getQuotechar(),connection.getHeaderline()
+                                       ,parser.getWhereColumn(), parser.getWhereValue()
+									   );
                 } else {
                   reader = new CsvReader(fileName, connection.getSeperator(),
                                        connection.isSuppressHeaders(), connection.getCharset(),connection.getQuotechar(),connection.getHeaderline());
