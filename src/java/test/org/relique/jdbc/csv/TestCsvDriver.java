@@ -28,7 +28,7 @@ import junit.framework.*;
  * @author Jonathan Ackerman
  * @author JD Evora
  * @author Chetan Gupta
- * @version $Id: TestCsvDriver.java,v 1.9 2005/05/13 02:19:32 gupta_chetan Exp $
+ * @version $Id: TestCsvDriver.java,v 1.10 2005/05/15 07:56:17 gupta_chetan Exp $
  */
 public class TestCsvDriver extends TestCase
 {
@@ -74,6 +74,10 @@ public class TestCsvDriver extends TestCase
       assertTrue("Incorrect NAME Value",results.getString("NAME").equals("\"S,\""));
       assertTrue("Incorrect EXTRA_FIELD Value",results.getString("EXTRA_FIELD").equals("F"));
 
+      assertTrue("Incorrect Column 1 Value",results.getString(1).equals("\"S,\""));
+      assertTrue("Incorrect Column 2 Value",results.getString(2).equals("Q123"));
+      assertTrue("Incorrect Column 3 Value",results.getString(3).equals("F"));
+
       results.next();
       assertTrue("Incorrect ID Value",results.getString("ID").equals("A123"));
       assertTrue("Incorrect NAME Value",results.getString("NAME").equals("Jonathan Ackerman"));
@@ -114,7 +118,7 @@ public class TestCsvDriver extends TestCase
     try
     {
       Properties props = new Properties();
-      props.put("fileExtension",".txt");
+      props.put("fileExtension","");
       props.put("separator",";");
 
       Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath,props);

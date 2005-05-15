@@ -32,7 +32,7 @@ import java.sql.SQLException;
  * @author     Christoph Langer
  * @author     Chetan Gupta
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.13 2005/05/13 02:05:48 gupta_chetan Exp $
+ * @version    $Id: CsvReader.java,v 1.14 2005/05/15 07:54:24 gupta_chetan Exp $
  */
 
 public class CsvReader extends CSVReaderAdapter
@@ -47,7 +47,7 @@ public class CsvReader extends CSVReaderAdapter
    */
   public CsvReader(String fileName) throws Exception
   {
-    this(fileName, ',', false,null, '"', "");
+    this(fileName, ',', false, null, '"', "", CsvDriver.DEFAULT_EXTENSION);
   }
 
   /**
@@ -62,10 +62,10 @@ public class CsvReader extends CSVReaderAdapter
    *    * @exception  java.lang.Exception  The exception description.
    * @since
    */
-  public CsvReader(String fileName, char separator, boolean suppressHeaders, String charset, char quoteChar, String headerLine)
+  public CsvReader(String fileName, char separator, boolean suppressHeaders, String charset, char quoteChar, String headerLine, String extension)
        throws java.lang.Exception
   {
-      super(fileName, separator, suppressHeaders, charset, quoteChar, headerLine);
+      super(fileName, separator, suppressHeaders, charset, quoteChar, headerLine, extension);
   }
   
 /**

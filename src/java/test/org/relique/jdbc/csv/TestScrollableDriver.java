@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 /**This class is used to test the CsvJdbc Scrollable driver.
 *
 * @author Chetan Gupta
-* @version $Id: TestScrollableDriver.java,v 1.3 2005/05/13 02:21:02 gupta_chetan Exp $
+* @version $Id: TestScrollableDriver.java,v 1.4 2005/05/15 07:56:17 gupta_chetan Exp $
 */
 public class TestScrollableDriver extends TestCase
 { 
@@ -303,13 +303,20 @@ public class TestScrollableDriver extends TestCase
       ResultSet results = stmt.executeQuery("SELECT ID,Name FROM sample4 WHERE ID=05");
       assertFalse("There are some junk records found", results.next());
       results.last();
+      assertNull("Invalid Id", results.getString("ID"));
+      assertNull("Invalid Name", results.getString("NAME"));
+      assertTrue("Is not last", results.isLast());
       results.absolute(0);
       assertNull("Invalid Id", results.getString("ID"));
       assertNull("Invalid Name", results.getString("NAME"));
       assertTrue("Is not last", results.isLast());
       results.absolute(0);
+      assertTrue("Is not before first", results.isBeforeFirst());
       results.previous();
       assertTrue("Is not before first", results.isBeforeFirst());
+      assertTrue("Is not last", results.isLast());
+      //Following throws exception
+      //assertTrue("Is not before first", results.isAfterLast());
 
   	}
     catch(Exception e)
@@ -318,6 +325,44 @@ public class TestScrollableDriver extends TestCase
     }
   }
 
+  /**
+   * This checks for the scenario when we have single record
+   */
+  public void testWhereSingleRecord() {
+  	try {
+  	  Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+      // create a Statement object to execute the query with
+      Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+
+      ResultSet results = stmt.executeQuery("SELECT ID,Name FROM singlerecord");
+      assertTrue(results.last());
+      assertEquals("Invalid Id", "A123", results.getString("ID"));
+      assertEquals("Invalid Name", "Jonathan Ackerman", results.getString("NAME"));
+      results.absolute(1);
+      assertEquals("Invalid Id", "A123", results.getString("ID"));
+      assertEquals("Invalid Name", "Jonathan Ackerman", results.getString("NAME"));
+      assertTrue("Is not last", results.isLast());
+      assertTrue("Is not first", results.isFirst());
+      results.absolute(0);
+      assertTrue("Is not before first", results.isBeforeFirst());
+      results.previous();
+      assertTrue("Is not before first", results.isBeforeFirst());
+      assertTrue(results.next());
+      assertEquals("Invalid Id", "A123", results.getString("ID"));
+      assertEquals("Invalid Name", "Jonathan Ackerman", results.getString("NAME"));
+      results.relative(1);
+      assertTrue("Is not after last", results.isAfterLast());
+      results.previous();
+      assertEquals("Invalid Id", "A123", results.getString("ID"));
+      assertEquals("Invalid Name", "Jonathan Ackerman", results.getString("NAME"));
+  	}
+    catch(Exception e)
+    {
+      fail("Unexpected Exception: " + e);
+    }
+  }
+
+  
   /**
    * This tests for the scenario with where clause.
    */

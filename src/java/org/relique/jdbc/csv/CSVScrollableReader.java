@@ -30,7 +30,7 @@ import java.util.Vector;
  *This class Class provides facility to navigate on the Result Set.
  *
  * @author     Chetan Gupta
- * @version    $Id: CSVScrollableReader.java,v 1.2 2005/05/13 02:14:34 gupta_chetan Exp $
+ * @version    $Id: CSVScrollableReader.java,v 1.3 2005/05/15 07:55:26 gupta_chetan Exp $
  */
 public class CSVScrollableReader extends CSVReaderAdapter {
   //---------------------------------------------------------------------
@@ -49,7 +49,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
    */
   public CSVScrollableReader(String fileName) throws Exception {
     this(fileName, ',', false, null,
-    		'"', "",
+    		'"', "", CsvDriver.DEFAULT_EXTENSION,
     		-1, null);
   }
 
@@ -69,11 +69,11 @@ public class CSVScrollableReader extends CSVReaderAdapter {
    */
   public CSVScrollableReader(
     String fileName, char separator, boolean suppressHeaders, String charset, 
-    char quoteChar, String headerLine,
+    char quoteChar, String headerLine, String extension,
 	int whereColumn, String whereValue)
     		throws java.lang.Exception {
 
-  	super(fileName, separator, suppressHeaders, charset, quoteChar, headerLine);
+  	super(fileName, separator, suppressHeaders, charset, quoteChar, headerLine, extension);
 
     loopAndFetchData(input, buf, whereColumn, whereValue);
     iRecordNo = FIRST_RECORD - 1;

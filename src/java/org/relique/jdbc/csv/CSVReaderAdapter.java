@@ -37,7 +37,7 @@ import java.util.Vector;
  * @author     Chetan Gupta
  * @author     Christoph Langer
  * @created    01 March 2004
- * @version    $Id: CSVReaderAdapter.java,v 1.4 2005/05/13 02:08:13 gupta_chetan Exp $
+ * @version    $Id: CSVReaderAdapter.java,v 1.5 2005/05/15 07:55:53 gupta_chetan Exp $
  */
 
 public abstract class CSVReaderAdapter
@@ -54,18 +54,22 @@ public abstract class CSVReaderAdapter
   protected String fileName;
   protected String charset = null;
   protected char quoteChar = '"';
+  protected String extension = CsvDriver.DEFAULT_EXTENSION;
   
   public CSVReaderAdapter () {
   	
   }
   
-  public CSVReaderAdapter (String fileName, char separator, boolean suppressHeaders, String charset, char quoteChar, String headerLine) throws UnsupportedEncodingException, FileNotFoundException, IOException, SQLException {
+  public CSVReaderAdapter (String fileName, char separator, boolean suppressHeaders, 
+  			String charset, char quoteChar, String headerLine, String extension) 
+  	throws UnsupportedEncodingException, FileNotFoundException, IOException, SQLException {
   	    this.separator = separator;
   	    this.suppressHeaders = suppressHeaders;
   	    this.fileName = fileName;
   	    this.charset = charset;
   	    this.quoteChar = quoteChar;
   	    this.headerLine = headerLine;
+  	    this.extension = extension;
 
   	    if (charset != null) {
   	        input = new BufferedReader(new InputStreamReader(new FileInputStream(fileName),charset));
@@ -120,7 +124,7 @@ public abstract class CSVReaderAdapter
             lastSlash = i;
             break;
           }
-      tableName = fileName.substring(lastSlash+1, fileName.length() - 4);
+      tableName = fileName.substring(lastSlash+1, fileName.length() - (extension==null?0:extension.length()));
       return tableName;
   }
 
