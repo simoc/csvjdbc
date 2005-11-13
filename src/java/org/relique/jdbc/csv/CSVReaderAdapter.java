@@ -37,7 +37,7 @@ import java.util.Vector;
  * @author     Chetan Gupta
  * @author     Christoph Langer
  * @created    01 March 2004
- * @version    $Id: CSVReaderAdapter.java,v 1.5 2005/05/15 07:55:53 gupta_chetan Exp $
+ * @version    $Id: CSVReaderAdapter.java,v 1.6 2005/11/13 18:14:58 jackerm Exp $
  */
 
 public abstract class CSVReaderAdapter
@@ -246,7 +246,7 @@ public abstract class CSVReaderAdapter
             // Remove extra , added at start
             value = value.substring(0,value.length()-1);
           	try {
-            	line = input.readLine();
+            	line = "\n" + input.readLine();
             } catch (IOException e) {
                 throw new SQLException(e.toString());
             }
