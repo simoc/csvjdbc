@@ -32,7 +32,7 @@ import java.sql.SQLException;
  * @author     Christoph Langer
  * @author     Chetan Gupta
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.14 2005/05/15 07:54:24 gupta_chetan Exp $
+ * @version    $Id: CsvReader.java,v 1.15 2005/11/13 18:32:58 jackerm Exp $
  */
 
 public class CsvReader extends CSVReaderAdapter
@@ -47,7 +47,7 @@ public class CsvReader extends CSVReaderAdapter
    */
   public CsvReader(String fileName) throws Exception
   {
-    this(fileName, ',', false, null, '"', "", CsvDriver.DEFAULT_EXTENSION);
+    this(fileName, ',', false, null, '"', "", CsvDriver.DEFAULT_EXTENSION, true);
   }
 
   /**
@@ -62,10 +62,10 @@ public class CsvReader extends CSVReaderAdapter
    *    * @exception  java.lang.Exception  The exception description.
    * @since
    */
-  public CsvReader(String fileName, char separator, boolean suppressHeaders, String charset, char quoteChar, String headerLine, String extension)
+  public CsvReader(String fileName, char separator, boolean suppressHeaders, String charset, char quoteChar, String headerLine, String extension, boolean trimHeaders)
        throws java.lang.Exception
   {
-      super(fileName, separator, suppressHeaders, charset, quoteChar, headerLine, extension);
+      super(fileName, separator, suppressHeaders, charset, quoteChar, headerLine, extension, trimHeaders);
   }
   
 /**
@@ -94,7 +94,7 @@ public class CsvReader extends CSVReaderAdapter
     } catch (IOException e) {
         throw new SQLException(e.toString());
     }
-    columns = parseCsvLine(dataLine);
+    columns = parseCsvLine(dataLine, false);
     return true;
   }
 

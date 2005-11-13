@@ -30,7 +30,7 @@ import java.util.Vector;
  *This class Class provides facility to navigate on the Result Set.
  *
  * @author     Chetan Gupta
- * @version    $Id: CSVScrollableReader.java,v 1.3 2005/05/15 07:55:26 gupta_chetan Exp $
+ * @version    $Id: CSVScrollableReader.java,v 1.4 2005/11/13 18:32:58 jackerm Exp $
  */
 public class CSVScrollableReader extends CSVReaderAdapter {
   //---------------------------------------------------------------------
@@ -49,7 +49,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
    */
   public CSVScrollableReader(String fileName) throws Exception {
     this(fileName, ',', false, null,
-    		'"', "", CsvDriver.DEFAULT_EXTENSION,
+    		'"', "", CsvDriver.DEFAULT_EXTENSION, true, 
     		-1, null);
   }
 
@@ -69,11 +69,11 @@ public class CSVScrollableReader extends CSVReaderAdapter {
    */
   public CSVScrollableReader(
     String fileName, char separator, boolean suppressHeaders, String charset, 
-    char quoteChar, String headerLine, String extension,
+    char quoteChar, String headerLine, String extension,boolean trimHeaders,
 	int whereColumn, String whereValue)
     		throws java.lang.Exception {
 
-  	super(fileName, separator, suppressHeaders, charset, quoteChar, headerLine, extension);
+  	super(fileName, separator, suppressHeaders, charset, quoteChar, headerLine, extension, trimHeaders);
 
     loopAndFetchData(input, buf, whereColumn, whereValue);
     iRecordNo = FIRST_RECORD - 1;
@@ -97,7 +97,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
 	        if (dataLine == null) {
 	          break;
 	        }
-	        columns = parseCsvLine(dataLine);
+	        columns = parseCsvLine(dataLine, false);
 	        if ( (whereColumn == -1) || // if no where clause
 	        		( (whereColumn != -1) && (columns[whereColumn].equals(whereValue))) // or satisfies where clause
 	        		) {

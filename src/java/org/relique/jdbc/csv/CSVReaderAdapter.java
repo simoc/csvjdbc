@@ -37,7 +37,7 @@ import java.util.Vector;
  * @author     Chetan Gupta
  * @author     Christoph Langer
  * @created    01 March 2004
- * @version    $Id: CSVReaderAdapter.java,v 1.6 2005/11/13 18:14:58 jackerm Exp $
+ * @version    $Id: CSVReaderAdapter.java,v 1.7 2005/11/13 18:32:58 jackerm Exp $
  */
 
 public abstract class CSVReaderAdapter
@@ -55,13 +55,14 @@ public abstract class CSVReaderAdapter
   protected String charset = null;
   protected char quoteChar = '"';
   protected String extension = CsvDriver.DEFAULT_EXTENSION;
+  protected boolean trimHeaders = true;
   
   public CSVReaderAdapter () {
   	
   }
   
   public CSVReaderAdapter (String fileName, char separator, boolean suppressHeaders, 
-  			String charset, char quoteChar, String headerLine, String extension) 
+  			String charset, char quoteChar, String headerLine, String extension, boolean trimHeaders) 
   	throws UnsupportedEncodingException, FileNotFoundException, IOException, SQLException {
   	    this.separator = separator;
   	    this.suppressHeaders = suppressHeaders;
@@ -70,6 +71,7 @@ public abstract class CSVReaderAdapter
   	    this.quoteChar = quoteChar;
   	    this.headerLine = headerLine;
   	    this.extension = extension;
+        this.trimHeaders = trimHeaders;
 
   	    if (charset != null) {
   	        input = new BufferedReader(new InputStreamReader(new FileInputStream(fileName),charset));
@@ -81,11 +83,11 @@ public abstract class CSVReaderAdapter
   	    {
   	      // column names specified by property are available. Read and use.
   	      if (this.headerLine != null) {
-  	          columnNames = parseCsvLine(this.headerLine);          
+  	          columnNames = parseCsvLine(this.headerLine, trimHeaders);          
   	      } else {
   	          // No column names available. Read first data line and determine number of colums.
   	        buf = input.readLine();
-  	        String[] data = parseCsvLine(buf);
+  	        String[] data = parseCsvLine(buf,false);
   	        columnNames = new String[data.length];
   	        for (int i = 0; i < data.length; i++)
   	        {
@@ -98,7 +100,7 @@ public abstract class CSVReaderAdapter
   	    else
   	    {
   	      String tmpHeaderLine = input.readLine();
-  	      columnNames = parseCsvLine(tmpHeaderLine);
+  	      columnNames = parseCsvLine(tmpHeaderLine, trimHeaders);
   	    }
   	}	
 
@@ -176,7 +178,7 @@ public abstract class CSVReaderAdapter
 //  protected abstract String[] parseCsvLine(String line) throws SQLException;
   // This code updated with code by Stuart Mottram to handle line breaks in fields
   // see bug #492063
-  protected String[] parseCsvLine(String line) throws SQLException
+  protected String[] parseCsvLine(String line, boolean trimValues) throws SQLException
   {
     Vector values = new Vector();
     boolean inQuotedString = false;
@@ -215,7 +217,14 @@ public abstract class CSVReaderAdapter
                                     {
                                         throw new SQLException("Expecting " + separator + " in position " + (currentPos + 1) + ". Line=" + orgLine);
                                     }
-                                values.add(value);
+                                if (trimValues)
+                                {
+                                  values.add(value.trim());
+                                }
+                                else
+                                {
+                                  values.add(value);
+                                }
                                 value = "";
                                 inQuotedString = false;
                                 currentPos++;
@@ -231,7 +240,14 @@ public abstract class CSVReaderAdapter
                                     }
                                 else
                                     {
-                                        values.add(value);
+                                        if (trimValues)
+                                        {
+                                          values.add(value.trim());
+                                        }
+                                        else
+                                        {
+                                          values.add(value);
+                                        }
                                         value = "";
                                     }
                             }

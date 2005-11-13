@@ -31,7 +31,7 @@ import java.util.Vector;
  * @author     Chetan Gupta
  * @author     Christoph Langer
  * @created    25 November 2001
- * @version    $Id: CsvStatement.java,v 1.12 2005/05/15 07:55:26 gupta_chetan Exp $
+ * @version    $Id: CsvStatement.java,v 1.13 2005/11/13 18:32:58 jackerm Exp $
  */
 
 public class CsvStatement implements Statement
@@ -350,13 +350,13 @@ public class CsvStatement implements Statement
                 if (isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE){
                   reader = new CSVScrollableReader(fileName, connection.getSeperator(),
                                        connection.isSuppressHeaders(), connection.getCharset()
-                                       ,connection.getQuotechar(),connection.getHeaderline(), connection.getExtension()
+                                       ,connection.getQuotechar(),connection.getHeaderline(), connection.getExtension(), connection.getTrimHeaders()
                                        ,parser.getWhereColumn(), parser.getWhereValue()
 									   );
                 } else {
                   reader = new CsvReader(fileName, connection.getSeperator()
                                        ,connection.isSuppressHeaders(), connection.getCharset()
-									   ,connection.getQuotechar(),connection.getHeaderline(), connection.getExtension());
+									   ,connection.getQuotechar(),connection.getHeaderline(), connection.getExtension(),connection.getTrimHeaders());
                 }
             }
         catch (Exception e)

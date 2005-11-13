@@ -28,7 +28,7 @@ import java.io.File;
  * @author     JD Evora
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvDriver.java,v 1.6 2005/01/08 21:30:13 jackerm Exp $
+ * @version    $Id: CsvDriver.java,v 1.7 2005/11/13 18:32:58 jackerm Exp $
  */
 
 public class CsvDriver implements Driver
@@ -39,11 +39,13 @@ public class CsvDriver implements Driver
   public static final char DEFAULT_QUOTECHAR ='"';
   public static final String DEFAULT_HEADERLINE = null;
   public static final boolean DEFAULT_SUPPRESS = false;
+  public static final boolean DEFAULT_TRIM_HEADERS = true;
   public static final String FILE_EXTENSION="fileExtension";
   public static final String SEPARATOR="separator";
   public static final String QUOTECHAR="quotechar";
   public static final String HEADERLINE="headerline";
   public static final String SUPPRESS_HEADERS="suppressHeaders";
+  public static final String TRIM_HEADERS="trimHeaders";
   public static final String CHARSET = "charset";
   private final static String URL_PREFIX = "jdbc:relique:csv:";
   private Properties info = null;

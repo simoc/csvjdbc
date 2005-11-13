@@ -39,7 +39,7 @@ import java.util.Vector;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.13 2005/01/08 21:30:14 jackerm Exp $
+ * @version    $Id: CsvConnection.java,v 1.14 2005/11/13 18:32:58 jackerm Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -60,6 +60,9 @@ public class CsvConnection implements Connection {
 
     /** Should headers be suppressed */
     private boolean suppressHeaders = CsvDriver.DEFAULT_SUPPRESS;
+    
+    /** Should headers be trimmed */
+    private boolean trimHeaders = CsvDriver.DEFAULT_TRIM_HEADERS;
 
     /** Collection of all created Statements */
     private Vector statements = new Vector();
@@ -785,5 +788,13 @@ public class CsvConnection implements Connection {
      */
     protected String getCharset() {
         return charset;
+    }
+    
+    /**
+     * Accessor method for the trimHeaders property
+     * @return current value for the trimHeaders property
+     */
+    public boolean getTrimHeaders() {
+        return trimHeaders;
     }
 }
