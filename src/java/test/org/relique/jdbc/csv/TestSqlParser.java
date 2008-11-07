@@ -27,7 +27,7 @@ import junit.framework.*;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.4 2008/11/07 11:29:30 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.5 2008/11/07 15:36:42 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -152,6 +152,7 @@ public class TestSqlParser extends TestCase {
 		parser.parse("SELECT * FROM test WHERE FLD_A = '20' AND FLD_B = 'AA'");
 		assertEquals("Incorrect table name", "test", parser.getTableName());
 		whereClause = parser.getWhereClause();
+		assertNotNull("query has a WHERE clause", whereClause);
 
 		assertEquals("Incorrect WHERE operator (level1)", "AND",
 				(String) whereClause.get("operator"));

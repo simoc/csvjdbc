@@ -18,10 +18,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package test.org.relique.jdbc.csv;
 
-import java.io.*;
-import java.sql.*;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
-import junit.framework.*;
+
+import junit.framework.TestCase;
 
 /**
  * This class is used to test the CsvJdbc driver.
@@ -30,8 +40,7 @@ import junit.framework.*;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.10 2005/05/15 07:56:17 gupta_chetan Exp
- *          $
+ * @version $Id: TestCsvDriver.java,v 1.12 2008/11/07 15:36:42 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -207,6 +216,58 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
+	public void testColumnTypesUserSpecified() throws SQLException, ParseException {
+		Properties props = new Properties();
+		props.put("columnTypes", "java.lang.Integer,java.lang.String,java.lang.String,java.util.Date");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT ID, Name, Job, Start "
+				+ "FROM sample5 WHERE Job = 'Project Manager'");
+		
+		assertTrue(results.next());
+		DateFormat dfp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		assertEquals("Integer column ID is wrong", new Integer(1), results.getObject("id"));
+		assertEquals("Integer column 1 is wrong", new Integer(1), results.getObject(1));
+		assertEquals("Date column Start is wrong", dfp.parse(results.getString("start")), results.getObject("start"));
+		assertEquals("Date column 4 is wrong", dfp.parse(results.getString("start")), results.getObject(4));
+		assertEquals("The Name is wrong", "Juan Pablo Morales", results.getObject("name"));
+	}
+	
+	public void testColumnTypesInferFromData() throws SQLException, ParseException {
+		Properties props = new Properties();
+		props.put("columnTypes", "");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT ID, Name, Job, Start "
+				+ "FROM sample5 WHERE Job = 'Project Manager'");
+		
+		assertTrue(results.next());
+		DateFormat dfp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		assertEquals("Integer Column ID is wrong", new Integer(1), results.getObject("id"));
+		assertEquals("Integer Column 1 is wrong", new Integer(1), results.getObject(1));
+		assertEquals("Date Column start is wrong", dfp.parse(results.getString("start")), results.getObject("start"));
+		assertEquals("The Name is wrong", "Juan Pablo Morales", results.getObject("name"));
+	}
+	
+	public void testColumnTypesDefaultBehaviour() throws SQLException, ParseException {
+		Properties props = new Properties();
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT ID, Name, Job, Start "
+				+ "FROM sample5 WHERE Job = 'Project Manager'");
+		
+		assertTrue(results.next());
+		assertEquals("the start time is wrong", "2001-01-02 12:30:00", results.getObject("start"));
+		assertEquals("The ID is wrong", "01", results.getObject("id"));
+		assertEquals("The Name is wrong", "Juan Pablo Morales", results.getObject("name"));
+	}
+	
 	public void testMetadataWithSupressedHeaders() throws SQLException {
 		Properties props = new Properties();
 		props.put("suppressHeaders", "true");
@@ -350,7 +411,11 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(results.next());
 		assertEquals("The name is wrong", "Mauricio Hernandez", results
 				.getString("Name"));
-		assertNull("Should not find the column 'Job'", results.getString("Job"));
+		try{
+			assertNull(results.getString("Job"));
+			fail("Should not find the column 'Job'");
+		} catch(SQLException e) {
+		}
 		assertTrue(!results.next());
 	}
 
@@ -406,6 +471,8 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The ID is wrong", "02", results.getString("i"));
 		assertEquals("The name is wrong", "Mauricio Hernandez", results
 				.getString("N"));
+		assertEquals("The name is wrong", "Mauricio Hernandez", results
+				.getString(2));
 		assertEquals("The job is wrong", "Project Manager", results
 				.getString("J"));
 		assertTrue(results.next());
@@ -423,6 +490,7 @@ public class TestCsvDriver extends TestCase {
 				.executeQuery("SELECT Job j,ID i,Name n, 0 c FROM sample4 WHERE I='02'");
 		assertTrue("no results found - should be one", results.next());
 		assertEquals("The literal c is wrong", "0", results.getString("c"));
+		assertEquals("The literal c is wrong", "0", results.getString(4));
 		assertEquals("The name is wrong", "Mauricio Hernandez", results
 				.getString("N"));
 		assertEquals("The job is wrong", "Project Manager", results

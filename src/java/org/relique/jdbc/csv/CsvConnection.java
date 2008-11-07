@@ -46,7 +46,7 @@ import java.util.Vector;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.15 2008/11/07 11:29:29 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.16 2008/11/07 15:36:41 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -71,10 +71,13 @@ public class CsvConnection implements Connection {
     /** Should headers be trimmed */
     private boolean trimHeaders = CsvDriver.DEFAULT_TRIM_HEADERS;
 
+    /** how to interpret string values before returning them to the caller */
+    private String columnTypes = CsvDriver.DEFAULT_COLUMN_TYPES;
+
     /** Collection of all created Statements */
     private Vector statements = new Vector();
 
-    /** Charset that should be used to read the files */
+    /** CharSet that should be used to read the files */
     private String charset = null;
 
     /** Stores whether this Connection is closed or not */
@@ -126,6 +129,10 @@ public class CsvConnection implements Connection {
             // default charset
             if (info.getProperty(CsvDriver.CHARSET) != null) {
                 charset = info.getProperty(CsvDriver.CHARSET);
+            }
+            // default charset
+            if (info.getProperty(CsvDriver.COLUMN_TYPES) != null) {
+                columnTypes = info.getProperty(CsvDriver.COLUMN_TYPES);
             }
         }
     }
@@ -872,5 +879,13 @@ public class CsvConnection implements Connection {
 	public Object unwrap(Class arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void setColumnTypes(String columnTypes) {
+		this.columnTypes = columnTypes;
+	}
+
+	public String getColumnTypes() {
+		return columnTypes;
 	}
 }

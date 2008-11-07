@@ -23,9 +23,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +42,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.17 2008/11/07 11:29:30 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.18 2008/11/07 15:36:41 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -76,10 +81,11 @@ public class CsvResultSet implements ResultSet {
      * @param reader Helper class that performs the actual file reads
      * @param tableName Table referenced by the Statement
      * @param columns Array of available columns for referenced table
+     * @throws ClassNotFoundException 
      */
     protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
-                           String tableName, Column[] columns, int isScrollable) {
-    	this(statement,reader,tableName,columns,isScrollable,-1,null);
+                           String tableName, Column[] columns, int isScrollable) throws ClassNotFoundException {
+    	this(statement,reader,tableName,columns,isScrollable,-1,null, "java.lang.String");
     }
     /**
      * Constructor for the CsvResultSet object 
@@ -90,10 +96,12 @@ public class CsvResultSet implements ResultSet {
      * @param columns Array of available columns for referenced table
      * @param whereColumn The zero base number for the column
      * @param whereValue The string to be sought for
+     * @param columnTypes A comma-separated string specifying the type of the i-th column.
+     * @throws ClassNotFoundException in case the typed columns fail
      */
     protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
 			String tableName, Column[] columns, int isScrollable,
-			int whereColumn, String whereValue) {
+			int whereColumn, String whereValue, String columnTypes) throws ClassNotFoundException {
         this.statement = statement;
         this.isScrollable = isScrollable;
         this.reader = reader;
@@ -129,6 +137,17 @@ public class CsvResultSet implements ResultSet {
 						.intValue());
 			}
             
+        }
+        if (columnTypes.contains(",")){
+        	String[] typeNames = columnTypes.split(",");
+        	for(int i=0; i<typeNames.length; i++){
+        		columns[i].setType(Class.forName(typeNames[i]));
+        	}
+        }
+        else if (!columnTypes.equals("")){
+        	for(int i=0; i<columns.length; i++){
+        		columns[i].setType(Class.forName(columnTypes));
+        	}
         }
     }
 
@@ -220,7 +239,12 @@ public class CsvResultSet implements ResultSet {
         if (columnIndex < 1 || columnIndex > columns.length) {
             throw new SQLException("Column not found: invalid index: "+columnIndex);
         }
-        return reader.getField(columns[columnIndex-1].getPosition());
+		int pos = columns[columnIndex - 1].getPosition();
+		if (pos == -1) {
+			return columns[columnIndex - 1].getValue();
+		} else {
+			return reader.getField(pos);
+		}
     }
 
     /**
@@ -510,20 +534,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public String getString(String columnName) throws SQLException {
-        // perform pre-accessor method processing
-        preAccessor(columnName);
-        // use CsvReader.getColumn(String) to retrieve the column
-        for (int i=0; i<this.columns.length; i++){
-        	if (columns[i].getName().equalsIgnoreCase(columnName)){
-        		int pos = columns[i].getPosition();
-				if (pos == -1){
-        			return columns[i].getValue();
-        		} else {
-        			return reader.getField(pos);
-        		}
-        	}
-        }
-        return null;
+        return getString(findColumn(columnName));
     }
 
     /**
@@ -537,8 +548,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public boolean getBoolean(String columnName) throws SQLException {
-        String str = getString(columnName);
-        return (str == null) ? false : Boolean.valueOf(str).booleanValue();
+    	return getBoolean(findColumn(columnName));
     }
 
     /**
@@ -552,8 +562,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public byte getByte(String columnName) throws SQLException {
-        String str = getString(columnName);
-        return (str == null) ? 0 : Byte.parseByte(str);
+    	return getByte(findColumn(columnName));
     }
 
     /**
@@ -567,8 +576,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public short getShort(String columnName) throws SQLException {
-        String str = getString(columnName);
-        return (str == null) ? 0 : Short.parseShort(str);
+    	return getShort(findColumn(columnName));
     }
 
     /**
@@ -582,8 +590,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public int getInt(String columnName) throws SQLException {
-        String str = getString(columnName);
-        return (str == null) ? 0 : Integer.parseInt(str);
+    	return getInt(findColumn(columnName));
     }
 
     /**
@@ -597,8 +604,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public long getLong(String columnName) throws SQLException {
-        String str = getString(columnName);
-        return (str == null) ? 0L : Long.parseLong(str);
+    	return getLong(findColumn(columnName));
     }
 
     /**
@@ -612,8 +618,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public float getFloat(String columnName) throws SQLException {
-        String str = getString(columnName);
-        return (str == null) ? 0F : Float.parseFloat(str);
+    	return getFloat(findColumn(columnName));
     }
 
     /**
@@ -627,8 +632,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public double getDouble(String columnName) throws SQLException {
-        String str = getString(columnName);
-        return (str == null) ? 0D : Double.parseDouble(str);
+    	return getDouble(findColumn(columnName));
     }
 
     /**
@@ -645,8 +649,7 @@ public class CsvResultSet implements ResultSet {
      */
     public BigDecimal getBigDecimal(String columnName, int scale)
             throws SQLException {
-        // let getBigDecimal(String) handle this for now
-        return getBigDecimal(columnName);
+    	return getBigDecimal(findColumn(columnName));
     }
 
     /**
@@ -661,8 +664,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public byte[] getBytes(String columnName) throws SQLException {
-        String str = getString(columnName);
-        return (str == null) ? null : str.getBytes();
+    	return getBytes(findColumn(columnName));
     }
 
     /**
@@ -676,8 +678,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Date getDate(String columnName) throws SQLException {
-        String str = getString(columnName);
-        return (str == null) ? null : Date.valueOf(str);
+    	return getDate(findColumn(columnName));
     }
 
     /**
@@ -692,8 +693,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Time getTime(String columnName) throws SQLException {
-        String str = getString(columnName);
-        return (str == null) ? null : Time.valueOf(str);
+    	return getTime(findColumn(columnName));
     }
 
     /**
@@ -707,8 +707,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Timestamp getTimestamp(String columnName) throws SQLException {
-        String str = getString(columnName);
-        return (str == null) ? null : Timestamp.valueOf(str);
+    	return getTimestamp(findColumn(columnName));
     }
 
     /**
@@ -734,9 +733,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public InputStream getAsciiStream(String columnName) throws SQLException {
-        String str = getString(columnName);
-        is = new ByteArrayInputStream(str.getBytes());
-        return (str == null) ? null : is;
+    	return getAsciiStream(findColumn(columnName));
     }
 
     /**
@@ -767,8 +764,7 @@ public class CsvResultSet implements ResultSet {
      * @deprecated use <code>getCharacterStream</code> instead
      */
     public InputStream getUnicodeStream(String columnName) throws SQLException {
-        // delegate to getAsciiStream(String)
-        return getAsciiStream(columnName);
+    	return getUnicodeStream(findColumn(columnName));
     }
 
     /**
@@ -793,8 +789,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public InputStream getBinaryStream(String columnName) throws SQLException {
-        // delegate to getAsciiStream(String)
-        return getAsciiStream(columnName);
+    	return getBinaryStream(findColumn(columnName));
     }
 
     //=====================================================================
@@ -911,7 +906,45 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Object getObject(int columnIndex) throws SQLException {
-        return getString(columnIndex);
+    	Class type = this.columns[columnIndex-1].getType();
+    	if (type == null) {
+            return getString(columnIndex);
+    	} else {
+			Class[] stringClass = new Class[1];
+			Object result = null;
+			try {
+				stringClass[0] = Class.forName("java.lang.String");
+				Constructor c = type.getConstructor(stringClass);
+				Object[] params = new Object[1];
+				params[0] = getString(columnIndex);
+				result = c.newInstance(params);
+			} catch (IllegalArgumentException e) {
+				DateFormat dfp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				try {
+					return dfp.parse(getString(columnIndex));
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				DateFormat dfp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				try {
+					return dfp.parse(getString(columnIndex));
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			}
+			return result;
+    	}
     }
 
     /**
@@ -941,7 +974,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Object getObject(String columnName) throws SQLException {
-        return getString(columnName);
+    	return getObject(findColumn(columnName));
     }
 
     /**
@@ -954,8 +987,12 @@ public class CsvResultSet implements ResultSet {
      * not contain <code>columnName</code> or a database access error occurs
      */
     public int findColumn(String columnName) throws SQLException {
-        throw new UnsupportedOperationException(
-                "ResultSet.findColumn(String) unsupported");
+        // use CsvReader.getColumn(String) to retrieve the column
+        for (int i=0; i<this.columns.length; i++){
+        	if (columns[i].getName().equalsIgnoreCase(columnName))
+        		return i + 1;
+        }
+        throw new SQLException("column '" + columnName + "' is not present in ResultSet");
     }
 
     //--------------------------JDBC 2.0-----------------------------------
@@ -1034,18 +1071,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public BigDecimal getBigDecimal(String columnName) throws SQLException {
-        BigDecimal retval = null;
-        String str = getString(columnName);
-        if(str != null) {
-            try {
-                retval = new BigDecimal(str);
-            }
-            catch (NumberFormatException e) {
-                throw new SQLException("Could not convert '" + str + "' to " +
-                                       "a java.math.BigDecimal object");
-            }
-        }
-        return retval;
+    	return getBigDecimal(findColumn(columnName));
     }
 
     //---------------------------------------------------------------------
@@ -2546,24 +2572,6 @@ public class CsvResultSet implements ResultSet {
             is = null;
         }
     }
-
-    /**
-     * Perform pre-accessor method processing
-     * @param columnName the SQL name of the column
-     * @exception SQLException if a database access error occurs
-     */
-    private void preAccessor(String columnName) throws SQLException {
-        // locate the index number and delegate to preAccessor(int)
-        for (int i = 0; i < columns.length; i++) {
-            if (columnName.equalsIgnoreCase(columns[i].getName())) {
-                preAccessor(i+1);
-            }
-        }
-    }
-
-    //---------------------------------------------------------------------
-    // JDBC 3.0
-    //---------------------------------------------------------------------
 
     public URL getURL(int columnIndex) throws SQLException {
         throw new UnsupportedOperationException("ResultSet.getURL(int) unsupported");
