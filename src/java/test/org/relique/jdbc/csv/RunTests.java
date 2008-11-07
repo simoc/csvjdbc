@@ -27,7 +27,7 @@ import junit.framework.*;
 */
 public class RunTests
 {
-  public static String DEFAULT_FILEPATH="C:\\Chetan\\Technical\\java\\csvjdbc\\src\\testdata";
+  public static String DEFAULT_FILEPATH="C:\\Local\\csvjdbc.cvs.sourceforge.net\\csvjdbc\\src\\testdata";
   
   public static Test suite()
   {

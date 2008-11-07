@@ -19,12 +19,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package test.org.relique.jdbc.csv;
 
 import java.sql.*;
+
 import junit.framework.TestCase;
 
 /**This class is used to test the CsvJdbc Scrollable driver.
 *
 * @author Chetan Gupta
-* @version $Id: TestScrollableDriver.java,v 1.4 2005/05/15 07:56:17 gupta_chetan Exp $
+* @version $Id: TestScrollableDriver.java,v 1.5 2008/11/07 11:29:30 mfrasca Exp $
 */
 public class TestScrollableDriver extends TestCase
 { 
@@ -59,10 +60,8 @@ public class TestScrollableDriver extends TestCase
 
   }
 
-  public void testScroll()
+  public void testScroll() throws SQLException
   {
-    try
-    {
 
       // create a connection. The first command line parameter is assumed to
       //  be the directory in which the .csv files are held
@@ -167,17 +166,10 @@ public class TestScrollableDriver extends TestCase
       results.close();
       stmt.close();
       conn.close();
-    }
-    catch(Exception e)
-    {
-      fail("Unexpected Exception:" + e);
-    }
   }
   
-  public void testScrollWithMultiLineText()
+  public void testScrollWithMultiLineText() throws ClassNotFoundException, SQLException
   {
-    try
-    {
       // load the driver into memory
       Class.forName("org.relique.jdbc.csv.CsvDriver");
 
@@ -284,18 +276,13 @@ public class TestScrollableDriver extends TestCase
       results.close();
       stmt.close();
       conn.close();
-    }
-    catch(Exception e)
-    {
-      fail("Unexpected Exception:" + e);
-    }
   }
 
   /**
    * This checks for the scenario when due to where clause no rows are returned.
+ * @throws SQLException 
    */
-  public void testWhereNoResults() {
-  	try {
+  public void testWhereNoResults() throws SQLException {
   	  Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
       // create a Statement object to execute the query with
       Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
@@ -318,11 +305,6 @@ public class TestScrollableDriver extends TestCase
       //Following throws exception
       //assertTrue("Is not before first", results.isAfterLast());
 
-  	}
-    catch(Exception e)
-    {
-      fail("Unexpected Exception: " + e);
-    }
   }
 
   /**

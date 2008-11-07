@@ -24,26 +24,26 @@ import java.sql.Types;
  *
  * @author     Jonathan Ackerman
  * @author     JD Evora
- * @version    $Id: CsvResultSetMetaData.java,v 1.4 2002/01/01 23:04:26 jackerm Exp $
+ * @version    $Id: CsvResultSetMetaData.java,v 1.5 2008/11/07 11:29:30 mfrasca Exp $
  */
 public class CsvResultSetMetaData implements ResultSetMetaData
 {
   /** Default value for getColumnDisplaySize */
   final static int DISPLAY_SIZE = 20;
   /** Names of columns */
-  protected String[] columnNames;
+  protected Column[] columns;
   /** Name of table */
   protected String tableName;
 
   /**Constructor for the CsvResultSetMetaData object
    *
    * @param  tableName    Name of table
-   * @param  columnNames  Names of columns in table
+   * @param  columns  Names of columns in table
    */
-  CsvResultSetMetaData(String tableName, String[] columnNames)
+  CsvResultSetMetaData(String tableName, Column[] columns)
   {
     this.tableName = tableName;
-    this.columnNames = columnNames;
+    this.columns = columns;
   }
 
 
@@ -67,7 +67,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData
    */
   public int getColumnCount() throws SQLException
   {
-    return columnNames.length;
+    return columns.length;
   }
 
 
@@ -178,7 +178,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData
   public String getColumnLabel(int column) throws SQLException
   {
     // SQL column numbers start at 1
-    return columnNames[column-1];
+    return columns[column-1].getName();
   }
 
 
@@ -191,7 +191,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData
   public String getColumnName(int column) throws SQLException
   {
     // SQL column numbers start at 1
-    return columnNames[column-1];
+    return columns[column-1].getName();
   }
 
 
@@ -267,6 +267,18 @@ public class CsvResultSetMetaData implements ResultSetMetaData
   {
     return false;
   }
+
+
+public boolean isWrapperFor(Class arg0) throws SQLException {
+	// TODO Auto-generated method stub
+	return false;
+}
+
+
+public Object unwrap(Class arg0) throws SQLException {
+	// TODO Auto-generated method stub
+	return null;
+}
 
 }
 

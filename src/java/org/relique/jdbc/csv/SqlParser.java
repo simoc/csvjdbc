@@ -15,18 +15,26 @@
  */
 package org.relique.jdbc.csv;
 
+import java.util.Map;
 import java.util.Vector;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- *This is a very crude and SQL simple parser used by the Csv JDBC driver. It
- * only handles SELECT statements in the format "SELECT xxx,yyy,zzz FROM fffff WHERE xxx='123'"
- * The WHERE condition can only be a signle equal condition, on the form 
- * COLUMN=VALUE where column is a column from the resultset and value is a quota enclosed expression  
- * @author     Jonathan Ackerman
- * @author     Juan Pablo Morales
- * @created    25 November 2001
- * @version    $Id: SqlParser.java,v 1.3 2004/08/09 21:56:55 jackerm Exp $
+ * This is a very crude and simple SQL parser used by the Csv JDBC driver. It
+ * only handles SELECT statements in the format
+ * "SELECT xxx,yyy,zzz FROM fffff WHERE xxx='123'"
+ * 
+ * The WHERE condition can only be a single equal condition, on the form
+ * COLUMN=VALUE where column is a column from the resultSet and value is a quote
+ * enclosed expression
+ * 
+ * @author Jonathan Ackerman
+ * @author Juan Pablo Morales
+ * @author Mario Frasca
+ * @created 25 November 2001
+ * @version $Id: SqlParser.java,v 1.4 2008/11/07 11:29:30 mfrasca Exp $
  */
 public class SqlParser
 {
@@ -41,7 +49,7 @@ public class SqlParser
    *
    * @since
    */
-  public String[] columnNames;
+  public Column[] columns;
   /**
    * The index of the column that will be used for the where clause.
    */
@@ -68,9 +76,9 @@ public class SqlParser
    * @return    The columnNames value
    * @since
    */
-  public String[] getColumnNames()
+  public Column[] getColumns()
   {
-    return columnNames;
+    return columns;
   }
   
   /**
@@ -87,6 +95,7 @@ public class SqlParser
   public String getWhereValue() {
   	return whereValue;
   }
+
   /**
    * Set the internal table name and column names.
    *
@@ -94,70 +103,114 @@ public class SqlParser
    * @exception  Exception  Description of Exception
    * @since
    */
-  public void parse(String sql) throws Exception
-  {
-    tableName = null;
-    columnNames = new String[0];
+  public void parse(String sql) throws Exception {
+		tableName = null;
+		columns = new Column[0];
 
-    String upperSql = sql.toUpperCase();
+		String upperSql = sql.toUpperCase();
 
-    if (!upperSql.startsWith("SELECT "))
-    {
-      throw new Exception("Malformed SQL. Missing SELECT statement.");
-    }
+		if (!upperSql.startsWith("SELECT ")) {
+			throw new Exception("Malformed SQL. Missing SELECT statement.");
+		}
 
-    if (upperSql.lastIndexOf(" FROM ") == -1)
-    {
-      throw new Exception("Malformed SQL. Missing FROM statement.");
-    }
+		if (upperSql.lastIndexOf(" FROM ") == -1) {
+			throw new Exception("Malformed SQL. Missing FROM statement.");
+		}
 
-    int fromPos = upperSql.lastIndexOf(" FROM ");
-    
-    int wherePos = upperSql.lastIndexOf(" WHERE ");
-    /**
-     * If we have a where clause then the table name is everything that sits between 
-     * FROM and WHERE. If we don't then it's everything from the "FROM" up to the end
-     * of the sentence
-     */ 
-    if(wherePos==-1) {
-    	tableName = sql.substring(fromPos + 6).trim();
-    } else {
-    	tableName = sql.substring(fromPos + 6,wherePos).trim();
-    }
-    /* If we have a where clause fill the whereColumn and whereValue attributes
-     */
-    String whereColumnName = null;
-    if(wherePos > -1) {
-      int equalsPos = upperSql.lastIndexOf("=");
-      if(equalsPos == -1) {
-      	throw new Exception("Malformed SQL. No = sign on the WHERE clause.");
-      }
-      whereColumnName = upperSql.substring(wherePos+ 6,equalsPos).trim();
-      whereValue = sql.substring(equalsPos + 1).trim();
-      // If we have enclosing quotes take them away
-      if(whereValue.startsWith("'")) {
-      	whereValue = whereValue.substring(1,whereValue.length()-1);
-      }
-    } else {
-    	whereValue = null;
-    	whereColumn = -1;
-    }
-    Vector cols = new Vector();
-    StringTokenizer tokenizer = new StringTokenizer(upperSql.substring(7, fromPos), ",");
+		int fromPos = upperSql.lastIndexOf(" FROM ");
 
-    while (tokenizer.hasMoreTokens())
-    {
-      String currentColumn = tokenizer.nextToken().trim();      
-      cols.add(currentColumn);
-      //If the column's name is the same as the where column then put it      
-      if(currentColumn.equals(whereColumnName)) {
-      	whereColumn = cols.size()-1;
-      }      
-    }
+		int wherePos = upperSql.lastIndexOf(" WHERE ");
+		/**
+		 * If we have a where clause then the table name is everything that sits
+		 * between FROM and WHERE. If we don't then it's everything from the
+		 * "FROM" up to the end of the sentence
+		 */
+		if (wherePos == -1) {
+			tableName = sql.substring(fromPos + 6).trim();
+		} else {
+			tableName = sql.substring(fromPos + 6, wherePos).trim();
+		}
+		/*
+		 * If we have a where clause fill the whereColumn and whereValue
+		 * attributes
+		 */
+		String whereColumnName = null;
+		if (wherePos > -1) {
+			int equalsPos = upperSql.lastIndexOf("=");
+			if (equalsPos == -1) {
+				throw new Exception(
+						"Malformed SQL. No = sign on the WHERE clause.");
+			}
+			whereColumnName = upperSql.substring(wherePos + 6, equalsPos)
+					.trim();
+			whereValue = sql.substring(equalsPos + 1).trim();
+			// If we have enclosing quotes take them away
+			if (whereValue.startsWith("'")) {
+				whereValue = whereValue.substring(1, whereValue.length() - 1);
+			}
+		} else {
+			whereValue = null;
+			whereColumn = -1;
+		}
+		Vector cols = new Vector();
+		StringTokenizer tokenizer = new StringTokenizer(upperSql.substring(7,
+				fromPos), ",");
 
-    columnNames = new String[cols.size()];
-    cols.copyInto(columnNames);
+		Pattern simple = Pattern.compile("[a-zA-Z0-9_]+");
+		Pattern nameAlias = Pattern.compile("([a-zA-Z0-9_]+) +(?:[aA][sS] +)?([a-zA-Z0-9_]+)");
+		Pattern literalAlias = Pattern.compile("('[^']*'|-?[0-9\\.]+) +(?:[aA][sS] +)?([a-zA-Z0-9_]+)");
+		
+		while (tokenizer.hasMoreTokens()) {
+			String thisToken = tokenizer.nextToken().trim();
+			/*
+			 * we don't parse the token, we simply try to match it against a
+			 * regular expressions describing...
+			 * 
+			 * name: new Column(name, -2, name);
+			 * name plus alias: new Column(alias, -2, name);
+			 * literal plus alias: new Column(alias, -1, literal);
+			 */
+			Column currentColumn = null;
+			Matcher m = simple.matcher(thisToken);
+			if (m.matches()){
+				currentColumn = new Column(thisToken, -2, thisToken);
+			}
+			m = nameAlias.matcher(thisToken);
+			if(m.matches()){
+				currentColumn = new Column(m.group(2), -2, m.group(1));
+			}
+			m = literalAlias.matcher(thisToken);
+			if(m.matches()){
+				currentColumn = new Column(m.group(2), -1, m.group(1));
+			}
+			if (thisToken.equals("*")){
+				currentColumn = new Column(thisToken, -2, thisToken);
+			}
 
-  }
+			cols.add(currentColumn);
+			// If the column's name is the same as the where column then put it
+			if (currentColumn.getName().equalsIgnoreCase(whereColumnName)) {
+				whereColumn = cols.size() - 1;
+			}
+		}
+
+		columns = new Column[cols.size()];
+		cols.copyInto(columns);
+	}
+
+
+public String[] getColumnNames() {
+	String[] result = new String[columns.length];
+	for (int i=0; i<columns.length; i++){
+		result[i] = columns[i].getName();
+	}
+    return result;
+}
+
+
+public Map getWhereClause() {
+	// TODO Auto-generated method stub
+	return null;
+}
 }
 

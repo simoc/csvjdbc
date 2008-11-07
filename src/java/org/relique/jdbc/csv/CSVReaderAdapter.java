@@ -36,8 +36,9 @@ import java.util.Vector;
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
  * @author     Christoph Langer
+ * @author     Mario Frasca
  * @created    01 March 2004
- * @version    $Id: CSVReaderAdapter.java,v 1.7 2005/11/13 18:32:58 jackerm Exp $
+ * @version    $Id: CSVReaderAdapter.java,v 1.8 2008/11/07 11:29:29 mfrasca Exp $
  */
 
 public abstract class CSVReaderAdapter
@@ -45,7 +46,7 @@ public abstract class CSVReaderAdapter
   protected BufferedReader input;
 
   protected String[] columnNames;
-  protected String[] columns;
+  protected String[] fieldValues;
   protected java.lang.String buf = null;
   protected char separator = ',';
   protected String headerLine = "";
@@ -131,21 +132,23 @@ public abstract class CSVReaderAdapter
   }
 
   /**
-   * Get the value of the column at the specified index.
-   *
-   * @param  columnIndex  Description of Parameter
-   * @return              The column value
-   * @since
-   */
+	 * Get the value of the column at the specified index.
+	 * 
+	 * @param columnIndex
+	 *            Description of Parameter
+	 * @return The column value
+	 * @since
+	 */
 
-  public String getColumn(int columnIndex) throws SQLException
-  {
-      if (columnIndex >= columns.length)
-      {
-          return null;
-      }
-      return columns[columnIndex];
-  }
+	public String getField(int columnIndex) throws SQLException {
+		if (columnIndex >= fieldValues.length) {
+			return null;
+		}
+		String result = fieldValues[columnIndex];
+		if (result != null)
+			result = result.trim();
+		return result;
+	}
 
   /**
    * Get value from column at specified name.
@@ -157,13 +160,13 @@ public abstract class CSVReaderAdapter
    * @since
    */
 
-  public String getColumn(String columnName) throws SQLException
+  public String getField(String columnName) throws SQLException
   {
     for (int loop = 0; loop < columnNames.length; loop++)
     {
       if (columnName.equalsIgnoreCase(columnNames[loop]) || columnName.equalsIgnoreCase(getTableName() + "." + columnNames[loop]))
       {
-        return getColumn(loop);
+        return getField(loop);
       }
     }
     throw new SQLException("Column '" + columnName + "' not found.");

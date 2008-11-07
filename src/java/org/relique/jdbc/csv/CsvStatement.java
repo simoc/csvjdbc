@@ -31,7 +31,7 @@ import java.util.Vector;
  * @author     Chetan Gupta
  * @author     Christoph Langer
  * @created    25 November 2001
- * @version    $Id: CsvStatement.java,v 1.13 2005/11/13 18:32:58 jackerm Exp $
+ * @version    $Id: CsvStatement.java,v 1.14 2008/11/07 11:29:30 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement
@@ -348,15 +348,18 @@ public class CsvStatement implements Statement
         try
             {
                 if (isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE){
-                  reader = new CSVScrollableReader(fileName, connection.getSeperator(),
-                                       connection.isSuppressHeaders(), connection.getCharset()
-                                       ,connection.getQuotechar(),connection.getHeaderline(), connection.getExtension(), connection.getTrimHeaders()
-                                       ,parser.getWhereColumn(), parser.getWhereValue()
-									   );
+                  reader = new CSVScrollableReader(fileName, connection
+						.getSeparator(), connection.isSuppressHeaders(),
+						connection.getCharset(), connection.getQuotechar(),
+						connection.getHeaderline(), connection.getExtension(),
+						connection.getTrimHeaders(), parser.getWhereColumn(),
+						parser.getWhereValue());
                 } else {
-                  reader = new CsvReader(fileName, connection.getSeperator()
-                                       ,connection.isSuppressHeaders(), connection.getCharset()
-									   ,connection.getQuotechar(),connection.getHeaderline(), connection.getExtension(),connection.getTrimHeaders());
+                  reader = new CsvReader(fileName, connection.getSeparator(),
+						connection.isSuppressHeaders(),
+						connection.getCharset(), connection.getQuotechar(),
+						connection.getHeaderline(), connection.getExtension(),
+						connection.getTrimHeaders());
                 }
             }
         catch (Exception e)
@@ -364,8 +367,9 @@ public class CsvStatement implements Statement
             throw new SQLException("Error reading data file. Message was: " + e);
             }
 
-        CsvResultSet resultSet = new CsvResultSet(this,reader,
-                                                  parser.getTableName(), parser.getColumnNames(), this.isScrollable,parser.getWhereColumn(), parser.getWhereValue());
+        CsvResultSet resultSet = new CsvResultSet(this, reader, parser
+				.getTableName(), parser.getColumns(), this.isScrollable,
+				parser.getWhereColumn(), parser.getWhereValue());
         resultSets.add(resultSet);
 
         return resultSet;
@@ -527,5 +531,35 @@ public class CsvStatement implements Statement
     public int getResultSetHoldability() throws SQLException {
         throw new UnsupportedOperationException("Statement.getResultSetHoldability() unsupported");
     }
+
+
+	public boolean isClosed() throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	public boolean isPoolable() throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	public void setPoolable(boolean poolable) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public boolean isWrapperFor(Class arg0) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	public Object unwrap(Class arg0) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 

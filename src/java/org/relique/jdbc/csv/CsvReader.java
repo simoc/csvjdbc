@@ -16,8 +16,7 @@
  */
 package org.relique.jdbc.csv;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
 import java.sql.SQLException;
 
 /**
@@ -32,7 +31,7 @@ import java.sql.SQLException;
  * @author     Christoph Langer
  * @author     Chetan Gupta
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.15 2005/11/13 18:32:58 jackerm Exp $
+ * @version    $Id: CsvReader.java,v 1.16 2008/11/07 11:29:30 mfrasca Exp $
  */
 
 public class CsvReader extends CSVReaderAdapter
@@ -62,11 +61,12 @@ public class CsvReader extends CSVReaderAdapter
    *    * @exception  java.lang.Exception  The exception description.
    * @since
    */
-  public CsvReader(String fileName, char separator, boolean suppressHeaders, String charset, char quoteChar, String headerLine, String extension, boolean trimHeaders)
-       throws java.lang.Exception
-  {
-      super(fileName, separator, suppressHeaders, charset, quoteChar, headerLine, extension, trimHeaders);
-  }
+  public CsvReader(String fileName, char separator, boolean suppressHeaders,
+			String charset, char quoteChar, String headerLine,
+			String extension, boolean trimHeaders) throws java.lang.Exception {
+		super(fileName, separator, suppressHeaders, charset, quoteChar,
+				headerLine, extension, trimHeaders);
+	}
   
 /**
    *Description of the Method
@@ -76,7 +76,7 @@ public class CsvReader extends CSVReaderAdapter
    * @since
    */
   public boolean next() throws SQLException {
-    columns = new String[columnNames.length];
+    fieldValues = new String[columnNames.length];
     String dataLine = null;
     try {
         if (suppressHeaders && (buf != null)) {
@@ -94,7 +94,7 @@ public class CsvReader extends CSVReaderAdapter
     } catch (IOException e) {
         throw new SQLException(e.toString());
     }
-    columns = parseCsvLine(dataLine, false);
+    fieldValues = parseCsvLine(dataLine, false);
     return true;
   }
 

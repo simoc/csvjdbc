@@ -16,21 +16,18 @@
 package org.relique.jdbc.csv;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-
 import java.sql.SQLException;
-
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.Map;
 
 
 /**
  *This class Class provides facility to navigate on the Result Set.
  *
  * @author     Chetan Gupta
- * @version    $Id: CSVScrollableReader.java,v 1.4 2005/11/13 18:32:58 jackerm Exp $
+ * @version    $Id: CSVScrollableReader.java,v 1.5 2008/11/07 11:29:29 mfrasca Exp $
  */
 public class CSVScrollableReader extends CSVReaderAdapter {
   //---------------------------------------------------------------------
@@ -44,10 +41,18 @@ public class CSVScrollableReader extends CSVReaderAdapter {
    *Constructor for the CsvReader object
    *
    * @param  fileName       Description of Parameter
+ * @param map 
+ * @param e 
+ * @param string3 
+ * @param string2 
+ * @param d 
+ * @param string 
+ * @param b 
+ * @param c 
    * @exception  Exception  Description of Exception
    * @since
    */
-  public CSVScrollableReader(String fileName) throws Exception {
+  public CSVScrollableReader(String fileName, char c, boolean b, String string, char d, String string2, String string3, boolean e, Map map) throws Exception {
     this(fileName, ',', false, null,
     		'"', "", CsvDriver.DEFAULT_EXTENSION, true, 
     		-1, null);
@@ -84,7 +89,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
     String dataLine = null;
     try {
 	    while (true) {
-	        columns = new String[columnNames.length];
+	        fieldValues = new String[columnNames.length];
 	        dataLine = null;
 	        if (suppressHeaders && (buf != null)) {
 	          // The buffer is not empty yet, so use this first.
@@ -97,11 +102,11 @@ public class CSVScrollableReader extends CSVReaderAdapter {
 	        if (dataLine == null) {
 	          break;
 	        }
-	        columns = parseCsvLine(dataLine, false);
+	        fieldValues = parseCsvLine(dataLine, false);
 	        if ( (whereColumn == -1) || // if no where clause
-	        		( (whereColumn != -1) && (columns[whereColumn].equals(whereValue))) // or satisfies where clause
+	        		( (whereColumn != -1) && (fieldValues[whereColumn].equals(whereValue))) // or satisfies where clause
 	        		) {
-		        alRecords.add(columns);
+		        alRecords.add(fieldValues);
 	        } else {
 	        	//System.out.println("Skipping: " + columns[0]);
 	        	continue;
@@ -344,13 +349,6 @@ public class CSVScrollableReader extends CSVReaderAdapter {
   }
 
   /*
-   * private method to reset the data
-   */
-  private void emptyData() {
-    columns = new String[columnNames.length];
-  }
-
-  /*
    * Utility Method to return and update the record No and takes into account AFTER LAST and BEFORE FIRST
    */
   private int getRecordNo() {
@@ -364,16 +362,14 @@ public class CSVScrollableReader extends CSVReaderAdapter {
   }
 
   private boolean readData() throws SQLException {
-    columns = new String[columnNames.length];
-
-    String dataLine = null;
+    fieldValues = new String[columnNames.length];
 
     if (
       (getRecordNo() < FIRST_RECORD) || (getRecordNo() >= alRecords.size())) {
       return false;
     }
 
-    columns = (String[])alRecords.get(iRecordNo);
+    fieldValues = (String[])alRecords.get(iRecordNo);
 
     return true;
   }

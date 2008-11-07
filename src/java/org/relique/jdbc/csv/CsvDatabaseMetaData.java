@@ -23,7 +23,7 @@ import java.sql.*;
  *
  * @author     Jonathan Ackerman
  * @created    25 November 2001
- * @version    $Id: CsvDatabaseMetaData.java,v 1.3 2004/08/09 05:02:03 jackerm Exp $
+ * @version    $Id: CsvDatabaseMetaData.java,v 1.4 2008/11/07 11:29:29 mfrasca Exp $
  */
 public class CsvDatabaseMetaData implements DatabaseMetaData
 {
@@ -868,6 +868,55 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	public boolean usesLocalFiles() throws SQLException
 	{
 		return false;
+	}
+
+	public boolean autoCommitFailureClosesAllResultSets() throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public ResultSet getClientInfoProperties() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResultSet getFunctionColumns(String catalog, String schemaPattern,
+			String functionNamePattern, String columnNamePattern)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResultSet getFunctions(String catalog, String schemaPattern,
+			String functionNamePattern) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public RowIdLifetime getRowIdLifetime() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResultSet getSchemas(String catalog, String schemaPattern)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean supportsStoredFunctionsUsingCallSyntax() throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isWrapperFor(Class arg0) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public Object unwrap(Class arg0) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

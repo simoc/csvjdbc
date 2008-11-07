@@ -18,14 +18,21 @@
  */
 package org.relique.jdbc.csv;
 
+import java.sql.Array;
+import java.sql.Blob;
 import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.sql.Struct;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
@@ -39,7 +46,7 @@ import java.util.Vector;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.14 2005/11/13 18:32:58 jackerm Exp $
+ * @version    $Id: CsvConnection.java,v 1.15 2008/11/07 11:29:29 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -754,7 +761,7 @@ public class CsvConnection implements Connection {
      * Accessor method for the separator property
      * @return current value for the separator property
      */
-    protected char getSeperator() {
+    protected char getSeparator() {
         return separator;
     }
 
@@ -797,4 +804,73 @@ public class CsvConnection implements Connection {
     public boolean getTrimHeaders() {
         return trimHeaders;
     }
+
+	public Array createArrayOf(String typeName, Object[] elements)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Blob createBlob() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Clob createClob() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public NClob createNClob() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public SQLXML createSQLXML() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Struct createStruct(String typeName, Object[] attributes)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Properties getClientInfo() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getClientInfo(String name) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean isValid(int timeout) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void setClientInfo(Properties properties)
+			throws SQLClientInfoException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setClientInfo(String name, String value)
+			throws SQLClientInfoException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean isWrapperFor(Class arg0) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public Object unwrap(Class arg0) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
