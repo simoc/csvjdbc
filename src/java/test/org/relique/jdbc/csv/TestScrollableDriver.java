@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 /**This class is used to test the CsvJdbc Scrollable driver.
 *
 * @author Chetan Gupta
-* @version $Id: TestScrollableDriver.java,v 1.5 2008/11/07 11:29:30 mfrasca Exp $
+* @version $Id: TestScrollableDriver.java,v 1.6 2008/11/10 13:41:19 mfrasca Exp $
 */
 public class TestScrollableDriver extends TestCase
 { 
@@ -168,6 +168,13 @@ public class TestScrollableDriver extends TestCase
       conn.close();
   }
   
+  /**
+	 * TODO: probably broken by me, Mario Frasca. I'm not sure what to do here
+	 * and I haven't enough time to investigate...
+	 * 
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
   public void testScrollWithMultiLineText() throws ClassNotFoundException, SQLException
   {
       // load the driver into memory

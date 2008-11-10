@@ -28,7 +28,6 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Properties;
 
 import junit.framework.TestCase;
@@ -40,7 +39,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.12 2008/11/07 15:36:42 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.13 2008/11/10 13:41:19 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -125,6 +124,51 @@ public class TestCsvDriver extends TestCase {
 		results.close();
 		stmt.close();
 		conn.close();
+	}
+
+	/**
+	 * This creates several sentences with where and tests they work
+	 * 
+	 * @throws SQLException
+	 */
+	public void testWhereSimple() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT ID,Name FROM sample4 WHERE ID='03'");
+		assertTrue(results.next());
+		assertEquals("The name is wrong", "Maria Cristina Lucero", results
+				.getString("Name"));
+		try{
+			assertNull(results.getString("Job"));
+			fail("Should not find the column 'Job'");
+		} catch(SQLException e) {
+		}
+		assertTrue(!results.next());
+	}
+
+	/**
+	 * fields in different order than in source file.
+	 * 
+	 * @throws SQLException
+	 */
+	public void testWhereMangled() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT Job,ID,Name FROM sample4 WHERE ID='02'");
+		assertTrue("no results found - should be one", results.next());
+		assertEquals("The name is wrong", "Mauricio Hernandez", results
+				.getString("Name"));
+		assertEquals("The job is wrong", "Project Manager", results
+				.getString("Job"));
+		assertTrue("more than one matching records", !results.next());
 	}
 
 	public void testWithProperties() throws SQLException {
@@ -218,7 +262,26 @@ public class TestCsvDriver extends TestCase {
 
 	public void testColumnTypesUserSpecified() throws SQLException, ParseException {
 		Properties props = new Properties();
-		props.put("columnTypes", "java.lang.Integer,java.lang.String,java.lang.String,java.util.Date");
+		props.put("columnTypes", "Int,String,String,Date");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT ID, Name, Job, Start "
+				+ "FROM sample5 WHERE Job = 'Project Manager'");
+		
+		assertTrue(results.next());
+		assertEquals("Integer column ID is wrong", new Integer(1), results.getObject("id"));
+		assertEquals("Integer column 1 is wrong", new Integer(1), results.getObject(1));
+		java.sql.Date shouldBe = java.sql.Date.valueOf("2001-01-02");
+		assertEquals("Date column Start is wrong", shouldBe, results.getObject("start"));
+		assertEquals("Date column 4 is wrong", shouldBe, results.getObject(4));
+		assertEquals("The Name is wrong", "Juan Pablo Morales", results.getObject("name"));
+	}
+
+	public void testColumnTypesUserSpecifiedTS() throws SQLException, ParseException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Timestamp");
 
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
@@ -235,6 +298,11 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The Name is wrong", "Juan Pablo Morales", results.getObject("name"));
 	}
 	
+	/**
+	 * TODO: this does not work yet!  first we must decide the behaviour!
+	 * @throws SQLException
+	 * @throws ParseException
+	 */
 	public void testColumnTypesInferFromData() throws SQLException, ParseException {
 		Properties props = new Properties();
 		props.put("columnTypes", "");
@@ -395,51 +463,6 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
-	/**
-	 * This creates several sentences with where and tests they work
-	 * 
-	 * @throws SQLException
-	 */
-	public void testWhereSimple() throws SQLException {
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath);
-
-		Statement stmt = conn.createStatement();
-
-		ResultSet results = stmt
-				.executeQuery("SELECT ID,Name FROM sample4 WHERE ID=02");
-		assertTrue(results.next());
-		assertEquals("The name is wrong", "Mauricio Hernandez", results
-				.getString("Name"));
-		try{
-			assertNull(results.getString("Job"));
-			fail("Should not find the column 'Job'");
-		} catch(SQLException e) {
-		}
-		assertTrue(!results.next());
-	}
-
-	/**
-	 * fields in different order than in source file.
-	 * 
-	 * @throws SQLException
-	 */
-	public void testWhereMangled() throws SQLException {
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath);
-
-		Statement stmt = conn.createStatement();
-
-		ResultSet results = stmt
-				.executeQuery("SELECT Job,ID,Name FROM sample4 WHERE ID=02");
-		assertTrue("no results found - should be one", results.next());
-		assertEquals("The name is wrong", "Mauricio Hernandez", results
-				.getString("Name"));
-		assertEquals("The job is wrong", "Project Manager", results
-				.getString("Job"));
-		assertTrue("more than one matching records", !results.next());
-	}
-
 	public void testWhereMultipleResult() throws SQLException {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
@@ -447,7 +470,7 @@ public class TestCsvDriver extends TestCase {
 		Statement stmt = conn.createStatement();
 
 		ResultSet results = stmt
-				.executeQuery("SELECT ID, Name, Job FROM sample4 WHERE Job = Project Manager");
+				.executeQuery("SELECT ID, Name, Job FROM sample4 WHERE Job = 'Project Manager'");
 		assertTrue(results.next());
 		assertEquals("The ID is wrong", "01", results.getString("ID"));
 		assertTrue(results.next());
@@ -464,7 +487,7 @@ public class TestCsvDriver extends TestCase {
 		Statement stmt = conn.createStatement();
 
 		ResultSet results = stmt
-				.executeQuery("SELECT ID as i, Name as n, Job as j FROM sample4 WHERE J='Project Manager'");
+				.executeQuery("SELECT ID as i, Name as n, Job as j FROM sample4 WHERE j='Project Manager'");
 		assertTrue(results.next());
 		assertEquals("The ID is wrong", "01", results.getString("i"));
 		assertTrue(results.next());
@@ -487,15 +510,15 @@ public class TestCsvDriver extends TestCase {
 		Statement stmt = conn.createStatement();
 
 		ResultSet results = stmt
-				.executeQuery("SELECT Job j,ID i,Name n, 0 c FROM sample4 WHERE I='02'");
-		assertTrue("no results found - should be one", results.next());
+				.executeQuery("SELECT Job j,ID i,Name n, 0 c FROM sample4");
+		assertTrue("no results found - should be all", results.next());
+		assertTrue("no results found - should be all", results.next());
 		assertEquals("The literal c is wrong", "0", results.getString("c"));
 		assertEquals("The literal c is wrong", "0", results.getString(4));
 		assertEquals("The name is wrong", "Mauricio Hernandez", results
 				.getString("N"));
 		assertEquals("The job is wrong", "Project Manager", results
 				.getString("J"));
-		assertTrue("more than one matching records", !results.next());
 	}
 
 	/**
@@ -508,7 +531,7 @@ public class TestCsvDriver extends TestCase {
 				+ filePath);
 		Statement stmt = conn.createStatement();
 		ResultSet results = stmt
-				.executeQuery("SELECT ID,Name FROM sample4 WHERE ID=05");
+				.executeQuery("SELECT ID,Name FROM sample4 WHERE ID='05'");
 		assertFalse(results.next());
 	}
 
@@ -534,7 +557,7 @@ public class TestCsvDriver extends TestCase {
 	}
 
 	/**
-	 * 
+	 * TODO: an old patch has been made useless by Mario Frasca (that's me).  sorry...
 	 * @throws SQLException
 	 */
 	public void testWhereWithAndOperator() throws SQLException {

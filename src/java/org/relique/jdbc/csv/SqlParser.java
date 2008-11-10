@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  * @author Juan Pablo Morales
  * @author Mario Frasca
  * @created 25 November 2001
- * @version $Id: SqlParser.java,v 1.4 2008/11/07 11:29:30 mfrasca Exp $
+ * @version $Id: SqlParser.java,v 1.5 2008/11/10 13:41:19 mfrasca Exp $
  */
 public class SqlParser
 {
@@ -51,13 +51,13 @@ public class SqlParser
    */
   public Column[] columns;
   /**
-   * The index of the column that will be used for the where clause.
-   */
-  private int whereColumn;
-  /**
    * The value that is sought on the where clause 
    */
   private String whereValue;
+  /**
+   * The name of the column that will be used for the where clause.
+   */
+  private String whereColumnName;
   /**
    *Gets the tableName attribute of the SqlParser object
    *
@@ -81,13 +81,6 @@ public class SqlParser
     return columns;
   }
   
-  /**
-   * Return the number of the column that is being used on the where clause
-   * @return The zero based number of the column that is used on the where clause, -1 if there is no where clause 
-   */
-  public int getWhereColumn() {
-  	return whereColumn;
-  }
   /**
    * Return the value to use on the where column.
    * @return null if there is no where clause 
@@ -134,7 +127,6 @@ public class SqlParser
 		 * If we have a where clause fill the whereColumn and whereValue
 		 * attributes
 		 */
-		String whereColumnName = null;
 		if (wherePos > -1) {
 			int equalsPos = upperSql.lastIndexOf("=");
 			if (equalsPos == -1) {
@@ -150,7 +142,7 @@ public class SqlParser
 			}
 		} else {
 			whereValue = null;
-			whereColumn = -1;
+			whereColumnName = null;
 		}
 		Vector cols = new Vector();
 		StringTokenizer tokenizer = new StringTokenizer(upperSql.substring(7,
@@ -188,10 +180,6 @@ public class SqlParser
 			}
 
 			cols.add(currentColumn);
-			// If the column's name is the same as the where column then put it
-			if (currentColumn.getName().equalsIgnoreCase(whereColumnName)) {
-				whereColumn = cols.size() - 1;
-			}
 		}
 
 		columns = new Column[cols.size()];
@@ -211,6 +199,11 @@ public String[] getColumnNames() {
 public Map getWhereClause() {
 	// TODO Auto-generated method stub
 	return null;
+}
+
+
+public String getWhereColumnName() {
+	return whereColumnName;
 }
 }
 

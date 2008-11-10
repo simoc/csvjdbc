@@ -23,11 +23,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.sql.*;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.DatabaseMetaData;
+import java.sql.Date;
+import java.sql.NClob;
+import java.sql.Ref;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.RowId;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.SQLXML;
+import java.sql.Statement;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,10 +57,111 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.18 2008/11/07 15:36:41 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.19 2008/11/10 13:41:19 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
+	public String parseString(String str) {
+		return str;
+	}
+
+	public boolean parseBoolean(String str) {
+		return Boolean.valueOf(str).booleanValue();
+	}
+
+	public byte parseByte(String str) {
+		return (str == null) ? 0 : Byte.parseByte(str);
+	}
+
+	public short parseShort(String str) {
+		return (str == null) ? 0 : Short.parseShort(str);
+	}
+
+	public int parseInt(String str) {
+		return (str == null) ? 0 : Integer.parseInt(str);
+	}
+
+	public long parseLong(String str) {
+		return (str == null) ? 0 : Long.parseLong(str);
+	}
+
+	public float parseFloat(String str) {
+		return (str == null) ? 0 : Float.parseFloat(str);
+	}
+
+	public double parseDouble(String str) {
+		return (str == null) ? 0 : Double.parseDouble(str);
+	}
+
+	public byte[] parseBytes(String str) {
+        return (str == null) ? null : str.getBytes();
+    }
+	
+	public BigDecimal parseBigDecimal(String str) {
+		return (str == null) ? null : new BigDecimal(str);
+	}
+	
+	public Date parseDate(String str) {
+		String datePart = str.substring(0, 10);
+		Date sqlResult = Date.valueOf(datePart);
+		return sqlResult;
+	}
+
+	public Time parseTime(String str) {
+		return (str == null) ? null : Time.valueOf(str);
+	}
+
+	public Timestamp parseTimestamp(String str) {
+		return (str == null) ? null : Timestamp.valueOf(str);
+	}
+
+	public InputStream parseAsciiStream(String str) {
+		return (str == null) ? null : new ByteArrayInputStream(str.getBytes());
+	}
+
+	static protected Map converterMethodForClass = new HashMap(){
+		private static final long serialVersionUID = -3037117163532338893L;
+		Class[] argTypes = new Class[1];
+		Class containerClass = null;
+		{
+			try {
+				argTypes[0] = Class.forName("java.lang.String");
+				containerClass = Class.forName("org.relique.jdbc.csv.CsvResultSet");
+				put("String", containerClass.getMethod("parseString", argTypes));
+				put("Boolean", containerClass.getMethod("parseBoolean", argTypes));
+				put("Byte", containerClass.getMethod("parseByte", argTypes));
+				put("Short", containerClass.getMethod("parseShort", argTypes));
+				put("Int", containerClass.getMethod("parseInt", argTypes));
+				put("Long", containerClass.getMethod("parseLong", argTypes));
+				put("Float", containerClass.getMethod("parseFloat", argTypes));
+				put("Double", containerClass.getMethod("parseDouble", argTypes));
+				put("BigDecimal", containerClass.getMethod("parseBigDecimal", argTypes));
+				put("Date", containerClass.getMethod("parseDate", argTypes));
+				put("Time", containerClass.getMethod("parseTime", argTypes));
+				put("Timestamp", containerClass.getMethod("parseTimestamp", argTypes));
+				put("AsciiStream", containerClass.getMethod("parseAsciiStream", argTypes));
+				/*
+				 * TODO, maybe...
+				 * put("UnicodeStream", containerClass.getMethod("parseUnicodeStream", argTypes));
+				 * put("BinaryStream", containerClass.getMethod("parseBinaryStream", argTypes));
+				 * put("Blob", containerClass.getMethod("parseBlob", argTypes));
+				 * put("Clob", containerClass.getMethod("parseClob", argTypes));
+				 * put("Array", containerClass.getMethod("parseArray", argTypes));
+				 * put("URL", containerClass.getMethod("parseURL", argTypes));
+				 * put("NCharacterStream", containerClass.getMethod("parseNCharacterStream", argTypes));
+				 * put("NClob", containerClass.getMethod("parseNClob", argTypes));
+				 * put("NString", containerClass.getMethod("parseNString", argTypes));
+				 * put("RowId", containerClass.getMethod("parseRowId", argTypes));
+				 * put("SQLXML", containerClass.getMethod("parseSQLXML", argTypes));
+				 */
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			}
+		}
+	};
+	
     /** Metadata for this ResultSet */
     protected ResultSetMetaData resultSetMetaData;
 
@@ -81,11 +197,14 @@ public class CsvResultSet implements ResultSet {
      * @param reader Helper class that performs the actual file reads
      * @param tableName Table referenced by the Statement
      * @param columns Array of available columns for referenced table
+     * @param whereColumnName 
      * @throws ClassNotFoundException 
      */
     protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
-                           String tableName, Column[] columns, int isScrollable) throws ClassNotFoundException {
-    	this(statement,reader,tableName,columns,isScrollable,-1,null, "java.lang.String");
+			String tableName, Column[] columns, int isScrollable,
+			String whereColumnName) throws ClassNotFoundException {
+		this(statement, reader, tableName, columns, isScrollable,
+				whereColumnName, null, CsvDriver.DEFAULT_COLUMN_TYPES);
     }
     /**
      * Constructor for the CsvResultSet object 
@@ -94,59 +213,65 @@ public class CsvResultSet implements ResultSet {
      * @param reader Helper class that performs the actual file reads
      * @param tableName Table referenced by the Statement
      * @param columns Array of available columns for referenced table
-     * @param whereColumn The zero base number for the column
      * @param whereValue The string to be sought for
      * @param columnTypes A comma-separated string specifying the type of the i-th column.
+     * @param whereColumnName the name of the column, needed late by a select *
      * @throws ClassNotFoundException in case the typed columns fail
      */
     protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
-			String tableName, Column[] columns, int isScrollable,
-			int whereColumn, String whereValue, String columnTypes) throws ClassNotFoundException {
+			String tableName, Column[] columns, int isScrollable, String whereColumnName,
+			String whereValue, String columnTypes) throws ClassNotFoundException {
         this.statement = statement;
         this.isScrollable = isScrollable;
         this.reader = reader;
         this.tableName = tableName;
         this.columns = columns;
         this.whereValue = whereValue;
+        this.whereColumn = -1;
         if(columns[0].getName().equals("*")) {
             String[] columnNames = reader.getColumnNames();
             this.columns = new Column[columnNames.length];
             for (int i = 0; i < columnNames.length; i++) {
 				this.columns[i] = new Column(columnNames[i], i, columnNames[i]);
+				if(columnNames[i].equalsIgnoreCase(whereColumnName))
+					this.whereColumn = i;
 			}
-            this.whereColumn = whereColumn;
         } else {
         	// update the position field of the columns array elements that are
 			// not constant...
             String[] columnNames = reader.getColumnNames();
-            Map columnPos = new HashMap();
+            // helper map to find the DB position of the DB name
+            Map dbNameToDBPos = new HashMap();
+            // helper map to find the DB position of the alias
+            Map aliasToDBPos = new HashMap();
             for (int i=0; i< columnNames.length; i++) {
-            	columnPos.put(columnNames[i].toLowerCase(), new Integer(i));
+            	dbNameToDBPos.put(columnNames[i].toLowerCase(), new Integer(i));
             }
             for (int i=0; i< this.columns.length; i++) {
             	if (columns[i].getPosition() == -1)
             		continue;
-            	columns[i].setPosition(((Integer) columnPos.get(columns[i]
-						.getDBName().toLowerCase())).intValue());
+            	Integer pos = (Integer)(dbNameToDBPos.get(columns[i]
+						.getDBName().toLowerCase()));
+            	aliasToDBPos.put(columns[i].getName().toLowerCase(), pos);
+            	columns[i].setPosition(pos.intValue());
 			}
-            if (whereColumn == -1) {
-				this.whereColumn = -1;
-			} else {
-				this.whereColumn = (((Integer) columnPos
-						.get(columns[whereColumn].getDBName().toLowerCase()))
-						.intValue());
+            if (whereColumnName != null) {
+				Integer t = (Integer)(aliasToDBPos
+						.get(whereColumnName.toLowerCase()));
+				if (t != null)
+					this.whereColumn = t.intValue();
 			}
             
         }
         if (columnTypes.contains(",")){
         	String[] typeNames = columnTypes.split(",");
         	for(int i=0; i<typeNames.length; i++){
-        		columns[i].setType(Class.forName(typeNames[i]));
+        		columns[i].setTypeName(typeNames[i]);
         	}
         }
         else if (!columnTypes.equals("")){
         	for(int i=0; i<columns.length; i++){
-        		columns[i].setType(Class.forName(columnTypes));
+        		columns[i].setTypeName(columnTypes);
         	}
         }
     }
@@ -171,7 +296,7 @@ public class CsvResultSet implements ResultSet {
     	boolean answer = false;
     	answer = reader.next();
     	//We have a where clause, honor it    	
-    	if(whereColumn>-1) {      		
+    	if(whereColumn>-1) {
     		while(answer && !reader.getField(whereColumn).equals(whereValue)) {
     			answer = reader.next();
     		}
@@ -258,8 +383,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public boolean getBoolean(int columnIndex) throws SQLException {
-        String str = getString(columnIndex);
-        return (str == null) ? false : Boolean.valueOf(str).booleanValue();
+        return parseBoolean(getString(columnIndex));
     }
 
     /**
@@ -273,8 +397,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public byte getByte(int columnIndex) throws SQLException {
-        String str = getString(columnIndex);
-        return (str == null) ? 0 : Byte.parseByte(str);
+        return parseByte(getString(columnIndex));
     }
 
     /**
@@ -288,8 +411,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public short getShort(int columnIndex) throws SQLException {
-        String str = getString(columnIndex);
-        return (str == null) ? 0 : Short.parseShort(str);
+        return parseShort(getString(columnIndex));
     }
 
     /**
@@ -303,8 +425,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public int getInt(int columnIndex) throws SQLException {
-        String str = getString(columnIndex);
-        return (str == null) ? 0 : Integer.parseInt(str);
+        return parseInt(getString(columnIndex));
     }
 
     /**
@@ -318,8 +439,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public long getLong(int columnIndex) throws SQLException {
-        String str = getString(columnIndex);
-        return (str == null) ? 0L : Long.parseLong(str);
+        return parseLong(getString(columnIndex));
     }
 
     /**
@@ -333,8 +453,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public float getFloat(int columnIndex) throws SQLException {
-        String str = getString(columnIndex);
-        return (str == null) ? 0F : Float.parseFloat(str);
+        return parseFloat(getString(columnIndex));
     }
 
     /**
@@ -348,8 +467,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public double getDouble(int columnIndex) throws SQLException {
-        String str = getString(columnIndex);
-        return (str == null) ? 0D : Double.parseDouble(str);
+        return parseDouble(getString(columnIndex));
     }
 
     /**
@@ -382,8 +500,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public byte[] getBytes(int columnIndex) throws SQLException {
-        String str = getString(columnIndex);
-        return (str == null) ? null : str.getBytes();
+        return parseBytes(getString(columnIndex));
     }
 
     /**
@@ -397,8 +514,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Date getDate(int columnIndex) throws SQLException  {
-        String str = getString(columnIndex);
-        return (str == null) ? null : Date.valueOf(str);
+        return parseDate(getString(columnIndex));
     }
 
     /**
@@ -412,8 +528,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Time getTime(int columnIndex) throws SQLException {
-        String str = getString(columnIndex);
-        return (str == null) ? null : Time.valueOf(str);
+        return parseTime(getString(columnIndex));
     }
 
     /**
@@ -427,8 +542,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Timestamp getTimestamp(int columnIndex) throws SQLException {
-        String str = getString(columnIndex);
-        return (str == null) ? null : Timestamp.valueOf(str);
+        return parseTimestamp(getString(columnIndex));
     }
 
     /**
@@ -454,9 +568,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public InputStream getAsciiStream(int columnIndex) throws SQLException {
-        String str = getString(columnIndex);
-        is = new ByteArrayInputStream(str.getBytes());
-        return (str == null) ? null : is;
+        return parseAsciiStream(getString(columnIndex));
     }
 
     /**
@@ -894,10 +1006,10 @@ public class CsvResultSet implements ResultSet {
      * <p>This method may also be used to read datatabase-specific
      * abstract data types.
      *
-     * In the JDBC 2.0 API, the behavior of method
+     * In the JDBC 2.0 API, the behaviour of method
      * <code>getObject</code> is extended to materialize
      * data of SQL user-defined types.  When a column contains
-     * a structured or distinct value, the behavior of this method is as
+     * a structured or distinct value, the behaviour of this method is as
      * if it were a call to: <code>getObject(columnIndex,
      * this.getStatement().getConnection().getTypeMap())</code>.
      *
@@ -906,44 +1018,22 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Object getObject(int columnIndex) throws SQLException {
-    	Class type = this.columns[columnIndex-1].getType();
-    	if (type == null) {
+    	String typeName = this.columns[columnIndex-1].getTypeName();
+    	if (typeName == null) {
             return getString(columnIndex);
     	} else {
-			Class[] stringClass = new Class[1];
-			Object result = null;
+    		Object[] args = new Object[1];
+    		args[0] = getString(columnIndex);
 			try {
-				stringClass[0] = Class.forName("java.lang.String");
-				Constructor c = type.getConstructor(stringClass);
-				Object[] params = new Object[1];
-				params[0] = getString(columnIndex);
-				result = c.newInstance(params);
+				return ((Method)(converterMethodForClass.get(typeName))).invoke(this, args);
 			} catch (IllegalArgumentException e) {
-				DateFormat dfp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				try {
-					return dfp.parse(getString(columnIndex));
-				} catch (ParseException e1) {
-					e1.printStackTrace();
-				}
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			} catch (InvocationTargetException e) {
-				DateFormat dfp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				try {
-					return dfp.parse(getString(columnIndex));
-				} catch (ParseException e1) {
-					e1.printStackTrace();
-				}
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
 				e.printStackTrace();
 			}
-			return result;
+			return null;
     	}
     }
 

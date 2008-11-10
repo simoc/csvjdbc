@@ -24,7 +24,7 @@
  * the type of the data for the column for proper type conversion.
  * 
  * @author Mario Frasca
- * @version $Id: Column.java,v 1.2 2008/11/07 15:36:42 mfrasca Exp $
+ * @version $Id: Column.java,v 1.3 2008/11/10 13:41:19 mfrasca Exp $
  * 
  */
 package org.relique.jdbc.csv;
@@ -33,7 +33,7 @@ public class Column {
 	private String name;
 	private String value;
 	private int position;
-	private Class type;
+	private String typeName;
 
 	public Column(String value) {
 		this.setName(value);
@@ -51,19 +51,15 @@ public class Column {
 		this.setName(name);
 		this.setPosition(i);
 		this.setValue(value);
-		try {
-			this.setType(Class.forName(typeName));
-		} catch (ClassNotFoundException e) {
-			this.setType(null);
-		}
+		this.setTypeName(typeName);
 	}
 
-	public void setType(Class type) {
-		this.type = type;
+	public void setTypeName(String type) {
+		this.typeName = type;
 	}
 
-	public Class getType() {
-		return(this.type);
+	public String getTypeName() {
+		return(this.typeName);
 	}
 
 	public void setName(String name) {

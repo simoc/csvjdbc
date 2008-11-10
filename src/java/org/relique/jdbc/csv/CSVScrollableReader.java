@@ -27,7 +27,7 @@ import java.util.Map;
  *This class Class provides facility to navigate on the Result Set.
  *
  * @author     Chetan Gupta
- * @version    $Id: CSVScrollableReader.java,v 1.5 2008/11/07 11:29:29 mfrasca Exp $
+ * @version    $Id: CSVScrollableReader.java,v 1.6 2008/11/10 13:41:19 mfrasca Exp $
  */
 public class CSVScrollableReader extends CSVReaderAdapter {
   //---------------------------------------------------------------------
@@ -55,7 +55,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
   public CSVScrollableReader(String fileName, char c, boolean b, String string, char d, String string2, String string3, boolean e, Map map) throws Exception {
     this(fileName, ',', false, null,
     		'"', "", CsvDriver.DEFAULT_EXTENSION, true, 
-    		-1, null);
+    		null, null);
   }
 
 
@@ -75,18 +75,27 @@ public class CSVScrollableReader extends CSVReaderAdapter {
   public CSVScrollableReader(
     String fileName, char separator, boolean suppressHeaders, String charset, 
     char quoteChar, String headerLine, String extension,boolean trimHeaders,
-	int whereColumn, String whereValue)
+	String whereColumnName, String whereValue)
     		throws java.lang.Exception {
 
   	super(fileName, separator, suppressHeaders, charset, quoteChar, headerLine, extension, trimHeaders);
 
-    loopAndFetchData(input, buf, whereColumn, whereValue);
+    loopAndFetchData(input, buf, whereColumnName, whereValue);
     iRecordNo = FIRST_RECORD - 1;
   }
 
-  private void loopAndFetchData(BufferedReader input, String buf, int whereColumn, String whereValue) throws SQLException {
+  private void loopAndFetchData(BufferedReader input, String buf, String whereColumnName, String whereValue) throws SQLException {
     alRecords = new ArrayList();
     String dataLine = null;
+    int whereColumn=-1;
+    if (whereColumnName != null) {
+		for (int i = 0; i < columnNames.length; i++) {
+			if (columnNames[i].equalsIgnoreCase(whereColumnName)) {
+				whereColumn = i;
+				break;
+			}
+		}
+	}
     try {
 	    while (true) {
 	        fieldValues = new String[columnNames.length];
@@ -103,8 +112,8 @@ public class CSVScrollableReader extends CSVReaderAdapter {
 	          break;
 	        }
 	        fieldValues = parseCsvLine(dataLine, false);
-	        if ( (whereColumn == -1) || // if no where clause
-	        		( (whereColumn != -1) && (fieldValues[whereColumn].equals(whereValue))) // or satisfies where clause
+	        if ( (whereColumnName == null) || // if no where clause
+	        		( (whereColumnName != null) && (fieldValues[whereColumn].equals(whereValue))) // or satisfies where clause
 	        		) {
 		        alRecords.add(fieldValues);
 	        } else {

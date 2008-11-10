@@ -31,7 +31,7 @@ import java.util.Vector;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.15 2008/11/07 15:36:42 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.16 2008/11/10 13:41:19 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -342,7 +342,7 @@ public class CsvStatement implements Statement {
 						.getSeparator(), connection.isSuppressHeaders(),
 						connection.getCharset(), connection.getQuotechar(),
 						connection.getHeaderline(), connection.getExtension(),
-						connection.getTrimHeaders(), parser.getWhereColumn(),
+						connection.getTrimHeaders(), parser.getWhereColumnName(),
 						parser.getWhereValue());
 			} else {
 				reader = new CsvReader(fileName, connection.getSeparator(),
@@ -359,7 +359,7 @@ public class CsvStatement implements Statement {
 		try {
 			resultSet = new CsvResultSet(this, reader, parser
 					.getTableName(), parser.getColumns(), this.isScrollable, parser
-					.getWhereColumn(), parser.getWhereValue(), connection.getColumnTypes());
+					.getWhereColumnName(), parser.getWhereValue(), connection.getColumnTypes());
 			resultSets.add(resultSet);
 		} catch (ClassNotFoundException e) {
 			DriverManager.println("" + e);

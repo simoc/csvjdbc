@@ -38,7 +38,7 @@ import java.util.Vector;
  * @author     Christoph Langer
  * @author     Mario Frasca
  * @created    01 March 2004
- * @version    $Id: CSVReaderAdapter.java,v 1.8 2008/11/07 11:29:29 mfrasca Exp $
+ * @version    $Id: CSVReaderAdapter.java,v 1.9 2008/11/10 13:41:19 mfrasca Exp $
  */
 
 public abstract class CSVReaderAdapter
@@ -132,7 +132,7 @@ public abstract class CSVReaderAdapter
   }
 
   /**
-	 * Get the value of the column at the specified index.
+	 * Get the value of the column at the specified index, 0 based.
 	 * 
 	 * @param columnIndex
 	 *            Description of Parameter

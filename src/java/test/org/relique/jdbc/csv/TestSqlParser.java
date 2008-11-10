@@ -27,7 +27,7 @@ import junit.framework.*;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.5 2008/11/07 15:36:42 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.6 2008/11/10 13:41:19 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -115,27 +115,27 @@ public class TestSqlParser extends TestCase {
 		SqlParser parser = new SqlParser();
 		parser.parse("SELECT FLD_A, FLD_B FROM test WHERE FLD_A = 20");
 		assertEquals("Incorrect table name", "test", parser.getTableName());
-		assertEquals("Incorrect WHERE column index", 0, parser.getWhereColumn());
+		assertEquals("Incorrect WHERE column", "FLD_A", parser.getWhereColumnName());
 		assertEquals("Incorrect WHERE value", "20", parser.getWhereValue());
 
 		parser.parse("SELECT FLD_A, FLD_B FROM test WHERE FLD_A = '20'");
 		assertEquals("Incorrect table name", "test", parser.getTableName());
-		assertEquals("Incorrect WHERE column index", 0, parser.getWhereColumn());
+		assertEquals("Incorrect WHERE column", "FLD_A", parser.getWhereColumnName());
 		assertEquals("Incorrect WHERE value", "20", parser.getWhereValue());
 
 		parser.parse("SELECT FLD_A,FLD_B FROM test WHERE FLD_A =20");
 		assertEquals("Incorrect table name", "test", parser.getTableName());
-		assertEquals("Incorrect WHERE column index", 0, parser.getWhereColumn());
+		assertEquals("Incorrect WHERE column", "FLD_A", parser.getWhereColumnName());
 		assertEquals("Incorrect WHERE value", "20", parser.getWhereValue());
 
 		parser.parse("SELECT FLD_A FROM test WHERE FLD_A=20");
 		assertEquals("Incorrect table name", "test", parser.getTableName());
-		assertEquals("Incorrect WHERE column index", 0, parser.getWhereColumn());
+		assertEquals("Incorrect WHERE column", "FLD_A", parser.getWhereColumnName());
 		assertEquals("Incorrect WHERE value", "20", parser.getWhereValue());
 
 		parser.parse("SELECT FLD_A, FLD_B FROM test WHERE FLD_B='Test Me'");
 		assertEquals("Incorrect table name", "test", parser.getTableName());
-		assertEquals("Incorrect WHERE column index", 1, parser.getWhereColumn());
+		assertEquals("Incorrect WHERE column", "FLD_B", parser.getWhereColumnName());
 		assertEquals("Incorrect WHERE value", "Test Me", parser.getWhereValue());
 	}
 
