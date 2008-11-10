@@ -43,9 +43,6 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +54,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.19 2008/11/10 13:41:19 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.20 2008/11/10 13:43:37 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
