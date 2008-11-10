@@ -39,7 +39,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.13 2008/11/10 13:41:19 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.14 2008/11/10 14:39:13 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -570,6 +570,46 @@ public class TestCsvDriver extends TestCase {
 				.executeQuery("SELECT * FROM sample4 WHERE Job = 'Project Manager' AND Name = 'Mauricio Hernandez'");
 		assertTrue(results.next());
 		assertEquals("The ID is wrong", "02", results.getString("ID"));
+		assertTrue(!results.next());
+	}
+
+	/**
+	 * @throws SQLException
+	 */
+	public void testWhereWithBetweenOperator() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM sample4 WHERE id BETWEEN 2 AND 3");
+				
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", 2, results.getInt("ID"));
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", 3, results.getInt("ID"));
+		assertTrue(!results.next());
+	}
+
+	/**
+	 * @throws SQLException
+	 */
+	public void testWhereWithUnselectedColumn() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT Name, Job FROM sample4 WHERE id = '04'");
+		assertTrue(results.next());
+		try{
+			assertNull(results.getString("id"));
+			fail("Should not find the column 'id'");
+		} catch(SQLException e) {
+		}
+		assertEquals("The name is wrong", "Felipe Grajales", results.getString("name"));
 		assertTrue(!results.next());
 	}
 

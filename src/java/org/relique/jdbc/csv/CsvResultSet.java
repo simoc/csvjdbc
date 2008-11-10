@@ -54,7 +54,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.20 2008/11/10 13:43:37 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.21 2008/11/10 14:39:13 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -255,6 +255,8 @@ public class CsvResultSet implements ResultSet {
             if (whereColumnName != null) {
 				Integer t = (Integer)(aliasToDBPos
 						.get(whereColumnName.toLowerCase()));
+				if (t == null)
+					t = (Integer)(dbNameToDBPos.get(whereColumnName.toLowerCase()));
 				if (t != null)
 					this.whereColumn = t.intValue();
 			}
