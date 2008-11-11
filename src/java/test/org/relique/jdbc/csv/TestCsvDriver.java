@@ -40,7 +40,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.15 2008/11/11 09:21:32 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.16 2008/11/11 10:01:22 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -655,6 +655,34 @@ public class TestCsvDriver extends TestCase {
 		}
 		assertEquals("The name is wrong", "Felipe Grajales", results.getString("name"));
 		assertTrue(!results.next());
+	}
+
+	/**
+	 * @throws SQLException
+	 */
+	public void test1073375() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("separator", "\t");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM jo");
+		assertTrue(results.next());
+		try{
+			assertNull(results.getString("id"));
+			fail("Should not find the column 'id'");
+		} catch(SQLException e) {
+		}
+		assertEquals("The name is wrong", "3", results.getString("rc"));
+		//would like to test the full_name_nd, but can't insert the Arabic string in the code
+		assertTrue(results.next());
+		assertEquals("The name is wrong", "3", results.getString("rc"));
+		assertTrue(results.next());
+		assertEquals("The name is wrong", "3", results.getString("rc"));
+		assertEquals("The name is wrong", "Tall Dhayl", results.getString("full_name_nd"));
 	}
 
 }
