@@ -40,7 +40,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.16 2008/11/11 10:01:22 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.17 2008/11/11 12:53:20 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -403,8 +403,9 @@ public class TestCsvDriver extends TestCase {
 				+ "FROM sample5 WHERE Job = 'Project Manager'");
 		
 		assertTrue(results.next());
-		assertEquals("the start time is wrong", "2001-01-02 12:30:00", results.getObject("start"));
-		assertEquals("The ID is wrong", "01", results.getObject("id"));
+		java.sql.Timestamp shouldBe = java.sql.Timestamp.valueOf("2001-01-02 12:30:00");
+		assertEquals("the start time is wrong", shouldBe, results.getObject("start"));
+		assertEquals("The ID is wrong", new Integer(1), results.getObject("id"));
 		assertEquals("The Name is wrong", "Juan Pablo Morales", results.getObject("name"));
 	}
 	
