@@ -29,6 +29,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Properties;
+import java.sql.Types;
 
 import junit.framework.TestCase;
 
@@ -39,7 +40,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.14 2008/11/10 14:39:13 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.15 2008/11/11 09:21:32 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -260,6 +261,61 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
+	public void testMetadataWithSupressedHeaders() throws SQLException {
+		Properties props = new Properties();
+		props.put("suppressHeaders", "true");
+	
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+	
+		Statement stmt = conn.createStatement();
+	
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+	
+		ResultSetMetaData metadata = results.getMetaData();
+	
+		assertTrue("Incorrect Table Name", metadata.getTableName(0).equals(
+				"sample"));
+	
+		assertTrue("Incorrect Column Name 1", metadata.getColumnName(1).equals(
+				"COLUMN1"));
+		assertTrue("Incorrect Column Name 2", metadata.getColumnName(2).equals(
+				"COLUMN2"));
+		assertTrue("Incorrect Column Name 3", metadata.getColumnName(3).equals(
+				"COLUMN3"));
+	
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+
+	public void testMetadataWithColumnType() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Timestamp");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT id, name, job, start FROM sample5");
+
+		ResultSetMetaData metadata = results.getMetaData();
+
+		assertEquals("type of column 1 is incorrect", "Int", metadata.getColumnTypeName(1));
+		assertEquals("type of column 2 is incorrect", "String", metadata.getColumnTypeName(2));
+		assertEquals("type of column 3 is incorrect", "String", metadata.getColumnTypeName(3));
+		assertEquals("type of column 4 is incorrect", "Timestamp", metadata.getColumnTypeName(4));
+
+		assertEquals("type of column 1 is incorrect", Types.INTEGER, metadata.getColumnType(1));
+		assertEquals("type of column 2 is incorrect", Types.CHAR, metadata.getColumnType(2));
+		assertEquals("type of column 3 is incorrect", Types.CHAR, metadata.getColumnType(3));
+		assertEquals("type of column 4 is incorrect", Types.TIMESTAMP, metadata.getColumnType(4));
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+
 	public void testColumnTypesUserSpecified() throws SQLException, ParseException {
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date");
@@ -336,34 +392,22 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The Name is wrong", "Juan Pablo Morales", results.getObject("name"));
 	}
 	
-	public void testMetadataWithSupressedHeaders() throws SQLException {
+	public void testColumnTypesWithSelectStar() throws SQLException, ParseException {
 		Properties props = new Properties();
-		props.put("suppressHeaders", "true");
+		props.put("columnTypes", "Int,String,String,Timestamp");
 
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
-
 		Statement stmt = conn.createStatement();
-
-		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
-
-		ResultSetMetaData metadata = results.getMetaData();
-
-		assertTrue("Incorrect Table Name", metadata.getTableName(0).equals(
-				"sample"));
-
-		assertTrue("Incorrect Column Name 1", metadata.getColumnName(1).equals(
-				"COLUMN1"));
-		assertTrue("Incorrect Column Name 2", metadata.getColumnName(2).equals(
-				"COLUMN2"));
-		assertTrue("Incorrect Column Name 3", metadata.getColumnName(3).equals(
-				"COLUMN3"));
-
-		results.close();
-		stmt.close();
-		conn.close();
+		ResultSet results = stmt.executeQuery("SELECT * "
+				+ "FROM sample5 WHERE Job = 'Project Manager'");
+		
+		assertTrue(results.next());
+		assertEquals("the start time is wrong", "2001-01-02 12:30:00", results.getObject("start"));
+		assertEquals("The ID is wrong", "01", results.getObject("id"));
+		assertEquals("The Name is wrong", "Juan Pablo Morales", results.getObject("name"));
 	}
-
+	
 	public void testWithSuppressedHeaders() throws SQLException {
 		Properties props = new Properties();
 		props.put("suppressHeaders", "true");
