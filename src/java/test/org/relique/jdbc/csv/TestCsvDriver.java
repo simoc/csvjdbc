@@ -40,7 +40,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.17 2008/11/11 12:53:20 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.18 2008/11/11 13:23:06 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -301,15 +301,15 @@ public class TestCsvDriver extends TestCase {
 
 		ResultSetMetaData metadata = results.getMetaData();
 
+		assertEquals("type of column 1 is incorrect", Types.INTEGER, metadata.getColumnType(1));
+		assertEquals("type of column 2 is incorrect", Types.VARCHAR, metadata.getColumnType(2));
+		assertEquals("type of column 3 is incorrect", Types.VARCHAR, metadata.getColumnType(3));
+		assertEquals("type of column 4 is incorrect", Types.TIMESTAMP, metadata.getColumnType(4));
+
 		assertEquals("type of column 1 is incorrect", "Int", metadata.getColumnTypeName(1));
 		assertEquals("type of column 2 is incorrect", "String", metadata.getColumnTypeName(2));
 		assertEquals("type of column 3 is incorrect", "String", metadata.getColumnTypeName(3));
 		assertEquals("type of column 4 is incorrect", "Timestamp", metadata.getColumnTypeName(4));
-
-		assertEquals("type of column 1 is incorrect", Types.INTEGER, metadata.getColumnType(1));
-		assertEquals("type of column 2 is incorrect", Types.CHAR, metadata.getColumnType(2));
-		assertEquals("type of column 3 is incorrect", Types.CHAR, metadata.getColumnType(3));
-		assertEquals("type of column 4 is incorrect", Types.TIMESTAMP, metadata.getColumnType(4));
 
 		results.close();
 		stmt.close();

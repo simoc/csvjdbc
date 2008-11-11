@@ -18,13 +18,15 @@ package org.relique.jdbc.csv;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *This class implements the ResultSetMetaData interface for the CsvJdbc driver.
  *
  * @author     Jonathan Ackerman
  * @author     JD Evora
- * @version    $Id: CsvResultSetMetaData.java,v 1.5 2008/11/07 11:29:30 mfrasca Exp $
+ * @version    $Id: CsvResultSetMetaData.java,v 1.6 2008/11/11 13:23:06 mfrasca Exp $
  */
 public class CsvResultSetMetaData implements ResultSetMetaData
 {
@@ -229,11 +231,33 @@ public class CsvResultSetMetaData implements ResultSetMetaData
   }
 
 
+  private Map typeNameToTypeCode = new HashMap() {
+	private static final long serialVersionUID = -8819579540085202365L;
+
+	{
+		  put("String", new Integer(Types.VARCHAR));
+		  put("Boolean", new Integer(Types.BOOLEAN));
+		  put("Byte", new Integer(Types.TINYINT));
+		  put("Short", new Integer(Types.SMALLINT));
+		  put("Int", new Integer(Types.INTEGER));
+		  put("Long", new Integer(Types.BIGINT));
+		  put("Float", new Integer(Types.FLOAT));
+		  put("Double", new Integer(Types.DOUBLE));
+		  put("BigDecimal", new Integer(Types.DECIMAL));
+		  put("Date", new Integer(Types.DATE));
+		  put("Time", new Integer(Types.TIME));
+		  put("Timestamp", new Integer(Types.TIMESTAMP));
+		  put("Blob", new Integer(Types.BLOB));
+		  put("Clob", new Integer(Types.CLOB));
+	  }
+  };
+  
   /**Comments to be done
    */
   public int getColumnType(int column) throws SQLException
   {
-    return Types.VARCHAR;
+    Integer value = (Integer) typeNameToTypeCode.get(getColumnTypeName(column));
+    return value.intValue();
   }
 
 
@@ -241,7 +265,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData
    */
   public String getColumnTypeName(int column) throws SQLException
   {
-    return String.class.getName();
+    return columns[column-1].getTypeName();
   }
 
 
