@@ -54,7 +54,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.22 2008/11/11 12:53:20 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.23 2008/11/12 16:06:56 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -67,49 +67,93 @@ public class CsvResultSet implements ResultSet {
 	}
 
 	public byte parseByte(String str) {
-		return (str == null) ? 0 : Byte.parseByte(str);
+		try {
+			return (str == null) ? 0 : Byte.parseByte(str);
+		} catch (RuntimeException e) {
+			return 0;
+		}
 	}
 
 	public short parseShort(String str) {
-		return (str == null) ? 0 : Short.parseShort(str);
+		try {
+			return (str == null) ? 0 : Short.parseShort(str);
+		} catch (RuntimeException e) {
+			return 0;
+		}
 	}
 
 	public int parseInt(String str) {
-		return (str == null) ? 0 : Integer.parseInt(str);
+		try {
+			return (str == null) ? 0 : Integer.parseInt(str);
+		} catch (RuntimeException e) {
+			return 0;
+		}
 	}
 
 	public long parseLong(String str) {
-		return (str == null) ? 0 : Long.parseLong(str);
+		try {
+			return (str == null) ? 0 : Long.parseLong(str);
+		} catch (RuntimeException e) {
+			return 0;
+		}
 	}
 
 	public float parseFloat(String str) {
-		return (str == null) ? 0 : Float.parseFloat(str);
+		try {
+			return (str == null) ? 0 : Float.parseFloat(str);
+		} catch (RuntimeException e) {
+			return 0;
+		}
 	}
 
 	public double parseDouble(String str) {
-		return (str == null) ? 0 : Double.parseDouble(str);
+		try {
+			return (str == null) ? 0 : Double.parseDouble(str);
+		} catch (RuntimeException e) {
+			return 0;
+		}
 	}
 
 	public byte[] parseBytes(String str) {
-        return (str == null) ? null : str.getBytes();
-    }
-	
-	public BigDecimal parseBigDecimal(String str) {
-		return (str == null) ? null : new BigDecimal(str);
+		try {
+			return (str == null) ? null : str.getBytes();
+		} catch (RuntimeException e) {
+			return null;
+		}
 	}
-	
+
+	public BigDecimal parseBigDecimal(String str) {
+		try {
+			return (str == null) ? null : new BigDecimal(str);
+		} catch (RuntimeException e) {
+			return null;
+		}
+	}
+
 	public Date parseDate(String str) {
-		String datePart = str.substring(0, 10);
-		Date sqlResult = Date.valueOf(datePart);
-		return sqlResult;
+		try {
+			String datePart = str.substring(0, 10);
+			Date sqlResult = Date.valueOf(datePart);
+			return sqlResult;
+		} catch (RuntimeException e) {
+			return null;
+		}
 	}
 
 	public Time parseTime(String str) {
-		return (str == null) ? null : Time.valueOf(str);
+		try {
+			return (str == null) ? null : Time.valueOf(str);
+		} catch (RuntimeException e) {
+			return null;
+		}
 	}
 
 	public Timestamp parseTimestamp(String str) {
-		return (str == null) ? null : Timestamp.valueOf(str);
+		try {
+			return (str == null) ? null : Timestamp.valueOf(str);
+		} catch (RuntimeException e) {
+			return null;
+		}
 	}
 
 	public InputStream parseAsciiStream(String str) {
@@ -187,6 +231,8 @@ public class CsvResultSet implements ResultSet {
     
     /** InputStream to keep track of */
     protected InputStream is;
+
+	private boolean mustInferTypeNames;
     /**
      * Constructor for the CsvResultSet object
      *
@@ -262,13 +308,16 @@ public class CsvResultSet implements ResultSet {
 			}
             
         }
+    	this.mustInferTypeNames = false;
         if (columnTypes.contains(",")){
         	String[] typeNames = columnTypes.split(",");
         	for(int i=0; i<typeNames.length; i++){
         		this.columns[i].setTypeName(typeNames[i]);
         	}
         }
-        else if (!columnTypes.equals("")){
+        else if (columnTypes.equals("")){
+        	this.mustInferTypeNames = true;
+        }else{
         	for(int i=0; i<this.columns.length; i++){
         		this.columns[i].setTypeName(columnTypes);
         	}
@@ -294,6 +343,9 @@ public class CsvResultSet implements ResultSet {
     public boolean next() throws SQLException {
     	boolean answer = false;
     	answer = reader.next();
+    	if (this.mustInferTypeNames) {
+    		inferTypeNames();
+    	}
     	//We have a where clause, honor it    	
     	if(whereColumn>-1) {
     		while(answer && !reader.getField(whereColumn).equals(whereValue)) {
@@ -303,7 +355,40 @@ public class CsvResultSet implements ResultSet {
     	return answer;
     }
 
-    /**
+    private void inferTypeNames() {
+		mustInferTypeNames = false;
+    	for (int i=0; i< this.columns.length; i++){
+    		try {
+    			String typeName = "String";
+				String value = reader.getField(i);
+				if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+					typeName = "Boolean";
+				} else if (value.equals(("" + parseInt(value)))) {
+					typeName = "Int";
+				} else if (value.equals(("" + parseLong(value)))) {
+					typeName = "Long";
+				} else if (value.equals(("" + parseDouble(value)))) {
+					typeName = "Double";
+				} else if (value.equals(("" + parseBytes(value)))) {
+					typeName = "Bytes";
+				} else if (value.equals(("" + parseBigDecimal(value)))) {
+					typeName = "BigDecimal";
+				} else if (value.equals(("" + parseDate(value) + "          ").substring(0, 10))) {
+					typeName = "Date";
+				} else if (value.equals(("" + parseTime(value) + "        ").substring(0, 8))) {
+					typeName = "Time";
+				} else if (value.equals(("" + parseTimestamp(value) + "                   ").substring(0, 19))) {
+					typeName = "Timestamp";
+				} else if (value.equals(("" + parseAsciiStream(value)))) {
+					typeName = "AsciiStream";
+				}
+				columns[i].setTypeName(typeName);
+			} catch (SQLException e) {
+			}
+    	}
+	}
+
+	/**
      * Releases this <code>ResultSet</code> object's database and
      * JDBC resources immediately instead of waiting for
      * this to happen when it is automatically closed.

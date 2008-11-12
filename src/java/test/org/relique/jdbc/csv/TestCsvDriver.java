@@ -40,7 +40,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.18 2008/11/11 13:23:06 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.19 2008/11/12 16:06:56 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -367,14 +367,14 @@ public class TestCsvDriver extends TestCase {
 				+ filePath, props);
 		Statement stmt = conn.createStatement();
 		ResultSet results = stmt.executeQuery("SELECT ID, Name, Job, Start "
-				+ "FROM sample5 WHERE Job = 'Project Manager'");
+				+ "FROM sample5");
 		
 		assertTrue(results.next());
-		DateFormat dfp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		assertEquals("Integer Column ID is wrong", new Integer(1), results.getObject("id"));
-		assertEquals("Integer Column 1 is wrong", new Integer(1), results.getObject(1));
-		assertEquals("Date Column start is wrong", dfp.parse(results.getString("start")), results.getObject("start"));
-		assertEquals("The Name is wrong", "Juan Pablo Morales", results.getObject("name"));
+		ResultSetMetaData metadata = results.getMetaData();
+		assertEquals("type of column 1 is incorrect", Types.INTEGER, metadata.getColumnType(1));
+		assertEquals("type of column 2 is incorrect", Types.VARCHAR, metadata.getColumnType(2));
+		assertEquals("type of column 3 is incorrect", Types.VARCHAR, metadata.getColumnType(3));
+		assertEquals("type of column 4 is incorrect", Types.TIMESTAMP, metadata.getColumnType(4));
 	}
 	
 	public void testColumnTypesDefaultBehaviour() throws SQLException, ParseException {
@@ -684,6 +684,29 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(results.next());
 		assertEquals("The name is wrong", "3", results.getString("rc"));
 		assertEquals("The name is wrong", "Tall Dhayl", results.getString("full_name_nd"));
+	}
+
+	/**
+	 * @throws SQLException
+	 */
+	public void test0733215() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM witheol");
+		assertTrue(results.next());
+		assertEquals("The name is wrong", "1", results.getString("key"));
+		//would like to test the full_name_nd, but can't insert the Arabic string in the code
+		assertTrue(results.next());
+		assertEquals("The name is wrong", "2", results.getString("key"));
+		assertTrue(results.next());
+		assertEquals("The name is wrong", "3", results.getString("key"));
+		assertEquals("The name is wrong", "123\n456\n789", results.getString("value"));
+		assertTrue(!results.next());
 	}
 
 }
