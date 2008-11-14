@@ -30,7 +30,7 @@ import junit.framework.*;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.8 2008/11/14 15:54:54 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.9 2008/11/14 16:03:07 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -239,6 +239,11 @@ public class TestSqlParser extends TestCase {
 		parser.parse("SELECT * FROM test WHERE c='1'");
 		env.clear();
 		env.put("C", new String("1"));
+		assertEquals(true, parser.getWhereClause().eval(env));
+
+		parser.parse("SELECT * FROM test WHERE c=1.0");
+		env.clear();
+		env.put("C", new Double("1.0"));
 		assertEquals(true, parser.getWhereClause().eval(env));
 		
 		parser.parse("SELECT * FROM test WHERE (A='20' OR B='AA') AND c=1");
