@@ -40,7 +40,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.19 2008/11/12 16:06:56 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.20 2008/11/14 14:20:28 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -628,7 +628,7 @@ public class TestCsvDriver extends TestCase {
 		Statement stmt = conn.createStatement();
 
 		ResultSet results = stmt
-				.executeQuery("SELECT * FROM sample4 WHERE id BETWEEN 2 AND 3");
+				.executeQuery("SELECT * FROM sample4 WHERE id BETWEEN '02' AND '03'");
 				
 		assertTrue(results.next());
 		assertEquals("The ID is wrong", 2, results.getInt("ID"));

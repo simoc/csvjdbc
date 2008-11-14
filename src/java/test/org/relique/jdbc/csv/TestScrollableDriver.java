@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 /**This class is used to test the CsvJdbc Scrollable driver.
 *
 * @author Chetan Gupta
-* @version $Id: TestScrollableDriver.java,v 1.6 2008/11/10 13:41:19 mfrasca Exp $
+* @version $Id: TestScrollableDriver.java,v 1.7 2008/11/14 14:20:28 mfrasca Exp $
 */
 public class TestScrollableDriver extends TestCase
 { 
@@ -362,7 +362,7 @@ public class TestScrollableDriver extends TestCase
       Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
 
       
-      ResultSet results = stmt.executeQuery("SELECT ID, Name, Job FROM sample4 WHERE Job = Project Manager");
+      ResultSet results = stmt.executeQuery("SELECT ID, Name, Job FROM sample4 WHERE Job = 'Project Manager'");
       assertTrue(results.next());
       assertEquals("The ID is wrong","01",results.getString("ID"));
       assertTrue(results.next());
