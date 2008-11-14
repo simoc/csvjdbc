@@ -30,7 +30,7 @@ import junit.framework.*;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.7 2008/11/14 14:20:28 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.8 2008/11/14 15:54:54 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -144,28 +144,28 @@ public class TestSqlParser extends TestCase {
 		parser.parse("SELECT * FROM test WHERE A='20'");
 		whereClause = parser.getWhereClause();
 		assertNotNull("query has a WHERE clause", whereClause);
-		assertEquals("Incorrect WHERE operator (level1)", "=",
-				whereClause.toString().substring(0, 1));
+		assertEquals("Incorrect WHERE", "= [A] '20'",
+				whereClause.toString());
 		
 		parser.parse("SELECT * FROM test WHERE A='20' AND B='AA'");
 		whereClause = parser.getWhereClause();
-		assertEquals("Incorrect WHERE operator (level1)", "AND",
-				whereClause.toString().substring(0, 3));
+		assertEquals("Incorrect WHERE", "AND = [A] '20' = [B] 'AA'",
+				whereClause.toString());
 
 		parser.parse("SELECT * FROM test WHERE A='20' OR B='AA'");
 		whereClause = parser.getWhereClause();
-		assertEquals("Incorrect WHERE operator (level1)", "OR",
-				whereClause.toString().substring(0, 2));
+		assertEquals("Incorrect WHERE", "OR = [A] '20' = [B] 'AA'",
+				whereClause.toString());
 
 		parser.parse("SELECT * FROM test WHERE A='20' OR B='AA' AND c=1");
 		whereClause = parser.getWhereClause();
-		assertEquals("Incorrect WHERE operator (level1)", "OR",
-				whereClause.toString().substring(0, 2));
+		assertEquals("Incorrect WHERE", "OR = [A] '20' AND = [B] 'AA' = [C] 1",
+				whereClause.toString());
 
 		parser.parse("SELECT * FROM test WHERE (A='20' OR B='AA') AND c=1");
 		whereClause = parser.getWhereClause();
-		assertEquals("Incorrect WHERE operator (level1)", "AND",
-				whereClause.toString().substring(0, 3));
+		assertEquals("Incorrect WHERE", "AND OR = [A] '20' = [B] 'AA' = [C] 1",
+				whereClause.toString());
 	}
 
 	public void testWhereMoreParsing() throws Exception {
@@ -193,9 +193,24 @@ public class TestSqlParser extends TestCase {
 		} catch (ParseException e) {
 		}
 
+		
 		parser.parse("SELECT * FROM test WHERE B IS NULL");
+		LogicalExpressionParser whereClause = parser.getWhereClause();
+		assertEquals("Incorrect WHERE", "N [B]",
+				whereClause.toString());
 		parser.parse("SELECT * FROM test WHERE B BETWEEN '20' AND 'AA'");
+		whereClause = parser.getWhereClause();
+		assertEquals("Incorrect WHERE", "B [B] '20' 'AA'",
+				whereClause.toString());
 		parser.parse("SELECT * FROM test WHERE B LIKE '20 AND AA'");
+		whereClause = parser.getWhereClause();
+		assertEquals("Incorrect WHERE", "L [B] '20 AND AA'",
+				whereClause.toString());
+
+		parser.parse("SELECT * FROM test WHERE B IS NULL OR B BETWEEN '20' AND 'AA' AND B LIKE '20 AND AA'");
+		whereClause = parser.getWhereClause();
+		assertEquals("Incorrect WHERE", "OR N [B] AND B [B] '20' 'AA' L [B] '20 AND AA'",
+				whereClause.toString());
 
 		try {
 			query = "SELECT * FROM test WHERE a=0 AND FLD_A";
@@ -218,7 +233,7 @@ public class TestSqlParser extends TestCase {
 
 		parser.parse("SELECT * FROM test WHERE c=1");
 		env.clear();
-		env.put("C", new Double("1"));
+		env.put("C", new Integer("1"));
 		assertEquals(true, parser.getWhereClause().eval(env));
 		
 		parser.parse("SELECT * FROM test WHERE c='1'");
@@ -232,7 +247,7 @@ public class TestSqlParser extends TestCase {
 		env.clear();
 		env.put("A", new String("20"));
 		env.put("B", new String("AA"));
-		env.put("C", new Double("1"));
+		env.put("C", new Integer("1"));
 		assertEquals(true, whereClause.eval(env));
 		env.put("A", new Double("20"));
 		assertEquals(true, whereClause.eval(env));
