@@ -30,7 +30,7 @@ import junit.framework.*;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.9 2008/11/14 16:03:07 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.10 2008/11/17 12:38:06 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -228,7 +228,6 @@ public class TestSqlParser extends TestCase {
 	 */
 	public void testWhereEvaluating() throws Exception {
 		SqlParser parser = new SqlParser();
-		LogicalExpressionParser whereClause;
 		Map env = new HashMap();
 
 		parser.parse("SELECT * FROM test WHERE c=1");
@@ -247,7 +246,7 @@ public class TestSqlParser extends TestCase {
 		assertEquals(true, parser.getWhereClause().eval(env));
 		
 		parser.parse("SELECT * FROM test WHERE (A='20' OR B='AA') AND c=1");
-		whereClause = parser.getWhereClause();
+		LogicalExpressionParser whereClause = parser.getWhereClause();
 
 		env.clear();
 		env.put("A", new String("20"));
@@ -258,6 +257,49 @@ public class TestSqlParser extends TestCase {
 		assertEquals(true, whereClause.eval(env));
 		env.put("B", new String(""));
 		assertEquals(false, whereClause.eval(env));
+		env.put("A", new String("20"));
+		assertEquals(true, whereClause.eval(env));
+		env.put("C", new Integer("3"));
+		assertEquals(false, whereClause.eval(env));
+	}
+	
+	/**
+	 * Test that where conditions with AND operator are parsed correctly
+	 * 
+	 * @throws Exception
+	 */
+	public void testWhereComparisons() throws Exception {
+		SqlParser parser = new SqlParser();
+		Map env = new HashMap();
+		env.put("C", new Integer("12"));
+
+		parser.parse("SELECT * FROM test WHERE c=1");
+		assertEquals(false, parser.getWhereClause().eval(env));
+		parser.parse("SELECT * FROM test WHERE c<1");
+		assertEquals(false, parser.getWhereClause().eval(env));
+		parser.parse("SELECT * FROM test WHERE c>1");
+		assertEquals(true, parser.getWhereClause().eval(env));
+		parser.parse("SELECT * FROM test WHERE c<=1");
+		assertEquals(false, parser.getWhereClause().eval(env));
+		parser.parse("SELECT * FROM test WHERE c>=1");
+		assertEquals(true, parser.getWhereClause().eval(env));
+		parser.parse("SELECT * FROM test WHERE c<=12");
+		assertEquals(true, parser.getWhereClause().eval(env));
+		parser.parse("SELECT * FROM test WHERE c>=12");
+		assertEquals(true, parser.getWhereClause().eval(env));
 	}
 
+	public void testWhereEvaluatingIndistinguishedNumbers() throws Exception {
+		SqlParser parser = new SqlParser();
+		Map env = new HashMap();
+
+		parser.parse("SELECT * FROM test WHERE c=1.0");
+		env.clear();
+		env.put("C", new Integer("1"));
+		assertEquals(true, parser.getWhereClause().eval(env));
+		env.put("C", new Double("1"));
+		assertEquals(true, parser.getWhereClause().eval(env));
+		env.put("C", new Float("1"));
+		assertEquals(true, parser.getWhereClause().eval(env));
+	}
 }
