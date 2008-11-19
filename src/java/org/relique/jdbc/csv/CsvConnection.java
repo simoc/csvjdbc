@@ -46,7 +46,7 @@ import java.util.Vector;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.16 2008/11/07 15:36:41 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.17 2008/11/19 10:20:44 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -130,7 +130,7 @@ public class CsvConnection implements Connection {
             if (info.getProperty(CsvDriver.CHARSET) != null) {
                 charset = info.getProperty(CsvDriver.CHARSET);
             }
-            // default charset
+            // default column types
             if (info.getProperty(CsvDriver.COLUMN_TYPES) != null) {
                 columnTypes = info.getProperty(CsvDriver.COLUMN_TYPES);
             }

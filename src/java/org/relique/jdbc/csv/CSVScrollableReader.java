@@ -20,14 +20,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Map;
 
 
 /**
  *This class Class provides facility to navigate on the Result Set.
  *
  * @author     Chetan Gupta
- * @version    $Id: CSVScrollableReader.java,v 1.6 2008/11/10 13:41:19 mfrasca Exp $
+ * @version    $Id: CSVScrollableReader.java,v 1.7 2008/11/19 10:20:44 mfrasca Exp $
  */
 public class CSVScrollableReader extends CSVReaderAdapter {
   //---------------------------------------------------------------------
@@ -37,29 +36,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
   private ArrayList alRecords = null;
   private int iRecordNo = 0;
 
-  /**
-   *Constructor for the CsvReader object
-   *
-   * @param  fileName       Description of Parameter
- * @param map 
- * @param e 
- * @param string3 
- * @param string2 
- * @param d 
- * @param string 
- * @param b 
- * @param c 
-   * @exception  Exception  Description of Exception
-   * @since
-   */
-  public CSVScrollableReader(String fileName, char c, boolean b, String string, char d, String string2, String string3, boolean e, Map map) throws Exception {
-    this(fileName, ',', false, null,
-    		'"', "", CsvDriver.DEFAULT_EXTENSION, true, 
-    		null, null);
-  }
-
-
-  /**
+   /**
    * Can be put in adpater apart from the last line
    *
    * Insert the method's description here.
@@ -75,27 +52,18 @@ public class CSVScrollableReader extends CSVReaderAdapter {
   public CSVScrollableReader(
     String fileName, char separator, boolean suppressHeaders, String charset, 
     char quoteChar, String headerLine, String extension,boolean trimHeaders,
-	String whereColumnName, String whereValue)
+	LogicalExpressionParser whereClause)
     		throws java.lang.Exception {
 
   	super(fileName, separator, suppressHeaders, charset, quoteChar, headerLine, extension, trimHeaders);
 
-    loopAndFetchData(input, buf, whereColumnName, whereValue);
+    loopAndFetchData(input, buf, whereClause);
     iRecordNo = FIRST_RECORD - 1;
   }
 
-  private void loopAndFetchData(BufferedReader input, String buf, String whereColumnName, String whereValue) throws SQLException {
+  private void loopAndFetchData(BufferedReader input, String buf, LogicalExpressionParser whereClause) throws SQLException {
     alRecords = new ArrayList();
     String dataLine = null;
-    int whereColumn=-1;
-    if (whereColumnName != null) {
-		for (int i = 0; i < columnNames.length; i++) {
-			if (columnNames[i].equalsIgnoreCase(whereColumnName)) {
-				whereColumn = i;
-				break;
-			}
-		}
-	}
     try {
 	    while (true) {
 	        fieldValues = new String[columnNames.length];
@@ -112,14 +80,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
 	          break;
 	        }
 	        fieldValues = parseCsvLine(dataLine, false);
-	        if ( (whereColumnName == null) || // if no where clause
-	        		( (whereColumnName != null) && (fieldValues[whereColumn].equals(whereValue))) // or satisfies where clause
-	        		) {
-		        alRecords.add(fieldValues);
-	        } else {
-	        	//System.out.println("Skipping: " + columns[0]);
-	        	continue;
-	        }
+	        alRecords.add(fieldValues);
 	    } 
     } catch (IOException e) {
         throw new SQLException(e.toString());

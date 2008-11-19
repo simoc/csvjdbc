@@ -28,7 +28,7 @@ import java.io.File;
  * @author     JD Evora
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvDriver.java,v 1.10 2008/11/10 13:41:19 mfrasca Exp $
+ * @version    $Id: CsvDriver.java,v 1.11 2008/11/19 10:20:44 mfrasca Exp $
  */
 
 public class CsvDriver implements Driver
@@ -48,8 +48,9 @@ public class CsvDriver implements Driver
   public static final String HEADERLINE="headerline";
   public static final String SUPPRESS_HEADERS="suppressHeaders";
   public static final String TRIM_HEADERS="trimHeaders";
-  public static final String CHARSET = "charset";
   public static final String COLUMN_TYPES = "columnTypes";
+  public static final String INDEXED_FILES = "indexedFiles";
+  public static final String CHARSET = "charset";
   private final static String URL_PREFIX = "jdbc:relique:csv:";
   /**
    *Gets the propertyInfo attribute of the CsvDriver object

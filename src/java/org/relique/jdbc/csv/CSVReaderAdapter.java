@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 /**
+/**
  * This class an abstract class that contains the common functionality 
  * of the Scrollable and Non Scrollable Reader
  *
@@ -38,7 +39,7 @@ import java.util.Vector;
  * @author     Christoph Langer
  * @author     Mario Frasca
  * @created    01 March 2004
- * @version    $Id: CSVReaderAdapter.java,v 1.9 2008/11/10 13:41:19 mfrasca Exp $
+ * @version    $Id: CSVReaderAdapter.java,v 1.10 2008/11/19 10:20:44 mfrasca Exp $
  */
 
 public abstract class CSVReaderAdapter

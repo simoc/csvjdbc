@@ -21,6 +21,8 @@ import java.sql.SQLException;
 
 /**
  * This class is a helper class that handles the reading and parsing of data
+/**
+ * This class is a helper class that handles the reading and parsing of data
  * from a .csv file.
  *
  * @author     Jonathan Ackerman
@@ -31,7 +33,7 @@ import java.sql.SQLException;
  * @author     Christoph Langer
  * @author     Chetan Gupta
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.16 2008/11/07 11:29:30 mfrasca Exp $
+ * @version    $Id: CsvReader.java,v 1.17 2008/11/19 10:20:44 mfrasca Exp $
  */
 
 public class CsvReader extends CSVReaderAdapter
@@ -63,7 +65,7 @@ public class CsvReader extends CSVReaderAdapter
    */
   public CsvReader(String fileName, char separator, boolean suppressHeaders,
 			String charset, char quoteChar, String headerLine,
-			String extension, boolean trimHeaders) throws java.lang.Exception {
+			String extension, boolean trimHeaders) throws IOException, SQLException {
 		super(fileName, separator, suppressHeaders, charset, quoteChar,
 				headerLine, extension, trimHeaders);
 	}

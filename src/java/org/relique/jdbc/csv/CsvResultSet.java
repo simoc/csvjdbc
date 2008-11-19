@@ -54,7 +54,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.23 2008/11/12 16:06:56 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.24 2008/11/19 10:20:44 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -223,16 +223,11 @@ public class CsvResultSet implements ResultSet {
     /** Last column name index read */
     protected int lastIndexRead = -1;
     
-    /** Number of the column that is used on the where clause */
-    protected int whereColumn;
-    
-    /** String that is sought for on the where column */
-    protected String whereValue;
-    
     /** InputStream to keep track of */
     protected InputStream is;
 
 	private boolean mustInferTypeNames;
+	private LogicalExpressionParser whereClause;
     /**
      * Constructor for the CsvResultSet object
      *
@@ -242,12 +237,13 @@ public class CsvResultSet implements ResultSet {
      * @param columns Array of available columns for referenced table
      * @param whereColumnName 
      * @throws ClassNotFoundException 
+     * @throws SQLException 
      */
     protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
 			String tableName, Column[] columns, int isScrollable,
-			String whereColumnName) throws ClassNotFoundException {
+			LogicalExpressionParser whereClause) throws ClassNotFoundException, SQLException {
 		this(statement, reader, tableName, columns, isScrollable,
-				whereColumnName, null, CsvDriver.DEFAULT_COLUMN_TYPES);
+				whereClause, CsvDriver.DEFAULT_COLUMN_TYPES);
     }
     /**
      * Constructor for the CsvResultSet object 
@@ -260,24 +256,22 @@ public class CsvResultSet implements ResultSet {
      * @param columnTypes A comma-separated string specifying the type of the i-th column.
      * @param whereColumnName the name of the column, needed late by a select *
      * @throws ClassNotFoundException in case the typed columns fail
+     * @throws SQLException 
      */
     protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
-			String tableName, Column[] columns, int isScrollable, String whereColumnName,
-			String whereValue, String columnTypes) throws ClassNotFoundException {
+			String tableName, Column[] columns, int isScrollable, 
+			LogicalExpressionParser whereClause, String columnTypes) throws ClassNotFoundException, SQLException {
         this.statement = statement;
         this.isScrollable = isScrollable;
         this.reader = reader;
         this.tableName = tableName;
         this.columns = columns;
-        this.whereValue = whereValue;
-        this.whereColumn = -1;
+        this.whereClause = whereClause;
         if(columns[0].getName().equals("*")) {
             String[] columnNames = reader.getColumnNames();
             this.columns = new Column[columnNames.length];
             for (int i = 0; i < columnNames.length; i++) {
 				this.columns[i] = new Column(columnNames[i], i, columnNames[i]);
-				if(columnNames[i].equalsIgnoreCase(whereColumnName))
-					this.whereColumn = i;
 			}
         } else {
         	// update the position field of the columns array elements that are
@@ -293,20 +287,15 @@ public class CsvResultSet implements ResultSet {
             for (int i=0; i< this.columns.length; i++) {
             	if (columns[i].getPosition() == -1)
             		continue;
-            	Integer pos = (Integer)(dbNameToDBPos.get(columns[i]
-						.getDBName().toLowerCase()));
+            	String dbColName = columns[i]
+						.getDBName().toLowerCase();
+				Integer pos = (Integer)(dbNameToDBPos.get(dbColName));
+            	if (pos == null){
+            		throw new SQLException("could not find column '"+dbColName+"'");
+            	}
             	aliasToDBPos.put(columns[i].getName().toLowerCase(), pos);
             	columns[i].setPosition(pos.intValue());
 			}
-            if (whereColumnName != null) {
-				Integer t = (Integer)(aliasToDBPos
-						.get(whereColumnName.toLowerCase()));
-				if (t == null)
-					t = (Integer)(dbNameToDBPos.get(whereColumnName.toLowerCase()));
-				if (t != null)
-					this.whereColumn = t.intValue();
-			}
-            
         }
     	this.mustInferTypeNames = false;
         if (columnTypes.contains(",")){
@@ -341,18 +330,30 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public boolean next() throws SQLException {
-    	boolean answer = false;
-    	answer = reader.next();
+    	boolean thereWasAnAnswer;
+    	thereWasAnAnswer = reader.next();
     	if (this.mustInferTypeNames) {
     		inferTypeNames();
     	}
-    	//We have a where clause, honor it    	
-    	if(whereColumn>-1) {
-    		while(answer && !reader.getField(whereColumn).equals(whereValue)) {
-    			answer = reader.next();
+		//We have a where clause, honor it    	
+    	if(whereClause != null) {
+    		while(thereWasAnAnswer){
+    			Map fieldValues = new HashMap();
+    			for (int i = 0; i<reader.columnNames.length; i++){
+    				String fieldName = reader.columnNames[i].toUpperCase();
+    				fieldValues.put(fieldName, reader.fieldValues[i]);
+    			}
+    			for (int i = 0; i<columns.length; i++) {
+    				String fieldName = columns[i].getName().toUpperCase();
+    				fieldValues.put(fieldName, getObject(fieldName));
+    			}
+    			
+    			if (whereClause.eval(fieldValues))
+    				break;
+    	    	thereWasAnAnswer = reader.next();
     		}
     	}
-    	return answer;
+    	return thereWasAnAnswer;
     }
 
     private void inferTypeNames() {

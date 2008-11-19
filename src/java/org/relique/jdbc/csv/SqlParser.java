@@ -15,6 +15,8 @@
  */
 package org.relique.jdbc.csv;
 
+import java.io.StringReader;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Vector;
 import java.util.StringTokenizer;
@@ -34,7 +36,7 @@ import java.util.regex.Pattern;
  * @author Juan Pablo Morales
  * @author Mario Frasca
  * @created 25 November 2001
- * @version $Id: SqlParser.java,v 1.5 2008/11/10 13:41:19 mfrasca Exp $
+ * @version $Id: SqlParser.java,v 1.6 2008/11/19 10:20:44 mfrasca Exp $
  */
 public class SqlParser
 {
@@ -50,14 +52,8 @@ public class SqlParser
    * @since
    */
   public Column[] columns;
-  /**
-   * The value that is sought on the where clause 
-   */
-  private String whereValue;
-  /**
-   * The name of the column that will be used for the where clause.
-   */
-  private String whereColumnName;
+  private LogicalExpressionParser whereClause;
+  
   /**
    *Gets the tableName attribute of the SqlParser object
    *
@@ -81,14 +77,6 @@ public class SqlParser
     return columns;
   }
   
-  /**
-   * Return the value to use on the where column.
-   * @return null if there is no where clause 
-   */
-  public String getWhereValue() {
-  	return whereValue;
-  }
-
   /**
    * Set the internal table name and column names.
    *
@@ -128,28 +116,17 @@ public class SqlParser
 		 * attributes
 		 */
 		if (wherePos > -1) {
-			int equalsPos = upperSql.lastIndexOf("=");
-			if (equalsPos == -1) {
-				throw new Exception(
-						"Malformed SQL. No = sign on the WHERE clause.");
-			}
-			whereColumnName = upperSql.substring(wherePos + 6, equalsPos)
-					.trim();
-			whereValue = sql.substring(equalsPos + 1).trim();
-			// If we have enclosing quotes take them away
-			if (whereValue.startsWith("'")) {
-				whereValue = whereValue.substring(1, whereValue.length() - 1);
-			}
+			whereClause = new LogicalExpressionParser(new StringReader(sql.substring(wherePos + 6)));
+			whereClause.parse();
 		} else {
-			whereValue = null;
-			whereColumnName = null;
+			whereClause = null;
 		}
 		Vector cols = new Vector();
 		StringTokenizer tokenizer = new StringTokenizer(upperSql.substring(7,
 				fromPos), ",");
 
-		Pattern simple = Pattern.compile("[a-zA-Z0-9_]+");
-		Pattern nameAlias = Pattern.compile("([a-zA-Z0-9_]+) +(?:[aA][sS] +)?([a-zA-Z0-9_]+)");
+		Pattern simple = Pattern.compile("[a-zA-Z0-9_\\.]+");
+		Pattern nameAlias = Pattern.compile("([a-zA-Z0-9_\\.]+) +(?:[aA][sS] +)?([a-zA-Z0-9_]+)");
 		Pattern literalAlias = Pattern.compile("('[^']*'|-?[0-9\\.]+) +(?:[aA][sS] +)?([a-zA-Z0-9_]+)");
 		
 		while (tokenizer.hasMoreTokens()) {
@@ -179,6 +156,9 @@ public class SqlParser
 				currentColumn = new Column(thisToken, -2, thisToken);
 			}
 
+			if (currentColumn == null){
+				throw new ParseException("could not parse column specification '" + thisToken + "'");
+			}
 			cols.add(currentColumn);
 		}
 
@@ -195,15 +175,9 @@ public String[] getColumnNames() {
     return result;
 }
 
-
-public Map getWhereClause() {
-	// TODO Auto-generated method stub
-	return null;
+public LogicalExpressionParser getWhereClause() {
+	return whereClause;
 }
 
-
-public String getWhereColumnName() {
-	return whereColumnName;
-}
 }
 

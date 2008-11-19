@@ -31,7 +31,7 @@ import java.util.Vector;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.16 2008/11/10 13:41:19 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.17 2008/11/19 10:20:44 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -329,12 +329,6 @@ public class CsvStatement implements Statement {
 			throw new SQLException("Cannot open data file '" + fileName
 					+ "'  !");
 		}
-
-		if (!checkFile.canRead()) {
-			throw new SQLException("Data file '" + fileName
-					+ "'  not readable !");
-		}
-
 		CSVReaderAdapter reader = null;
 		try {
 			if (isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
@@ -342,8 +336,7 @@ public class CsvStatement implements Statement {
 						.getSeparator(), connection.isSuppressHeaders(),
 						connection.getCharset(), connection.getQuotechar(),
 						connection.getHeaderline(), connection.getExtension(),
-						connection.getTrimHeaders(), parser.getWhereColumnName(),
-						parser.getWhereValue());
+						connection.getTrimHeaders(), parser.getWhereClause());
 			} else {
 				reader = new CsvReader(fileName, connection.getSeparator(),
 						connection.isSuppressHeaders(),
@@ -359,7 +352,7 @@ public class CsvStatement implements Statement {
 		try {
 			resultSet = new CsvResultSet(this, reader, parser
 					.getTableName(), parser.getColumns(), this.isScrollable, parser
-					.getWhereColumnName(), parser.getWhereValue(), connection.getColumnTypes());
+					.getWhereClause(), connection.getColumnTypes());
 			resultSets.add(resultSet);
 		} catch (ClassNotFoundException e) {
 			DriverManager.println("" + e);
