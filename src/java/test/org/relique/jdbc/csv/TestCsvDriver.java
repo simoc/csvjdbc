@@ -40,7 +40,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.23 2008/11/19 12:14:17 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.24 2008/11/19 13:31:28 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -782,6 +782,23 @@ public class TestCsvDriver extends TestCase {
 			assertEquals("wrong location #" + i, "004", results.getString("location"));
 		}
 		assertFalse(results.next());
+	}
+
+	/**
+	 * TODO: an old patch has been made useless by Mario Frasca (that's me).  sorry...
+	 * @throws SQLException
+	 */
+	public void testAddingFields() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT id + job as mix FROM sample4 WHERE Job = 'Project Manager' AND Name = 'Mauricio Hernandez'");
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", "02Project Manager", results.getString("mix"));
+		assertTrue(!results.next());
 	}
 
 }

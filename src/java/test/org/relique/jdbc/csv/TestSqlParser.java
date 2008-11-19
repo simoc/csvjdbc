@@ -31,7 +31,7 @@ import junit.framework.*;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.11 2008/11/19 09:48:05 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.12 2008/11/19 13:31:28 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -59,8 +59,8 @@ public class TestSqlParser extends TestCase {
 		Column[] cols = parser.getColumns();
 		assertTrue("Incorrect Column Count", cols.length == 4);
 
-		assertEquals("Incorrect Column Name Col 3", cols[3].getDBName().toLowerCase(), "name.suffix");
-		assertEquals("Incorrect Column Name Col 3", cols[3].getName().toLowerCase(), "value");
+		assertEquals("Incorrect Column Name Col 3", "name.suffix", cols[3].getDBName().toLowerCase());
+		assertEquals("Incorrect Column Name Col 3", "value", cols[3].getName().toLowerCase());
 
 		try {
 			String query = "SELECT location!parameter FROM total";
@@ -337,4 +337,10 @@ public class TestSqlParser extends TestCase {
 		env.put("C", new Float("1"));
 		assertEquals(true, parser.getWhereClause().eval(env));
 	}
+
+	public void testAddingFields() throws Exception {
+		SqlParser parser = new SqlParser();
+
+		parser.parse("SELECT A+B as SUM FROM test");
+	}		
 }
