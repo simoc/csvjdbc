@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  * @author Juan Pablo Morales
  * @author Mario Frasca
  * @created 25 November 2001
- * @version $Id: SqlParser.java,v 1.7 2008/11/19 11:39:41 mfrasca Exp $
+ * @version $Id: SqlParser.java,v 1.8 2008/11/19 15:52:05 mfrasca Exp $
  */
 public class SqlParser
 {
@@ -52,7 +52,7 @@ public class SqlParser
    * @since
    */
   public Column[] columns;
-  private LogicalExpressionParser whereClause;
+  private ExpressionParser whereClause;
   
   /**
    *Gets the tableName attribute of the SqlParser object
@@ -116,8 +116,8 @@ public class SqlParser
 		 * attributes
 		 */
 		if (wherePos > -1) {
-			whereClause = new LogicalExpressionParser(new StringReader(sql.substring(wherePos + 6)));
-			whereClause.parse();
+			whereClause = new ExpressionParser(new StringReader(sql.substring(wherePos + 6)));
+			whereClause.parseLogicalExpression();
 		} else {
 			whereClause = null;
 		}
@@ -175,7 +175,7 @@ public String[] getColumnNames() {
     return result;
 }
 
-public LogicalExpressionParser getWhereClause() {
+public ExpressionParser getWhereClause() {
 	return whereClause;
 }
 

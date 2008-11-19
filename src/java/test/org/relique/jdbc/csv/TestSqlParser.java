@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.relique.jdbc.csv.Column;
-import org.relique.jdbc.csv.LogicalExpressionParser;
+import org.relique.jdbc.csv.ExpressionParser;
 import org.relique.jdbc.csv.ParseException;
 import org.relique.jdbc.csv.SqlParser;
 import junit.framework.*;
@@ -31,7 +31,7 @@ import junit.framework.*;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.12 2008/11/19 13:31:28 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.13 2008/11/19 15:52:05 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -174,7 +174,7 @@ public class TestSqlParser extends TestCase {
 	 */
 	public void testWhereParsing() throws Exception {
 		SqlParser parser = new SqlParser();
-		LogicalExpressionParser whereClause;
+		ExpressionParser whereClause;
 
 		parser.parse("SELECT * FROM test WHERE A='20'");
 		whereClause = parser.getWhereClause();
@@ -230,7 +230,7 @@ public class TestSqlParser extends TestCase {
 
 		
 		parser.parse("SELECT * FROM test WHERE B IS NULL");
-		LogicalExpressionParser whereClause = parser.getWhereClause();
+		ExpressionParser whereClause = parser.getWhereClause();
 		assertEquals("Incorrect WHERE", "N [B]",
 				whereClause.toString());
 		parser.parse("SELECT * FROM test WHERE B BETWEEN '20' AND 'AA'");
@@ -281,7 +281,7 @@ public class TestSqlParser extends TestCase {
 		assertEquals(true, parser.getWhereClause().eval(env));
 		
 		parser.parse("SELECT * FROM test WHERE (A='20' OR B='AA') AND c=1");
-		LogicalExpressionParser whereClause = parser.getWhereClause();
+		ExpressionParser whereClause = parser.getWhereClause();
 
 		env.clear();
 		env.put("A", new String("20"));
@@ -341,6 +341,8 @@ public class TestSqlParser extends TestCase {
 	public void testAddingFields() throws Exception {
 		SqlParser parser = new SqlParser();
 
-		parser.parse("SELECT A+B as SUM FROM test");
+		parser.parse("SELECT A+B AS SUM FROM test");
+		parser.parse("SELECT A+B SUM FROM test");
+		parser.parse("SELECT A+B SUM, B+C+'123' t12 FROM test");
 	}		
 }

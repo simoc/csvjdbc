@@ -26,7 +26,7 @@ import java.util.ArrayList;
  *This class Class provides facility to navigate on the Result Set.
  *
  * @author     Chetan Gupta
- * @version    $Id: CSVScrollableReader.java,v 1.8 2008/11/19 11:39:41 mfrasca Exp $
+ * @version    $Id: CSVScrollableReader.java,v 1.9 2008/11/19 15:52:05 mfrasca Exp $
  */
 public class CSVScrollableReader extends CSVReaderAdapter {
   //---------------------------------------------------------------------
@@ -52,7 +52,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
   public CSVScrollableReader(
     String fileName, char separator, boolean suppressHeaders, String charset, 
     char quoteChar, String headerLine, String extension,boolean trimHeaders,
-	LogicalExpressionParser whereClause)
+	ExpressionParser whereClause)
     		throws java.lang.Exception {
 
   	super(fileName, separator, suppressHeaders, charset, quoteChar, headerLine, extension, trimHeaders);
@@ -61,7 +61,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
     iRecordNo = FIRST_RECORD - 1;
   }
 
-  private void loopAndFetchData(BufferedReader input, String buf, LogicalExpressionParser whereClause) throws SQLException {
+  private void loopAndFetchData(BufferedReader input, String buf, ExpressionParser whereClause) throws SQLException {
     alRecords = new ArrayList();
     String dataLine = null;
     try {

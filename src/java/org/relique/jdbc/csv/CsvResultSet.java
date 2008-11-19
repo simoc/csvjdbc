@@ -54,7 +54,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.25 2008/11/19 11:39:41 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.26 2008/11/19 15:52:05 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -227,7 +227,7 @@ public class CsvResultSet implements ResultSet {
     protected InputStream is;
 
 	private boolean mustInferTypeNames;
-	private LogicalExpressionParser whereClause;
+	private ExpressionParser whereClause;
     /**
      * Constructor for the CsvResultSet object
      *
@@ -241,7 +241,7 @@ public class CsvResultSet implements ResultSet {
      */
     protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
 			String tableName, Column[] columns, int isScrollable,
-			LogicalExpressionParser whereClause) throws ClassNotFoundException, SQLException {
+			ExpressionParser whereClause) throws ClassNotFoundException, SQLException {
 		this(statement, reader, tableName, columns, isScrollable,
 				whereClause, CsvDriver.DEFAULT_COLUMN_TYPES);
     }
@@ -260,7 +260,7 @@ public class CsvResultSet implements ResultSet {
      */
     protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
 			String tableName, Column[] columns, int isScrollable, 
-			LogicalExpressionParser whereClause, String columnTypes) throws ClassNotFoundException, SQLException {
+			ExpressionParser whereClause, String columnTypes) throws ClassNotFoundException, SQLException {
         this.statement = statement;
         this.isScrollable = isScrollable;
         this.reader = reader;
