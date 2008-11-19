@@ -28,7 +28,7 @@ import java.io.File;
  * @author     JD Evora
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvDriver.java,v 1.11 2008/11/19 10:20:44 mfrasca Exp $
+ * @version    $Id: CsvDriver.java,v 1.12 2008/11/19 11:39:41 mfrasca Exp $
  */
 
 public class CsvDriver implements Driver
@@ -41,6 +41,7 @@ public class CsvDriver implements Driver
   public static final boolean DEFAULT_SUPPRESS = false;
   public static final boolean DEFAULT_TRIM_HEADERS = true;
   public static final String DEFAULT_COLUMN_TYPES = "String";
+  public static final boolean DEFAULT_INDEXED_FILES = false;
 
   public static final String FILE_EXTENSION="fileExtension";
   public static final String SEPARATOR="separator";

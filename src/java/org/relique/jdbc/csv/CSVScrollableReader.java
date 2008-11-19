@@ -26,7 +26,7 @@ import java.util.ArrayList;
  *This class Class provides facility to navigate on the Result Set.
  *
  * @author     Chetan Gupta
- * @version    $Id: CSVScrollableReader.java,v 1.7 2008/11/19 10:20:44 mfrasca Exp $
+ * @version    $Id: CSVScrollableReader.java,v 1.8 2008/11/19 11:39:41 mfrasca Exp $
  */
 public class CSVScrollableReader extends CSVReaderAdapter {
   //---------------------------------------------------------------------

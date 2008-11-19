@@ -40,7 +40,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.21 2008/11/19 09:48:05 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.22 2008/11/19 11:39:41 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -730,20 +730,49 @@ public class TestCsvDriver extends TestCase {
 		
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
-		props.put("fileNameFormat", ".*_([0-9]{3})_([0-9]{8})");
-		props.put("fileNameGroups", "TABLE,location,file_date");
+		props.put("fileTailPattern", "-([0-9]{3})-([0-9]{8})");
+		props.put("fileTailParts", "location,file_date");
 		props.put("indexedFiles", "True");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 
 		Statement stmt = conn.createStatement();
 
-		ResultSet results = stmt.executeQuery("SELECT location,station,datum,tijd FROM test");
+		ResultSet results = stmt.executeQuery("SELECT location,station,datum,tijd,file_date FROM test");
+
+		ResultSetMetaData metadata = results.getMetaData();
+
+		assertTrue("Incorrect Table Name", metadata.getTableName(0).equals("test"));
+
+		assertEquals("Incorrect Column Name 1", metadata.getColumnName(1),"LOCATION");
+		assertEquals("Incorrect Column Name 2", metadata.getColumnName(2),"STATION");
+		assertEquals("Incorrect Column Name 3", metadata.getColumnName(3),"DATUM");
+		assertEquals("Incorrect Column Name 4", metadata.getColumnName(4),"TIJD");
+
 		assertTrue(results.next());
-		assertEquals("The name is wrong", "20-12-2007", results.getString("datum"));
-		assertEquals("The name is wrong", "10:59:00", results.getString("tijd"));
-		assertEquals("The name is wrong", "007", results.getString("station"));
-		assertEquals("The name is wrong", "001", results.getString("location"));
+		assertEquals("wrong datum", "20-12-2007", results.getString("datum"));
+		assertEquals("wrong tijd", "10:59:00", results.getString("tijd"));
+		assertEquals("wrong station", "007", results.getString("station"));
+		assertEquals("wrong location #0", "001", results.getString("location"));
+		for (int i=1; i<12; i++){
+			assertTrue(results.next());
+			assertEquals("wrong location #" + i, "001", results.getString("location"));
+			assertEquals("wrong file_date #" + i, "20081112", results.getString("file_date"));
+		}
+		for (int i=0; i<12; i++){
+			assertTrue(results.next());
+			assertEquals("wrong location #" + i, "001", results.getString("location"));
+			assertEquals("wrong file_date #" + i, "20081113", results.getString("file_date"));
+		}
+		for (int i=0; i<12; i++){
+			assertTrue(results.next());
+			assertEquals("wrong location #" + i, "001", results.getString("location"));
+			assertEquals("wrong file_date #" + i, "20081114", results.getString("file_date"));
+		}
+		for (int i=0; i<12; i++){
+			assertTrue(results.next());
+			assertEquals("wrong location #" + i, "002", results.getString("location"));
+		}
 	}
 
 }

@@ -54,7 +54,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.24 2008/11/19 10:20:44 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.25 2008/11/19 11:39:41 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 

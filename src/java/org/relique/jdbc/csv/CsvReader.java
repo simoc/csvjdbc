@@ -16,11 +16,11 @@
  */
 package org.relique.jdbc.csv;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 
-/**
- * This class is a helper class that handles the reading and parsing of data
 /**
  * This class is a helper class that handles the reading and parsing of data
  * from a .csv file.
@@ -33,7 +33,7 @@ import java.sql.SQLException;
  * @author     Christoph Langer
  * @author     Chetan Gupta
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.17 2008/11/19 10:20:44 mfrasca Exp $
+ * @version    $Id: CsvReader.java,v 1.18 2008/11/19 11:39:41 mfrasca Exp $
  */
 
 public class CsvReader extends CSVReaderAdapter
@@ -60,7 +60,11 @@ public class CsvReader extends CSVReaderAdapter
    * @param  separator                char
    * @param  suppressHeaders          boolean
    * @param  quoteChar				  char
-   *    * @exception  java.lang.Exception  The exception description.
+   * @exception  java.lang.Exception  The exception description.
+ * @throws SQLException 
+ * @throws IOException 
+ * @throws FileNotFoundException 
+ * @throws UnsupportedEncodingException 
    * @since
    */
   public CsvReader(String fileName, char separator, boolean suppressHeaders,
@@ -69,6 +73,16 @@ public class CsvReader extends CSVReaderAdapter
 		super(fileName, separator, suppressHeaders, charset, quoteChar,
 				headerLine, extension, trimHeaders);
 	}
+  
+  public CsvReader(String dirName, String pathNamePattern, String[] fieldsInName,
+			char separator, boolean suppressHeaders, String charset,
+			char quoteChar, String headerLine, String extension,
+			boolean trimHeaders) throws IOException, SQLException{
+	  super(dirName, pathNamePattern, fieldsInName,
+				separator, suppressHeaders, charset,
+				quoteChar, headerLine, extension,
+				trimHeaders);
+  }
   
 /**
    *Description of the Method

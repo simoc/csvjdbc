@@ -46,7 +46,7 @@ import java.util.Vector;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.17 2008/11/19 10:20:44 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.18 2008/11/19 11:39:41 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -71,6 +71,9 @@ public class CsvConnection implements Connection {
     /** Should headers be trimmed */
     private boolean trimHeaders = CsvDriver.DEFAULT_TRIM_HEADERS;
 
+    /** should files be grouped in one table - as if there was an index */
+    private boolean indexedFiles = CsvDriver.DEFAULT_INDEXED_FILES;
+
     /** how to interpret string values before returning them to the caller */
     private String columnTypes = CsvDriver.DEFAULT_COLUMN_TYPES;
 
@@ -82,6 +85,10 @@ public class CsvConnection implements Connection {
 
     /** Stores whether this Connection is closed or not */
     private boolean closed;
+
+	private String fileNamePattern;
+
+	private String[] nameParts;
 
     /**
      * Creates a new CsvConnection that takes the supplied path
@@ -133,6 +140,14 @@ public class CsvConnection implements Connection {
             // default column types
             if (info.getProperty(CsvDriver.COLUMN_TYPES) != null) {
                 columnTypes = info.getProperty(CsvDriver.COLUMN_TYPES);
+            }
+            // are files indexed? ()
+            if (info.getProperty(CsvDriver.INDEXED_FILES) != null) {
+                indexedFiles = Boolean.valueOf(
+						info.getProperty(CsvDriver.INDEXED_FILES))
+						.booleanValue();
+                fileNamePattern = info.getProperty("fileTailPattern");
+                nameParts = info.getProperty("fileTailParts","").split(",");
             }
         }
     }
@@ -887,5 +902,22 @@ public class CsvConnection implements Connection {
 
 	public String getColumnTypes() {
 		return columnTypes;
+	}
+
+	public void setIndexedFiles(boolean indexedFiles) {
+		this.indexedFiles = indexedFiles;
+	}
+
+	public boolean isIndexedFiles() {
+		return indexedFiles;
+	}
+
+	public String getFileNamePattern() {
+		return fileNamePattern;
+	}
+
+	public String[] getNameParts() {
+		// TODO Auto-generated method stub
+		return nameParts;
 	}
 }

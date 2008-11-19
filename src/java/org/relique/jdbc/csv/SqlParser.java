@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  * @author Juan Pablo Morales
  * @author Mario Frasca
  * @created 25 November 2001
- * @version $Id: SqlParser.java,v 1.6 2008/11/19 10:20:44 mfrasca Exp $
+ * @version $Id: SqlParser.java,v 1.7 2008/11/19 11:39:41 mfrasca Exp $
  */
 public class SqlParser
 {

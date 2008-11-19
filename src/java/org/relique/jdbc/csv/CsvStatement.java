@@ -18,6 +18,7 @@ package org.relique.jdbc.csv;
 
 import java.sql.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -31,7 +32,7 @@ import java.util.Vector;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.17 2008/11/19 10:20:44 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.18 2008/11/19 11:39:41 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -318,33 +319,54 @@ public class CsvStatement implements Statement {
 		DriverManager.println("Connection Extension: "
 				+ connection.getExtension());
 
-		String fileName = connection.getPath() + parser.getTableName()
-				+ connection.getExtension();
-
-		DriverManager.println("CSV file name: " + fileName);
-
-		File checkFile = new File(fileName);
-
-		if (!checkFile.exists()) {
-			throw new SQLException("Cannot open data file '" + fileName
-					+ "'  !");
+		String fileName = null;
+		if(!connection.isIndexedFiles()){
+			fileName = connection.getPath() + parser.getTableName()
+					+ connection.getExtension();
+	
+			DriverManager.println("CSV file name: " + fileName);
+	
+			File checkFile = new File(fileName);
+	
+			if (!checkFile.exists()) {
+				throw new SQLException("Cannot open data file '" + fileName
+						+ "'  !");
+			}
+	
+			if (!checkFile.canRead()) {
+				throw new SQLException("Data file '" + fileName
+						+ "'  not readable !");
+			}
 		}
 		CSVReaderAdapter reader = null;
 		try {
 			if (isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
-				reader = new CSVScrollableReader(fileName, connection
-						.getSeparator(), connection.isSuppressHeaders(),
-						connection.getCharset(), connection.getQuotechar(),
-						connection.getHeaderline(), connection.getExtension(),
-						connection.getTrimHeaders(), parser.getWhereClause());
-			} else {
+				try {
+					reader = new CSVScrollableReader(fileName, connection
+							.getSeparator(), connection.isSuppressHeaders(),
+							connection.getCharset(), connection.getQuotechar(),
+							connection.getHeaderline(), connection.getExtension(),
+							connection.getTrimHeaders(), parser.getWhereClause());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else if(connection.isIndexedFiles()){
+				String fileNamePattern = parser.getTableName()+connection.getFileNamePattern()+connection.getExtension();
+				String[] nameParts = connection.getNameParts();
+				reader = new CsvReader(connection.getPath(), fileNamePattern,
+						nameParts, connection.getSeparator(), 
+						connection.isSuppressHeaders(), connection.getCharset(),
+						connection.getQuotechar(), connection.getHeaderline(),
+						connection.getExtension(), connection.getTrimHeaders());
+			} else{
 				reader = new CsvReader(fileName, connection.getSeparator(),
 						connection.isSuppressHeaders(),
 						connection.getCharset(), connection.getQuotechar(),
 						connection.getHeaderline(), connection.getExtension(),
 						connection.getTrimHeaders());
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new SQLException("Error reading data file. Message was: " + e);
 		}
 

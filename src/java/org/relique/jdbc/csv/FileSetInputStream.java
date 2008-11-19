@@ -20,6 +20,7 @@ public class FileSetInputStream extends InputStream {
 	private int pos;
 	private Pattern fileNameRE;
 	private char separator;
+	private String dataTail;
 
 	public FileSetInputStream(String dirName, String fileNamePattern,
 			String[] fieldsInName, char separator) throws FileNotFoundException {
@@ -41,12 +42,15 @@ public class FileSetInputStream extends InputStream {
 		for (int i = 0; i < candidates.length; i++) {
 			Matcher m = fileNameRE.matcher(candidates[i]);
 			if (m.matches()) {
-				fileNames.add(dirName + '/' + candidates[i]);
+				fileNames.add(dirName + candidates[i]);
 			}
 		}
+		fileNameRE = Pattern.compile(".*"+fileNamePattern);
 		readingHeader = true;
 		atEndOfLine = false;
-		currentFile = new FileInputStream((String) fileNames.remove(0));
+		String currentName = (String) fileNames.remove(0);
+		dataTail = getTailFromName(currentName);
+		currentFile = new FileInputStream(currentName);
 	}
 
 	/*
@@ -67,37 +71,49 @@ public class FileSetInputStream extends InputStream {
 		if (atEndOfLine) {
 			return readTail();
 		}
-		try {
-			int ch = currentFile.read();
-			if (ch == '\n') {
-				atEndOfLine = true;
-				return readTail();
-			}
-			return ch;
-		} catch (IOException e) {
+		int ch = currentFile.read();
+		if (ch == '\n') {
+			atEndOfLine = true;
+			return readTail();
+		} else if (ch == -1) {
 			currentFile.close();
 			// open next file and skip header
 			atEndOfLine = false;
-			String currentName = (String) fileNames.remove(0);
-			Matcher m = fileNameRE.matcher(currentName);
-			tail = "";
-			for (int i = 0; i < m.groupCount(); i++) {
-				tail += separator;
-				tail += m.group(i);
+			pos = 0;
+			String currentName;
+			try {
+				currentName = (String) fileNames.remove(0);
+			} catch (IndexOutOfBoundsException e) {
+				return -1;
 			}
+			tail = getTailFromName(currentName);
 			currentFile = new FileInputStream(currentName);
 			while (currentFile.read() != '\n')
 				;
 			return read();
 		}
+		return ch;
+	}
+
+	private String getTailFromName(String currentName) {
+		Matcher m = fileNameRE.matcher(currentName);
+		m.matches();
+		String tail = "";
+		for (int i = 1; i <= m.groupCount(); i++) {
+			tail += separator;
+			tail += m.group(i);
+		}
+		return tail;
 	}
 
 	private int readTail() {
 		if (pos < tail.length())
 			return tail.charAt(pos++);
 		atEndOfLine = false;
+		pos = 0;
 		if (readingHeader) {
 			readingHeader = false;
+			tail = dataTail;
 		}
 		return '\n';
 	}

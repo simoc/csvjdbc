@@ -20,12 +20,12 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Vector;
 
-/**
 /**
  * This class an abstract class that contains the common functionality 
  * of the Scrollable and Non Scrollable Reader
@@ -39,7 +39,7 @@ import java.util.Vector;
  * @author     Christoph Langer
  * @author     Mario Frasca
  * @created    01 March 2004
- * @version    $Id: CSVReaderAdapter.java,v 1.10 2008/11/19 10:20:44 mfrasca Exp $
+ * @version    $Id: CSVReaderAdapter.java,v 1.11 2008/11/19 11:39:41 mfrasca Exp $
  */
 
 public abstract class CSVReaderAdapter
@@ -64,47 +64,91 @@ public abstract class CSVReaderAdapter
   }
   
   public CSVReaderAdapter (String fileName, char separator, boolean suppressHeaders, 
-  			String charset, char quoteChar, String headerLine, String extension, boolean trimHeaders) 
-  	throws UnsupportedEncodingException, FileNotFoundException, IOException, SQLException {
-  	    this.separator = separator;
-  	    this.suppressHeaders = suppressHeaders;
-  	    this.fileName = fileName;
-  	    this.charset = charset;
-  	    this.quoteChar = quoteChar;
-  	    this.headerLine = headerLine;
-  	    this.extension = extension;
-        this.trimHeaders = trimHeaders;
+			String charset, char quoteChar, String headerLine, String extension, boolean trimHeaders) 
+	throws UnsupportedEncodingException, FileNotFoundException, IOException, SQLException {
+	    this.separator = separator;
+	    this.suppressHeaders = suppressHeaders;
+	    this.fileName = fileName;
+	    this.charset = charset;
+	    this.quoteChar = quoteChar;
+	    this.headerLine = headerLine;
+	    this.extension = extension;
+      this.trimHeaders = trimHeaders;
 
-  	    if (charset != null) {
-  	        input = new BufferedReader(new InputStreamReader(new FileInputStream(fileName),charset));
-  	    } else {
-  	        input = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
-  	    }
-  	    // input = new BufferedReader(new FileReader(fileName));
-  	    if (this.suppressHeaders)
-  	    {
-  	      // column names specified by property are available. Read and use.
-  	      if (this.headerLine != null) {
-  	          columnNames = parseCsvLine(this.headerLine, trimHeaders);          
-  	      } else {
-  	          // No column names available. Read first data line and determine number of colums.
-  	        buf = input.readLine();
-  	        String[] data = parseCsvLine(buf,false);
-  	        columnNames = new String[data.length];
-  	        for (int i = 0; i < data.length; i++)
-  	        {
-  	            columnNames[i] = "COLUMN" + String.valueOf(i+1);
-  	        }
-  	        data = null;
-  	        // throw away.
-  	      }
-  	    }
-  	    else
-  	    {
-  	      String tmpHeaderLine = input.readLine();
-  	      columnNames = parseCsvLine(tmpHeaderLine, trimHeaders);
-  	    }
-  	}	
+	    FileInputStream in = new FileInputStream(fileName);
+		if (charset != null) {
+	        input = new BufferedReader(new InputStreamReader(in,charset));
+	    } else {
+	        input = new BufferedReader(new InputStreamReader(in));
+	    }
+	    // input = new BufferedReader(new FileReader(fileName));
+	    if (this.suppressHeaders)
+	    {
+	      // column names specified by property are available. Read and use.
+	      if (this.headerLine != null) {
+	          columnNames = parseCsvLine(this.headerLine, trimHeaders);          
+	      } else {
+	          // No column names available. Read first data line and determine number of colums.
+	        buf = input.readLine();
+	        String[] data = parseCsvLine(buf,false);
+	        columnNames = new String[data.length];
+	        for (int i = 0; i < data.length; i++)
+	        {
+	            columnNames[i] = "COLUMN" + String.valueOf(i+1);
+	        }
+	        data = null;
+	        // throw away.
+	      }
+	    }
+	    else
+	    {
+	      String tmpHeaderLine = input.readLine();
+	      columnNames = parseCsvLine(tmpHeaderLine, trimHeaders);
+	    }
+	}	
+
+  public CSVReaderAdapter(String dirName, String fileNamePattern, String[] fieldsInName,
+			char separator, boolean suppressHeaders, String charset,
+			char quoteChar, String headerLine, String extension,
+			boolean trimHeaders) throws UnsupportedEncodingException,
+			FileNotFoundException, IOException, SQLException {
+		this.separator = separator;
+		this.suppressHeaders = suppressHeaders;
+		this.charset = charset;
+		this.quoteChar = quoteChar;
+		this.headerLine = headerLine;
+		this.extension = extension;
+		this.trimHeaders = trimHeaders;
+
+		InputStream in = new FileSetInputStream(dirName, fileNamePattern,
+				fieldsInName, separator);
+		if (charset != null) {
+			input = new BufferedReader(new InputStreamReader(in, charset));
+		} else {
+			input = new BufferedReader(new InputStreamReader(in));
+		}
+		// input = new BufferedReader(new FileReader(fileName));
+		if (this.suppressHeaders) {
+			// column names specified by property are available. Read and use.
+			if (this.headerLine != null) {
+				columnNames = parseCsvLine(this.headerLine, trimHeaders);
+			} else {
+				// No column names available. Read first data line and determine
+				// number of colums.
+				buf = input.readLine();
+				String[] data = parseCsvLine(buf, false);
+				columnNames = new String[data.length];
+				for (int i = 0; i < data.length; i++) {
+					columnNames[i] = "COLUMN" + String.valueOf(i + 1);
+				}
+				data = null;
+				// throw away.
+			}
+		} else {
+			String tmpHeaderLine = input.readLine();
+			columnNames = parseCsvLine(tmpHeaderLine, trimHeaders);
+		}
+	}	
 
   /**
    *Gets the columnNames attribute of the CsvReader object
