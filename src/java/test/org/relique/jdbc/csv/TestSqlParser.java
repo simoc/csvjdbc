@@ -21,6 +21,7 @@ package test.org.relique.jdbc.csv;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.relique.jdbc.csv.Column;
 import org.relique.jdbc.csv.LogicalExpressionParser;
 import org.relique.jdbc.csv.ParseException;
 import org.relique.jdbc.csv.SqlParser;
@@ -30,7 +31,7 @@ import junit.framework.*;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.10 2008/11/17 12:38:06 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.11 2008/11/19 09:48:05 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -43,14 +44,48 @@ public class TestSqlParser extends TestCase {
 		parser.parse("SELECT location, parameter, ts, waarde, unit FROM total");
 		assertTrue("Incorrect table name", parser.getTableName().equals("total"));
 
-		String[] cols = parser.getColumnNames();
-		assertTrue("Incorrect Column Count", cols.length == 5);
+		String[] colNames = parser.getColumnNames();
+		assertTrue("Incorrect Column Count", colNames.length == 5);
 
-		assertEquals("Incorrect Column Name Col 0", cols[0].toLowerCase(), "location");
-		assertEquals("Incorrect Column Name Col 1", cols[1].toLowerCase(), "parameter");
-		assertEquals("Incorrect Column Name Col 2", cols[2].toLowerCase(), "ts");
-		assertEquals("Incorrect Column Name Col 3", cols[3].toLowerCase(), "waarde");
-		assertEquals("Incorrect Column Name Col 4", cols[4].toLowerCase(), "unit");
+		assertEquals("Incorrect Column Name Col 0", colNames[0].toLowerCase(), "location");
+		assertEquals("Incorrect Column Name Col 1", colNames[1].toLowerCase(), "parameter");
+		assertEquals("Incorrect Column Name Col 2", colNames[2].toLowerCase(), "ts");
+		assertEquals("Incorrect Column Name Col 3", colNames[3].toLowerCase(), "waarde");
+		assertEquals("Incorrect Column Name Col 4", colNames[4].toLowerCase(), "unit");
+
+		parser.parse("SELECT location, parameter, ts, name.suffix as value FROM total");
+		assertTrue("Incorrect table name", parser.getTableName().equals("total"));
+
+		Column[] cols = parser.getColumns();
+		assertTrue("Incorrect Column Count", cols.length == 4);
+
+		assertEquals("Incorrect Column Name Col 3", cols[3].getDBName().toLowerCase(), "name.suffix");
+		assertEquals("Incorrect Column Name Col 3", cols[3].getName().toLowerCase(), "value");
+
+		try {
+			String query = "SELECT location!parameter FROM total";
+			parser.parse(query);
+			fail("incorrect query '" + query + "' parsed as correct");
+		} catch (ParseException e) {
+		}
+		try {
+			String query = "SELECT location+parameter FROM total";
+			parser.parse(query);
+			fail("incorrect query '" + query + "' parsed as correct");
+		} catch (ParseException e) {
+		}
+		try {
+			String query = "SELECT location-parameter FROM total";
+			parser.parse(query);
+			fail("incorrect query '" + query + "' parsed as correct");
+		} catch (ParseException e) {
+		}
+		try {
+			String query = "SELECT location*parameter FROM total";
+			parser.parse(query);
+			fail("incorrect query '" + query + "' parsed as correct");
+		} catch (ParseException e) {
+		}
 	}
 
 	public void testParser() throws Exception {

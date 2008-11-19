@@ -40,7 +40,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.20 2008/11/14 14:20:28 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.21 2008/11/19 09:48:05 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -707,6 +707,43 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The name is wrong", "3", results.getString("key"));
 		assertEquals("The name is wrong", "123\n456\n789", results.getString("value"));
 		assertTrue(!results.next());
+	}
+	
+	public void testColumnWithDot() throws SQLException {
+		
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT datum, tijd, station, ai007.000 as value FROM test-001-20081112");
+		assertTrue(results.next());
+		assertEquals("The name is wrong", "20-12-2007", results.getString("datum"));
+		assertEquals("The name is wrong", "10:59:00", results.getString("tijd"));
+		assertEquals("The name is wrong", "007", results.getString("station"));
+		assertEquals("The name is wrong", "0.0", results.getString("value"));
+	}
+
+	public void testFromIndexedTable() throws SQLException {
+		
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("fileNameFormat", ".*_([0-9]{3})_([0-9]{8})");
+		props.put("fileNameGroups", "TABLE,location,file_date");
+		props.put("indexedFiles", "True");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT location,station,datum,tijd FROM test");
+		assertTrue(results.next());
+		assertEquals("The name is wrong", "20-12-2007", results.getString("datum"));
+		assertEquals("The name is wrong", "10:59:00", results.getString("tijd"));
+		assertEquals("The name is wrong", "007", results.getString("station"));
+		assertEquals("The name is wrong", "001", results.getString("location"));
 	}
 
 }
