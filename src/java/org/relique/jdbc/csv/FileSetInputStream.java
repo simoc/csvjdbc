@@ -71,6 +71,8 @@ public class FileSetInputStream extends InputStream {
 		if (atEndOfLine) {
 			return readTail();
 		}
+		if (currentFile == null)
+			return -1;
 		int ch = currentFile.read();
 		if (ch == '\n') {
 			atEndOfLine = true;
@@ -84,12 +86,12 @@ public class FileSetInputStream extends InputStream {
 			try {
 				currentName = (String) fileNames.remove(0);
 			} catch (IndexOutOfBoundsException e) {
+				currentFile = null;
 				return -1;
 			}
 			tail = getTailFromName(currentName);
 			currentFile = new FileInputStream(currentName);
-			while (currentFile.read() != '\n')
-				;
+			while (currentFile.read() != '\n');
 			return read();
 		}
 		return ch;

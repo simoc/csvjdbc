@@ -40,7 +40,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.22 2008/11/19 11:39:41 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.23 2008/11/19 12:14:17 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -769,10 +769,19 @@ public class TestCsvDriver extends TestCase {
 			assertEquals("wrong location #" + i, "001", results.getString("location"));
 			assertEquals("wrong file_date #" + i, "20081114", results.getString("file_date"));
 		}
-		for (int i=0; i<12; i++){
+		for (int i=0; i<36; i++){
 			assertTrue(results.next());
 			assertEquals("wrong location #" + i, "002", results.getString("location"));
 		}
+		for (int i=0; i<36; i++){
+			assertTrue(results.next());
+			assertEquals("wrong location #" + i, "003", results.getString("location"));
+		}
+		for (int i=0; i<36; i++){
+			assertTrue(results.next());
+			assertEquals("wrong location #" + i, "004", results.getString("location"));
+		}
+		assertFalse(results.next());
 	}
 
 }
