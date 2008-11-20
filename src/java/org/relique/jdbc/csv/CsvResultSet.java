@@ -48,6 +48,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -59,7 +60,7 @@ import java.util.Map.Entry;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.27 2008/11/20 14:49:00 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.28 2008/11/20 15:33:16 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -95,6 +96,8 @@ public class CsvResultSet implements ResultSet {
 	private Map recordEnvironment;
 
 	private Map objectEnvironment;
+
+	private List usedColumns;
 
 	/**
      * Constructor for the CsvResultSet object
@@ -135,6 +138,11 @@ public class CsvResultSet implements ResultSet {
         this.tableName = tableName;
         this.queryEnvironment = queryEnvironment;
         this.whereClause = whereClause;
+        if (whereClause!= null)
+        	this.usedColumns = whereClause.usedColumns();
+        else
+            this.usedColumns = new LinkedList();
+
         String[] columnNames = reader.getColumnNames();
         this.columnPositions = new HashMap();
         for (int i=0; i<columnNames.length; i++){
@@ -359,6 +367,13 @@ public class CsvResultSet implements ResultSet {
 			String key = (String) o[0];
 			Object value = ((Expression) o[1]).eval(recordEnvironment);
 			objectEnvironment.put(key.toUpperCase(), value);
+		}
+		for (int i=0; i<usedColumns.size(); i++){
+			String key = (String) usedColumns.get(i);
+			key = key.toUpperCase();
+			if (!objectEnvironment.containsKey(key)){
+				objectEnvironment.put(key, recordEnvironment.get(key));
+			}
 		}
 	}
 	private void inferTypeNames() {
