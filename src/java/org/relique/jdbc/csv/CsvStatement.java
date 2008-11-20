@@ -32,7 +32,7 @@ import java.util.Vector;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.18 2008/11/19 11:39:41 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.19 2008/11/20 14:49:00 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -373,7 +373,7 @@ public class CsvStatement implements Statement {
 		CsvResultSet resultSet = null;
 		try {
 			resultSet = new CsvResultSet(this, reader, parser
-					.getTableName(), parser.getColumns(), this.isScrollable, parser
+					.getTableName(), parser.environment, this.isScrollable, parser
 					.getWhereClause(), connection.getColumnTypes());
 			resultSets.add(resultSet);
 		} catch (ClassNotFoundException e) {

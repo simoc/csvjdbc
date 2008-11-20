@@ -43,9 +43,14 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * This class implements the ResultSet interface for the CsvJdbc driver.
@@ -54,9 +59,109 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.26 2008/11/19 15:52:05 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.27 2008/11/20 14:49:00 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
+
+    /** Metadata for this ResultSet */
+    protected ResultSetMetaData resultSetMetaData;
+
+    /** Statement that produced this ResultSet */
+    protected CsvStatement statement;
+
+    protected int isScrollable = ResultSet.TYPE_SCROLL_SENSITIVE;
+    
+    /** Helper class that performs the actual file reads */
+    protected CSVReaderAdapter reader;
+
+    /** Table referenced by the Statement */
+    protected String tableName;
+
+    /** Last column name index read */
+    protected int lastIndexRead = -1;
+    
+    /** InputStream to keep track of */
+    protected InputStream is;
+
+	private boolean mustInferTypeNames;
+	private ExpressionParser whereClause;
+
+	private List queryEnvironment;
+
+	private Map columnPositions;
+
+	private String[] columnNames;
+
+	private Map recordEnvironment;
+
+	private Map objectEnvironment;
+
+	/**
+     * Constructor for the CsvResultSet object
+     *
+     * @param statement Statement that produced this ResultSet
+     * @param reader Helper class that performs the actual file reads
+     * @param tableName Table referenced by the Statement
+     * @param columnNames Array of available columns for referenced table
+     * @param whereColumnName 
+     * @throws ClassNotFoundException 
+     * @throws SQLException 
+     */
+    protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
+			String tableName, List queryEnvironment, int isScrollable,
+			ExpressionParser whereClause) throws ClassNotFoundException, SQLException {
+		this(statement, reader, tableName, queryEnvironment, isScrollable,
+				whereClause, CsvDriver.DEFAULT_COLUMN_TYPES);
+    }
+    /**
+     * Constructor for the CsvResultSet object 
+     *
+     * @param statement Statement that produced this ResultSet
+     * @param reader Helper class that performs the actual file reads
+     * @param tableName Table referenced by the Statement
+     * @param columnNames Array of available columns for referenced table
+     * @param whereValue The string to be sought for
+     * @param columnTypes A comma-separated string specifying the type of the i-th column.
+     * @param whereColumnName the name of the column, needed late by a select *
+     * @throws ClassNotFoundException in case the typed columns fail
+     * @throws SQLException 
+     */
+    protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
+			String tableName, List queryEnvironment, int isScrollable, 
+			ExpressionParser whereClause, String columnTypes) throws ClassNotFoundException, SQLException {
+        this.statement = statement;
+        this.isScrollable = isScrollable;
+        this.reader = reader;
+        this.tableName = tableName;
+        this.queryEnvironment = queryEnvironment;
+        this.whereClause = whereClause;
+        String[] columnNames = reader.getColumnNames();
+        this.columnPositions = new HashMap();
+        for (int i=0; i<columnNames.length; i++){
+        	this.columnPositions.put(columnNames[i], new Integer(i));
+        }
+        if(queryEnvironment.size() == 0) {
+        	this.queryEnvironment = new ArrayList();
+            for (int i = 0; i < columnNames.length; i++) {
+            	this.queryEnvironment.add(new Object[]{columnNames[i], new ColumnName(columnNames[i])});
+			}
+        }
+        this.columnNames = new String[columnNames.length];
+    	this.mustInferTypeNames = false;
+        if (columnTypes.contains(",")){
+        	String[] typeNames = columnTypes.split(",");
+        	for(int i=0; i<typeNames.length; i++){
+        		this.columnNames[i] = typeNames[i].trim();
+        	}
+        }
+        else if (columnTypes.equals("")){
+        	this.mustInferTypeNames = true;
+        }else{
+        	for(int i=0; i<this.columnNames.length; i++){
+        		this.columnNames[i] = columnTypes.trim();
+        	}
+        }
+    }
 
 	public String parseString(String str) {
 		return str;
@@ -203,116 +308,6 @@ public class CsvResultSet implements ResultSet {
 		}
 	};
 	
-    /** Metadata for this ResultSet */
-    protected ResultSetMetaData resultSetMetaData;
-
-    /** Statement that produced this ResultSet */
-    protected CsvStatement statement;
-
-    protected int isScrollable = ResultSet.TYPE_SCROLL_SENSITIVE;
-    
-    /** Helper class that performs the actual file reads */
-    protected CSVReaderAdapter reader;
-
-    /** Table referenced by the Statement */
-    protected String tableName;
-
-    /** Array of available columns for referenced table */
-    protected Column[] columns;
-    
-    /** Last column name index read */
-    protected int lastIndexRead = -1;
-    
-    /** InputStream to keep track of */
-    protected InputStream is;
-
-	private boolean mustInferTypeNames;
-	private ExpressionParser whereClause;
-    /**
-     * Constructor for the CsvResultSet object
-     *
-     * @param statement Statement that produced this ResultSet
-     * @param reader Helper class that performs the actual file reads
-     * @param tableName Table referenced by the Statement
-     * @param columns Array of available columns for referenced table
-     * @param whereColumnName 
-     * @throws ClassNotFoundException 
-     * @throws SQLException 
-     */
-    protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
-			String tableName, Column[] columns, int isScrollable,
-			ExpressionParser whereClause) throws ClassNotFoundException, SQLException {
-		this(statement, reader, tableName, columns, isScrollable,
-				whereClause, CsvDriver.DEFAULT_COLUMN_TYPES);
-    }
-    /**
-     * Constructor for the CsvResultSet object 
-     *
-     * @param statement Statement that produced this ResultSet
-     * @param reader Helper class that performs the actual file reads
-     * @param tableName Table referenced by the Statement
-     * @param columns Array of available columns for referenced table
-     * @param whereValue The string to be sought for
-     * @param columnTypes A comma-separated string specifying the type of the i-th column.
-     * @param whereColumnName the name of the column, needed late by a select *
-     * @throws ClassNotFoundException in case the typed columns fail
-     * @throws SQLException 
-     */
-    protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
-			String tableName, Column[] columns, int isScrollable, 
-			ExpressionParser whereClause, String columnTypes) throws ClassNotFoundException, SQLException {
-        this.statement = statement;
-        this.isScrollable = isScrollable;
-        this.reader = reader;
-        this.tableName = tableName;
-        this.columns = columns;
-        this.whereClause = whereClause;
-        if(columns[0].getName().equals("*")) {
-            String[] columnNames = reader.getColumnNames();
-            this.columns = new Column[columnNames.length];
-            for (int i = 0; i < columnNames.length; i++) {
-				this.columns[i] = new Column(columnNames[i], i, columnNames[i]);
-			}
-        } else {
-        	// update the position field of the columns array elements that are
-			// not constant...
-            String[] columnNames = reader.getColumnNames();
-            // helper map to find the DB position of the DB name
-            Map dbNameToDBPos = new HashMap();
-            // helper map to find the DB position of the alias
-            Map aliasToDBPos = new HashMap();
-            for (int i=0; i< columnNames.length; i++) {
-            	dbNameToDBPos.put(columnNames[i].toLowerCase(), new Integer(i));
-            }
-            for (int i=0; i< this.columns.length; i++) {
-            	if (columns[i].getPosition() == -1)
-            		continue;
-            	String dbColName = columns[i]
-						.getDBName().toLowerCase();
-				Integer pos = (Integer)(dbNameToDBPos.get(dbColName));
-            	if (pos == null){
-            		throw new SQLException("could not find column '"+dbColName+"'");
-            	}
-            	aliasToDBPos.put(columns[i].getName().toLowerCase(), pos);
-            	columns[i].setPosition(pos.intValue());
-			}
-        }
-    	this.mustInferTypeNames = false;
-        if (columnTypes.contains(",")){
-        	String[] typeNames = columnTypes.split(",");
-        	for(int i=0; i<typeNames.length; i++){
-        		this.columns[i].setTypeName(typeNames[i]);
-        	}
-        }
-        else if (columnTypes.equals("")){
-        	this.mustInferTypeNames = true;
-        }else{
-        	for(int i=0; i<this.columns.length; i++){
-        		this.columns[i].setTypeName(columnTypes);
-        	}
-        }
-    }
-
     /**
      * Moves the cursor down one row from its current position.
      * A <code>ResultSet</code> cursor is initially positioned
@@ -332,33 +327,43 @@ public class CsvResultSet implements ResultSet {
     public boolean next() throws SQLException {
     	boolean thereWasAnAnswer;
     	thereWasAnAnswer = reader.next();
+    	updateRecordEnvironment(thereWasAnAnswer);
+		
     	if (this.mustInferTypeNames) {
     		inferTypeNames();
     	}
 		//We have a where clause, honor it    	
     	if(whereClause != null) {
     		while(thereWasAnAnswer){
-    			Map fieldValues = new HashMap();
-    			for (int i = 0; i<reader.columnNames.length; i++){
-    				String fieldName = reader.columnNames[i].toUpperCase();
-    				fieldValues.put(fieldName, reader.fieldValues[i]);
-    			}
-    			for (int i = 0; i<columns.length; i++) {
-    				String fieldName = columns[i].getName().toUpperCase();
-    				fieldValues.put(fieldName, getObject(fieldName));
-    			}
-    			
-    			if (whereClause.eval(fieldValues))
+    			if (whereClause.eval(objectEnvironment))
     				break;
     	    	thereWasAnAnswer = reader.next();
+    	    	updateRecordEnvironment(thereWasAnAnswer);
     		}
     	}
     	return thereWasAnAnswer;
     }
 
-    private void inferTypeNames() {
+    private void updateRecordEnvironment(boolean thereWasAnAnswer) {
+    	if(!thereWasAnAnswer)
+    		return;
+		recordEnvironment = new HashMap();
+		for (int i = 0; i<reader.columnNames.length; i++){
+			String key = reader.columnNames[i].toUpperCase();
+			String value = reader.fieldValues[i];
+			recordEnvironment.put(key, value);
+		}
+		objectEnvironment = new HashMap();
+		for (int i = 0; i < queryEnvironment.size(); i++){
+			Object[] o = (Object[]) queryEnvironment.get(i);
+			String key = (String) o[0];
+			Object value = ((Expression) o[1]).eval(recordEnvironment);
+			objectEnvironment.put(key.toUpperCase(), value);
+		}
+	}
+	private void inferTypeNames() {
 		mustInferTypeNames = false;
-    	for (int i=0; i< this.columns.length; i++){
+    	for (int i=0; i< this.columnNames.length; i++){
     		try {
     			String typeName = "String";
 				String value = reader.getField(i);
@@ -383,7 +388,7 @@ public class CsvResultSet implements ResultSet {
 				} else if (value.equals(("" + parseAsciiStream(value)))) {
 					typeName = "AsciiStream";
 				}
-				columns[i].setTypeName(typeName);
+				columnNames[i] = typeName;
 			} catch (SQLException e) {
 			}
     	}
@@ -446,15 +451,12 @@ public class CsvResultSet implements ResultSet {
         // perform pre-accessor method processing
         preAccessor(columnIndex);
         // use CsvReader.getColumn(String) to retrieve the column
-        if (columnIndex < 1 || columnIndex > columns.length) {
+        if (columnIndex < 1 || columnIndex > this.queryEnvironment.size()) {
             throw new SQLException("Column not found: invalid index: "+columnIndex);
         }
-		int pos = columns[columnIndex - 1].getPosition();
-		if (pos == -1) {
-			return columns[columnIndex - 1].getValue();
-		} else {
-			return reader.getField(pos);
-		}
+		Object[] o = (Object[]) queryEnvironment.get(columnIndex-1);
+		Expression result = (Expression) o[1];
+		return result.eval(recordEnvironment).toString();
     }
 
     /**
@@ -1071,7 +1073,7 @@ public class CsvResultSet implements ResultSet {
      */
     public ResultSetMetaData getMetaData() throws SQLException {
         if (resultSetMetaData == null) {
-            resultSetMetaData = new CsvResultSetMetaData(tableName,columns);
+            resultSetMetaData = new CsvResultSetMetaData(tableName, queryEnvironment, columnNames);
         }
         return resultSetMetaData;
     }
@@ -1103,7 +1105,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Object getObject(int columnIndex) throws SQLException {
-    	String typeName = this.columns[columnIndex-1].getTypeName();
+    	String typeName = this.columnNames[columnIndex-1];
     	if (typeName == null) {
             return getString(columnIndex);
     	} else {
@@ -1150,24 +1152,6 @@ public class CsvResultSet implements ResultSet {
      */
     public Object getObject(String columnName) throws SQLException {
     	return getObject(findColumn(columnName));
-    }
-
-    /**
-     * Maps the given <code>ResultSet</code> column name to its
-     * <code>ResultSet</code> column index.
-     *
-     * @param columnName the name of the column
-     * @return the column index of the given column name
-     * @exception SQLException if the <code>ResultSet</code> object does
-     * not contain <code>columnName</code> or a database access error occurs
-     */
-    public int findColumn(String columnName) throws SQLException {
-        // use CsvReader.getColumn(String) to retrieve the column
-        for (int i=0; i<this.columns.length; i++){
-        	if (columns[i].getName().equalsIgnoreCase(columnName))
-        		return i + 1;
-        }
-        throw new SQLException("column '" + columnName + "' is not present in ResultSet");
     }
 
     //--------------------------JDBC 2.0-----------------------------------
@@ -3016,6 +3000,23 @@ public class CsvResultSet implements ResultSet {
 	public Object unwrap(Class arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * @return the environment in which aliases are associated to expressions
+	 */
+	public List getQueryEnvironment() {
+		return queryEnvironment;
+	}
+
+	public int findColumn(String columnLabel) throws SQLException {
+		for (int i = 0; i < this.queryEnvironment.size(); i++)
+		{
+			Object[] queryEnvEntry = (Object[]) this.queryEnvironment.get(i);
+			if(((String)queryEnvEntry[0]).equalsIgnoreCase(columnLabel))
+				return i+1;
+		}
+		return 0;
 	}
 
 }

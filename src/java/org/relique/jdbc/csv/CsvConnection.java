@@ -46,7 +46,7 @@ import java.util.Vector;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.18 2008/11/19 11:39:41 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.19 2008/11/20 14:49:00 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 

@@ -39,7 +39,7 @@ import java.util.Vector;
  * @author     Christoph Langer
  * @author     Mario Frasca
  * @created    01 March 2004
- * @version    $Id: CSVReaderAdapter.java,v 1.11 2008/11/19 11:39:41 mfrasca Exp $
+ * @version    $Id: CSVReaderAdapter.java,v 1.12 2008/11/20 14:49:00 mfrasca Exp $
  */
 
 public abstract class CSVReaderAdapter

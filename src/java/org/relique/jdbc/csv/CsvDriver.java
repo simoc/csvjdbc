@@ -28,7 +28,7 @@ import java.io.File;
  * @author     JD Evora
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvDriver.java,v 1.12 2008/11/19 11:39:41 mfrasca Exp $
+ * @version    $Id: CsvDriver.java,v 1.13 2008/11/20 14:49:00 mfrasca Exp $
  */
 
 public class CsvDriver implements Driver

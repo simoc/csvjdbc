@@ -20,9 +20,10 @@ package test.org.relique.jdbc.csv;
 
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.relique.jdbc.csv.Column;
+import org.relique.jdbc.csv.Expression;
 import org.relique.jdbc.csv.ExpressionParser;
 import org.relique.jdbc.csv.ParseException;
 import org.relique.jdbc.csv.SqlParser;
@@ -34,7 +35,7 @@ import junit.framework.*;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.15 2008/11/20 09:34:25 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.16 2008/11/20 14:49:00 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -67,13 +68,16 @@ public class TestSqlParser extends TestCase {
 		assertTrue("Incorrect table name", parser.getTableName()
 				.equals("total"));
 
-		Column[] cols = parser.getColumns();
-		assertTrue("Incorrect Column Count", cols.length == 4);
+		assertEquals("Incorrect Column Count", 4, parser.environment.size());
 
-		assertEquals("Incorrect Column Name Col 3", "name.suffix", cols[3]
-				.getDBName().toLowerCase());
-		assertEquals("Incorrect Column Name Col 3", "value", cols[3].getName()
-				.toLowerCase());
+		List cols = parser.getColumns();
+		assertEquals("Incorrect Column Count", 4, cols.size());
+
+		Object[] colSpec = (Object[]) cols.get(3);
+		assertEquals("Incorrect Column Name Col 3", "VALUE", colSpec[0]
+				.toString());
+		assertEquals("Incorrect Column Name Col 3", "[NAME.SUFFIX]", colSpec[1]
+				.toString());
 
 		try {
 			String query = "SELECT location!parameter FROM total";
@@ -158,7 +162,7 @@ public class TestSqlParser extends TestCase {
 		assertTrue("Incorrect table name", parser.getTableName().equals("test"));
 
 		String[] cols = parser.getColumnNames();
-		assertTrue("Incorrect Column Count " + cols.length, cols.length == 1);
+		assertEquals("Incorrect Column Count", 0, cols.length);
 	}
 
 	/**
@@ -383,10 +387,33 @@ public class TestSqlParser extends TestCase {
 		cs = new ExpressionParser(new StringReader("B+C+'123' t1"));
 		cs.parseQueryEnvEntry();
 		assertEquals("T1: + + [B] [C] '123'", cs.toString());
+		try{
+			String expression = "loc * par";
+			cs = new ExpressionParser(new StringReader(expression));
+			cs.parseQueryEnvEntry();
+			fail("incorrect column specification '" + expression + "' parsed as correct");
+		} catch (ParseException e){}
+	}
 
+	public void testParsingQueryEnvironmentWithoutExpressions()
+			throws Exception {
+		SqlParser parser = new SqlParser();
+		parser.parse("SELECT A FROM test");
+		assertEquals("[A]", parser.getExpression(0).toString());
+		parser.parse("SELECT 123 a FROM test");
+		assertEquals("123", parser.getExpression(0).toString());
+		parser.parse("SELECT '123' a FROM test");
+		assertEquals("'123'", parser.getExpression(0).toString());
+	}
+
+	public void testParsingQueryEnvironmentWithExpressions() throws Exception {
 		SqlParser parser = new SqlParser();
 		parser.parse("SELECT A+B AS SUM FROM test");
+		assertEquals("+ [A] [B]", parser.getExpression(0).toString());
 		parser.parse("SELECT A+B SUM FROM test");
+		assertEquals("+ [A] [B]", parser.getExpression(0).toString());
 		parser.parse("SELECT A+B SUM, B+C+'123' t12 FROM test");
+		assertEquals("+ [A] [B]", parser.getExpression(0).toString());
+		assertEquals("+ + [B] [C] '123'", parser.getExpression(1).toString());
 	}
 }

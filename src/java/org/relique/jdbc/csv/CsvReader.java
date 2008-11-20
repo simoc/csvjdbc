@@ -33,7 +33,7 @@ import java.sql.SQLException;
  * @author     Christoph Langer
  * @author     Chetan Gupta
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.19 2008/11/19 12:14:18 mfrasca Exp $
+ * @version    $Id: CsvReader.java,v 1.20 2008/11/20 14:49:00 mfrasca Exp $
  */
 
 public class CsvReader extends CSVReaderAdapter

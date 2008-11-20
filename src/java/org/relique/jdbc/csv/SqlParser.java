@@ -16,12 +16,9 @@
 package org.relique.jdbc.csv;
 
 import java.io.StringReader;
-import java.sql.SQLException;
-import java.util.Map;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This is a very crude and simple SQL parser used by the Csv JDBC driver. It
@@ -36,7 +33,7 @@ import java.util.regex.Pattern;
  * @author Juan Pablo Morales
  * @author Mario Frasca
  * @created 25 November 2001
- * @version $Id: SqlParser.java,v 1.9 2008/11/20 09:12:31 mfrasca Exp $
+ * @version $Id: SqlParser.java,v 1.10 2008/11/20 14:49:00 mfrasca Exp $
  */
 public class SqlParser
 {
@@ -51,8 +48,9 @@ public class SqlParser
    *
    * @since
    */
-  public Column[] columns;
+  public String[] columns;
   private ExpressionParser whereClause;
+  public List environment;
   
   /**
    *Gets the tableName attribute of the SqlParser object
@@ -72,9 +70,9 @@ public class SqlParser
    * @return    The columnNames value
    * @since
    */
-  public Column[] getColumns()
+  public List getColumns()
   {
-    return columns;
+    return environment;
   }
   
   /**
@@ -86,7 +84,7 @@ public class SqlParser
    */
   public void parse(String sql) throws Exception {
 		tableName = null;
-		columns = new Column[0];
+		columns = new String[0];
 
 		String upperSql = sql.toUpperCase();
 
@@ -121,13 +119,10 @@ public class SqlParser
 		} else {
 			whereClause = null;
 		}
-		Vector cols = new Vector();
 		StringTokenizer tokenizer = new StringTokenizer(upperSql.substring(7,
 				fromPos), ",");
 
-		Pattern simple = Pattern.compile("[a-zA-Z0-9_\\.]+");
-		Pattern nameAlias = Pattern.compile("([a-zA-Z0-9_\\.]+) +(?:[aA][sS] +)?([a-zA-Z0-9_]+)");
-		Pattern literalAlias = Pattern.compile("('[^']*'|-?[0-9\\.]+) +(?:[aA][sS] +)?([a-zA-Z0-9_]+)");
+		environment = new ArrayList();
 		
 		while (tokenizer.hasMoreTokens()) {
 			String thisToken = tokenizer.nextToken().trim();
@@ -139,51 +134,40 @@ public class SqlParser
 			 * name plus alias: new Column(alias, -2, name);
 			 * literal plus alias: new Column(alias, -1, literal);
 			 */
-			Column currentColumn = null;
 			ExpressionParser cs = new ExpressionParser(new StringReader(thisToken));
 			cs.parseQueryEnvEntry();
-			if (cs.content == null)
-			{
-				if (thisToken.equals("*")){
-					currentColumn = new Column(thisToken, -2, thisToken);
-				}
-			} else {
-				Expression cc = cs.content.content;
-				Matcher m = simple.matcher(thisToken);
-				if (m.matches()){
-					currentColumn = new Column(thisToken, -2, thisToken);
-				}
-				m = nameAlias.matcher(thisToken);
-				if(m.matches()){
-					currentColumn = new Column(m.group(2), -2, m.group(1));
-				}
-				m = literalAlias.matcher(thisToken);
-				if(m.matches()){
-					currentColumn = new Column(m.group(2), -1, m.group(1));
-				}
-	
-				if (currentColumn == null){
-					throw new ParseException("could not parse column specification '" + thisToken + "'");
-				}
+			if (cs.content != null) {
+				QueryEnvEntry cc = (QueryEnvEntry)cs.content.content;
+				environment.add(new Object[]{cc.key, cc.expression});
 			}
-			cols.add(currentColumn);
 		}
-
-		columns = new Column[cols.size()];
-		cols.copyInto(columns);
 	}
 
 
 public String[] getColumnNames() {
-	String[] result = new String[columns.length];
-	for (int i=0; i<columns.length; i++){
-		result[i] = columns[i].getName();
+	String[] result = new String[environment.size()];
+	for (int i=0; i<environment.size(); i++){
+		Object[] entry = (Object[]) environment.get(i);
+		result[i] = (String) entry[0];
 	}
     return result;
 }
 
 public ExpressionParser getWhereClause() {
 	return whereClause;
+}
+
+
+public String getAlias(int i) {
+	// TODO Auto-generated method stub
+	Object[] o = (Object[]) environment.get(i);
+	return (String) o[0];
+}
+
+public Expression getExpression(int i) {
+	// TODO Auto-generated method stub
+	Object[] o = (Object[]) environment.get(i);
+	return (Expression) o[1];
 }
 
 }
