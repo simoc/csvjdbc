@@ -33,7 +33,7 @@ import java.util.StringTokenizer;
  * @author Juan Pablo Morales
  * @author Mario Frasca
  * @created 25 November 2001
- * @version $Id: SqlParser.java,v 1.10 2008/11/20 14:49:00 mfrasca Exp $
+ * @version $Id: SqlParser.java,v 1.11 2008/11/20 15:59:55 mfrasca Exp $
  */
 public class SqlParser
 {
@@ -109,10 +109,8 @@ public class SqlParser
 		} else {
 			tableName = sql.substring(fromPos + 6, wherePos).trim();
 		}
-		/*
-		 * If we have a where clause fill the whereColumn and whereValue
-		 * attributes
-		 */
+
+		// if we have a "WHERE" parse the expression
 		if (wherePos > -1) {
 			whereClause = new ExpressionParser(new StringReader(sql.substring(wherePos + 6)));
 			whereClause.parseLogicalExpression();
@@ -123,17 +121,10 @@ public class SqlParser
 				fromPos), ",");
 
 		environment = new ArrayList();
-		
+
+		// parse the column specifications
 		while (tokenizer.hasMoreTokens()) {
 			String thisToken = tokenizer.nextToken().trim();
-			/*
-			 * we don't parse the token, we simply try to match it against a
-			 * regular expressions describing...
-			 * 
-			 * name: new Column(name, -2, name);
-			 * name plus alias: new Column(alias, -2, name);
-			 * literal plus alias: new Column(alias, -1, literal);
-			 */
 			ExpressionParser cs = new ExpressionParser(new StringReader(thisToken));
 			cs.parseQueryEnvEntry();
 			if (cs.content != null) {
