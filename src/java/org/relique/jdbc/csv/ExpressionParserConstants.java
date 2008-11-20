@@ -37,7 +37,9 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int RELOP = 16;
   /** RegularExpression Id. */
-  int BINOP = 17;
+  int ASTERISK = 17;
+  /** RegularExpression Id. */
+  int BINOP = 18;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -61,6 +63,7 @@ public interface ExpressionParserConstants {
     "<NAME>",
     "<STRING>",
     "<RELOP>",
+    "\"*\"",
     "<BINOP>",
     "\"(\"",
     "\")\"",

@@ -40,7 +40,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.24 2008/11/19 13:31:28 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.25 2008/11/20 09:12:30 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -355,7 +355,6 @@ public class TestCsvDriver extends TestCase {
 	}
 	
 	/**
-	 * TODO: this does not work yet!  first we must decide the behaviour!
 	 * @throws SQLException
 	 * @throws ParseException
 	 */
@@ -602,7 +601,6 @@ public class TestCsvDriver extends TestCase {
 	}
 
 	/**
-	 * TODO: an old patch has been made useless by Mario Frasca (that's me).  sorry...
 	 * @throws SQLException
 	 */
 	public void testWhereWithAndOperator() throws SQLException {
@@ -785,7 +783,6 @@ public class TestCsvDriver extends TestCase {
 	}
 
 	/**
-	 * TODO: an old patch has been made useless by Mario Frasca (that's me).  sorry...
 	 * @throws SQLException
 	 */
 	public void testAddingFields() throws SQLException {

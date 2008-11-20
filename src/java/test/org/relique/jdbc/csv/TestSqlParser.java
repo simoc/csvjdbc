@@ -25,13 +25,15 @@ import org.relique.jdbc.csv.Column;
 import org.relique.jdbc.csv.ExpressionParser;
 import org.relique.jdbc.csv.ParseException;
 import org.relique.jdbc.csv.SqlParser;
+import org.relique.jdbc.csv.TokenMgrError;
+
 import junit.framework.*;
 
 /**
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.13 2008/11/19 15:52:05 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.14 2008/11/20 09:12:30 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -66,7 +68,7 @@ public class TestSqlParser extends TestCase {
 			String query = "SELECT location!parameter FROM total";
 			parser.parse(query);
 			fail("incorrect query '" + query + "' parsed as correct");
-		} catch (ParseException e) {
+		} catch (TokenMgrError e) {
 		}
 		try {
 			String query = "SELECT location+parameter FROM total";

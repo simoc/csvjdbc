@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  * @author Juan Pablo Morales
  * @author Mario Frasca
  * @created 25 November 2001
- * @version $Id: SqlParser.java,v 1.8 2008/11/19 15:52:05 mfrasca Exp $
+ * @version $Id: SqlParser.java,v 1.9 2008/11/20 09:12:31 mfrasca Exp $
  */
 public class SqlParser
 {
@@ -140,24 +140,31 @@ public class SqlParser
 			 * literal plus alias: new Column(alias, -1, literal);
 			 */
 			Column currentColumn = null;
-			Matcher m = simple.matcher(thisToken);
-			if (m.matches()){
-				currentColumn = new Column(thisToken, -2, thisToken);
-			}
-			m = nameAlias.matcher(thisToken);
-			if(m.matches()){
-				currentColumn = new Column(m.group(2), -2, m.group(1));
-			}
-			m = literalAlias.matcher(thisToken);
-			if(m.matches()){
-				currentColumn = new Column(m.group(2), -1, m.group(1));
-			}
-			if (thisToken.equals("*")){
-				currentColumn = new Column(thisToken, -2, thisToken);
-			}
-
-			if (currentColumn == null){
-				throw new ParseException("could not parse column specification '" + thisToken + "'");
+			ExpressionParser cs = new ExpressionParser(new StringReader(thisToken));
+			cs.parseQueryEnvEntry();
+			if (cs.content == null)
+			{
+				if (thisToken.equals("*")){
+					currentColumn = new Column(thisToken, -2, thisToken);
+				}
+			} else {
+				Expression cc = cs.content.content;
+				Matcher m = simple.matcher(thisToken);
+				if (m.matches()){
+					currentColumn = new Column(thisToken, -2, thisToken);
+				}
+				m = nameAlias.matcher(thisToken);
+				if(m.matches()){
+					currentColumn = new Column(m.group(2), -2, m.group(1));
+				}
+				m = literalAlias.matcher(thisToken);
+				if(m.matches()){
+					currentColumn = new Column(m.group(2), -1, m.group(1));
+				}
+	
+				if (currentColumn == null){
+					throw new ParseException("could not parse column specification '" + thisToken + "'");
+				}
 			}
 			cols.add(currentColumn);
 		}
