@@ -56,6 +56,9 @@ class QueryEnvEntry extends Expression{
   public Object eval(Map env){
     return expression.eval(env);
   }
+  public String toString(){
+        return key + ": " + expression.toString();
+  }
 }
 class BinaryOperation extends Expression{
   String op;

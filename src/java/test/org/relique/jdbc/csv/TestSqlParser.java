@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package test.org.relique.jdbc.csv;
 
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ import junit.framework.*;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.14 2008/11/20 09:12:30 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.15 2008/11/20 09:34:25 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -44,25 +45,35 @@ public class TestSqlParser extends TestCase {
 		SqlParser parser = new SqlParser();
 
 		parser.parse("SELECT location, parameter, ts, waarde, unit FROM total");
-		assertTrue("Incorrect table name", parser.getTableName().equals("total"));
+		assertTrue("Incorrect table name", parser.getTableName()
+				.equals("total"));
 
 		String[] colNames = parser.getColumnNames();
 		assertTrue("Incorrect Column Count", colNames.length == 5);
 
-		assertEquals("Incorrect Column Name Col 0", colNames[0].toLowerCase(), "location");
-		assertEquals("Incorrect Column Name Col 1", colNames[1].toLowerCase(), "parameter");
-		assertEquals("Incorrect Column Name Col 2", colNames[2].toLowerCase(), "ts");
-		assertEquals("Incorrect Column Name Col 3", colNames[3].toLowerCase(), "waarde");
-		assertEquals("Incorrect Column Name Col 4", colNames[4].toLowerCase(), "unit");
+		assertEquals("Incorrect Column Name Col 0", colNames[0].toLowerCase(),
+				"location");
+		assertEquals("Incorrect Column Name Col 1", colNames[1].toLowerCase(),
+				"parameter");
+		assertEquals("Incorrect Column Name Col 2", colNames[2].toLowerCase(),
+				"ts");
+		assertEquals("Incorrect Column Name Col 3", colNames[3].toLowerCase(),
+				"waarde");
+		assertEquals("Incorrect Column Name Col 4", colNames[4].toLowerCase(),
+				"unit");
 
-		parser.parse("SELECT location, parameter, ts, name.suffix as value FROM total");
-		assertTrue("Incorrect table name", parser.getTableName().equals("total"));
+		parser
+				.parse("SELECT location, parameter, ts, name.suffix as value FROM total");
+		assertTrue("Incorrect table name", parser.getTableName()
+				.equals("total"));
 
 		Column[] cols = parser.getColumns();
 		assertTrue("Incorrect Column Count", cols.length == 4);
 
-		assertEquals("Incorrect Column Name Col 3", "name.suffix", cols[3].getDBName().toLowerCase());
-		assertEquals("Incorrect Column Name Col 3", "value", cols[3].getName().toLowerCase());
+		assertEquals("Incorrect Column Name Col 3", "name.suffix", cols[3]
+				.getDBName().toLowerCase());
+		assertEquals("Incorrect Column Name Col 3", "value", cols[3].getName()
+				.toLowerCase());
 
 		try {
 			String query = "SELECT location!parameter FROM total";
@@ -114,8 +125,10 @@ public class TestSqlParser extends TestCase {
 		String[] cols = parser.getColumnNames();
 		assertTrue("Incorrect Column Count", cols.length == 2);
 
-		assertTrue("Column Name Col 0 '" + cols[0] + "' is not equal FLD_A", cols[0].equalsIgnoreCase("fld_a"));
-		assertTrue("Column Name Col 1 '" + cols[1] + "' is not equal FLD_B", cols[1].equalsIgnoreCase("FLD_B"));
+		assertTrue("Column Name Col 0 '" + cols[0] + "' is not equal FLD_A",
+				cols[0].equalsIgnoreCase("fld_a"));
+		assertTrue("Column Name Col 1 '" + cols[1] + "' is not equal FLD_B",
+				cols[1].equalsIgnoreCase("FLD_B"));
 	}
 
 	public void testFieldAsAlias() throws Exception {
@@ -127,8 +140,10 @@ public class TestSqlParser extends TestCase {
 		String[] cols = parser.getColumnNames();
 		assertTrue("Incorrect Column Count", cols.length == 2);
 
-		assertTrue("Column Name Col 0 '" + cols[0] + "' is not equal FLD_A", cols[0].equalsIgnoreCase("fld_a"));
-		assertTrue("Column Name Col 1 '" + cols[1] + "' is not equal FLD_B", cols[1].equalsIgnoreCase("FLD_B"));
+		assertTrue("Column Name Col 0 '" + cols[0] + "' is not equal FLD_A",
+				cols[0].equalsIgnoreCase("fld_a"));
+		assertTrue("Column Name Col 1 '" + cols[1] + "' is not equal FLD_B",
+				cols[1].equalsIgnoreCase("FLD_B"));
 	}
 
 	/**
@@ -181,9 +196,8 @@ public class TestSqlParser extends TestCase {
 		parser.parse("SELECT * FROM test WHERE A='20'");
 		whereClause = parser.getWhereClause();
 		assertNotNull("query has a WHERE clause", whereClause);
-		assertEquals("Incorrect WHERE", "= [A] '20'",
-				whereClause.toString());
-		
+		assertEquals("Incorrect WHERE", "= [A] '20'", whereClause.toString());
+
 		parser.parse("SELECT * FROM test WHERE A='20' AND B='AA'");
 		whereClause = parser.getWhereClause();
 		assertEquals("Incorrect WHERE", "AND = [A] '20' = [B] 'AA'",
@@ -191,8 +205,8 @@ public class TestSqlParser extends TestCase {
 
 		parser.parse("SELECT * FROM test WHERE A='20' OR B='AA'");
 		whereClause = parser.getWhereClause();
-		assertEquals("Incorrect WHERE", "OR = [A] '20' = [B] 'AA'",
-				whereClause.toString());
+		assertEquals("Incorrect WHERE", "OR = [A] '20' = [B] 'AA'", whereClause
+				.toString());
 
 		parser.parse("SELECT * FROM test WHERE A='20' OR B='AA' AND c=1");
 		whereClause = parser.getWhereClause();
@@ -230,24 +244,24 @@ public class TestSqlParser extends TestCase {
 		} catch (ParseException e) {
 		}
 
-		
 		parser.parse("SELECT * FROM test WHERE B IS NULL");
 		ExpressionParser whereClause = parser.getWhereClause();
-		assertEquals("Incorrect WHERE", "N [B]",
-				whereClause.toString());
+		assertEquals("Incorrect WHERE", "N [B]", whereClause.toString());
 		parser.parse("SELECT * FROM test WHERE B BETWEEN '20' AND 'AA'");
 		whereClause = parser.getWhereClause();
-		assertEquals("Incorrect WHERE", "B [B] '20' 'AA'",
-				whereClause.toString());
+		assertEquals("Incorrect WHERE", "B [B] '20' 'AA'", whereClause
+				.toString());
 		parser.parse("SELECT * FROM test WHERE B LIKE '20 AND AA'");
 		whereClause = parser.getWhereClause();
-		assertEquals("Incorrect WHERE", "L [B] '20 AND AA'",
-				whereClause.toString());
+		assertEquals("Incorrect WHERE", "L [B] '20 AND AA'", whereClause
+				.toString());
 
-		parser.parse("SELECT * FROM test WHERE B IS NULL OR B BETWEEN '20' AND 'AA' AND B LIKE '20 AND AA'");
+		parser
+				.parse("SELECT * FROM test WHERE B IS NULL OR B BETWEEN '20' AND 'AA' AND B LIKE '20 AND AA'");
 		whereClause = parser.getWhereClause();
-		assertEquals("Incorrect WHERE", "OR N [B] AND B [B] '20' 'AA' L [B] '20 AND AA'",
-				whereClause.toString());
+		assertEquals("Incorrect WHERE",
+				"OR N [B] AND B [B] '20' 'AA' L [B] '20 AND AA'", whereClause
+						.toString());
 
 		try {
 			query = "SELECT * FROM test WHERE a=0 AND FLD_A";
@@ -271,7 +285,7 @@ public class TestSqlParser extends TestCase {
 		env.clear();
 		env.put("C", new Integer("1"));
 		assertEquals(true, parser.getWhereClause().eval(env));
-		
+
 		parser.parse("SELECT * FROM test WHERE c='1'");
 		env.clear();
 		env.put("C", new String("1"));
@@ -281,7 +295,7 @@ public class TestSqlParser extends TestCase {
 		env.clear();
 		env.put("C", new Double("1.0"));
 		assertEquals(true, parser.getWhereClause().eval(env));
-		
+
 		parser.parse("SELECT * FROM test WHERE (A='20' OR B='AA') AND c=1");
 		ExpressionParser whereClause = parser.getWhereClause();
 
@@ -299,7 +313,7 @@ public class TestSqlParser extends TestCase {
 		env.put("C", new Integer("3"));
 		assertEquals(false, whereClause.eval(env));
 	}
-	
+
 	/**
 	 * Test that where conditions with AND operator are parsed correctly
 	 * 
@@ -340,11 +354,39 @@ public class TestSqlParser extends TestCase {
 		assertEquals(true, parser.getWhereClause().eval(env));
 	}
 
-	public void testAddingFields() throws Exception {
-		SqlParser parser = new SqlParser();
+	public void testParsingQueryEnvironmentEntries() throws Exception {
+		ExpressionParser cs;
+		cs = new ExpressionParser(new StringReader("*"));
+		cs.parseQueryEnvEntry();
+		assertEquals("null", cs.toString());
+		cs = new ExpressionParser(new StringReader("A"));
+		cs.parseQueryEnvEntry();
+		assertEquals("A: [A]", cs.toString());
+		cs = new ExpressionParser(new StringReader("123 A"));
+		cs.parseQueryEnvEntry();
+		assertEquals("A: 123", cs.toString());
+		cs = new ExpressionParser(new StringReader("123+2 A"));
+		cs.parseQueryEnvEntry();
+		assertEquals("A: + 123 2", cs.toString());
+		cs = new ExpressionParser(new StringReader("123/2 A"));
+		cs.parseQueryEnvEntry();
+		assertEquals("A: / 123 2", cs.toString());
+		cs = new ExpressionParser(new StringReader("'123' A"));
+		cs.parseQueryEnvEntry();
+		assertEquals("A: '123'", cs.toString());
+		cs = new ExpressionParser(new StringReader("A+B AS sum"));
+		cs.parseQueryEnvEntry();
+		assertEquals("SUM: + [A] [B]", cs.toString());
+		cs = new ExpressionParser(new StringReader("A+B sum"));
+		cs.parseQueryEnvEntry();
+		assertEquals("SUM: + [A] [B]", cs.toString());
+		cs = new ExpressionParser(new StringReader("B+C+'123' t1"));
+		cs.parseQueryEnvEntry();
+		assertEquals("T1: + + [B] [C] '123'", cs.toString());
 
+		SqlParser parser = new SqlParser();
 		parser.parse("SELECT A+B AS SUM FROM test");
 		parser.parse("SELECT A+B SUM FROM test");
 		parser.parse("SELECT A+B SUM, B+C+'123' t12 FROM test");
-	}		
+	}
 }
