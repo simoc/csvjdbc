@@ -57,7 +57,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.30 2008/11/21 13:35:10 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.31 2008/11/21 15:04:47 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -350,15 +350,16 @@ public class CsvResultSet implements ResultSet {
     }
 
     private void updateRecordEnvironment(boolean thereWasAnAnswer) {
-    	if(!thereWasAnAnswer)
-    		return;
 		recordEnvironment = new HashMap();
+		objectEnvironment = new HashMap();
+    	if(!thereWasAnAnswer) {
+    		return;
+    	}
 		for (int i = 0; i<reader.columnNames.length; i++){
 			String key = reader.columnNames[i].toUpperCase();
 			String value = reader.fieldValues[i];
 			recordEnvironment.put(key, value);
 		}
-		objectEnvironment = new HashMap();
 		for (int i = 0; i < queryEnvironment.size(); i++){
 			Object[] o = (Object[]) queryEnvironment.get(i);
 			String key = (String) o[0];
@@ -467,8 +468,11 @@ public class CsvResultSet implements ResultSet {
             throw new SQLException("Column not found: invalid index: "+columnIndex);
         }
 		Object[] o = (Object[]) queryEnvironment.get(columnIndex-1);
-		Expression result = (Expression) o[1];
-		return result.eval(recordEnvironment).toString();
+		try{
+			return ((Expression) o[1]).eval(recordEnvironment).toString();
+		} catch (NullPointerException e){
+			return null;
+		}
     }
 
     /**
@@ -1367,7 +1371,9 @@ public class CsvResultSet implements ResultSet {
      */
     public boolean first() throws SQLException {
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
-        	return reader.first();
+        	boolean thereWasAnAnswer = reader.first();
+        	updateRecordEnvironment(thereWasAnAnswer);
+        	return thereWasAnAnswer;
         } else {
           throw new UnsupportedOperationException(
                 "ResultSet.first() unsupported");
@@ -1385,7 +1391,9 @@ public class CsvResultSet implements ResultSet {
      */
     public boolean last() throws SQLException {
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
-        	return reader.last();
+        	boolean thereWasAnAnswer = reader.last();
+        	updateRecordEnvironment(thereWasAnAnswer);
+        	return thereWasAnAnswer;
         } else {
           throw new UnsupportedOperationException("ResultSet.last() unsupported");
         }
@@ -1442,7 +1450,9 @@ public class CsvResultSet implements ResultSet {
      */
     public boolean absolute(int row) throws SQLException {
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
-        	return reader.absolute(row);
+        	boolean thereWasAnAnswer = reader.absolute(row);
+        	updateRecordEnvironment(thereWasAnAnswer);
+        	return thereWasAnAnswer;
         } else {
 	        throw new UnsupportedOperationException(
 	                "ResultSet.absolute() unsupported");
@@ -1472,7 +1482,9 @@ public class CsvResultSet implements ResultSet {
      */
     public boolean relative(int rows) throws SQLException {
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
-        	return reader.relative(rows);
+        	boolean thereWasAnAnswer = reader.relative(rows);
+        	updateRecordEnvironment(thereWasAnAnswer);
+        	return thereWasAnAnswer;
         } else {
           throw new UnsupportedOperationException(
                 "ResultSet.relative() unsupported");
@@ -1490,7 +1502,9 @@ public class CsvResultSet implements ResultSet {
      */
     public boolean previous() throws SQLException {
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
-        	return reader.previous();
+        	boolean thereWasAnAnswer = reader.previous();
+        	updateRecordEnvironment(thereWasAnAnswer);
+        	return thereWasAnAnswer;
         } else {
           throw new UnsupportedOperationException(
                 "ResultSet.previous() unsupported");

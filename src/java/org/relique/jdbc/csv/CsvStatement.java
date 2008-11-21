@@ -32,7 +32,7 @@ import java.util.Vector;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.19 2008/11/20 14:49:00 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.20 2008/11/21 15:04:47 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -341,16 +341,12 @@ public class CsvStatement implements Statement {
 		CSVReaderAdapter reader = null;
 		try {
 			if (isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
-				try {
-					reader = new CSVScrollableReader(fileName, connection
-							.getSeparator(), connection.isSuppressHeaders(),
-							connection.getCharset(), connection.getQuotechar(),
-							connection.getHeaderline(), connection.getExtension(),
-							connection.getTrimHeaders(), parser.getWhereClause());
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				reader = new CSVScrollableReader(fileName, connection
+						.getSeparator(), connection.isSuppressHeaders(),
+						connection.getCharset(), connection.getQuotechar(),
+						connection.getHeaderline(), connection.getExtension(),
+						connection.getTrimHeaders(), parser.environment, parser
+								.getWhereClause());
 			} else if(connection.isIndexedFiles()){
 				String fileNamePattern = parser.getTableName()+connection.getFileNamePattern()+connection.getExtension();
 				String[] nameParts = connection.getNameParts();

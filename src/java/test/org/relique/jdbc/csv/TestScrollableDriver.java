@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 /**This class is used to test the CsvJdbc Scrollable driver.
 *
 * @author Chetan Gupta
-* @version $Id: TestScrollableDriver.java,v 1.7 2008/11/14 14:20:28 mfrasca Exp $
+* @version $Id: TestScrollableDriver.java,v 1.8 2008/11/21 15:04:47 mfrasca Exp $
 */
 public class TestScrollableDriver extends TestCase
 { 
@@ -75,24 +75,24 @@ public class TestScrollableDriver extends TestCase
 
       // dump out the results
       results.next();
-      assertEquals("Incorrect ID Value",results.getString("ID"),"Q123");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"\"S,\"");
+      assertEquals("Incorrect ID Value","Q123",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","\"S,\"",results.getString("NAME"));
 
       results.next();
-      assertEquals("Incorrect ID Value",results.getString("ID"),"A123");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"Jonathan Ackerman");
+      assertEquals("Incorrect ID Value","A123",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","Jonathan Ackerman",results.getString("NAME"));
 
       results.first();
-      assertEquals("Incorrect ID Value",results.getString("ID"),"Q123");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"\"S,\"");
+      assertEquals("Incorrect ID Value","Q123",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","\"S,\"",results.getString("NAME"));
 
       results.previous();
       assertNull(results.getString("ID"));
       assertNull(results.getString("NAME"));
 
       results.next();
-      assertEquals("Incorrect ID Value",results.getString("ID"),"Q123");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"\"S,\"");
+      assertEquals("Incorrect ID Value","Q123",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","\"S,\"",results.getString("NAME"));
 
       results.next();
       assertEquals("Incorrect ID Value",results.getString("ID"),"A123");
@@ -192,60 +192,60 @@ public class TestScrollableDriver extends TestCase
 
       // dump out the results
       results.next();
-      assertEquals("Incorrect ID Value",results.getString("ID"),"A123");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"Aman");
+      assertEquals("Incorrect ID Value","A123",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","Aman",results.getString("NAME"));
 
       results.next();
-      assertEquals("Incorrect ID Value",results.getString("ID"),"B223");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"Binoy");
+      assertEquals("Incorrect ID Value","B223",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","Binoy",results.getString("NAME"));
 
       results.first();
-      assertEquals("Incorrect ID Value",results.getString("ID"),"A123");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"Aman");
+      assertEquals("Incorrect ID Value","A123",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","Aman",results.getString("NAME"));
 
       results.previous();
       assertNull(results.getString("ID"));
       assertNull(results.getString("NAME"));
 
       results.next();
-      assertEquals("Incorrect ID Value",results.getString("ID"),"A123");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"Aman");
+      assertEquals("Incorrect ID Value","A123",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","Aman",results.getString("NAME"));
 
       results.next();
-      assertEquals("Incorrect ID Value",results.getString("ID"),"B223");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"Binoy");
+      assertEquals("Incorrect ID Value","B223",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","Binoy",results.getString("NAME"));
 
       results.relative(2);
-      assertEquals("Incorrect ID Value",results.getString("ID"),"D456");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"Dilip \"meals\" Maurice ~In New  LIne~ Done");
+      assertEquals("Incorrect ID Value","D456",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","Dilip \"meals\" Maurice\n ~In New  LIne~ \nDone",results.getString("NAME"));
 
       results.relative(-3);
-      assertEquals("Incorrect ID Value",results.getString("ID"),"A123");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"Aman");
+      assertEquals("Incorrect ID Value","A123",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","Aman",results.getString("NAME"));
 
       results.relative(0);
-      assertEquals("Incorrect ID Value",results.getString("ID"),"A123");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"Aman");
+      assertEquals("Incorrect ID Value","A123",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","Aman",results.getString("NAME"));
 
       results.absolute(2);
-      assertEquals("Incorrect ID Value",results.getString("ID"),"B223");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"Binoy");
+      assertEquals("Incorrect ID Value","B223",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","Binoy",results.getString("NAME"));
 
       results.absolute(-2);
-      assertEquals("Incorrect ID Value",results.getString("ID"),"E589");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"\"Elephant\"");
+      assertEquals("Incorrect ID Value","E589",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","\"Elephant\"",results.getString("NAME"));
 
       results.last();
-      assertEquals("Incorrect ID Value",results.getString("ID"),"F634");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"Fandu \"\"peg leg\"\", Jimmy & Samantha ~In Another New  LIne~ \"\"Sam\"\"");
+      assertEquals("Incorrect ID Value","F634",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","Fandu \"\"peg leg\"\", Jimmy & Samantha \n~In Another New  LIne~ \n\"\"Sam\"\"",results.getString("NAME"));
 
       results.next();
       assertNull(results.getString("ID"));
       assertNull(results.getString("NAME"));
 
       results.previous();
-      assertEquals("Incorrect ID Value",results.getString("ID"),"F634");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"Fandu \"\"peg leg\"\", Jimmy & Samantha ~In Another New  LIne~ \"\"Sam\"\"");
+      assertEquals("Incorrect ID Value","F634",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","Fandu \"\"peg leg\"\", Jimmy & Samantha \n~In Another New  LIne~ \n\"\"Sam\"\"",results.getString("NAME"));
 
       results.relative(100);
       assertNull(results.getString("ID"));
@@ -256,8 +256,8 @@ public class TestScrollableDriver extends TestCase
       assertNull(results.getString("NAME"));
 
       results.relative(2);
-      assertEquals("Incorrect ID Value",results.getString("ID"),"B223");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"Binoy");
+      assertEquals("Incorrect ID Value","B223",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","Binoy",results.getString("NAME"));
 
       results.absolute(7);
       assertNull(results.getString("ID"));
@@ -268,8 +268,8 @@ public class TestScrollableDriver extends TestCase
       assertNull(results.getString("NAME"));
 
       results.absolute(2);
-      assertEquals("Incorrect ID Value",results.getString("ID"),"B223");
-      assertEquals("Incorrect NAME Value",results.getString("NAME"),"Binoy");
+      assertEquals("Incorrect ID Value","B223",results.getString("ID"));
+      assertEquals("Incorrect NAME Value","Binoy",results.getString("NAME"));
 
       results.absolute(0);
       assertNull(results.getString("ID"));
@@ -294,7 +294,7 @@ public class TestScrollableDriver extends TestCase
       // create a Statement object to execute the query with
       Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
 
-      ResultSet results = stmt.executeQuery("SELECT ID,Name FROM sample4 WHERE ID=05");
+      ResultSet results = stmt.executeQuery("SELECT ID,Name FROM sample4 WHERE ID='05'");
       assertFalse("There are some junk records found", results.next());
       results.last();
       assertNull("Invalid Id", results.getString("ID"));
@@ -316,9 +316,9 @@ public class TestScrollableDriver extends TestCase
 
   /**
    * This checks for the scenario when we have single record
+ * @throws SQLException 
    */
-  public void testWhereSingleRecord() {
-  	try {
+  public void testWhereSingleRecord() throws SQLException {
   	  Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
       // create a Statement object to execute the query with
       Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
@@ -344,19 +344,14 @@ public class TestScrollableDriver extends TestCase
       results.previous();
       assertEquals("Invalid Id", "A123", results.getString("ID"));
       assertEquals("Invalid Name", "Jonathan Ackerman", results.getString("NAME"));
-  	}
-    catch(Exception e)
-    {
-      fail("Unexpected Exception: " + e);
-    }
   }
 
   
   /**
    * This tests for the scenario with where clause.
+ * @throws SQLException 
    */
-  public void testWhereMultipleResult() {
-  	try {
+  public void testWhereMultipleResult() throws SQLException {
   	  Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
 
       Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
@@ -393,11 +388,6 @@ public class TestScrollableDriver extends TestCase
       results.previous();
       assertTrue("Is not before first", results.isBeforeFirst());
 
-  	}
-    catch(Exception e)
-    {
-      fail("Unexpected Exception: " + e);
-    }
   }
 
 
