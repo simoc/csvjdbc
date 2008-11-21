@@ -46,12 +46,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * This class implements the ResultSet interface for the CsvJdbc driver.
@@ -60,7 +57,7 @@ import java.util.Map.Entry;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.29 2008/11/21 10:14:18 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.30 2008/11/21 13:35:10 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 

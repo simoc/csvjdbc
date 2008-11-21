@@ -17,25 +17,21 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package test.org.relique.jdbc.csv;
-
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.relique.jdbc.csv.Expression;
+import junit.framework.TestCase;
 import org.relique.jdbc.csv.ExpressionParser;
 import org.relique.jdbc.csv.ParseException;
 import org.relique.jdbc.csv.SqlParser;
 import org.relique.jdbc.csv.TokenMgrError;
 
-import junit.framework.*;
-
 /**
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.17 2008/11/21 10:14:18 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.18 2008/11/21 13:35:10 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
