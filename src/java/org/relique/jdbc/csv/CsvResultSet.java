@@ -60,7 +60,7 @@ import java.util.Map.Entry;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.28 2008/11/20 15:33:16 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.29 2008/11/21 10:14:18 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -343,7 +343,7 @@ public class CsvResultSet implements ResultSet {
 		//We have a where clause, honor it    	
     	if(whereClause != null) {
     		while(thereWasAnAnswer){
-    			if (whereClause.eval(objectEnvironment))
+    			if (whereClause.isTrue(objectEnvironment))
     				break;
     	    	thereWasAnAnswer = reader.next();
     	    	updateRecordEnvironment(thereWasAnAnswer);

@@ -35,7 +35,7 @@ import junit.framework.*;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.16 2008/11/20 14:49:00 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.17 2008/11/21 10:14:18 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -288,17 +288,17 @@ public class TestSqlParser extends TestCase {
 		parser.parse("SELECT * FROM test WHERE c=1");
 		env.clear();
 		env.put("C", new Integer("1"));
-		assertEquals(true, parser.getWhereClause().eval(env));
+		assertEquals(true, parser.getWhereClause().isTrue(env));
 
 		parser.parse("SELECT * FROM test WHERE c='1'");
 		env.clear();
 		env.put("C", new String("1"));
-		assertEquals(true, parser.getWhereClause().eval(env));
+		assertEquals(true, parser.getWhereClause().isTrue(env));
 
 		parser.parse("SELECT * FROM test WHERE c=1.0");
 		env.clear();
 		env.put("C", new Double("1.0"));
-		assertEquals(true, parser.getWhereClause().eval(env));
+		assertEquals(true, parser.getWhereClause().isTrue(env));
 
 		parser.parse("SELECT * FROM test WHERE (A='20' OR B='AA') AND c=1");
 		ExpressionParser whereClause = parser.getWhereClause();
@@ -307,15 +307,15 @@ public class TestSqlParser extends TestCase {
 		env.put("A", new String("20"));
 		env.put("B", new String("AA"));
 		env.put("C", new Integer("1"));
-		assertEquals(true, whereClause.eval(env));
+		assertEquals(true, whereClause.isTrue(env));
 		env.put("A", new Double("20"));
-		assertEquals(true, whereClause.eval(env));
+		assertEquals(true, whereClause.isTrue(env));
 		env.put("B", new String(""));
-		assertEquals(false, whereClause.eval(env));
+		assertEquals(false, whereClause.isTrue(env));
 		env.put("A", new String("20"));
-		assertEquals(true, whereClause.eval(env));
+		assertEquals(true, whereClause.isTrue(env));
 		env.put("C", new Integer("3"));
-		assertEquals(false, whereClause.eval(env));
+		assertEquals(false, whereClause.isTrue(env));
 	}
 
 	/**
@@ -329,19 +329,19 @@ public class TestSqlParser extends TestCase {
 		env.put("C", new Integer("12"));
 
 		parser.parse("SELECT * FROM test WHERE c=1");
-		assertEquals(false, parser.getWhereClause().eval(env));
+		assertEquals(false, parser.getWhereClause().isTrue(env));
 		parser.parse("SELECT * FROM test WHERE c<1");
-		assertEquals(false, parser.getWhereClause().eval(env));
+		assertEquals(false, parser.getWhereClause().isTrue(env));
 		parser.parse("SELECT * FROM test WHERE c>1");
-		assertEquals(true, parser.getWhereClause().eval(env));
+		assertEquals(true, parser.getWhereClause().isTrue(env));
 		parser.parse("SELECT * FROM test WHERE c<=1");
-		assertEquals(false, parser.getWhereClause().eval(env));
+		assertEquals(false, parser.getWhereClause().isTrue(env));
 		parser.parse("SELECT * FROM test WHERE c>=1");
-		assertEquals(true, parser.getWhereClause().eval(env));
+		assertEquals(true, parser.getWhereClause().isTrue(env));
 		parser.parse("SELECT * FROM test WHERE c<=12");
-		assertEquals(true, parser.getWhereClause().eval(env));
+		assertEquals(true, parser.getWhereClause().isTrue(env));
 		parser.parse("SELECT * FROM test WHERE c>=12");
-		assertEquals(true, parser.getWhereClause().eval(env));
+		assertEquals(true, parser.getWhereClause().isTrue(env));
 	}
 
 	public void testWhereEvaluatingIndistinguishedNumbers() throws Exception {
@@ -351,11 +351,11 @@ public class TestSqlParser extends TestCase {
 		parser.parse("SELECT * FROM test WHERE c=1.0");
 		env.clear();
 		env.put("C", new Integer("1"));
-		assertEquals(true, parser.getWhereClause().eval(env));
+		assertEquals(true, parser.getWhereClause().isTrue(env));
 		env.put("C", new Double("1"));
-		assertEquals(true, parser.getWhereClause().eval(env));
+		assertEquals(true, parser.getWhereClause().isTrue(env));
 		env.put("C", new Float("1"));
-		assertEquals(true, parser.getWhereClause().eval(env));
+		assertEquals(true, parser.getWhereClause().isTrue(env));
 	}
 
 	public void testParsingQueryEnvironmentEntries() throws Exception {
@@ -415,5 +415,48 @@ public class TestSqlParser extends TestCase {
 		parser.parse("SELECT A+B SUM, B+C+'123' t12 FROM test");
 		assertEquals("+ [A] [B]", parser.getExpression(0).toString());
 		assertEquals("+ + [B] [C] '123'", parser.getExpression(1).toString());
+	}
+	
+	public void testEvaluateBinaryOperationsSum() throws Exception {
+		ExpressionParser cs;
+		cs = new ExpressionParser(new StringReader("A+b AS result"));
+		cs.parseQueryEnvEntry();
+		Map env = new HashMap();
+		env.put("A", new Integer(1));
+
+		env.put("B", new Integer(1));
+		assertEquals((Object)(new Integer("2")), cs.eval(env));
+		env.put("A", new Double(1));
+		assertEquals((Object)(new Double("2")), cs.eval(env));
+		env.put("A", new String("1"));
+		assertEquals("11", ""+cs.eval(env));
+	}
+
+	public void testEvaluateBinaryOperationsOtherThanSum() throws Exception {
+		ExpressionParser cs;
+		cs = new ExpressionParser(new StringReader("a-b AS result"));
+		cs.parseQueryEnvEntry();
+		Map env = new HashMap();
+		env.put("A", new Integer(5));
+
+		env.put("B", new Integer(1));
+		assertEquals((Object)(new Integer("4")), cs.eval(env));
+		env.put("B", new Double(1));
+		assertEquals((Object)(new Double("4")), cs.eval(env));
+
+		cs = new ExpressionParser(new StringReader("a*b AS result"));
+		cs.parseQueryEnvEntry();
+
+		env.put("B", new Integer(1));
+		assertEquals((Object)(new Integer("5")), cs.eval(env));
+		env.put("B", new Double(1));
+		assertEquals((Object)(new Double("5")), cs.eval(env));
+		
+		cs = new ExpressionParser(new StringReader("a/b AS result"));
+		cs.parseQueryEnvEntry();
+		env.put("B", new Integer(2));
+		assertEquals((Object)(new Integer("2")), cs.eval(env));
+		env.put("B", new Double(2));
+		assertEquals((Object)(new Double("2.5")), cs.eval(env));
 	}
 }
