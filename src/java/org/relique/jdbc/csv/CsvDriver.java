@@ -28,7 +28,7 @@ import java.io.File;
  * @author     JD Evora
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvDriver.java,v 1.13 2008/11/20 14:49:00 mfrasca Exp $
+ * @version    $Id: CsvDriver.java,v 1.14 2008/11/25 08:08:55 mfrasca Exp $
  */
 
 public class CsvDriver implements Driver
@@ -42,6 +42,9 @@ public class CsvDriver implements Driver
   public static final boolean DEFAULT_TRIM_HEADERS = true;
   public static final String DEFAULT_COLUMN_TYPES = "String";
   public static final boolean DEFAULT_INDEXED_FILES = false;
+  public static final String DEFAULT_TIMESTAMP_FORMAT = "YYYY-mm-dd HH:MM:SS";
+  public static final String DEFAULT_DATE_FORMAT = "YYYY-mm-dd";
+  public static final String DEFAULT_TIME_FORMAT = "HH:MM:SS";
 
   public static final String FILE_EXTENSION="fileExtension";
   public static final String SEPARATOR="separator";
@@ -51,6 +54,9 @@ public class CsvDriver implements Driver
   public static final String TRIM_HEADERS="trimHeaders";
   public static final String COLUMN_TYPES = "columnTypes";
   public static final String INDEXED_FILES = "indexedFiles";
+  public static final String TIMESTAMP_FORMAT = "timestampFormat";
+  public static final String DATE_FORMAT = "dateFormat";
+  public static final String TIME_FORMAT = "timeFormat";
   public static final String CHARSET = "charset";
   private final static String URL_PREFIX = "jdbc:relique:csv:";
   /**

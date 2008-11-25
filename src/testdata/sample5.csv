@@ -1,6 +1,6 @@
-ID,Name,Job,Start
-41,Juan Pablo Montoya,Piloto,2001-01-02 12:30:00
-01,Juan Pablo Morales,Project Manager,2001-01-02 12:30:00
-02,Mauricio Hernandez,Finance Manager,2002-02-02 12:30:00
-03,Maria Cristina Lucero,Project Manager,2003-03-02 12:30:00
-04,Felipe Grajales,Project Manager,2004-04-02 12:30:00
+ID,Name,Job,Start,timeoffset
+41,Juan Pablo Montoya,Piloto,2001-04-02 12:30:00,1230
+01,Juan Pablo Morales,Project Manager,2001-01-02 12:30:00,1235
+02,Mauricio Hernandez,Finance Manager,2002-02-02 12:30:00,1240
+03,Maria Cristina Lucero,Project Manager,2003-03-02 12:30:00,1245
+04,Felipe Grajales,Project Manager,2004-04-02 12:30:00,0100

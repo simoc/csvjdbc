@@ -46,7 +46,7 @@ import java.util.Vector;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.19 2008/11/20 14:49:00 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.20 2008/11/25 08:08:55 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -89,6 +89,12 @@ public class CsvConnection implements Connection {
 	private String fileNamePattern;
 
 	private String[] nameParts;
+
+	private String timestampFormat;
+
+	private String dateFormat;
+
+	private String timeFormat;
 
     /**
      * Creates a new CsvConnection that takes the supplied path
@@ -149,6 +155,9 @@ public class CsvConnection implements Connection {
                 fileNamePattern = info.getProperty("fileTailPattern");
                 nameParts = info.getProperty("fileTailParts","").split(",");
             }
+            setTimestampFormat(info.getProperty(CsvDriver.TIMESTAMP_FORMAT, CsvDriver.DEFAULT_TIMESTAMP_FORMAT));
+            setDateFormat(info.getProperty(CsvDriver.DATE_FORMAT, CsvDriver.DEFAULT_DATE_FORMAT));
+            setTimeFormat(info.getProperty(CsvDriver.TIME_FORMAT, CsvDriver.DEFAULT_TIME_FORMAT));
         }
     }
 
@@ -919,5 +928,29 @@ public class CsvConnection implements Connection {
 	public String[] getNameParts() {
 		// TODO Auto-generated method stub
 		return nameParts;
+	}
+
+	public void setTimestampFormat(String timestampFormat) {
+		this.timestampFormat = timestampFormat;
+	}
+
+	public String getTimestampFormat() {
+		return timestampFormat;
+	}
+
+	public void setDateFormat(String dateFormat) {
+		this.dateFormat = dateFormat;
+	}
+
+	public String getDateFormat() {
+		return dateFormat;
+	}
+
+	public void setTimeFormat(String timeFormat) {
+		this.timeFormat = timeFormat;
+	}
+
+	public String getTimeFormat() {
+		return timeFormat;
 	}
 }

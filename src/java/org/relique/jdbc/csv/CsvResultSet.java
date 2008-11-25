@@ -57,7 +57,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.31 2008/11/21 15:04:47 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.32 2008/11/25 08:08:55 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -88,7 +88,10 @@ public class CsvResultSet implements ResultSet {
 
 	private Map columnPositions;
 
-	private String[] columnNames;
+    /**
+     * the types of the columns in the database table (not the result set).
+     */
+	private String[] typeNames;
 
 	private Map recordEnvironment;
 
@@ -96,13 +99,19 @@ public class CsvResultSet implements ResultSet {
 
 	private List usedColumns;
 
+	private String timestampFormat;
+
+	private String timeFormat;
+
+	private String dateFormat;
+
 	/**
      * Constructor for the CsvResultSet object
      *
      * @param statement Statement that produced this ResultSet
      * @param reader Helper class that performs the actual file reads
      * @param tableName Table referenced by the Statement
-     * @param columnNames Array of available columns for referenced table
+     * @param typeNames Array of available columns for referenced table
      * @param whereColumnName 
      * @throws ClassNotFoundException 
      * @throws SQLException 
@@ -119,9 +128,9 @@ public class CsvResultSet implements ResultSet {
      * @param statement Statement that produced this ResultSet
      * @param reader Helper class that performs the actual file reads
      * @param tableName Table referenced by the Statement
-     * @param columnNames Array of available columns for referenced table
+     * @param typeNames Array of available columns for referenced table
      * @param whereValue The string to be sought for
-     * @param columnTypes A comma-separated string specifying the type of the i-th column.
+     * @param columnTypes A comma-separated string specifying the type of the i-th column of the database table (not of the result).
      * @param whereColumnName the name of the column, needed late by a select *
      * @throws ClassNotFoundException in case the typed columns fail
      * @throws SQLException 
@@ -135,6 +144,9 @@ public class CsvResultSet implements ResultSet {
         this.tableName = tableName;
         this.queryEnvironment = queryEnvironment;
         this.whereClause = whereClause;
+        timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
+        timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
+        dateFormat = ((CsvConnection)statement.getConnection()).getDateFormat();
         if (whereClause!= null)
         	this.usedColumns = whereClause.usedColumns();
         else
@@ -151,19 +163,19 @@ public class CsvResultSet implements ResultSet {
             	this.queryEnvironment.add(new Object[]{columnNames[i], new ColumnName(columnNames[i])});
 			}
         }
-        this.columnNames = new String[columnNames.length];
+        this.typeNames = new String[columnNames.length];
     	this.mustInferTypeNames = false;
         if (columnTypes.contains(",")){
-        	String[] typeNames = columnTypes.split(",");
-        	for(int i=0; i<typeNames.length; i++){
-        		this.columnNames[i] = typeNames[i].trim();
+        	String[] typeNamesLoc = columnTypes.split(",");
+        	for(int i=0; i<typeNamesLoc.length; i++){
+        		this.typeNames[i] = typeNamesLoc[i].trim();
         	}
         }
         else if (columnTypes.equals("")){
         	this.mustInferTypeNames = true;
         }else{
-        	for(int i=0; i<this.columnNames.length; i++){
-        		this.columnNames[i] = columnTypes.trim();
+        	for(int i=0; i<this.typeNames.length; i++){
+        		this.typeNames[i] = columnTypes.trim();
         	}
         }
     }
@@ -242,8 +254,22 @@ public class CsvResultSet implements ResultSet {
 
 	public Date parseDate(String str) {
 		try {
-			String datePart = str.substring(0, 10);
-			Date sqlResult = Date.valueOf(datePart);
+			String year = "1970";
+			int pos = dateFormat.indexOf('Y'); 
+			if (pos != -1){
+				year = str.substring(pos, pos+4);
+			}
+			String month = "01";
+			pos = dateFormat.indexOf('m'); 
+			if (pos != -1){
+				month = str.substring(pos, pos+2);
+			}
+			String day_of_month = "01";
+			pos = dateFormat.indexOf('d'); 
+			if (pos != -1){
+				day_of_month = str.substring(pos, pos+2);
+			}
+			Date sqlResult = Date.valueOf(year + "-" + month + "-" + day_of_month);
 			return sqlResult;
 		} catch (RuntimeException e) {
 			return null;
@@ -252,7 +278,23 @@ public class CsvResultSet implements ResultSet {
 
 	public Time parseTime(String str) {
 		try {
-			return (str == null) ? null : Time.valueOf(str);
+			String hours = "00";
+			int pos = timeFormat.indexOf('H'); 
+			if (pos != -1){
+				hours = str.substring(pos, pos+2);
+			}
+			String minutes = "00";
+			pos = timeFormat.indexOf('M'); 
+			if (pos != -1){
+				minutes = str.substring(pos, pos+2);
+			}
+			String seconds = "00";
+			pos = timeFormat.indexOf('S'); 
+			if (pos != -1){
+				seconds = str.substring(pos, pos+2);
+			}
+			Time sqlResult = Time.valueOf(hours+":"+minutes+":"+seconds);
+			return sqlResult;
 		} catch (RuntimeException e) {
 			return null;
 		}
@@ -292,7 +334,7 @@ public class CsvResultSet implements ResultSet {
 				put("Timestamp", containerClass.getMethod("parseTimestamp", argTypes));
 				put("AsciiStream", containerClass.getMethod("parseAsciiStream", argTypes));
 				/*
-				 * TODO, maybe...
+				 * sooner or later, maybe...
 				 * put("UnicodeStream", containerClass.getMethod("parseUnicodeStream", argTypes));
 				 * put("BinaryStream", containerClass.getMethod("parseBinaryStream", argTypes));
 				 * put("Blob", containerClass.getMethod("parseBlob", argTypes));
@@ -357,7 +399,21 @@ public class CsvResultSet implements ResultSet {
     	}
 		for (int i = 0; i<reader.columnNames.length; i++){
 			String key = reader.columnNames[i].toUpperCase();
-			String value = reader.fieldValues[i];
+			Object value = reader.fieldValues[i];
+	    	String typeName = this.typeNames[i];
+	    	if (typeName != null) {
+	    		Object[] args = new Object[1];
+	    		args[0] = value;
+				try {
+					value = ((Method)(converterMethodForClass.get(typeName))).invoke(this, args);
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				}
+	    	}
 			recordEnvironment.put(key, value);
 		}
 		for (int i = 0; i < queryEnvironment.size(); i++){
@@ -376,7 +432,7 @@ public class CsvResultSet implements ResultSet {
 	}
 	private void inferTypeNames() {
 		mustInferTypeNames = false;
-    	for (int i=0; i< this.columnNames.length; i++){
+    	for (int i=0; i< this.typeNames.length; i++){
     		try {
     			String typeName = "String";
 				String value = reader.getField(i);
@@ -401,7 +457,7 @@ public class CsvResultSet implements ResultSet {
 				} else if (value.equals(("" + parseAsciiStream(value)))) {
 					typeName = "AsciiStream";
 				}
-				columnNames[i] = typeName;
+				typeNames[i] = typeName;
 			} catch (SQLException e) {
 			}
     	}
@@ -1089,7 +1145,7 @@ public class CsvResultSet implements ResultSet {
      */
     public ResultSetMetaData getMetaData() throws SQLException {
         if (resultSetMetaData == null) {
-            resultSetMetaData = new CsvResultSetMetaData(tableName, queryEnvironment, columnNames);
+            resultSetMetaData = new CsvResultSetMetaData(tableName, queryEnvironment, typeNames);
         }
         return resultSetMetaData;
     }
@@ -1121,23 +1177,12 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Object getObject(int columnIndex) throws SQLException {
-    	String typeName = this.columnNames[columnIndex-1];
-    	if (typeName == null) {
-            return getString(columnIndex);
-    	} else {
-    		Object[] args = new Object[1];
-    		args[0] = getString(columnIndex);
-			try {
-				return ((Method)(converterMethodForClass.get(typeName))).invoke(this, args);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			}
+		Object[] o = (Object[]) queryEnvironment.get(columnIndex-1);
+		try{
+			return ((Expression) o[1]).eval(recordEnvironment);
+		} catch (NullPointerException e){
 			return null;
-    	}
+		}
     }
 
     /**

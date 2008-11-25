@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.26 2008/11/20 14:49:00 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.27 2008/11/25 08:08:55 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -157,7 +157,7 @@ public class TestCsvDriver extends TestCase {
 	 * 
 	 * @throws SQLException
 	 */
-	public void testWhereMangled() throws SQLException {
+	public void testWhereShuffled() throws SQLException {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -326,6 +326,31 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
+
+	public void testMetadataWithOperations() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Date,Time");
+		props.put("timeFormat", "HHMM");
+		props.put("dateFormat", "YYYY-mm-dd");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT id, start, timeoffset, start+timeoffset AS ts FROM sample5");
+		ResultSetMetaData metadata = results.getMetaData();
+
+		assertEquals("type of column 1 is incorrect", Types.INTEGER, metadata
+				.getColumnType(1));
+		assertEquals("type of column 2 is incorrect", Types.DATE, metadata
+				.getColumnType(2));
+		assertEquals("type of column 3 is incorrect", Types.TIME, metadata
+				.getColumnType(3));
+		assertEquals("type of column 4 is incorrect", Types.TIMESTAMP, metadata
+				.getColumnType(4));
+	}
+
 	public void testColumnTypesUserSpecified() throws SQLException,
 			ParseException {
 		Properties props = new Properties();
@@ -346,6 +371,30 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("Date column Start is wrong", shouldBe, results
 				.getObject("start"));
 		assertEquals("Date column 4 is wrong", shouldBe, results.getObject(4));
+		assertEquals("The Name is wrong", "Juan Pablo Morales", results
+				.getObject("name"));
+	}
+
+	public void testColumnTypesUserSpecifiedShuffled() throws SQLException,
+			ParseException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Date");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT ID, Start, Name, Job "
+				+ "FROM sample5 WHERE Job = 'Project Manager'");
+
+		assertTrue(results.next());
+		assertEquals("Integer column ID is wrong", new Integer(1), results
+				.getObject("id"));
+		assertEquals("Integer column 1 is wrong", new Integer(1), results
+				.getObject(1));
+		java.sql.Date shouldBe = java.sql.Date.valueOf("2001-01-02");
+		assertEquals("Date column Start is wrong", shouldBe, results
+				.getObject("start"));
+		assertEquals("Date column 4 is wrong", shouldBe, results.getObject(2));
 		assertEquals("The Name is wrong", "Juan Pablo Morales", results
 				.getObject("name"));
 	}
@@ -888,6 +937,45 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The mix is wrong", "04 Project Manager", results
 				.getString("mix"));
 		assertTrue(!results.next());
+	}
+	
+	public void testAddingDateToTime() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Date,Time");
+		props.put("timeFormat", "HHMM");
+		props.put("dateFormat", "YYYY-mm-dd");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Object expect;
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT id, start, timeoffset, start+timeoffset AS ts FROM sample5 WHERE id=41 OR id=4");
+
+		assertTrue(results.next());
+		expect = java.sql.Date.valueOf("2001-04-02");
+		assertEquals("Date is a Date", expect.getClass(), results.getObject("start").getClass());
+		assertEquals("Date is a Date", expect, results.getObject("start"));
+		expect = java.sql.Time.valueOf("12:30:00");
+		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+		expect = java.sql.Timestamp.valueOf("2001-04-02 12:30:00");
+		assertEquals("adding Date to Time", expect.getClass(), results.getObject("ts").getClass());
+		assertEquals("adding Date to Time", expect, results.getObject("ts"));
+
+		assertTrue(results.next());
+		expect = java.sql.Date.valueOf("2004-04-02");
+		assertEquals("Date is a Date", expect.getClass(), results.getObject("start").getClass());
+		assertEquals("Date is a Date", expect, results.getObject("start"));
+		expect = java.sql.Time.valueOf("01:00:00");
+		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+		expect = java.sql.Timestamp.valueOf("2004-04-02 01:00:00");
+		assertEquals("adding Date to Time", expect.getClass(), results.getObject("ts").getClass());
+		assertEquals("adding Date to Time", expect, results.getObject("ts"));
+
+		assertFalse(results.next());
 	}
 
 }
