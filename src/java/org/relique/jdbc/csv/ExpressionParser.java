@@ -106,10 +106,10 @@ class BinaryOperation extends Expression{
       if (op == '/')return new Double(bdl.divide(bdr).toString());
     }
     catch (ClassCastException e){}try {
-      Date leftD = (Date)leftEval;
-      Time rightT = (Time)rightEval;
       if (op == '+'){
-        Date offset = Date.valueOf("1970-01-01");
+        Date leftD = (Date)leftEval;
+        Time rightT = (Time)rightEval;
+        // unfortunately, rightT is not the amount of millis from midnight         // but from midnight UTC, so adding it to the leftD brings in double         // your timezone offset from UTC.  using 'offset' to get this back.          Time offset = Time.valueOf("00:00:00");
         return new Timestamp(leftD.getTime() + rightT.getTime() - offset.getTime());
       }
     }
