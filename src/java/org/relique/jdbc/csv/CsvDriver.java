@@ -28,7 +28,7 @@ import java.io.File;
  * @author     JD Evora
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvDriver.java,v 1.14 2008/11/25 08:08:55 mfrasca Exp $
+ * @version    $Id: CsvDriver.java,v 1.15 2008/12/02 13:21:07 mfrasca Exp $
  */
 
 public class CsvDriver implements Driver
@@ -45,6 +45,7 @@ public class CsvDriver implements Driver
   public static final String DEFAULT_TIMESTAMP_FORMAT = "YYYY-mm-dd HH:MM:SS";
   public static final String DEFAULT_DATE_FORMAT = "YYYY-mm-dd";
   public static final String DEFAULT_TIME_FORMAT = "HH:MM:SS";
+  public static final String DEFAULT_COMMENT_CHAR = null;
 
   public static final String FILE_EXTENSION="fileExtension";
   public static final String SEPARATOR="separator";
@@ -57,6 +58,7 @@ public class CsvDriver implements Driver
   public static final String TIMESTAMP_FORMAT = "timestampFormat";
   public static final String DATE_FORMAT = "dateFormat";
   public static final String TIME_FORMAT = "timeFormat";
+  public static final String COMMENT_CHAR = "commentChar";
   public static final String CHARSET = "charset";
   private final static String URL_PREFIX = "jdbc:relique:csv:";
   /**

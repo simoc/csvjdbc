@@ -39,7 +39,7 @@ import java.util.Vector;
  * @author     Christoph Langer
  * @author     Mario Frasca
  * @created    01 March 2004
- * @version    $Id: CSVReaderAdapter.java,v 1.12 2008/11/20 14:49:00 mfrasca Exp $
+ * @version    $Id: CSVReaderAdapter.java,v 1.13 2008/12/02 13:21:07 mfrasca Exp $
  */
 
 public abstract class CSVReaderAdapter
@@ -58,19 +58,28 @@ public abstract class CSVReaderAdapter
   protected char quoteChar = '"';
   protected String extension = CsvDriver.DEFAULT_EXTENSION;
   protected boolean trimHeaders = true;
+  protected char commentChar = 0;
   
   public CSVReaderAdapter () {
-  	
   }
   
+  protected String getNextDataLine() throws IOException {
+		String tmp = input.readLine();
+		if (commentChar != 0 && tmp != null)
+			while (tmp.charAt(0) == commentChar)
+				tmp = input.readLine();
+		return tmp;
+	}
+  
   public CSVReaderAdapter (String fileName, char separator, boolean suppressHeaders, 
-			String charset, char quoteChar, String headerLine, String extension, boolean trimHeaders) 
+			String charset, char quoteChar, char commentChar, String headerLine, String extension, boolean trimHeaders) 
 	throws UnsupportedEncodingException, FileNotFoundException, IOException, SQLException {
 	    this.separator = separator;
 	    this.suppressHeaders = suppressHeaders;
 	    this.fileName = fileName;
 	    this.charset = charset;
 	    this.quoteChar = quoteChar;
+	    this.commentChar = commentChar;
 	    this.headerLine = headerLine;
 	    this.extension = extension;
       this.trimHeaders = trimHeaders;
@@ -89,7 +98,7 @@ public abstract class CSVReaderAdapter
 	          columnNames = parseCsvLine(this.headerLine, trimHeaders);          
 	      } else {
 	          // No column names available. Read first data line and determine number of colums.
-	        buf = input.readLine();
+	        buf = getNextDataLine();
 	        String[] data = parseCsvLine(buf,false);
 	        columnNames = new String[data.length];
 	        for (int i = 0; i < data.length; i++)
@@ -102,20 +111,22 @@ public abstract class CSVReaderAdapter
 	    }
 	    else
 	    {
-	      String tmpHeaderLine = input.readLine();
+	      String tmpHeaderLine = getNextDataLine();
 	      columnNames = parseCsvLine(tmpHeaderLine, trimHeaders);
 	    }
 	}	
 
   public CSVReaderAdapter(String dirName, String fileNamePattern, String[] fieldsInName,
 			char separator, boolean suppressHeaders, String charset,
-			char quoteChar, String headerLine, String extension,
+			char quoteChar,  char commentChar,
+			String headerLine, String extension,
 			boolean trimHeaders) throws UnsupportedEncodingException,
 			FileNotFoundException, IOException, SQLException {
 		this.separator = separator;
 		this.suppressHeaders = suppressHeaders;
 		this.charset = charset;
 		this.quoteChar = quoteChar;
+		this.commentChar = commentChar;
 		this.headerLine = headerLine;
 		this.extension = extension;
 		this.trimHeaders = trimHeaders;
@@ -135,7 +146,7 @@ public abstract class CSVReaderAdapter
 			} else {
 				// No column names available. Read first data line and determine
 				// number of colums.
-				buf = input.readLine();
+				buf = getNextDataLine();
 				String[] data = parseCsvLine(buf, false);
 				columnNames = new String[data.length];
 				for (int i = 0; i < data.length; i++) {
@@ -145,12 +156,19 @@ public abstract class CSVReaderAdapter
 				// throw away.
 			}
 		} else {
-			String tmpHeaderLine = input.readLine();
+			String tmpHeaderLine = getNextDataLine();
 			columnNames = parseCsvLine(tmpHeaderLine, trimHeaders);
 		}
 	}	
 
-  /**
+  public CSVReaderAdapter(String dirName, String pathNamePattern,
+		String[] fieldsInName, char separator2, boolean suppressHeaders2,
+		String charset2, char quoteChar2, 
+		String headerLine2, String extension2, boolean trimHeaders2) {
+	// TODO Auto-generated constructor stub
+}
+
+/**
    *Gets the columnNames attribute of the CsvReader object
    *
    * @return    The columnNames value

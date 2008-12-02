@@ -32,7 +32,7 @@ import java.util.Vector;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.20 2008/11/21 15:04:47 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.21 2008/12/02 13:21:07 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -353,12 +353,14 @@ public class CsvStatement implements Statement {
 				reader = new CsvReader(connection.getPath(), fileNamePattern,
 						nameParts, connection.getSeparator(), 
 						connection.isSuppressHeaders(), connection.getCharset(),
-						connection.getQuotechar(), connection.getHeaderline(),
+						connection.getQuotechar(), connection.getCommentChar(),
+						connection.getHeaderline(),
 						connection.getExtension(), connection.getTrimHeaders());
 			} else{
 				reader = new CsvReader(fileName, connection.getSeparator(),
 						connection.isSuppressHeaders(),
 						connection.getCharset(), connection.getQuotechar(),
+						connection.getCommentChar(),
 						connection.getHeaderline(), connection.getExtension(),
 						connection.getTrimHeaders());
 			}

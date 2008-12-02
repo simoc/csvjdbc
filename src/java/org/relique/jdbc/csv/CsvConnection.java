@@ -46,7 +46,7 @@ import java.util.Vector;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.20 2008/11/25 08:08:55 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.21 2008/12/02 13:21:07 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -87,14 +87,11 @@ public class CsvConnection implements Connection {
     private boolean closed;
 
 	private String fileNamePattern;
-
 	private String[] nameParts;
-
 	private String timestampFormat;
-
 	private String dateFormat;
-
 	private String timeFormat;
+	private Character commentChar;
 
     /**
      * Creates a new CsvConnection that takes the supplied path
@@ -158,10 +155,11 @@ public class CsvConnection implements Connection {
             setTimestampFormat(info.getProperty(CsvDriver.TIMESTAMP_FORMAT, CsvDriver.DEFAULT_TIMESTAMP_FORMAT));
             setDateFormat(info.getProperty(CsvDriver.DATE_FORMAT, CsvDriver.DEFAULT_DATE_FORMAT));
             setTimeFormat(info.getProperty(CsvDriver.TIME_FORMAT, CsvDriver.DEFAULT_TIME_FORMAT));
+            setCommentChar(info.getProperty(CsvDriver.COMMENT_CHAR, CsvDriver.DEFAULT_COMMENT_CHAR));
         }
     }
 
-    /**
+	/**
      * Creates a <code>Statement</code> object for sending
      * SQL statements to the database.
      * SQL statements without parameters are normally
@@ -926,7 +924,6 @@ public class CsvConnection implements Connection {
 	}
 
 	public String[] getNameParts() {
-		// TODO Auto-generated method stub
 		return nameParts;
 	}
 
@@ -952,5 +949,19 @@ public class CsvConnection implements Connection {
 
 	public String getTimeFormat() {
 		return timeFormat;
+	}
+
+    public void setCommentChar(String value) {
+    	if(value == null) {
+    		commentChar = null;
+    	} else {
+    		commentChar = new Character(value.charAt(0));
+    	}
+	}
+
+    public char getCommentChar() {
+    	if(commentChar == null)
+    		return 0;
+		return commentChar.charValue();
 	}
 }

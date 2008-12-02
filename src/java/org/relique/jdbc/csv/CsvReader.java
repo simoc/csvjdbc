@@ -33,7 +33,7 @@ import java.sql.SQLException;
  * @author     Christoph Langer
  * @author     Chetan Gupta
  * @created    25 November 2001
- * @version    $Id: CsvReader.java,v 1.20 2008/11/20 14:49:00 mfrasca Exp $
+ * @version    $Id: CsvReader.java,v 1.21 2008/12/02 13:21:07 mfrasca Exp $
  */
 
 public class CsvReader extends CSVReaderAdapter
@@ -48,7 +48,7 @@ public class CsvReader extends CSVReaderAdapter
    */
   public CsvReader(String fileName) throws Exception
   {
-    this(fileName, ',', false, null, '"', "", CsvDriver.DEFAULT_EXTENSION, true);
+    this(fileName, ',', false, null, '"', (char) 0, "", CsvDriver.DEFAULT_EXTENSION, true);
   }
 
   /**
@@ -68,19 +68,19 @@ public class CsvReader extends CSVReaderAdapter
    * @since
    */
   public CsvReader(String fileName, char separator, boolean suppressHeaders,
-			String charset, char quoteChar, String headerLine,
+			String charset, char quoteChar, char commentChar, String headerLine,
 			String extension, boolean trimHeaders) throws IOException, SQLException {
-		super(fileName, separator, suppressHeaders, charset, quoteChar,
+		super(fileName, separator, suppressHeaders, charset, quoteChar, commentChar,
 				headerLine, extension, trimHeaders);
 	}
   
   public CsvReader(String dirName, String pathNamePattern, String[] fieldsInName,
 			char separator, boolean suppressHeaders, String charset,
-			char quoteChar, String headerLine, String extension,
+			char quoteChar, char commentChar, String headerLine, String extension,
 			boolean trimHeaders) throws IOException, SQLException{
 	  super(dirName, pathNamePattern, fieldsInName,
 				separator, suppressHeaders, charset,
-				quoteChar, headerLine, extension,
+				quoteChar, commentChar, headerLine, extension,
 				trimHeaders);
   }
   
@@ -101,7 +101,7 @@ public class CsvReader extends CSVReaderAdapter
           buf = null;
         } else {
           // read new line of data from input.
-          dataLine = input.readLine();
+          dataLine = getNextDataLine();
         }
         if (dataLine == null) {
           input.close();

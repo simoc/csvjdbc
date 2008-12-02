@@ -68,7 +68,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
 			List queryEnvironment, ExpressionParser whereClause)
 			throws IOException, SQLException {
 
-		super(fileName, separator, suppressHeaders, charset, quoteChar,
+		super(fileName, separator, suppressHeaders, charset, quoteChar, (char)0,
 				headerLine, extension, trimHeaders);
 
 		loopAndFetchData(input, buf, queryEnvironment, whereClause);
