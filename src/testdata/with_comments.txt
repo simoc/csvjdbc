@@ -1,0 +1,7 @@
+# comment line
+#second comment line
+#next comes the header
+id, name, value, comment
+1, alpha, 12.34, some field
+2, beta, 13.24, other parameter
+3, gamma, 41.32, still a field 

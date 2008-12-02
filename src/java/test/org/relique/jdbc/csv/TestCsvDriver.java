@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.27 2008/11/25 08:08:55 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.28 2008/12/02 13:19:14 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -978,4 +978,28 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	public void testWithComments() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,Float,String");
+		props.put("commentChar", "#");
+		props.put("fileExtension", ".txt");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM with_comments");
+
+		ResultSetMetaData metadata = results.getMetaData();
+		assertEquals("id", metadata.getColumnName(1));
+		assertEquals("name", metadata.getColumnName(2));
+		assertEquals("value", metadata.getColumnName(3));
+		assertEquals("comment", metadata.getColumnName(4));
+
+		assertTrue(results.next());
+		assertEquals(new Integer(1), results.getObject(1));
+		assertTrue(results.next());
+		assertEquals(new Integer(2), results.getObject(1));
+		assertTrue(results.next());
+		assertEquals(new Integer(3), results.getObject(1));
+		assertFalse(results.next());
+	}
 }
