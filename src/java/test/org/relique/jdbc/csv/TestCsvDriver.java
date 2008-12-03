@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.28 2008/12/02 13:19:14 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.29 2008/12/03 13:12:58 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -980,7 +980,7 @@ public class TestCsvDriver extends TestCase {
 
 	public void testWithComments() throws SQLException {
 		Properties props = new Properties();
-		props.put("columnTypes", "Int,String,Float,String");
+		props.put("columnTypes", "String,Int,Float,String");
 		props.put("commentChar", "#");
 		props.put("fileExtension", ".txt");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -989,17 +989,44 @@ public class TestCsvDriver extends TestCase {
 		ResultSet results = stmt.executeQuery("SELECT * FROM with_comments");
 
 		ResultSetMetaData metadata = results.getMetaData();
-		assertEquals("id", metadata.getColumnName(1));
-		assertEquals("name", metadata.getColumnName(2));
+		assertEquals("name", metadata.getColumnName(1));
+		assertEquals("id", metadata.getColumnName(2));
 		assertEquals("value", metadata.getColumnName(3));
 		assertEquals("comment", metadata.getColumnName(4));
 
 		assertTrue(results.next());
-		assertEquals(new Integer(1), results.getObject(1));
+		assertEquals(new Integer(1), results.getObject(2));
 		assertTrue(results.next());
-		assertEquals(new Integer(2), results.getObject(1));
+		assertEquals(new Integer(2), results.getObject(2));
 		assertTrue(results.next());
-		assertEquals(new Integer(3), results.getObject(1));
+		assertEquals(new Integer(3), results.getObject(2));
+		assertFalse(results.next());
+	}
+	
+	public void testWithoutComments() throws SQLException {
+		Properties props = new Properties();
+		props.put("commentChar", "");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample5");
+
+		ResultSetMetaData metadata = results.getMetaData();
+		assertEquals("ID", metadata.getColumnName(1));
+		assertEquals("Name", metadata.getColumnName(2));
+		assertEquals("Job", metadata.getColumnName(3));
+		assertEquals("Start", metadata.getColumnName(4));
+
+		assertTrue(results.next());
+		assertEquals("41", results.getObject(1));
+		assertTrue(results.next());
+		assertEquals("01", results.getObject(1));
+		assertTrue(results.next());
+		assertEquals("02", results.getObject(1));
+		assertTrue(results.next());
+		assertEquals("03", results.getObject(1));
+		assertTrue(results.next());
+		assertEquals("04", results.getObject(1));
 		assertFalse(results.next());
 	}
 }

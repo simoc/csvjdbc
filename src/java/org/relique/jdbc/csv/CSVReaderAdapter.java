@@ -39,7 +39,7 @@ import java.util.Vector;
  * @author     Christoph Langer
  * @author     Mario Frasca
  * @created    01 March 2004
- * @version    $Id: CSVReaderAdapter.java,v 1.13 2008/12/02 13:21:07 mfrasca Exp $
+ * @version    $Id: CSVReaderAdapter.java,v 1.14 2008/12/03 13:12:58 mfrasca Exp $
  */
 
 public abstract class CSVReaderAdapter
@@ -65,9 +65,12 @@ public abstract class CSVReaderAdapter
   
   protected String getNextDataLine() throws IOException {
 		String tmp = input.readLine();
-		if (commentChar != 0 && tmp != null)
-			while (tmp.charAt(0) == commentChar)
+		if (commentChar != 0 && tmp != null){
+			while (tmp.length()== 0 || tmp.charAt(0) == commentChar)
 				tmp = input.readLine();
+			// set it to 0: we don't skip data lines, only pre-header lines...
+			commentChar = 0;
+		}
 		return tmp;
 	}
   

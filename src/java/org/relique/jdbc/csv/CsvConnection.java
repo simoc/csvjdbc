@@ -46,7 +46,7 @@ import java.util.Vector;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.21 2008/12/02 13:21:07 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.22 2008/12/03 13:12:58 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -953,6 +953,8 @@ public class CsvConnection implements Connection {
 
     public void setCommentChar(String value) {
     	if(value == null) {
+    		commentChar = null;
+    	} else if(value.equals("")) {
     		commentChar = null;
     	} else {
     		commentChar = new Character(value.charAt(0));
