@@ -32,7 +32,7 @@ import java.util.Vector;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.21 2008/12/02 13:21:07 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.22 2008/12/11 09:10:28 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -366,6 +366,8 @@ public class CsvStatement implements Statement {
 			}
 		} catch (IOException e) {
 			throw new SQLException("Error reading data file. Message was: " + e);
+		} catch (Exception e) {
+			throw new SQLException(e);
 		}
 
 		CsvResultSet resultSet = null;

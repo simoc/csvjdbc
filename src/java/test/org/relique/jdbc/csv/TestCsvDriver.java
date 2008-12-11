@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.29 2008/12/03 13:12:58 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.30 2008/12/11 09:10:28 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -326,6 +326,32 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
+	public void testMetadataWithColumnTypeShuffled() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Timestamp");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT start, id, name, job FROM sample5");
+
+		ResultSetMetaData metadata = results.getMetaData();
+
+		assertEquals("type of column 1 is incorrect", Types.TIMESTAMP, metadata
+				.getColumnType(1));
+		assertEquals("type of column 2 is incorrect", Types.INTEGER, metadata
+				.getColumnType(2));
+		assertEquals("type of column 3 is incorrect", Types.VARCHAR, metadata
+				.getColumnType(3));
+		assertEquals("type of column 4 is incorrect", Types.VARCHAR, metadata
+				.getColumnType(4));
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
 
 	public void testMetadataWithOperations() throws SQLException {
 		Properties props = new Properties();
@@ -338,17 +364,13 @@ public class TestCsvDriver extends TestCase {
 		Statement stmt = conn.createStatement();
 
 		ResultSet results = stmt
-				.executeQuery("SELECT id, start, timeoffset, start+timeoffset AS ts FROM sample5");
+				.executeQuery("SELECT id, start+timeoffset AS ts FROM sample5");
 		ResultSetMetaData metadata = results.getMetaData();
 
 		assertEquals("type of column 1 is incorrect", Types.INTEGER, metadata
 				.getColumnType(1));
-		assertEquals("type of column 2 is incorrect", Types.DATE, metadata
+		assertEquals("type of column 2 is incorrect", Types.TIMESTAMP, metadata
 				.getColumnType(2));
-		assertEquals("type of column 3 is incorrect", Types.TIME, metadata
-				.getColumnType(3));
-		assertEquals("type of column 4 is incorrect", Types.TIMESTAMP, metadata
-				.getColumnType(4));
 	}
 
 	public void testColumnTypesUserSpecified() throws SQLException,
@@ -1028,5 +1050,129 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(results.next());
 		assertEquals("04", results.getObject(1));
 		assertFalse(results.next());
+	}
+	
+	public void testVariableColumnCount() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("indexedFiles", "True");
+		props.put("fileTailPattern", "-([0-9]{8})");
+		props.put("fileTailParts", "file_date");
+		props.put("fileTailPrepend", "True");
+		props.put("columnTypes", "Date,Time,String");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = null;
+		ResultSetMetaData metadata;
+		
+		results = stmt.executeQuery("SELECT * FROM varlen1");
+		metadata = results.getMetaData();
+		assertEquals("Datum", metadata.getColumnName(1));
+		assertEquals("Tijd", metadata.getColumnName(2));
+		assertEquals("Station", metadata.getColumnName(3));
+		assertEquals("P000", metadata.getColumnName(4));
+		assertEquals("P001", metadata.getColumnName(5));
+		assertEquals("P002", metadata.getColumnName(6));
+		assertEquals("P003", metadata.getColumnName(7));
+		assertEquals("file_date", metadata.getColumnName(8));
+
+		results = stmt.executeQuery("SELECT * FROM varlen2");
+		metadata = results.getMetaData();
+		assertEquals("Datum", metadata.getColumnName(1));
+		assertEquals("Tijd", metadata.getColumnName(2));
+		assertEquals("Station", metadata.getColumnName(3));
+		assertEquals("P000", metadata.getColumnName(4));
+		assertEquals("P001", metadata.getColumnName(5));
+		assertEquals("file_date", metadata.getColumnName(6));
+
+		results = stmt.executeQuery("SELECT * FROM varlen1");
+		assertTrue(results.next());
+		assertEquals("007", results.getObject("Station"));
+		assertEquals(new Double("26.54"), results.getObject("P003"));
+		assertTrue(results.next());
+		assertEquals("007", results.getObject("Station"));
+		assertEquals(new Double("26.54"), results.getObject("P003"));
+		assertTrue(results.next());
+		assertEquals("007", results.getObject("Station"));
+		assertEquals(new Double("26.54"), results.getObject("P003"));
+		assertTrue(results.next());
+		assertEquals("001", results.getObject("Station"));
+		assertEquals(new Double("26.55"), results.getObject("P003"));
+		assertFalse(results.next());
+
+		results = stmt.executeQuery("SELECT * FROM varlen2");
+		assertTrue(results.next());
+		assertEquals("007", results.getObject("Station"));
+		assertTrue(results.next());
+		assertEquals("007", results.getObject("Station"));
+		assertTrue(results.next());
+		assertEquals("013", results.getObject("Station"));
+		assertTrue(results.next());
+		assertEquals("013", results.getObject("Station"));
+		assertFalse(results.next());
+	}
+
+	public void testTailPrepend() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("indexedFiles", "True");
+		props.put("fileTailPattern", "-([0-9]{8})");
+		props.put("fileTailParts", "file_date");
+		props.put("fileTailPrepend", "True");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = null;
+		ResultSetMetaData metadata = null;
+		
+		results = stmt.executeQuery("SELECT * FROM varlen1");
+		metadata = results.getMetaData();
+		assertEquals("file_date", metadata.getColumnName(1));
+		assertEquals("Datum", metadata.getColumnName(2));
+		assertEquals("Tijd", metadata.getColumnName(3));
+		assertEquals("Station", metadata.getColumnName(4));
+		assertEquals("P000", metadata.getColumnName(5));
+		assertEquals("P001", metadata.getColumnName(6));
+		assertEquals("P002", metadata.getColumnName(7));
+		assertEquals("P003", metadata.getColumnName(8));
+
+		results = stmt.executeQuery("SELECT * FROM varlen2");
+		metadata = results.getMetaData();
+		assertEquals("file_date", metadata.getColumnName(1));
+		assertEquals("Datum", metadata.getColumnName(2));
+		assertEquals("Tijd", metadata.getColumnName(3));
+		assertEquals("Station", metadata.getColumnName(4));
+		assertEquals("P000", metadata.getColumnName(5));
+		assertEquals("P001", metadata.getColumnName(6));
+	}
+	
+	public void testNonExistingTable() throws SQLException{
+		Statement stmt = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath).createStatement();
+		
+		try {
+			stmt.executeQuery("SELECT * FROM not_there");
+			fail("Should not find the table 'not_there'");
+		} catch (SQLException e) {
+		}
+		
+		Properties props = new Properties();
+		props.put("indexedFiles", "True");
+		props.put("fileTailPattern", "-([0-9]{8})");
+		props.put("fileTailParts", "file_date");
+		stmt = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props).createStatement();
+		
+		try {
+			stmt.executeQuery("SELECT * FROM not_there");
+			fail("Should not find the table 'not_there'");
+		} catch (SQLException e) {
+		}
+				
 	}
 }
