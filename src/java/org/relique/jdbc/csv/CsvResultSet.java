@@ -57,7 +57,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.33 2008/12/11 12:56:23 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.34 2008/12/11 13:08:35 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -265,7 +265,7 @@ public class CsvResultSet implements ResultSet {
 				month = str.substring(pos, pos+2);
 			}
 			String day_of_month = "01";
-			pos = dateFormat.indexOf('D'); 
+			pos = dateFormat.indexOf('d'); 
 			if (pos != -1){
 				day_of_month = str.substring(pos, pos+2);
 			}
