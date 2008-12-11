@@ -28,7 +28,7 @@ import java.io.File;
  * @author     JD Evora
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvDriver.java,v 1.15 2008/12/02 13:21:07 mfrasca Exp $
+ * @version    $Id: CsvDriver.java,v 1.16 2008/12/11 12:56:23 mfrasca Exp $
  */
 
 public class CsvDriver implements Driver
@@ -42,9 +42,9 @@ public class CsvDriver implements Driver
   public static final boolean DEFAULT_TRIM_HEADERS = true;
   public static final String DEFAULT_COLUMN_TYPES = "String";
   public static final boolean DEFAULT_INDEXED_FILES = false;
-  public static final String DEFAULT_TIMESTAMP_FORMAT = "YYYY-mm-dd HH:MM:SS";
-  public static final String DEFAULT_DATE_FORMAT = "YYYY-mm-dd";
-  public static final String DEFAULT_TIME_FORMAT = "HH:MM:SS";
+  public static final String DEFAULT_TIMESTAMP_FORMAT = "YYYY-MM-DD HH:mm:ss";
+  public static final String DEFAULT_DATE_FORMAT = "YYYY-MM-DD";
+  public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
   public static final String DEFAULT_COMMENT_CHAR = null;
 
   public static final String FILE_EXTENSION="fileExtension";

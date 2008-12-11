@@ -57,7 +57,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.32 2008/11/25 08:08:55 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.33 2008/12/11 12:56:23 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -260,12 +260,12 @@ public class CsvResultSet implements ResultSet {
 				year = str.substring(pos, pos+4);
 			}
 			String month = "01";
-			pos = dateFormat.indexOf('m'); 
+			pos = dateFormat.indexOf('M'); 
 			if (pos != -1){
 				month = str.substring(pos, pos+2);
 			}
 			String day_of_month = "01";
-			pos = dateFormat.indexOf('d'); 
+			pos = dateFormat.indexOf('D'); 
 			if (pos != -1){
 				day_of_month = str.substring(pos, pos+2);
 			}
@@ -284,12 +284,12 @@ public class CsvResultSet implements ResultSet {
 				hours = str.substring(pos, pos+2);
 			}
 			String minutes = "00";
-			pos = timeFormat.indexOf('M'); 
+			pos = timeFormat.indexOf('m'); 
 			if (pos != -1){
 				minutes = str.substring(pos, pos+2);
 			}
 			String seconds = "00";
-			pos = timeFormat.indexOf('S'); 
+			pos = timeFormat.indexOf('s'); 
 			if (pos != -1){
 				seconds = str.substring(pos, pos+2);
 			}
