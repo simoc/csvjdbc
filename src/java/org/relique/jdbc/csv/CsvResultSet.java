@@ -57,7 +57,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.34 2008/12/11 13:08:35 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.35 2008/12/11 13:14:29 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -255,7 +255,7 @@ public class CsvResultSet implements ResultSet {
 	public Date parseDate(String str) {
 		try {
 			String year = "1970";
-			int pos = dateFormat.indexOf('Y'); 
+			int pos = dateFormat.indexOf('y'); 
 			if (pos != -1){
 				year = str.substring(pos, pos+4);
 			}

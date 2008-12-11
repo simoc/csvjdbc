@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.30 2008/12/11 09:10:28 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.31 2008/12/11 13:14:29 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -356,8 +356,8 @@ public class TestCsvDriver extends TestCase {
 	public void testMetadataWithOperations() throws SQLException {
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date,Time");
-		props.put("timeFormat", "HHMM");
-		props.put("dateFormat", "YYYY-mm-dd");
+		props.put("timeFormat", "HHmm");
+		props.put("dateFormat", "yyyy-MM-dd");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 
@@ -964,8 +964,8 @@ public class TestCsvDriver extends TestCase {
 	public void testAddingDateToTime() throws SQLException {
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date,Time");
-		props.put("timeFormat", "HHMM");
-		props.put("dateFormat", "YYYY-mm-dd");
+		props.put("timeFormat", "HHmm");
+		props.put("dateFormat", "yyyy-MM-dd");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 
