@@ -100,16 +100,22 @@ private int jjMoveStringLiteralDfa0_0()
       case 42:
          return jjStopAtPos(0, 17);
       case 65:
+      case 97:
          return jjMoveStringLiteralDfa1_0(0x880L);
       case 66:
+      case 98:
          return jjMoveStringLiteralDfa1_0(0x2000L);
       case 73:
+      case 105:
          return jjMoveStringLiteralDfa1_0(0x400L);
       case 76:
+      case 108:
          return jjMoveStringLiteralDfa1_0(0x1000L);
       case 78:
+      case 110:
          return jjMoveStringLiteralDfa1_0(0x240L);
       case 79:
+      case 111:
          return jjMoveStringLiteralDfa1_0(0x100L);
       default :
          return jjMoveNfa_0(0, 0);
@@ -125,24 +131,31 @@ private int jjMoveStringLiteralDfa1_0(long active0)
    switch(curChar)
    {
       case 69:
+      case 101:
          return jjMoveStringLiteralDfa2_0(active0, 0x2000L);
       case 73:
+      case 105:
          return jjMoveStringLiteralDfa2_0(active0, 0x1000L);
       case 78:
+      case 110:
          return jjMoveStringLiteralDfa2_0(active0, 0x80L);
       case 79:
+      case 111:
          return jjMoveStringLiteralDfa2_0(active0, 0x200L);
       case 82:
+      case 114:
          if ((active0 & 0x100L) != 0L)
             return jjStartNfaWithStates_0(1, 8, 2);
          break;
       case 83:
+      case 115:
          if ((active0 & 0x400L) != 0L)
             return jjStartNfaWithStates_0(1, 10, 2);
          else if ((active0 & 0x800L) != 0L)
             return jjStartNfaWithStates_0(1, 11, 2);
          break;
       case 85:
+      case 117:
          return jjMoveStringLiteralDfa2_0(active0, 0x40L);
       default :
          break;
@@ -161,14 +174,18 @@ private int jjMoveStringLiteralDfa2_0(long old0, long active0)
    switch(curChar)
    {
       case 68:
+      case 100:
          if ((active0 & 0x80L) != 0L)
             return jjStartNfaWithStates_0(2, 7, 2);
          break;
       case 75:
+      case 107:
          return jjMoveStringLiteralDfa3_0(active0, 0x1000L);
       case 76:
+      case 108:
          return jjMoveStringLiteralDfa3_0(active0, 0x40L);
       case 84:
+      case 116:
          if ((active0 & 0x200L) != 0L)
             return jjStartNfaWithStates_0(2, 9, 2);
          return jjMoveStringLiteralDfa3_0(active0, 0x2000L);
@@ -189,14 +206,17 @@ private int jjMoveStringLiteralDfa3_0(long old0, long active0)
    switch(curChar)
    {
       case 69:
+      case 101:
          if ((active0 & 0x1000L) != 0L)
             return jjStartNfaWithStates_0(3, 12, 2);
          break;
       case 76:
+      case 108:
          if ((active0 & 0x40L) != 0L)
             return jjStartNfaWithStates_0(3, 6, 2);
          break;
       case 87:
+      case 119:
          return jjMoveStringLiteralDfa4_0(active0, 0x2000L);
       default :
          break;
@@ -215,6 +235,7 @@ private int jjMoveStringLiteralDfa4_0(long old0, long active0)
    switch(curChar)
    {
       case 69:
+      case 101:
          return jjMoveStringLiteralDfa5_0(active0, 0x2000L);
       default :
          break;
@@ -233,6 +254,7 @@ private int jjMoveStringLiteralDfa5_0(long old0, long active0)
    switch(curChar)
    {
       case 69:
+      case 101:
          return jjMoveStringLiteralDfa6_0(active0, 0x2000L);
       default :
          break;
@@ -251,6 +273,7 @@ private int jjMoveStringLiteralDfa6_0(long old0, long active0)
    switch(curChar)
    {
       case 78:
+      case 110:
          if ((active0 & 0x2000L) != 0L)
             return jjStartNfaWithStates_0(6, 13, 2);
          break;
@@ -468,9 +491,8 @@ static final int[] jjnextStates = {
 
 /** Token literal values. */
 public static final String[] jjstrLiteralImages = {
-"", null, null, null, null, null, "\116\125\114\114", "\101\116\104", 
-"\117\122", "\116\117\124", "\111\123", "\101\123", "\114\111\113\105", 
-"\102\105\124\127\105\105\116", null, null, null, "\52", null, "\50", "\51", };
+"", null, null, null, null, null, null, null, null, null, null, null, null, 
+null, null, null, null, "\52", null, "\50", "\51", };
 
 /** Lexer state names. */
 public static final String[] lexStateNames = {

@@ -31,7 +31,7 @@ import org.relique.jdbc.csv.TokenMgrError;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.18 2008/11/21 13:35:10 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.19 2008/12/19 15:56:54 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -455,4 +455,17 @@ public class TestSqlParser extends TestCase {
 		env.put("B", new Double(2));
 		assertEquals((Object)(new Double("2.5")), cs.eval(env));
 	}
+
+	public void testParsingIgnoresCase() throws Exception {
+		SqlParser parser = new SqlParser();
+		parser.parse("SELECT A+B AS SUM FROM test");
+		assertEquals("+ [A] [B]", parser.getExpression(0).toString());
+		parser.parse("SELECT A+B As SUM FROM test");
+		assertEquals("+ [A] [B]", parser.getExpression(0).toString());
+		parser.parse("SELECT A+B aS SUM FROM test");
+		assertEquals("+ [A] [B]", parser.getExpression(0).toString());
+		parser.parse("SELECT A+B as SUM FROM test");
+		assertEquals("+ [A] [B]", parser.getExpression(0).toString());
+	}
+	
 }

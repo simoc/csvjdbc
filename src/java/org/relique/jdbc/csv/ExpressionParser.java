@@ -109,7 +109,7 @@ class BinaryOperation extends Expression{
       if (op == '+'){
         Date leftD = (Date)leftEval;
         Time rightT = (Time)rightEval;
-        // unfortunately, rightT is not the amount of millis from midnight         // but from midnight UTC, so adding it to the leftD brings in double         // your timezone offset from UTC.  using 'offset' to get this back.          Time offset = Time.valueOf("00:00:00");
+        // unfortunately, rightT is not the amount of millis from any fictive midnight         // but from midnight UTC 1970-01-01, so adding it to the leftD brings in that         // unwanted offset into our computations.  'offset' gets this back.          Time offset = Time.valueOf("00:00:00");
         return new Timestamp(leftD.getTime() + rightT.getTime() - offset.getTime());
       }
     }
