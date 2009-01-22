@@ -62,13 +62,13 @@ public class CSVScrollableReader extends CSVReaderAdapter {
 	 *                The exception description.
 	 * @since
 	 */
-	public CSVScrollableReader(String fileName, char separator,
-			boolean suppressHeaders, String charset, char quoteChar,
+	public CSVScrollableReader(BufferedReader fileName, char separator,
+			boolean suppressHeaders, char quoteChar,
 			String headerLine, String extension, boolean trimHeaders,
 			List queryEnvironment, ExpressionParser whereClause)
 			throws IOException, SQLException {
 
-		super(fileName, separator, suppressHeaders, charset, quoteChar, (char)0,
+		super(fileName, separator, suppressHeaders, quoteChar, (char)0,
 				headerLine, extension, trimHeaders);
 
 		loopAndFetchData(input, buf, queryEnvironment, whereClause);

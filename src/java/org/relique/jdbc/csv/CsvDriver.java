@@ -28,7 +28,7 @@ import java.io.File;
  * @author     JD Evora
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvDriver.java,v 1.16 2008/12/11 12:56:23 mfrasca Exp $
+ * @version    $Id: CsvDriver.java,v 1.17 2009/01/22 09:09:19 mfrasca Exp $
  */
 
 public class CsvDriver implements Driver
@@ -59,6 +59,8 @@ public class CsvDriver implements Driver
   public static final String DATE_FORMAT = "dateFormat";
   public static final String TIME_FORMAT = "timeFormat";
   public static final String COMMENT_CHAR = "commentChar";
+  public static final String SCRAMBLING_STRING = "scramblingString";
+  
   public static final String CHARSET = "charset";
   private final static String URL_PREFIX = "jdbc:relique:csv:";
   /**

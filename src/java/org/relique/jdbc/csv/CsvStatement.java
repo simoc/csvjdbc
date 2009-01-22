@@ -17,10 +17,16 @@
 package org.relique.jdbc.csv;
 
 import java.sql.*;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Enumeration;
 import java.util.Vector;
+
+//import nl.nelen_schuurmans.io.ScrambledInputStream;
 
 /**
  * This class implements the Statement interface for the CsvJdbc driver.
@@ -32,7 +38,7 @@ import java.util.Vector;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.22 2008/12/11 09:10:28 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.23 2009/01/22 09:09:19 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -320,19 +326,19 @@ public class CsvStatement implements Statement {
 				+ connection.getExtension());
 
 		String fileName = null;
-		if(!connection.isIndexedFiles()){
+		if (!connection.isIndexedFiles()) {
 			fileName = connection.getPath() + parser.getTableName()
 					+ connection.getExtension();
-	
+
 			DriverManager.println("CSV file name: " + fileName);
-	
+
 			File checkFile = new File(fileName);
-	
+
 			if (!checkFile.exists()) {
 				throw new SQLException("Cannot open data file '" + fileName
 						+ "'  !");
 			}
-	
+
 			if (!checkFile.canRead()) {
 				throw new SQLException("Data file '" + fileName
 						+ "'  not readable !");
@@ -340,27 +346,38 @@ public class CsvStatement implements Statement {
 		}
 		CSVReaderAdapter reader = null;
 		try {
-			if (isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
-				reader = new CSVScrollableReader(fileName, connection
-						.getSeparator(), connection.isSuppressHeaders(),
-						connection.getCharset(), connection.getQuotechar(),
-						connection.getHeaderline(), connection.getExtension(),
-						connection.getTrimHeaders(), parser.environment, parser
-								.getWhereClause());
-			} else if(connection.isIndexedFiles()){
-				String fileNamePattern = parser.getTableName()+connection.getFileNamePattern()+connection.getExtension();
+			InputStream in;
+			if (connection.isIndexedFiles()) {
+				String fileNamePattern = parser.getTableName()
+						+ connection.getFileNamePattern()
+						+ connection.getExtension();
 				String[] nameParts = connection.getNameParts();
-				reader = new CsvReader(connection.getPath(), fileNamePattern,
-						nameParts, connection.getSeparator(), 
-						connection.isSuppressHeaders(), connection.getCharset(),
-						connection.getQuotechar(), connection.getCommentChar(),
-						connection.getHeaderline(),
-						connection.getExtension(), connection.getTrimHeaders());
-			} else{
-				reader = new CsvReader(fileName, connection.getSeparator(),
-						connection.isSuppressHeaders(),
-						connection.getCharset(), connection.getQuotechar(),
-						connection.getCommentChar(),
+				String dirName = connection.getPath();
+				in = new FileSetInputStream(dirName, fileNamePattern,
+						nameParts, connection.getSeparator());
+
+//			} else if (connection.isScrambled()) {
+//				in = new ScrambledInputStream(fileName, connection.getScramblingString());
+			} else {
+				in = new FileInputStream(fileName);
+			}
+			BufferedReader input;
+			if (connection.getCharset() != null) {
+				input = new BufferedReader(new InputStreamReader(in, connection
+						.getCharset()));
+			} else {
+				input = new BufferedReader(new InputStreamReader(in));
+			}
+			if (isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+				reader = new CSVScrollableReader(input, connection
+						.getSeparator(), connection.isSuppressHeaders(),
+						connection.getQuotechar(), connection.getHeaderline(),
+						connection.getExtension(), connection.getTrimHeaders(),
+						parser.environment, parser.getWhereClause());
+			} else {
+				reader = new CsvReader(input, connection.getSeparator(),
+						connection.isSuppressHeaders(), connection
+								.getQuotechar(), connection.getCommentChar(),
 						connection.getHeaderline(), connection.getExtension(),
 						connection.getTrimHeaders());
 			}
@@ -372,9 +389,9 @@ public class CsvStatement implements Statement {
 
 		CsvResultSet resultSet = null;
 		try {
-			resultSet = new CsvResultSet(this, reader, parser
-					.getTableName(), parser.environment, this.isScrollable, parser
-					.getWhereClause(), connection.getColumnTypes());
+			resultSet = new CsvResultSet(this, reader, parser.getTableName(),
+					parser.environment, this.isScrollable, parser
+							.getWhereClause(), connection.getColumnTypes());
 			resultSets.add(resultSet);
 		} catch (ClassNotFoundException e) {
 			DriverManager.println("" + e);

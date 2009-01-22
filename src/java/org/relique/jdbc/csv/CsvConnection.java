@@ -46,7 +46,7 @@ import java.util.Vector;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.22 2008/12/03 13:12:58 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.23 2009/01/22 09:09:19 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -93,7 +93,11 @@ public class CsvConnection implements Connection {
 	private String timeFormat;
 	private Character commentChar;
 
-    /**
+	private boolean scrambled;
+
+	private String scramblingString;
+
+	/**
      * Creates a new CsvConnection that takes the supplied path
      * @param path directory where the CSV files are located
      */
@@ -156,6 +160,7 @@ public class CsvConnection implements Connection {
             setDateFormat(info.getProperty(CsvDriver.DATE_FORMAT, CsvDriver.DEFAULT_DATE_FORMAT));
             setTimeFormat(info.getProperty(CsvDriver.TIME_FORMAT, CsvDriver.DEFAULT_TIME_FORMAT));
             setCommentChar(info.getProperty(CsvDriver.COMMENT_CHAR, CsvDriver.DEFAULT_COMMENT_CHAR));
+            setScramblingString(info.getProperty(CsvDriver.SCRAMBLING_STRING));
         }
     }
 
@@ -966,4 +971,25 @@ public class CsvConnection implements Connection {
     		return 0;
 		return commentChar.charValue();
 	}
+
+	public boolean isScrambled() {
+		return this.scrambled;
+	}
+
+    /**
+	 * @param scramblingString the scramblingString to set
+	 */
+	public void setScramblingString(String scramblingString) {
+		this.scrambled = (scramblingString != null);
+		this.scramblingString = scramblingString;
+	}
+
+	/**
+	 * @return the scramblingString
+	 */
+	public String getScramblingString() {
+		if (!scrambled) return null;
+		return scramblingString;
+	}
+
 }

@@ -86,7 +86,6 @@ public class FileSetInputStream extends InputStream {
 	 * @see java.io.FileInputStream#read()
 	 */
 	public int read() throws IOException {
-		// TODO Auto-generated method stub
 		if (atEndOfLine) {
 			return readTail();
 		}
@@ -145,7 +144,6 @@ public class FileSetInputStream extends InputStream {
 	 * @see java.io.InputStream#reset()
 	 */
 	public synchronized void reset() throws IOException {
-		// TODO Auto-generated method stub
 		super.reset();
 	}
 
