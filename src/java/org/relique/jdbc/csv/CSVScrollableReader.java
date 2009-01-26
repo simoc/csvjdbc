@@ -42,7 +42,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
 	private int iRecordNo = 0;
 
 	/**
-	 * Can be put in adpater apart from the last line
+	 * Can be put in adapter apart from the last line
 	 * 
 	 * Insert the method's description here.
 	 * 
