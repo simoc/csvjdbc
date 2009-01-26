@@ -26,8 +26,6 @@ import java.io.InputStreamReader;
 import java.util.Enumeration;
 import java.util.Vector;
 
-//import nl.nelen_schuurmans.io.ScrambledInputStream;
-
 /**
  * This class implements the Statement interface for the CsvJdbc driver.
  * 
@@ -38,7 +36,7 @@ import java.util.Vector;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.23 2009/01/22 09:09:19 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.24 2009/01/26 10:44:40 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -355,9 +353,6 @@ public class CsvStatement implements Statement {
 				String dirName = connection.getPath();
 				in = new FileSetInputStream(dirName, fileNamePattern,
 						nameParts, connection.getSeparator());
-
-//			} else if (connection.isScrambled()) {
-//				in = new ScrambledInputStream(fileName, connection.getScramblingString());
 			} else {
 				in = new FileInputStream(fileName);
 			}
