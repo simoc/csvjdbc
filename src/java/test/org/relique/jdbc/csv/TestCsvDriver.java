@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.33 2009/02/06 10:12:14 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.34 2009/02/06 12:59:50 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1074,6 +1074,68 @@ public class TestCsvDriver extends TestCase {
 		assertEquals(new Integer(2), results.getObject(2));
 		assertTrue(results.next());
 		assertEquals(new Integer(3), results.getObject(2));
+		assertFalse(results.next());
+	}
+	
+	public void testNonParseableWithColumnTypes() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "String,String,String,String,Int,Float");
+		props.put("ignoreNonParseableLines", "True");
+		props.put("separator", ";");
+		props.put("fileExtension", ".txt");
+		props.put("suppressHeaders", "true");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM with_leading_trash");
+
+		assertTrue(results.next());
+		assertEquals("12:20", results.getString(2));
+		assertTrue(results.next());
+		assertEquals("12:30", results.getString(2));
+		assertTrue(results.next());
+		assertEquals("12:40", results.getObject(2));
+		assertFalse(results.next());
+	}
+	
+	public void testNonParseableWithHeaderline() throws SQLException {
+		Properties props = new Properties();
+		props.put("headerline", "Date;Time;TimeZone;Unit;Quality;Value");
+		props.put("ignoreNonParseableLines", "True");
+		props.put("separator", ";");
+		props.put("fileExtension", ".txt");
+		props.put("suppressHeaders", "true");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM with_leading_trash");
+
+		assertTrue(results.next());
+		assertEquals("12:20", results.getString(2));
+		assertTrue(results.next());
+		assertEquals("12:30", results.getString(2));
+		assertTrue(results.next());
+		assertEquals("12:40", results.getObject(2));
+		assertFalse(results.next());
+	}
+	
+	public void testNonParseable() throws SQLException {
+		Properties props = new Properties();
+		props.put("ignoreNonParseableLines", "True");
+		props.put("separator", ";");
+		props.put("fileExtension", ".txt");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM with_leading_trash");
+
+		ResultSetMetaData metadata = results.getMetaData();
+		assertEquals("12:20", metadata.getColumnName(2));
+
+		assertTrue(results.next());
+		assertEquals("12:30", results.getString(2));
+		assertTrue(results.next());
+		assertEquals("12:40", results.getObject(2));
 		assertFalse(results.next());
 	}
 	
