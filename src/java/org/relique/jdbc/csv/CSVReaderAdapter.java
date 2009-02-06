@@ -36,7 +36,7 @@ import java.util.Vector;
  * @author Christoph Langer
  * @author Mario Frasca
  * @created 01 March 2004
- * @version $Id: CSVReaderAdapter.java,v 1.16 2009/02/06 10:12:14 mfrasca Exp $
+ * @version $Id: CSVReaderAdapter.java,v 1.17 2009/02/06 13:07:13 mfrasca Exp $
  */
 
 public abstract class CSVReaderAdapter {
@@ -54,9 +54,16 @@ public abstract class CSVReaderAdapter {
 	protected boolean trimHeaders = true;
 	protected char commentChar = 0;
 
+	private boolean ignoreUnparseableLines;
+
 	public CSVReaderAdapter() {
 	}
 
+	/**
+	 * 
+	 * @return the first data line that contains the correct amount of columns
+	 * @throws IOException
+	 */
 	protected String getNextDataLine() throws IOException {
 		String tmp = input.readLine();
 		if (commentChar != 0 && tmp != null) {
@@ -65,12 +72,27 @@ public abstract class CSVReaderAdapter {
 			// set it to 0: we don't skip data lines, only pre-header lines...
 			commentChar = 0;
 		}
+		if(ignoreUnparseableLines && tmp!=null){
+			try {
+				do {
+					int fieldsCount = this.parseCsvLine(tmp, true).length;
+					if (columnNames != null && columnNames.length == fieldsCount)
+						break; // we are satisfied
+					if (columnNames == null && fieldsCount != 1)
+						break; // also good enough - hopefully
+					tmp = input.readLine();
+				} while (tmp != null);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return tmp;
 	}
 
 	public CSVReaderAdapter(BufferedReader in, char separator,
 			boolean suppressHeaders, char quoteChar, char commentChar,
-			String headerLine, String extension, boolean trimHeaders, int skipLeadingLines)
+			String headerLine, String extension, boolean trimHeaders, int skipLeadingLines, boolean ignoreUnparseableLines)
 			throws UnsupportedEncodingException, FileNotFoundException,
 			IOException, SQLException {
 		this.separator = separator;
@@ -81,6 +103,7 @@ public abstract class CSVReaderAdapter {
 		this.extension = extension;
 		this.trimHeaders = trimHeaders;
 		this.input = in;
+		this.ignoreUnparseableLines = ignoreUnparseableLines;
 		
 		for (int i=0; i<skipLeadingLines; i++){
 			in.readLine();
@@ -89,22 +112,22 @@ public abstract class CSVReaderAdapter {
 		if (this.suppressHeaders) {
 			// column names specified by property are available. Read and use.
 			if (this.headerLine != null) {
-				columnNames = parseCsvLine(this.headerLine, trimHeaders);
+				this.columnNames = parseCsvLine(this.headerLine, trimHeaders);
 			} else {
 				// No column names available. Read first data line and determine
 				// number of columns.
 				buf = getNextDataLine();
 				String[] data = parseCsvLine(buf, false);
-				columnNames = new String[data.length];
+				this.columnNames = new String[data.length];
 				for (int i = 0; i < data.length; i++) {
-					columnNames[i] = "COLUMN" + String.valueOf(i + 1);
+					this.columnNames[i] = "COLUMN" + String.valueOf(i + 1);
 				}
 				data = null;
 				// throw away.
 			}
 		} else {
 			String tmpHeaderLine = getNextDataLine();
-			columnNames = parseCsvLine(tmpHeaderLine, trimHeaders);
+			this.columnNames = parseCsvLine(tmpHeaderLine, trimHeaders);
 		}
 	}
 
@@ -177,11 +200,15 @@ public abstract class CSVReaderAdapter {
 
 	public abstract void close();
 
-	// protected abstract String[] parseCsvLine(String line) throws
-	// SQLException;
-	// This code updated with code by Stuart Mottram to handle line breaks in
-	// fields
-	// see bug #492063
+	/**
+	 * splits <b>line</b> into the String[] it contains.
+	 * Stuart Mottram added the code for handling line breaks in fields.
+	 * 
+	 * @param line the line to parse
+	 * @param trimValues tells whether to remove leading and trailing spaces
+	 * @return
+	 * @throws SQLException
+	 */
 	protected String[] parseCsvLine(String line, boolean trimValues)
 			throws SQLException {
 		Vector values = new Vector();

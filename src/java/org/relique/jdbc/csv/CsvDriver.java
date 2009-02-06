@@ -28,7 +28,7 @@ import java.io.File;
  * @author     JD Evora
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvDriver.java,v 1.18 2009/02/06 10:12:14 mfrasca Exp $
+ * @version    $Id: CsvDriver.java,v 1.19 2009/02/06 13:07:13 mfrasca Exp $
  */
 
 public class CsvDriver implements Driver
@@ -47,6 +47,7 @@ public class CsvDriver implements Driver
   public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
   public static final String DEFAULT_COMMENT_CHAR = null;
   public static final String DEFAULT_SKIP_LEADING_LINES = null;
+  public static final String DEFAULT_IGNORE_UNPARSEABLE_LINES = "False";
 
   public static final String FILE_EXTENSION="fileExtension";
   public static final String SEPARATOR="separator";
@@ -61,6 +62,7 @@ public class CsvDriver implements Driver
   public static final String TIME_FORMAT = "timeFormat";
   public static final String COMMENT_CHAR = "commentChar";
   public static final String SKIP_LEADING_LINES = "skipLeadingLines";
+  public static final String IGNORE_UNPARSEABLE_LINES = "ignoreNonParseableLines";
   public static final String SCRAMBLING_STRING = "scramblingString";
   
   public static final String CHARSET = "charset";

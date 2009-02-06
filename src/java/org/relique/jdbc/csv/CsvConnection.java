@@ -46,7 +46,7 @@ import java.util.Vector;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.24 2009/02/06 10:12:14 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.25 2009/02/06 13:07:13 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -98,6 +98,8 @@ public class CsvConnection implements Connection {
 	private String scramblingString;
 
 	private int skipLeadingLines = 0;
+
+	private boolean ignoreUnparseableLines;
 
 	/**
      * Creates a new CsvConnection that takes the supplied path
@@ -163,6 +165,7 @@ public class CsvConnection implements Connection {
             setTimeFormat(info.getProperty(CsvDriver.TIME_FORMAT, CsvDriver.DEFAULT_TIME_FORMAT));
             setCommentChar(info.getProperty(CsvDriver.COMMENT_CHAR, CsvDriver.DEFAULT_COMMENT_CHAR));
             setSkipLeadingLines(info.getProperty(CsvDriver.SKIP_LEADING_LINES, CsvDriver.DEFAULT_SKIP_LEADING_LINES));
+            setIgnoreUnparseableLines(info.getProperty(CsvDriver.IGNORE_UNPARSEABLE_LINES, CsvDriver.DEFAULT_IGNORE_UNPARSEABLE_LINES));
             setScramblingString(info.getProperty(CsvDriver.SCRAMBLING_STRING));
         }
     }
@@ -1015,6 +1018,25 @@ public class CsvConnection implements Connection {
 	 */
 	public void setSkipLeadingLines(int skipLeadingLines) {
 		this.skipLeadingLines = skipLeadingLines;
+	}
+
+	public boolean getIgnoreUnparseableLines() {
+		return ignoreUnparseableLines;
+	}
+
+	/**
+	 * @param ignoreUnparseableLines the ignoreUnparseableLines to set
+	 */
+	public void setIgnoreUnparseableLines(boolean ignoreUnparseableLines) {
+		this.ignoreUnparseableLines = ignoreUnparseableLines;
+	}
+
+	/**
+	 * me lazy and prefer hiding type conversion here
+	 * @param property
+	 */
+	private void setIgnoreUnparseableLines(String property) {
+		setIgnoreUnparseableLines(Boolean.parseBoolean(property));
 	}
 
 }

@@ -36,7 +36,7 @@ import java.sql.SQLException;
  * @author Christoph Langer
  * @author Chetan Gupta
  * @created 25 November 2001
- * @version $Id: CsvReader.java,v 1.23 2009/02/06 10:12:14 mfrasca Exp $
+ * @version $Id: CsvReader.java,v 1.24 2009/02/06 13:07:13 mfrasca Exp $
  */
 
 public class CsvReader extends CSVReaderAdapter {
@@ -53,7 +53,7 @@ public class CsvReader extends CSVReaderAdapter {
 	public CsvReader(String fileName) throws Exception {
 		this(new BufferedReader(new InputStreamReader(new FileInputStream(
 				fileName))), ',', false, '"', (char) 0, "",
-				CsvDriver.DEFAULT_EXTENSION, true, 0);
+				CsvDriver.DEFAULT_EXTENSION, true, 0, false);
 	}
 
 	/**
@@ -79,10 +79,12 @@ public class CsvReader extends CSVReaderAdapter {
 	 */
 	public CsvReader(BufferedReader in, char separator,
 			boolean suppressHeaders, char quoteChar, char commentChar,
-			String headerLine, String extension, boolean trimHeaders, int skipLeadingLines)
+			String headerLine, String extension, boolean trimHeaders, 
+			int skipLeadingLines, boolean ignoreUnparseableLines)
 			throws IOException, SQLException {
 		super(in, separator, suppressHeaders, quoteChar, commentChar,
-				headerLine, extension, trimHeaders, skipLeadingLines);
+				headerLine, extension, trimHeaders, skipLeadingLines,
+				ignoreUnparseableLines);
 	}
 
 	/**

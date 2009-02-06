@@ -65,11 +65,12 @@ public class CSVScrollableReader extends CSVReaderAdapter {
 	public CSVScrollableReader(BufferedReader fileName, char separator,
 			boolean suppressHeaders, char quoteChar,
 			String headerLine, String extension, boolean trimHeaders,
-			List queryEnvironment, ExpressionParser whereClause, int skipLeadingLines)
+			List queryEnvironment, ExpressionParser whereClause, int skipLeadingLines, 
+			boolean ignoreUnparseableLines)
 			throws IOException, SQLException {
 
 		super(fileName, separator, suppressHeaders, quoteChar, (char)0,
-				headerLine, extension, trimHeaders, skipLeadingLines);
+				headerLine, extension, trimHeaders, skipLeadingLines, ignoreUnparseableLines);
 
 		loopAndFetchData(input, buf, queryEnvironment, whereClause);
 		iRecordNo = FIRST_RECORD - 1;

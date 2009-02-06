@@ -41,7 +41,7 @@ import java.util.Vector;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.25 2009/02/06 10:12:14 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.26 2009/02/06 13:07:13 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -373,13 +373,15 @@ public class CsvStatement implements Statement {
 						.getSeparator(), connection.isSuppressHeaders(),
 						connection.getQuotechar(), connection.getHeaderline(),
 						connection.getExtension(), connection.getTrimHeaders(),
-						parser.environment, parser.getWhereClause(), connection.getSkipLeadingLines());
+						parser.environment, parser.getWhereClause(), 
+						connection.getSkipLeadingLines(), connection.getIgnoreUnparseableLines());
 			} else {
 				reader = new CsvReader(input, connection.getSeparator(),
 						connection.isSuppressHeaders(), connection
 								.getQuotechar(), connection.getCommentChar(),
 						connection.getHeaderline(), connection.getExtension(),
-						connection.getTrimHeaders(), connection.getSkipLeadingLines());
+						connection.getTrimHeaders(), connection.getSkipLeadingLines(),
+						connection.getIgnoreUnparseableLines());
 			}
 		} catch (IOException e) {
 			throw new SQLException("Error reading data file. Message was: " + e);
