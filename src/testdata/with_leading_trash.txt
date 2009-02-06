@@ -1,0 +1,9 @@
+Databank=MSW
+Locatie=DENH
+Parameter=TW10
+Waarnemingsgroepcode=-
+X_coordinaat=11185000
+Y_coordinaat=55323000
+2009/01/26;12:20;MET;gr.C;10;2.6
+2009/01/26;12:30;MET;gr.C;10;2.4
+2009/01/26;12:40;MET;gr.C;10;2.5
