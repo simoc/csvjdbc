@@ -36,7 +36,7 @@ import java.util.Vector;
  * @author Christoph Langer
  * @author Mario Frasca
  * @created 01 March 2004
- * @version $Id: CSVReaderAdapter.java,v 1.15 2009/01/22 09:09:19 mfrasca Exp $
+ * @version $Id: CSVReaderAdapter.java,v 1.16 2009/02/06 10:12:14 mfrasca Exp $
  */
 
 public abstract class CSVReaderAdapter {
@@ -70,7 +70,7 @@ public abstract class CSVReaderAdapter {
 
 	public CSVReaderAdapter(BufferedReader in, char separator,
 			boolean suppressHeaders, char quoteChar, char commentChar,
-			String headerLine, String extension, boolean trimHeaders)
+			String headerLine, String extension, boolean trimHeaders, int skipLeadingLines)
 			throws UnsupportedEncodingException, FileNotFoundException,
 			IOException, SQLException {
 		this.separator = separator;
@@ -81,6 +81,10 @@ public abstract class CSVReaderAdapter {
 		this.extension = extension;
 		this.trimHeaders = trimHeaders;
 		this.input = in;
+		
+		for (int i=0; i<skipLeadingLines; i++){
+			in.readLine();
+		}
 
 		if (this.suppressHeaders) {
 			// column names specified by property are available. Read and use.
@@ -88,7 +92,7 @@ public abstract class CSVReaderAdapter {
 				columnNames = parseCsvLine(this.headerLine, trimHeaders);
 			} else {
 				// No column names available. Read first data line and determine
-				// number of colums.
+				// number of columns.
 				buf = getNextDataLine();
 				String[] data = parseCsvLine(buf, false);
 				columnNames = new String[data.length];

@@ -57,7 +57,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.35 2008/12/11 13:14:29 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.36 2009/02/06 10:12:14 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -120,7 +120,7 @@ public class CsvResultSet implements ResultSet {
 			String tableName, List queryEnvironment, int isScrollable,
 			ExpressionParser whereClause) throws ClassNotFoundException, SQLException {
 		this(statement, reader, tableName, queryEnvironment, isScrollable,
-				whereClause, CsvDriver.DEFAULT_COLUMN_TYPES);
+				whereClause, CsvDriver.DEFAULT_COLUMN_TYPES, 0);
     }
     /**
      * Constructor for the CsvResultSet object 
@@ -137,7 +137,7 @@ public class CsvResultSet implements ResultSet {
      */
     protected CsvResultSet(CsvStatement statement, CSVReaderAdapter reader,
 			String tableName, List queryEnvironment, int isScrollable, 
-			ExpressionParser whereClause, String columnTypes) throws ClassNotFoundException, SQLException {
+			ExpressionParser whereClause, String columnTypes, int skipLeadingLines) throws ClassNotFoundException, SQLException {
         this.statement = statement;
         this.isScrollable = isScrollable;
         this.reader = reader;

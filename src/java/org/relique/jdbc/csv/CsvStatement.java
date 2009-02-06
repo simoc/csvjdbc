@@ -16,13 +16,18 @@
  */
 package org.relique.jdbc.csv;
 
-import java.sql.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -36,7 +41,7 @@ import java.util.Vector;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.24 2009/01/26 10:44:40 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.25 2009/02/06 10:12:14 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -368,13 +373,13 @@ public class CsvStatement implements Statement {
 						.getSeparator(), connection.isSuppressHeaders(),
 						connection.getQuotechar(), connection.getHeaderline(),
 						connection.getExtension(), connection.getTrimHeaders(),
-						parser.environment, parser.getWhereClause());
+						parser.environment, parser.getWhereClause(), connection.getSkipLeadingLines());
 			} else {
 				reader = new CsvReader(input, connection.getSeparator(),
 						connection.isSuppressHeaders(), connection
 								.getQuotechar(), connection.getCommentChar(),
 						connection.getHeaderline(), connection.getExtension(),
-						connection.getTrimHeaders());
+						connection.getTrimHeaders(), connection.getSkipLeadingLines());
 			}
 		} catch (IOException e) {
 			throw new SQLException("Error reading data file. Message was: " + e);
@@ -386,7 +391,8 @@ public class CsvStatement implements Statement {
 		try {
 			resultSet = new CsvResultSet(this, reader, parser.getTableName(),
 					parser.environment, this.isScrollable, parser
-							.getWhereClause(), connection.getColumnTypes());
+							.getWhereClause(), connection.getColumnTypes(), 
+							connection.getSkipLeadingLines());
 			resultSets.add(resultSet);
 		} catch (ClassNotFoundException e) {
 			DriverManager.println("" + e);

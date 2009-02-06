@@ -46,7 +46,7 @@ import java.util.Vector;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.23 2009/01/22 09:09:19 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.24 2009/02/06 10:12:14 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -96,6 +96,8 @@ public class CsvConnection implements Connection {
 	private boolean scrambled;
 
 	private String scramblingString;
+
+	private int skipLeadingLines = 0;
 
 	/**
      * Creates a new CsvConnection that takes the supplied path
@@ -160,6 +162,7 @@ public class CsvConnection implements Connection {
             setDateFormat(info.getProperty(CsvDriver.DATE_FORMAT, CsvDriver.DEFAULT_DATE_FORMAT));
             setTimeFormat(info.getProperty(CsvDriver.TIME_FORMAT, CsvDriver.DEFAULT_TIME_FORMAT));
             setCommentChar(info.getProperty(CsvDriver.COMMENT_CHAR, CsvDriver.DEFAULT_COMMENT_CHAR));
+            setSkipLeadingLines(info.getProperty(CsvDriver.SKIP_LEADING_LINES, CsvDriver.DEFAULT_SKIP_LEADING_LINES));
             setScramblingString(info.getProperty(CsvDriver.SCRAMBLING_STRING));
         }
     }
@@ -990,6 +993,28 @@ public class CsvConnection implements Connection {
 	public String getScramblingString() {
 		if (!scrambled) return null;
 		return scramblingString;
+	}
+
+	private void setSkipLeadingLines(String property) {
+		try{
+			skipLeadingLines = Integer.parseInt(property);
+		} catch(NumberFormatException e){
+			skipLeadingLines = 0;
+		}
+	}
+
+	/**
+	 * @return the skipLeadingLines
+	 */
+	public int getSkipLeadingLines() {
+		return skipLeadingLines;
+	}
+
+	/**
+	 * @param skipLeadingLines the skipLeadingLines to set
+	 */
+	public void setSkipLeadingLines(int skipLeadingLines) {
+		this.skipLeadingLines = skipLeadingLines;
 	}
 
 }
