@@ -57,7 +57,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.36 2009/02/06 10:12:14 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.37 2009/02/09 14:59:05 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -164,18 +164,14 @@ public class CsvResultSet implements ResultSet {
 			}
         }
         this.typeNames = new String[columnNames.length];
-    	this.mustInferTypeNames = false;
-        if (columnTypes.contains(",")){
+    	this.mustInferTypeNames = columnTypes.equals("");
+    	if (!this.mustInferTypeNames){
         	String[] typeNamesLoc = columnTypes.split(",");
         	for(int i=0; i<typeNamesLoc.length; i++){
         		this.typeNames[i] = typeNamesLoc[i].trim();
         	}
-        }
-        else if (columnTypes.equals("")){
-        	this.mustInferTypeNames = true;
-        }else{
-        	for(int i=0; i<this.typeNames.length; i++){
-        		this.typeNames[i] = columnTypes.trim();
+        	for(int i=typeNamesLoc.length; i<this.typeNames.length; i++){
+        		this.typeNames[i] = typeNamesLoc[typeNamesLoc.length-1].trim();
         	}
         }
     }
@@ -374,7 +370,7 @@ public class CsvResultSet implements ResultSet {
     public boolean next() throws SQLException {
     	boolean thereWasAnAnswer;
     	thereWasAnAnswer = reader.next();
-    	updateRecordEnvironment(thereWasAnAnswer);
+   		updateRecordEnvironment(thereWasAnAnswer);
 		
     	if (this.mustInferTypeNames) {
     		inferTypeNames();

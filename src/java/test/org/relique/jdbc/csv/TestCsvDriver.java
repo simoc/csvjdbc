@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.34 2009/02/06 12:59:50 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.35 2009/02/09 14:59:05 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -861,7 +861,7 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The name is wrong", "007", results.getString("station"));
 		assertEquals("The name is wrong", "0.0", results.getString("value"));
 	}
-
+	
 	public void testFromIndexedTable() throws SQLException {
 
 		Properties props = new Properties();
@@ -890,6 +890,82 @@ public class TestCsvDriver extends TestCase {
 				"DATUM");
 		assertEquals("Incorrect Column Name 4", metadata.getColumnName(4),
 				"TIJD");
+
+		assertTrue(results.next());
+		assertEquals("wrong datum", "20-12-2007", results.getString("datum"));
+		assertEquals("wrong tijd", "10:59:00", results.getString("tijd"));
+		assertEquals("wrong station", "007", results.getString("station"));
+		assertEquals("wrong location #0", "001", results.getString("location"));
+		for (int i = 1; i < 12; i++) {
+			assertTrue(results.next());
+			assertEquals("wrong location #" + i, "001", results
+					.getString("location"));
+			assertEquals("wrong file_date #" + i, "20081112", results
+					.getString("file_date"));
+		}
+		for (int i = 0; i < 12; i++) {
+			assertTrue(results.next());
+			assertEquals("wrong location #" + i, "001", results
+					.getString("location"));
+			assertEquals("wrong file_date #" + i, "20081113", results
+					.getString("file_date"));
+		}
+		for (int i = 0; i < 12; i++) {
+			assertTrue(results.next());
+			assertEquals("wrong location #" + i, "001", results
+					.getString("location"));
+			assertEquals("wrong file_date #" + i, "20081114", results
+					.getString("file_date"));
+		}
+		for (int i = 0; i < 36; i++) {
+			assertTrue(results.next());
+			assertEquals("wrong location #" + i, "002", results
+					.getString("location"));
+		}
+		for (int i = 0; i < 36; i++) {
+			assertTrue(results.next());
+			assertEquals("wrong location #" + i, "003", results
+					.getString("location"));
+		}
+		for (int i = 0; i < 36; i++) {
+			assertTrue(results.next());
+			assertEquals("wrong location #" + i, "004", results
+					.getString("location"));
+		}
+		assertFalse(results.next());
+	}
+
+	public void testFromIndexedTablePrepend() throws SQLException {
+
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("fileTailPattern", "-([0-9]{3})-([0-9]{8})");
+		props.put("fileTailParts", "location,file_date");
+		props.put("indexedFiles", "True");
+		props.put("fileTailPrepend", "True");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT location,file_date,datum,tijd,station FROM test");
+
+		ResultSetMetaData metadata = results.getMetaData();
+
+		assertTrue("Incorrect Table Name", metadata.getTableName(0).equals(
+				"test"));
+
+		assertEquals("Incorrect Column Name 1", metadata.getColumnName(1),
+				"LOCATION");
+		assertEquals("Incorrect Column Name 1", metadata.getColumnName(2),
+				"FILE_DATE");
+		assertEquals("Incorrect Column Name 1", metadata.getColumnName(3),
+				"DATUM");
+		assertEquals("Incorrect Column Name 2", metadata.getColumnName(4),
+				"TIJD");
+		assertEquals("Incorrect Column Name 3", metadata.getColumnName(5),
+				"STATION");
 
 		assertTrue(results.next());
 		assertEquals("wrong datum", "20-12-2007", results.getString("datum"));
@@ -1146,7 +1222,7 @@ public class TestCsvDriver extends TestCase {
 		props.put("fileTailPattern", "-([0-9]{8})");
 		props.put("fileTailParts", "file_date");
 		props.put("fileTailPrepend", "True");
-		props.put("columnTypes", "Date,Time,String");
+		props.put("columnTypes", "String,Date,Time,String,Double");
 
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
@@ -1157,23 +1233,23 @@ public class TestCsvDriver extends TestCase {
 		
 		results = stmt.executeQuery("SELECT * FROM varlen1");
 		metadata = results.getMetaData();
-		assertEquals("Datum", metadata.getColumnName(1));
-		assertEquals("Tijd", metadata.getColumnName(2));
-		assertEquals("Station", metadata.getColumnName(3));
-		assertEquals("P000", metadata.getColumnName(4));
-		assertEquals("P001", metadata.getColumnName(5));
-		assertEquals("P002", metadata.getColumnName(6));
-		assertEquals("P003", metadata.getColumnName(7));
-		assertEquals("file_date", metadata.getColumnName(8));
+		assertEquals("file_date", metadata.getColumnName(1));
+		assertEquals("Datum", metadata.getColumnName(2));
+		assertEquals("Tijd", metadata.getColumnName(3));
+		assertEquals("Station", metadata.getColumnName(4));
+		assertEquals("P000", metadata.getColumnName(5));
+		assertEquals("P001", metadata.getColumnName(6));
+		assertEquals("P002", metadata.getColumnName(7));
+		assertEquals("P003", metadata.getColumnName(8));
 
 		results = stmt.executeQuery("SELECT * FROM varlen2");
 		metadata = results.getMetaData();
-		assertEquals("Datum", metadata.getColumnName(1));
-		assertEquals("Tijd", metadata.getColumnName(2));
-		assertEquals("Station", metadata.getColumnName(3));
-		assertEquals("P000", metadata.getColumnName(4));
-		assertEquals("P001", metadata.getColumnName(5));
-		assertEquals("file_date", metadata.getColumnName(6));
+		assertEquals("file_date", metadata.getColumnName(1));
+		assertEquals("Datum", metadata.getColumnName(2));
+		assertEquals("Tijd", metadata.getColumnName(3));
+		assertEquals("Station", metadata.getColumnName(4));
+		assertEquals("P000", metadata.getColumnName(5));
+		assertEquals("P001", metadata.getColumnName(6));
 
 		results = stmt.executeQuery("SELECT * FROM varlen1");
 		assertTrue(results.next());

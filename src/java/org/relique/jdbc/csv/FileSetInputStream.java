@@ -42,7 +42,6 @@ public class FileSetInputStream extends InputStream {
 
 	private List fileNames;
 	private FileInputStream currentFile;
-	private boolean atLineBorder;
 	private boolean readingHeader;
 	private String tail;
 	private int pos;
@@ -50,7 +49,9 @@ public class FileSetInputStream extends InputStream {
 	private char separator;
 	private String dataTail;
 	private boolean prepend;
-	private boolean atBeginningOfLine;
+	private int lookahead = '\n';
+	private boolean doingTail;
+	private int currentLineLength;
 
 	/**
 	 * 
@@ -66,23 +67,29 @@ public class FileSetInputStream extends InputStream {
 	 * @param prepend
 	 *            whether the extra fields should precede the ones from the file
 	 *            content.
-	 * @throws FileNotFoundException
+	 * @throws IOException 
 	 */
 	public FileSetInputStream(String dirName, String fileNamePattern,
 			String[] fieldsInName, char separator, boolean prepend)
-			throws FileNotFoundException {
+			throws IOException {
 
 		// Initialising tail for header...
 		this.prepend = prepend;
 		this.separator = separator;
 		tail = "";
-		if (!prepend)
+		if (prepend)
+			tail += '\n';
+		else
 			tail += separator;
 		for (int i = 0; i < fieldsInName.length; i++) {
 			tail += fieldsInName[i];
-			if(i+1 < fieldsInName.length)
+			if (i + 1 < fieldsInName.length)
 				tail += separator;
 		}
+		if (prepend)
+			tail += separator;
+		else
+			tail += '\n';
 
 		fileNames = new LinkedList();
 		File root = new File(dirName);
@@ -98,10 +105,13 @@ public class FileSetInputStream extends InputStream {
 		}
 		fileNameRE = Pattern.compile(".*" + fileNamePattern);
 		readingHeader = true;
-		this.atLineBorder = prepend;
 		String currentName = (String) fileNames.remove(0);
 		dataTail = getTailFromName(currentName);
 		currentFile = new FileInputStream(currentName);
+		lookahead = currentFile.read();
+		doingTail = prepend;
+		if (doingTail)
+			pos = 1;
 	}
 
 	/*
@@ -112,28 +122,56 @@ public class FileSetInputStream extends InputStream {
 	public void close() throws IOException {
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Reads the next byte of data from the input stream. The value byte is
+	 * returned as an int in the range 0 to 255. if the end of the current
+	 * source file is reached, the next single file is opened. if all input has
+	 * been used, -1 is returned.
 	 * 
-	 * @see java.io.FileInputStream#read()
+	 * to output the tail, we just glue it before each '\n'
+	 * 
+	 * to output the lead, we have to look ahead and append it to all '\n' that
+	 * are not followed by '\n' or -1
+	 * 
+	 * @return the next byte of data, or -1 if the end of the stream is reached.
+	 * 
+	 * @throws IOException
+	 *             if an I/O error occurs.
 	 */
 	public int read() throws IOException {
-		if (atLineBorder) {
-			return readTail();
-		}
+		// run out of input on all subfiles
 		if (currentFile == null)
 			return -1;
-		int ch = currentFile.read();
-		if (ch == '\n') {
-			atLineBorder = true;
-			if (!prepend)
-				return readTail();
-			else
+
+		int ch;
+		if (doingTail) {
+			ch = readFromTail();
+			if(ch != -1)
 				return ch;
-		} else if (ch == -1) {
+			doingTail = false;
+			currentLineLength = 0;
+		}
+
+		// shift the readahead into the current char and get the new readahead.
+		ch = lookahead;
+		lookahead = currentFile.read();
+		// if we met a line border we have to output the lead/tail
+		if (prepend) {
+			// prepending a non empty line...
+			if (ch == '\n' && !(lookahead == '\n' || lookahead == -1)) {
+				doingTail = true;
+				return readFromTail();
+			}
+		} else {
+			// appending to the end of just any line
+			if (currentLineLength > 0 && (ch == '\n' || ch == -1)) {
+				doingTail = true;
+				return readFromTail();
+			}
+		}
+		if (ch < 0) {
 			currentFile.close();
 			// open next file and skip header
-			atLineBorder = false;
 			pos = 0;
 			String currentName;
 			try {
@@ -144,10 +182,15 @@ public class FileSetInputStream extends InputStream {
 			}
 			tail = getTailFromName(currentName);
 			currentFile = new FileInputStream(currentName);
+			// skip the header
 			while (currentFile.read() != '\n')
 				;
+			doingTail = prepend;
+			if (doingTail) pos = 1;
+			lookahead = currentFile.read();
 			return read();
 		}
+		currentLineLength++;
 		return ch;
 	}
 
@@ -155,29 +198,31 @@ public class FileSetInputStream extends InputStream {
 		Matcher m = fileNameRE.matcher(currentName);
 		m.matches();
 		String tail = "";
-		if (!prepend)
+		if (prepend)
+			tail += '\n';
+		else
 			tail += separator;
 		for (int i = 1; i <= m.groupCount(); i++) {
 			tail += m.group(i);
-			if (i<m.groupCount())
+			if (i < m.groupCount())
 				tail += separator;
 		}
+		if (prepend)
+			tail += separator;
+		else
+			tail += '\n';
 		return tail;
 	}
 
-	private int readTail() {
+	private int readFromTail() {
 		if (pos < tail.length())
 			return tail.charAt(pos++);
-		atLineBorder = false;
 		pos = 0;
 		if (readingHeader) {
 			readingHeader = false;
 			tail = dataTail;
 		}
-		if (prepend)
-			return separator;
-		else
-			return '\n';
+		return -1;
 	}
 
 	/*
