@@ -29,27 +29,59 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Class that collapses a set of files into one input stream. All files matching
+ * a given pattern are collected, parts of the file name contains part of the
+ * data, and the values in the file name are appended (or prepended) to each
+ * data line.
+ * 
+ * @author Mario Frasca
+ * 
+ */
 public class FileSetInputStream extends InputStream {
 
 	private List fileNames;
 	private FileInputStream currentFile;
-	private boolean atEndOfLine;
+	private boolean atLineBorder;
 	private boolean readingHeader;
 	private String tail;
 	private int pos;
 	private Pattern fileNameRE;
 	private char separator;
 	private String dataTail;
+	private boolean prepend;
+	private boolean atBeginningOfLine;
 
+	/**
+	 * 
+	 * @param dirName
+	 *            the containing directory
+	 * @param fileNamePattern
+	 *            the regular expression describing the file name and the extra
+	 *            fields.
+	 * @param fieldsInName
+	 *            the names of the fields contained in the file name.
+	 * @param separator
+	 *            the separator to use when faking output (typically the ",").
+	 * @param prepend
+	 *            whether the extra fields should precede the ones from the file
+	 *            content.
+	 * @throws FileNotFoundException
+	 */
 	public FileSetInputStream(String dirName, String fileNamePattern,
-			String[] fieldsInName, char separator) throws FileNotFoundException {
+			String[] fieldsInName, char separator, boolean prepend)
+			throws FileNotFoundException {
 
 		// Initialising tail for header...
+		this.prepend = prepend;
 		this.separator = separator;
 		tail = "";
-		for (int i = 0; i < fieldsInName.length; i++) {
+		if (!prepend)
 			tail += separator;
+		for (int i = 0; i < fieldsInName.length; i++) {
 			tail += fieldsInName[i];
+			if(i+1 < fieldsInName.length)
+				tail += separator;
 		}
 
 		fileNames = new LinkedList();
@@ -64,9 +96,9 @@ public class FileSetInputStream extends InputStream {
 				fileNames.add(dirName + candidates[i]);
 			}
 		}
-		fileNameRE = Pattern.compile(".*"+fileNamePattern);
+		fileNameRE = Pattern.compile(".*" + fileNamePattern);
 		readingHeader = true;
-		atEndOfLine = false;
+		this.atLineBorder = prepend;
 		String currentName = (String) fileNames.remove(0);
 		dataTail = getTailFromName(currentName);
 		currentFile = new FileInputStream(currentName);
@@ -86,19 +118,22 @@ public class FileSetInputStream extends InputStream {
 	 * @see java.io.FileInputStream#read()
 	 */
 	public int read() throws IOException {
-		if (atEndOfLine) {
+		if (atLineBorder) {
 			return readTail();
 		}
 		if (currentFile == null)
 			return -1;
 		int ch = currentFile.read();
 		if (ch == '\n') {
-			atEndOfLine = true;
-			return readTail();
+			atLineBorder = true;
+			if (!prepend)
+				return readTail();
+			else
+				return ch;
 		} else if (ch == -1) {
 			currentFile.close();
 			// open next file and skip header
-			atEndOfLine = false;
+			atLineBorder = false;
 			pos = 0;
 			String currentName;
 			try {
@@ -109,7 +144,8 @@ public class FileSetInputStream extends InputStream {
 			}
 			tail = getTailFromName(currentName);
 			currentFile = new FileInputStream(currentName);
-			while (currentFile.read() != '\n');
+			while (currentFile.read() != '\n')
+				;
 			return read();
 		}
 		return ch;
@@ -119,9 +155,12 @@ public class FileSetInputStream extends InputStream {
 		Matcher m = fileNameRE.matcher(currentName);
 		m.matches();
 		String tail = "";
-		for (int i = 1; i <= m.groupCount(); i++) {
+		if (!prepend)
 			tail += separator;
+		for (int i = 1; i <= m.groupCount(); i++) {
 			tail += m.group(i);
+			if (i<m.groupCount())
+				tail += separator;
 		}
 		return tail;
 	}
@@ -129,13 +168,16 @@ public class FileSetInputStream extends InputStream {
 	private int readTail() {
 		if (pos < tail.length())
 			return tail.charAt(pos++);
-		atEndOfLine = false;
+		atLineBorder = false;
 		pos = 0;
 		if (readingHeader) {
 			readingHeader = false;
 			tail = dataTail;
 		}
-		return '\n';
+		if (prepend)
+			return separator;
+		else
+			return '\n';
 	}
 
 	/*

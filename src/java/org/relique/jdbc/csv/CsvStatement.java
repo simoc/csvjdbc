@@ -41,7 +41,7 @@ import java.util.Vector;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.26 2009/02/06 13:07:13 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.27 2009/02/09 07:59:58 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -357,7 +357,7 @@ public class CsvStatement implements Statement {
 				String[] nameParts = connection.getNameParts();
 				String dirName = connection.getPath();
 				in = new FileSetInputStream(dirName, fileNamePattern,
-						nameParts, connection.getSeparator());
+						nameParts, connection.getSeparator(), connection.isFileTailPrepend());
 			} else {
 				in = new FileInputStream(fileName);
 			}
@@ -374,14 +374,14 @@ public class CsvStatement implements Statement {
 						connection.getQuotechar(), connection.getHeaderline(),
 						connection.getExtension(), connection.getTrimHeaders(),
 						parser.environment, parser.getWhereClause(), 
-						connection.getSkipLeadingLines(), connection.getIgnoreUnparseableLines());
+						connection.getSkipLeadingLines(), connection.isIgnoreUnparseableLines());
 			} else {
 				reader = new CsvReader(input, connection.getSeparator(),
 						connection.isSuppressHeaders(), connection
 								.getQuotechar(), connection.getCommentChar(),
 						connection.getHeaderline(), connection.getExtension(),
 						connection.getTrimHeaders(), connection.getSkipLeadingLines(),
-						connection.getIgnoreUnparseableLines());
+						connection.isIgnoreUnparseableLines());
 			}
 		} catch (IOException e) {
 			throw new SQLException("Error reading data file. Message was: " + e);
