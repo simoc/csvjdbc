@@ -31,7 +31,7 @@ import org.relique.jdbc.csv.TokenMgrError;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.19 2008/12/19 15:56:54 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.20 2009/03/16 09:59:18 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -340,6 +340,24 @@ public class TestSqlParser extends TestCase {
 		assertEquals(true, parser.getWhereClause().isTrue(env));
 	}
 
+	public void testParsingWhereEmptyString() throws Exception {
+		SqlParser parser = new SqlParser();
+		Map env = new HashMap();
+		env.put("C", new String(""));
+
+		parser.parse("SELECT * FROM test WHERE c=''");
+		assertEquals(true, parser.getWhereClause().isTrue(env));
+	}
+	
+	public void testParsingWhereSingleQuoteString() throws Exception {
+		SqlParser parser = new SqlParser();
+		Map env = new HashMap();
+		env.put("C", new String("it's"));
+
+		parser.parse("SELECT * FROM test WHERE c='it''s'");
+		assertEquals(true, parser.getWhereClause().isTrue(env));
+	}
+	
 	public void testWhereEvaluatingIndistinguishedNumbers() throws Exception {
 		SqlParser parser = new SqlParser();
 		Map env = new HashMap();
