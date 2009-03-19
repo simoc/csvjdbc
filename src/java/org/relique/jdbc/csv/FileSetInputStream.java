@@ -67,7 +67,7 @@ public class FileSetInputStream extends InputStream {
 	 * @param prepend
 	 *            whether the extra fields should precede the ones from the file
 	 *            content.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public FileSetInputStream(String dirName, String fileNamePattern,
 			String[] fieldsInName, char separator, boolean prepend)
@@ -146,15 +146,18 @@ public class FileSetInputStream extends InputStream {
 		int ch;
 		if (doingTail) {
 			ch = readFromTail();
-			if(ch != -1)
+			if (ch != -1)
 				return ch;
 			doingTail = false;
 			currentLineLength = 0;
 		}
 
-		// shift the readahead into the current char and get the new readahead.
+		// shift the lookahead into the current char and get the new lookahead.
 		ch = lookahead;
-		lookahead = currentFile.read();
+		do {
+			lookahead = currentFile.read();
+			// we ignore \r, which breaks things on files created with MacOS9
+		} while (lookahead == '\r');
 		// if we met a line border we have to output the lead/tail
 		if (prepend) {
 			// prepending a non empty line...
@@ -186,7 +189,8 @@ public class FileSetInputStream extends InputStream {
 			while (currentFile.read() != '\n')
 				;
 			doingTail = prepend;
-			if (doingTail) pos = 1;
+			if (doingTail)
+				pos = 1;
 			lookahead = currentFile.read();
 			return read();
 		}
