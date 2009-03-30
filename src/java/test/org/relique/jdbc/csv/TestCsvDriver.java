@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.35 2009/02/09 14:59:05 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.36 2009/03/30 07:18:10 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1363,6 +1363,22 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The key is wrong", "3", results.getString("key"));
 		assertEquals("The value is wrong", "tre", results.getString("value"));
 		assertTrue(!results.next());
+	}
+	
+	public void testDuplicatedColumnNames() throws SQLException {
+		Properties props = new Properties();
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM duplicate_headers");
+		
+		assertTrue(results.next());
+		assertEquals("ID:1 is wrong", "1", results.getObject("ID"));
+		assertEquals("1:ID is wrong", "1", results.getObject(1));
+		assertEquals("2:ID is wrong", "2", results.getObject(2));
 	}
 
 }
