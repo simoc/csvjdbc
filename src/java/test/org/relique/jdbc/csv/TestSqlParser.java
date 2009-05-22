@@ -31,7 +31,7 @@ import org.relique.jdbc.csv.TokenMgrError;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.20 2009/03/16 09:59:18 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.21 2009/05/22 08:28:14 mfrasca Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -372,6 +372,20 @@ public class TestSqlParser extends TestCase {
 		assertEquals(true, parser.getWhereClause().isTrue(env));
 	}
 
+	public void testWhereEvaluatingIndistinguishedNegativeNumbers() throws Exception {
+		SqlParser parser = new SqlParser();
+		Map env = new HashMap();
+
+		parser.parse("SELECT * FROM test WHERE c=-1.0");
+		env.clear();
+		env.put("C", new Integer("-1"));
+		assertEquals(true, parser.getWhereClause().isTrue(env));
+		env.put("C", new Double("-1"));
+		assertEquals(true, parser.getWhereClause().isTrue(env));
+		env.put("C", new Float("-1"));
+		assertEquals(true, parser.getWhereClause().isTrue(env));
+	}
+
 	public void testParsingQueryEnvironmentEntries() throws Exception {
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("*"));
@@ -389,6 +403,9 @@ public class TestSqlParser extends TestCase {
 		cs = new ExpressionParser(new StringReader("123/2 A"));
 		cs.parseQueryEnvEntry();
 		assertEquals("A: / 123 2", cs.toString());
+		cs = new ExpressionParser(new StringReader("123/-2 A"));
+		cs.parseQueryEnvEntry();
+		assertEquals("A: / 123 -2", cs.toString());
 		cs = new ExpressionParser(new StringReader("'123' A"));
 		cs.parseQueryEnvEntry();
 		assertEquals("A: '123'", cs.toString());
