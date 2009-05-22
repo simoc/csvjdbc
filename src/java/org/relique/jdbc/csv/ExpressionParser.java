@@ -357,10 +357,11 @@ public class ExpressionParser implements ExpressionParserConstants {
   final public ParsedExpression queryEnvEntry() throws ParseException {
   Expression expression, alias, result;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case NUMBER:
+    case UNSIGNEDNUMBER:
     case NULL:
     case NAME:
     case STRING:
+    case MINUS:
     result = null;
       expression = binaryOperation();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -454,16 +455,17 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = logicalUnaryExpression();
     {if (true) return new NotExpression(arg);}
       break;
-    case 19:
-      jj_consume_token(19);
-      arg = logicalOrExpression();
+    case 20:
       jj_consume_token(20);
+      arg = logicalOrExpression();
+      jj_consume_token(21);
     {if (true) return arg;}
       break;
-    case NUMBER:
+    case UNSIGNEDNUMBER:
     case NULL:
     case NAME:
     case STRING:
+    case MINUS:
       arg = relationalExpression();
     {if (true) return arg;}
       break;
@@ -527,6 +529,9 @@ public class ExpressionParser implements ExpressionParserConstants {
     case ASTERISK:
       t = jj_consume_token(ASTERISK);
       break;
+    case MINUS:
+      t = jj_consume_token(MINUS);
+      break;
     default:
       jj_la1[7] = jj_gen;
       jj_consume_token(-1);
@@ -544,6 +549,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case ASTERISK:
+      case MINUS:
       case BINOP:
         ;
         break;
@@ -566,7 +572,8 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = columnName();
     {if (true) return arg;}
       break;
-    case NUMBER:
+    case UNSIGNEDNUMBER:
+    case MINUS:
       arg = numericConstant();
     {if (true) return arg;}
       break;
@@ -595,13 +602,24 @@ public class ExpressionParser implements ExpressionParserConstants {
 
   final public Expression numericConstant() throws ParseException {
   Token t;
-    t = jj_consume_token(NUMBER);
+  String sign;
+   sign="";
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case MINUS:
+      t = jj_consume_token(MINUS);
+             sign=t.image;
+      break;
+    default:
+      jj_la1[10] = jj_gen;
+      ;
+    }
+    t = jj_consume_token(UNSIGNEDNUMBER);
     Number value = null;
     try {
-      value = new Integer(t.image);
+      value = new Integer(sign+t.image);
     }
     catch (NumberFormatException e){
-      value = new Double(t.image);
+      value = new Double(sign+t.image);
     }
     {if (true) return new NumericConstant(value);}
     throw new Error("Missing return statement in function");
@@ -617,7 +635,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         ;
         break;
       default:
-        jj_la1[10] = jj_gen;
+        jj_la1[11] = jj_gen;
         break label_4;
       }
       right = stringConstantAtom();
@@ -643,13 +661,13 @@ public class ExpressionParser implements ExpressionParserConstants {
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[11];
+  final private int[] jj_la1 = new int[12];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x800,0x4800,0x2c050,0x100,0x80,0x8c250,0x13400,0x60000,0x60000,0xc050,0x8000,};
+      jj_la1_0 = new int[] {0x800,0x4800,0x6c050,0x100,0x80,0x14c250,0x13400,0xe0000,0xe0000,0x4c050,0x40000,0x8000,};
    }
 
   /** Constructor with InputStream. */
@@ -663,7 +681,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -677,7 +695,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -687,7 +705,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -697,7 +715,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -706,7 +724,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -715,7 +733,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -766,12 +784,12 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[21];
+    boolean[] la1tokens = new boolean[22];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 12; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -780,7 +798,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 21; i++) {
+    for (int i = 0; i < 22; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

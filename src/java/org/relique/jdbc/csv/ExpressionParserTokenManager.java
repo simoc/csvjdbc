@@ -94,11 +94,13 @@ private int jjMoveStringLiteralDfa0_0()
    switch(curChar)
    {
       case 40:
-         return jjStopAtPos(0, 19);
-      case 41:
          return jjStopAtPos(0, 20);
+      case 41:
+         return jjStopAtPos(0, 21);
       case 42:
          return jjStopAtPos(0, 17);
+      case 45:
+         return jjStopAtPos(0, 18);
       case 65:
       case 97:
          return jjMoveStringLiteralDfa1_0(0x880L);
@@ -315,15 +317,15 @@ private int jjMoveNfa_0(int startState, int curPos)
                         kind = 14;
                      jjCheckNAdd(2);
                   }
-                  else if ((0xa80000000000L & l) != 0L)
-                  {
-                     if (kind > 18)
-                        kind = 18;
-                  }
                   else if ((0x7000000000000000L & l) != 0L)
                   {
                      if (kind > 16)
                         kind = 16;
+                  }
+                  else if ((0x880000000000L & l) != 0L)
+                  {
+                     if (kind > 19)
+                        kind = 19;
                   }
                   else if (curChar == 33)
                      jjCheckNAdd(7);
@@ -385,8 +387,8 @@ private int jjMoveNfa_0(int startState, int curPos)
                      jjCheckNAdd(7);
                   break;
                case 10:
-                  if ((0xa80000000000L & l) != 0L && kind > 18)
-                     kind = 18;
+                  if ((0x880000000000L & l) != 0L && kind > 19)
+                     kind = 19;
                   break;
                case 11:
                   if (curChar == 60)
@@ -492,14 +494,14 @@ static final int[] jjnextStates = {
 /** Token literal values. */
 public static final String[] jjstrLiteralImages = {
 "", null, null, null, null, null, null, null, null, null, null, null, null, 
-null, null, null, null, "\52", null, "\50", "\51", };
+null, null, null, null, "\52", "\55", null, "\50", "\51", };
 
 /** Lexer state names. */
 public static final String[] lexStateNames = {
    "DEFAULT", 
 };
 static final long[] jjtoToken = {
-   0x1fffd1L, 
+   0x3fffd1L, 
 };
 static final long[] jjtoSkip = {
    0xeL, 

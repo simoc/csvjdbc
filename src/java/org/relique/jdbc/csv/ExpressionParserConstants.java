@@ -11,7 +11,7 @@ public interface ExpressionParserConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int NUMBER = 4;
+  int UNSIGNEDNUMBER = 4;
   /** RegularExpression Id. */
   int DIGITS = 5;
   /** RegularExpression Id. */
@@ -39,7 +39,9 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int ASTERISK = 17;
   /** RegularExpression Id. */
-  int BINOP = 18;
+  int MINUS = 18;
+  /** RegularExpression Id. */
+  int BINOP = 19;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -50,7 +52,7 @@ public interface ExpressionParserConstants {
     "\" \"",
     "\"\\t\"",
     "\"\\n\"",
-    "<NUMBER>",
+    "<UNSIGNEDNUMBER>",
     "<DIGITS>",
     "\"NULL\"",
     "\"AND\"",
@@ -64,6 +66,7 @@ public interface ExpressionParserConstants {
     "<STRING>",
     "<RELOP>",
     "\"*\"",
+    "\"-\"",
     "<BINOP>",
     "\"(\"",
     "\")\"",
