@@ -23,11 +23,11 @@ import junit.framework.*;
 /**This class is used to test the CsvJdbc driver.
 *
 * @author Jonathan Ackerman
-* @version $Id: RunTests.java,v 1.7 2008/11/07 15:36:42 mfrasca Exp $
+* @version $Id: RunTests.java,v 1.8 2009/06/18 14:14:04 mfrasca Exp $
 */
 public class RunTests
 {
-  public static String DEFAULT_FILEPATH="C:\\Local\\csvjdbc.cvs.sourceforge.net\\csvjdbc\\src\\testdata";
+  public static String DEFAULT_FILEPATH="/home/mario/workspace/csvjdbc/src/testdata";
   
   public static Test suite()
   {

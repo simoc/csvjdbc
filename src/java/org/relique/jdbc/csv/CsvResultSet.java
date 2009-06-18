@@ -57,7 +57,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.37 2009/02/09 14:59:05 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.38 2009/06/18 14:14:01 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -274,6 +274,10 @@ public class CsvResultSet implements ResultSet {
 
 	public Time parseTime(String str) {
 		try {
+			str = str.trim();
+			while (str.length() < timeFormat.length()){
+				str = "0" + str;
+			}
 			String hours = "00";
 			int pos = timeFormat.indexOf('H'); 
 			if (pos != -1){

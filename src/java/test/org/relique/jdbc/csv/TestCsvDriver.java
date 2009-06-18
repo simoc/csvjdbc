@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.37 2009/03/30 07:26:18 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.38 2009/06/18 14:14:04 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1037,6 +1037,71 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(!results.next());
 	}
 	
+	public void testReadingTime() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Date,Time");
+		props.put("timeFormat", "HHmm");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Object expect;
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT id, timeoffset FROM sample5");
+
+		assertTrue(results.next());
+		expect = java.sql.Time.valueOf("12:30:00");
+		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+
+		assertTrue(results.next());
+		expect = java.sql.Time.valueOf("12:35:00");
+		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+
+		assertTrue(results.next());
+		expect = java.sql.Time.valueOf("12:40:00");
+		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+
+		assertTrue(results.next());
+		expect = java.sql.Time.valueOf("12:45:00");
+		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+
+		assertTrue(results.next());
+		expect = java.sql.Time.valueOf("01:00:00");
+		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+
+		assertTrue(results.next());
+		expect = java.sql.Time.valueOf("01:00:00");
+		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+
+		assertTrue(results.next());
+		expect = java.sql.Time.valueOf("01:00:00");
+		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+
+		assertTrue(results.next());
+		expect = java.sql.Time.valueOf("00:00:00");
+		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+
+		assertTrue(results.next());
+		expect = java.sql.Time.valueOf("00:10:00");
+		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+
+		assertTrue(results.next());
+		expect = java.sql.Time.valueOf("01:23:00");
+		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+
+		assertFalse(results.next());
+	}
+
 	public void testAddingDateToTime() throws SQLException {
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date,Time");
@@ -1125,6 +1190,16 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("03", results.getObject(1));
 		assertTrue(results.next());
 		assertEquals("04", results.getObject(1));
+		assertTrue(results.next());
+		assertEquals("05", results.getObject(1));
+		assertTrue(results.next());
+		assertEquals("06", results.getObject(1));
+		assertTrue(results.next());
+		assertEquals("07", results.getObject(1));
+		assertTrue(results.next());
+		assertEquals("08", results.getObject(1));
+		assertTrue(results.next());
+		assertEquals("09", results.getObject(1));
 		assertFalse(results.next());
 	}
 	
