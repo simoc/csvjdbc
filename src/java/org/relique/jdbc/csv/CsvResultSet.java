@@ -18,13 +18,10 @@
  */
 package org.relique.jdbc.csv;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
@@ -32,14 +29,11 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.DatabaseMetaData;
 import java.sql.Date;
-import java.sql.NClob;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -57,7 +51,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.38 2009/06/18 14:14:01 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.39 2009/08/13 09:31:04 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -105,6 +99,8 @@ public class CsvResultSet implements ResultSet {
 
 	private String dateFormat;
 
+	private StringConverter converter;
+
 	/**
      * Constructor for the CsvResultSet object
      *
@@ -147,6 +143,7 @@ public class CsvResultSet implements ResultSet {
         timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
         timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
         dateFormat = ((CsvConnection)statement.getConnection()).getDateFormat();
+        this.converter = new StringConverter(dateFormat, timeFormat);
         if (whereClause!= null)
         	this.usedColumns = whereClause.usedColumns();
         else
@@ -176,185 +173,6 @@ public class CsvResultSet implements ResultSet {
         }
     }
 
-	public String parseString(String str) {
-		return str;
-	}
-
-	public boolean parseBoolean(String str) {
-		return Boolean.valueOf(str).booleanValue();
-	}
-
-	public byte parseByte(String str) {
-		try {
-			return (str == null) ? 0 : Byte.parseByte(str);
-		} catch (RuntimeException e) {
-			return 0;
-		}
-	}
-
-	public short parseShort(String str) {
-		try {
-			return (str == null) ? 0 : Short.parseShort(str);
-		} catch (RuntimeException e) {
-			return 0;
-		}
-	}
-
-	public int parseInt(String str) {
-		try {
-			return (str == null) ? 0 : Integer.parseInt(str);
-		} catch (RuntimeException e) {
-			return 0;
-		}
-	}
-
-	public long parseLong(String str) {
-		try {
-			return (str == null) ? 0 : Long.parseLong(str);
-		} catch (RuntimeException e) {
-			return 0;
-		}
-	}
-
-	public float parseFloat(String str) {
-		try {
-			return (str == null) ? 0 : Float.parseFloat(str);
-		} catch (RuntimeException e) {
-			return 0;
-		}
-	}
-
-	public double parseDouble(String str) {
-		try {
-			return (str == null) ? 0 : Double.parseDouble(str);
-		} catch (RuntimeException e) {
-			return 0;
-		}
-	}
-
-	public byte[] parseBytes(String str) {
-		try {
-			return (str == null) ? null : str.getBytes();
-		} catch (RuntimeException e) {
-			return null;
-		}
-	}
-
-	public BigDecimal parseBigDecimal(String str) {
-		try {
-			return (str == null) ? null : new BigDecimal(str);
-		} catch (RuntimeException e) {
-			return null;
-		}
-	}
-
-	public Date parseDate(String str) {
-		try {
-			String year = "1970";
-			int pos = dateFormat.indexOf('y'); 
-			if (pos != -1){
-				year = str.substring(pos, pos+4);
-			}
-			String month = "01";
-			pos = dateFormat.indexOf('M'); 
-			if (pos != -1){
-				month = str.substring(pos, pos+2);
-			}
-			String day_of_month = "01";
-			pos = dateFormat.indexOf('d'); 
-			if (pos != -1){
-				day_of_month = str.substring(pos, pos+2);
-			}
-			Date sqlResult = Date.valueOf(year + "-" + month + "-" + day_of_month);
-			return sqlResult;
-		} catch (RuntimeException e) {
-			return null;
-		}
-	}
-
-	public Time parseTime(String str) {
-		try {
-			str = str.trim();
-			while (str.length() < timeFormat.length()){
-				str = "0" + str;
-			}
-			String hours = "00";
-			int pos = timeFormat.indexOf('H'); 
-			if (pos != -1){
-				hours = str.substring(pos, pos+2);
-			}
-			String minutes = "00";
-			pos = timeFormat.indexOf('m'); 
-			if (pos != -1){
-				minutes = str.substring(pos, pos+2);
-			}
-			String seconds = "00";
-			pos = timeFormat.indexOf('s'); 
-			if (pos != -1){
-				seconds = str.substring(pos, pos+2);
-			}
-			Time sqlResult = Time.valueOf(hours+":"+minutes+":"+seconds);
-			return sqlResult;
-		} catch (RuntimeException e) {
-			return null;
-		}
-	}
-
-	public Timestamp parseTimestamp(String str) {
-		try {
-			return (str == null) ? null : Timestamp.valueOf(str);
-		} catch (RuntimeException e) {
-			return null;
-		}
-	}
-
-	public InputStream parseAsciiStream(String str) {
-		return (str == null) ? null : new ByteArrayInputStream(str.getBytes());
-	}
-
-	static protected Map converterMethodForClass = new HashMap(){
-		private static final long serialVersionUID = -3037117163532338893L;
-		Class[] argTypes = new Class[1];
-		Class containerClass = null;
-		{
-			try {
-				argTypes[0] = Class.forName("java.lang.String");
-				containerClass = Class.forName("org.relique.jdbc.csv.CsvResultSet");
-				put("String", containerClass.getMethod("parseString", argTypes));
-				put("Boolean", containerClass.getMethod("parseBoolean", argTypes));
-				put("Byte", containerClass.getMethod("parseByte", argTypes));
-				put("Short", containerClass.getMethod("parseShort", argTypes));
-				put("Int", containerClass.getMethod("parseInt", argTypes));
-				put("Long", containerClass.getMethod("parseLong", argTypes));
-				put("Float", containerClass.getMethod("parseFloat", argTypes));
-				put("Double", containerClass.getMethod("parseDouble", argTypes));
-				put("BigDecimal", containerClass.getMethod("parseBigDecimal", argTypes));
-				put("Date", containerClass.getMethod("parseDate", argTypes));
-				put("Time", containerClass.getMethod("parseTime", argTypes));
-				put("Timestamp", containerClass.getMethod("parseTimestamp", argTypes));
-				put("AsciiStream", containerClass.getMethod("parseAsciiStream", argTypes));
-				/*
-				 * sooner or later, maybe...
-				 * put("UnicodeStream", containerClass.getMethod("parseUnicodeStream", argTypes));
-				 * put("BinaryStream", containerClass.getMethod("parseBinaryStream", argTypes));
-				 * put("Blob", containerClass.getMethod("parseBlob", argTypes));
-				 * put("Clob", containerClass.getMethod("parseClob", argTypes));
-				 * put("Array", containerClass.getMethod("parseArray", argTypes));
-				 * put("URL", containerClass.getMethod("parseURL", argTypes));
-				 * put("NCharacterStream", containerClass.getMethod("parseNCharacterStream", argTypes));
-				 * put("NClob", containerClass.getMethod("parseNClob", argTypes));
-				 * put("NString", containerClass.getMethod("parseNString", argTypes));
-				 * put("RowId", containerClass.getMethod("parseRowId", argTypes));
-				 * put("SQLXML", containerClass.getMethod("parseSQLXML", argTypes));
-				 */
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			}
-		}
-	};
-	
     /**
      * Moves the cursor down one row from its current position.
      * A <code>ResultSet</code> cursor is initially positioned
@@ -399,21 +217,7 @@ public class CsvResultSet implements ResultSet {
     	}
 		for (int i = 0; i<reader.columnNames.length; i++){
 			String key = reader.columnNames[i].toUpperCase();
-			Object value = reader.fieldValues[i];
-	    	String typeName = this.typeNames[i];
-	    	if (typeName != null) {
-	    		Object[] args = new Object[1];
-	    		args[0] = value;
-				try {
-					value = ((Method)(converterMethodForClass.get(typeName))).invoke(this, args);
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
-	    	}
+			Object value = converter.convert(typeNames[i], reader.fieldValues[i]);
 			recordEnvironment.put(key, value);
 		}
 		for (int i = 0; i < queryEnvironment.size(); i++){
@@ -432,29 +236,30 @@ public class CsvResultSet implements ResultSet {
 	}
 	private void inferTypeNames() {
 		mustInferTypeNames = false;
+		StringConverter converter = new StringConverter(dateFormat, timeFormat);
     	for (int i=0; i< this.typeNames.length; i++){
     		try {
     			String typeName = "String";
 				String value = reader.getField(i);
 				if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
 					typeName = "Boolean";
-				} else if (value.equals(("" + parseInt(value)))) {
+				} else if (value.equals(("" + converter.parseInt(value)))) {
 					typeName = "Int";
-				} else if (value.equals(("" + parseLong(value)))) {
+				} else if (value.equals(("" + converter.parseLong(value)))) {
 					typeName = "Long";
-				} else if (value.equals(("" + parseDouble(value)))) {
+				} else if (value.equals(("" + converter.parseDouble(value)))) {
 					typeName = "Double";
-				} else if (value.equals(("" + parseBytes(value)))) {
+				} else if (value.equals(("" + converter.parseBytes(value)))) {
 					typeName = "Bytes";
-				} else if (value.equals(("" + parseBigDecimal(value)))) {
+				} else if (value.equals(("" + converter.parseBigDecimal(value)))) {
 					typeName = "BigDecimal";
-				} else if (value.equals(("" + parseDate(value) + "          ").substring(0, 10))) {
+				} else if (value.equals(("" + converter.parseDate(value) + "          ").substring(0, 10))) {
 					typeName = "Date";
-				} else if (value.equals(("" + parseTime(value) + "        ").substring(0, 8))) {
+				} else if (value.equals(("" + converter.parseTime(value) + "        ").substring(0, 8))) {
 					typeName = "Time";
-				} else if (value.equals(("" + parseTimestamp(value) + "                   ").substring(0, 19))) {
+				} else if (value.equals(("" + converter.parseTimestamp(value) + "                   ").substring(0, 19))) {
 					typeName = "Timestamp";
-				} else if (value.equals(("" + parseAsciiStream(value)))) {
+				} else if (value.equals(("" + converter.parseAsciiStream(value)))) {
 					typeName = "AsciiStream";
 				}
 				typeNames[i] = typeName;
@@ -542,7 +347,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public boolean getBoolean(int columnIndex) throws SQLException {
-        return parseBoolean(getString(columnIndex));
+        return converter.parseBoolean(getString(columnIndex));
     }
 
     /**
@@ -556,7 +361,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public byte getByte(int columnIndex) throws SQLException {
-        return parseByte(getString(columnIndex));
+        return converter.parseByte(getString(columnIndex));
     }
 
     /**
@@ -570,7 +375,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public short getShort(int columnIndex) throws SQLException {
-        return parseShort(getString(columnIndex));
+        return converter.parseShort(getString(columnIndex));
     }
 
     /**
@@ -584,7 +389,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public int getInt(int columnIndex) throws SQLException {
-        return parseInt(getString(columnIndex));
+        return converter.parseInt(getString(columnIndex));
     }
 
     /**
@@ -598,7 +403,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public long getLong(int columnIndex) throws SQLException {
-        return parseLong(getString(columnIndex));
+        return converter.parseLong(getString(columnIndex));
     }
 
     /**
@@ -612,7 +417,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public float getFloat(int columnIndex) throws SQLException {
-        return parseFloat(getString(columnIndex));
+        return converter.parseFloat(getString(columnIndex));
     }
 
     /**
@@ -626,7 +431,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public double getDouble(int columnIndex) throws SQLException {
-        return parseDouble(getString(columnIndex));
+        return converter.parseDouble(getString(columnIndex));
     }
 
     /**
@@ -659,7 +464,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public byte[] getBytes(int columnIndex) throws SQLException {
-        return parseBytes(getString(columnIndex));
+        return converter.parseBytes(getString(columnIndex));
     }
 
     /**
@@ -673,7 +478,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Date getDate(int columnIndex) throws SQLException  {
-        return parseDate(getString(columnIndex));
+        return converter.parseDate(getString(columnIndex));
     }
 
     /**
@@ -687,7 +492,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Time getTime(int columnIndex) throws SQLException {
-        return parseTime(getString(columnIndex));
+        return converter.parseTime(getString(columnIndex));
     }
 
     /**
@@ -701,7 +506,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Timestamp getTimestamp(int columnIndex) throws SQLException {
-        return parseTimestamp(getString(columnIndex));
+        return converter.parseTimestamp(getString(columnIndex));
     }
 
     /**
@@ -727,7 +532,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public InputStream getAsciiStream(int columnIndex) throws SQLException {
-        return parseAsciiStream(getString(columnIndex));
+        return converter.parseAsciiStream(getString(columnIndex));
     }
 
     /**
@@ -2854,35 +2659,11 @@ public class CsvResultSet implements ResultSet {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	public NClob getNClob(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public NClob getNClob(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	public String getNString(int columnIndex) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	public String getNString(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public RowId getRowId(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public RowId getRowId(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public SQLXML getSQLXML(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public SQLXML getSQLXML(String columnLabel) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -3009,14 +2790,6 @@ public class CsvResultSet implements ResultSet {
 		// TODO Auto-generated method stub
 		
 	}
-	public void updateNClob(int columnIndex, NClob clob) throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-	public void updateNClob(String columnLabel, NClob clob) throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
 	public void updateNClob(int columnIndex, Reader reader) throws SQLException {
 		// TODO Auto-generated method stub
 		
@@ -3042,24 +2815,6 @@ public class CsvResultSet implements ResultSet {
 		
 	}
 	public void updateNString(String columnLabel, String string)
-			throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-	public void updateRowId(int columnIndex, RowId x) throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-	public void updateRowId(String columnLabel, RowId x) throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-	public void updateSQLXML(int columnIndex, SQLXML xmlObject)
-			throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-	public void updateSQLXML(String columnLabel, SQLXML xmlObject)
 			throws SQLException {
 		// TODO Auto-generated method stub
 		

@@ -23,6 +23,8 @@ import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Vector;
 
+import org.relique.io.CryptoFilter;
+
 /**
  * This class an abstract class that contains the common functionality of the
  * Scrollable and Non Scrollable Reader
@@ -36,7 +38,7 @@ import java.util.Vector;
  * @author Christoph Langer
  * @author Mario Frasca
  * @created 01 March 2004
- * @version $Id: CSVReaderAdapter.java,v 1.17 2009/02/06 13:07:13 mfrasca Exp $
+ * @version $Id: CSVReaderAdapter.java,v 1.18 2009/08/13 09:31:04 mfrasca Exp $
  */
 
 public abstract class CSVReaderAdapter {
@@ -55,6 +57,8 @@ public abstract class CSVReaderAdapter {
 	protected char commentChar = 0;
 
 	private boolean ignoreUnparseableLines;
+
+	protected CryptoFilter filter;
 
 	public CSVReaderAdapter() {
 	}
@@ -92,7 +96,8 @@ public abstract class CSVReaderAdapter {
 
 	public CSVReaderAdapter(BufferedReader in, char separator,
 			boolean suppressHeaders, char quoteChar, char commentChar,
-			String headerLine, String extension, boolean trimHeaders, int skipLeadingLines, boolean ignoreUnparseableLines)
+			String headerLine, String extension, boolean trimHeaders, 
+			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter)
 			throws UnsupportedEncodingException, FileNotFoundException,
 			IOException, SQLException {
 		this.separator = separator;
@@ -104,6 +109,7 @@ public abstract class CSVReaderAdapter {
 		this.trimHeaders = trimHeaders;
 		this.input = in;
 		this.ignoreUnparseableLines = ignoreUnparseableLines;
+		this.filter = filter;
 		
 		for (int i=0; i<skipLeadingLines; i++){
 			in.readLine();

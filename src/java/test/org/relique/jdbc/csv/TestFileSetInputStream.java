@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashSet;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -31,40 +33,51 @@ public class TestFileSetInputStream extends TestCase {
 	}
 
 	public void testGlueAsTrailing() throws IOException {
-		String lineRef, lineTest;
 		BufferedReader inputRef = new BufferedReader(new InputStreamReader(
 				new FileInputStream(filePath + "test-glued-trailing.txt")));
 
 		BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ',', false)));
-		int i = 0;
+								"location", "file_date" }, ',', false, null)));
+
+		Set refSet = new HashSet();
+		Set testSet = new HashSet();
+		inputRef.readLine();
+		inputTest.readLine();
+		String lineRef, lineTest;
 		do {
-			i++;
 			lineRef = inputRef.readLine();
 			lineTest = inputTest.readLine();
-			assertEquals("on line " + i, lineRef, lineTest);
-		} while (lineRef != null);
+			refSet.add(lineRef);
+			testSet.add(lineTest);
+		} while (lineRef != null && lineTest != null);
+		assertTrue("refSet contains testSet", refSet.containsAll(testSet));
+		assertTrue("testSet contains refSet", testSet.containsAll(refSet));
 	}
 
 	public void testGlueAsLeading() throws IOException {
-		String lineRef, lineTest;
 		BufferedReader inputRef = new BufferedReader(new InputStreamReader(
 				new FileInputStream(filePath + "test-glued-leading.txt")));
 
 		BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ',', true)));
+								"location", "file_date" }, ',', true, null)));
 
-		int i = 0;
+		Set refSet = new HashSet();
+		Set testSet = new HashSet();
+		inputRef.readLine();
+		inputTest.readLine();
+		String lineRef, lineTest;
 		do {
-			i++;
 			lineRef = inputRef.readLine();
 			lineTest = inputTest.readLine();
-			assertEquals("on line " + i, lineRef, lineTest);
-		} while (lineRef != null);
+			refSet.add(lineRef);
+			testSet.add(lineTest);
+		} while (lineRef != null && lineTest != null);
+		assertTrue("refSet contains testSet", refSet.containsAll(testSet));
+		assertTrue("testSet contains refSet", testSet.containsAll(refSet));
 	}
 
 }

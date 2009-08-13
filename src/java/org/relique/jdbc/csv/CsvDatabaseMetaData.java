@@ -23,7 +23,7 @@ import java.sql.*;
  *
  * @author     Jonathan Ackerman
  * @created    25 November 2001
- * @version    $Id: CsvDatabaseMetaData.java,v 1.4 2008/11/07 11:29:29 mfrasca Exp $
+ * @version    $Id: CsvDatabaseMetaData.java,v 1.5 2009/08/13 09:31:04 mfrasca Exp $
  */
 public class CsvDatabaseMetaData implements DatabaseMetaData
 {
@@ -889,11 +889,6 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 
 	public ResultSet getFunctions(String catalog, String schemaPattern,
 			String functionNamePattern) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public RowIdLifetime getRowIdLifetime() throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -18,18 +18,18 @@
  */
 package org.relique.jdbc.csv;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.NClob;
 import java.sql.PreparedStatement;
-import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
@@ -37,6 +37,11 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+
+import org.relique.io.CryptoFilter;
 
 /**
  * This class implements the Connection interface for the CsvJdbc driver.
@@ -46,7 +51,7 @@ import java.util.Vector;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.26 2009/02/09 07:59:58 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.27 2009/08/13 09:31:04 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -93,15 +98,13 @@ public class CsvConnection implements Connection {
 	private String timeFormat;
 	private Character commentChar;
 
-	private boolean scrambled;
-
-	private String scramblingString;
-
 	private int skipLeadingLines = 0;
 
 	private boolean ignoreUnparseableLines;
 
 	private boolean fileTailPrepend;
+
+	private CryptoFilter decryptingFilter;
 
 	/**
      * Creates a new CsvConnection that takes the supplied path
@@ -120,8 +123,9 @@ public class CsvConnection implements Connection {
      * Creates a new CsvConnection that takes the supplied path and properties
      * @param path directory where the CSV files are located
      * @param info set of properties containing custom options
+     * @throws SQLException 
      */
-    protected CsvConnection(String path, Properties info) {
+    protected CsvConnection(String path, Properties info) throws SQLException {
         this(path);
         // check for properties
         if(info != null) {
@@ -165,6 +169,51 @@ public class CsvConnection implements Connection {
 						CsvDriver.FILE_TAIL_PREPEND,
 						CsvDriver.DEFAULT_FILE_TAIL_PREPEND)));
             }
+            // is the stream to be decrypted? ()
+            // per default: no, it's unencrypted and will not be decrypted
+            decryptingFilter = null;
+			if (info.getProperty(CsvDriver.CRYPTO_FILTER_CLASS_NAME) != null) {
+				String className = info
+						.getProperty(CsvDriver.CRYPTO_FILTER_CLASS_NAME);
+				try{
+					Class encrypterClass = Class.forName(className);
+					String[] parameterTypes = info.getProperty(
+							"cryptoFilterParameterTypes", "String")
+							.split(",");
+					String[] parameterStrings = info.getProperty(
+							"cryptoFilterParameters", "").split(",");
+					StringConverter converter = new StringConverter("", "");
+					Class[] parameterClasses = new Class[parameterStrings.length];
+					Object[] parameterValues = new Object[parameterStrings.length];
+					for (int i = 0; i < parameterStrings.length; i++) {
+						parameterClasses[i] = converter
+								.forSQLName(parameterTypes[i]);
+						parameterValues[i] = converter.convert(
+								parameterTypes[i], parameterStrings[i]);
+					}
+					Constructor constructor = encrypterClass
+							.getConstructor(parameterClasses);
+					decryptingFilter = (CryptoFilter) constructor
+							.newInstance(parameterValues);
+				// ignore all possible exceptions: just leave the stream
+				// undecrypted.
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+				if(decryptingFilter==null){
+					throw new SQLException("could not initialize CryptoFilter");
+				}
+			}
             setTimestampFormat(info.getProperty(CsvDriver.TIMESTAMP_FORMAT, CsvDriver.DEFAULT_TIMESTAMP_FORMAT));
             setDateFormat(info.getProperty(CsvDriver.DATE_FORMAT, CsvDriver.DEFAULT_DATE_FORMAT));
             setTimeFormat(info.getProperty(CsvDriver.TIME_FORMAT, CsvDriver.DEFAULT_TIME_FORMAT));
@@ -173,7 +222,6 @@ public class CsvConnection implements Connection {
             setIgnoreUnparseableLines(Boolean.parseBoolean(info.getProperty(
 					CsvDriver.IGNORE_UNPARSEABLE_LINES,
 					CsvDriver.DEFAULT_IGNORE_UNPARSEABLE_LINES)));
-            setScramblingString(info.getProperty(CsvDriver.SCRAMBLING_STRING));
         }
     }
 
@@ -867,17 +915,7 @@ public class CsvConnection implements Connection {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	public NClob createNClob() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public SQLXML createSQLXML() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	public Struct createStruct(String typeName, Object[] attributes)
 			throws SQLException {
 		// TODO Auto-generated method stub
@@ -897,18 +935,6 @@ public class CsvConnection implements Connection {
 	public boolean isValid(int timeout) throws SQLException {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	public void setClientInfo(Properties properties)
-			throws SQLClientInfoException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setClientInfo(String name, String value)
-			throws SQLClientInfoException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public boolean isWrapperFor(Class arg0) throws SQLException {
@@ -985,26 +1011,6 @@ public class CsvConnection implements Connection {
 		return commentChar.charValue();
 	}
 
-	public boolean isScrambled() {
-		return this.scrambled;
-	}
-
-    /**
-	 * @param scramblingString the scramblingString to set
-	 */
-	public void setScramblingString(String scramblingString) {
-		this.scrambled = (scramblingString != null);
-		this.scramblingString = scramblingString;
-	}
-
-	/**
-	 * @return the scramblingString
-	 */
-	public String getScramblingString() {
-		if (!scrambled) return null;
-		return scramblingString;
-	}
-
 	private void setSkipLeadingLines(String property) {
 		try{
 			skipLeadingLines = Integer.parseInt(property);
@@ -1044,6 +1050,10 @@ public class CsvConnection implements Connection {
 
 	public boolean isFileTailPrepend() {
 		return fileTailPrepend;
+	}
+
+	public CryptoFilter getDecryptingCodec() {
+		return this.decryptingFilter;
 	}
 
 }

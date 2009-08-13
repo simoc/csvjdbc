@@ -31,6 +31,11 @@ import java.sql.Statement;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.relique.io.CryptoFilter;
+import org.relique.io.EncryptedFileInputStream;
+
+import nl.nelen_schuurmans.io.ScrambledInputStream;
+
 /**
  * This class implements the Statement interface for the CsvJdbc driver.
  * 
@@ -41,7 +46,7 @@ import java.util.Vector;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.27 2009/02/09 07:59:58 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.28 2009/08/13 09:31:04 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -320,6 +325,7 @@ public class CsvStatement implements Statement {
 		try {
 			parser.parse(sql);
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new SQLException("Syntax Error. " + e.getMessage());
 		}
 
@@ -350,6 +356,7 @@ public class CsvStatement implements Statement {
 		CSVReaderAdapter reader = null;
 		try {
 			InputStream in;
+			CryptoFilter filter = connection.getDecryptingCodec();
 			if (connection.isIndexedFiles()) {
 				String fileNamePattern = parser.getTableName()
 						+ connection.getFileNamePattern()
@@ -357,9 +364,12 @@ public class CsvStatement implements Statement {
 				String[] nameParts = connection.getNameParts();
 				String dirName = connection.getPath();
 				in = new FileSetInputStream(dirName, fileNamePattern,
-						nameParts, connection.getSeparator(), connection.isFileTailPrepend());
-			} else {
+						nameParts, connection.getSeparator(), connection.isFileTailPrepend(),
+						filter);
+			} else if (filter==null) {
 				in = new FileInputStream(fileName);
+			} else{
+				in = new EncryptedFileInputStream(fileName, filter);
 			}
 			BufferedReader input;
 			if (connection.getCharset() != null) {
@@ -374,19 +384,22 @@ public class CsvStatement implements Statement {
 						connection.getQuotechar(), connection.getHeaderline(),
 						connection.getExtension(), connection.getTrimHeaders(),
 						parser.environment, parser.getWhereClause(), 
-						connection.getSkipLeadingLines(), connection.isIgnoreUnparseableLines());
+						connection.getSkipLeadingLines(), connection.isIgnoreUnparseableLines(),
+						connection.getDecryptingCodec());
 			} else {
 				reader = new CsvReader(input, connection.getSeparator(),
 						connection.isSuppressHeaders(), connection
 								.getQuotechar(), connection.getCommentChar(),
 						connection.getHeaderline(), connection.getExtension(),
 						connection.getTrimHeaders(), connection.getSkipLeadingLines(),
-						connection.isIgnoreUnparseableLines());
+						connection.isIgnoreUnparseableLines(),
+						connection.getDecryptingCodec());
 			}
 		} catch (IOException e) {
 			throw new SQLException("Error reading data file. Message was: " + e);
 		} catch (Exception e) {
-			throw new SQLException(e);
+			e.printStackTrace();
+			throw new SQLException(""+e);
 		}
 
 		CsvResultSet resultSet = null;

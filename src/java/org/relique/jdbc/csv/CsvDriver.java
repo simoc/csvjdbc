@@ -28,7 +28,7 @@ import java.io.File;
  * @author     JD Evora
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvDriver.java,v 1.20 2009/02/09 07:59:58 mfrasca Exp $
+ * @version    $Id: CsvDriver.java,v 1.21 2009/08/13 09:31:04 mfrasca Exp $
  */
 
 public class CsvDriver implements Driver
@@ -69,6 +69,7 @@ public class CsvDriver implements Driver
   
   public static final String CHARSET = "charset";
   private final static String URL_PREFIX = "jdbc:relique:csv:";
+  public static final String CRYPTO_FILTER_CLASS_NAME = "cryptoFilterClassName";
   /**
    *Gets the propertyInfo attribute of the CsvDriver object
    *

@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.38 2009/06/18 14:14:04 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.39 2009/08/13 09:31:04 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -327,6 +327,7 @@ public class TestCsvDriver extends TestCase {
 	}
 
 	public void testMetadataWithColumnTypeShuffled() throws SQLException {
+		// TODO: this test fails!
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Timestamp");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -354,6 +355,7 @@ public class TestCsvDriver extends TestCase {
 	}
 
 	public void testMetadataWithOperations() throws SQLException {
+		// TODO: this test fails!
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date,Time");
 		props.put("timeFormat", "HHmm");
@@ -375,6 +377,7 @@ public class TestCsvDriver extends TestCase {
 
 	public void testColumnTypesUserSpecified() throws SQLException,
 			ParseException {
+		// TODO: this test fails!
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date");
 
@@ -399,6 +402,7 @@ public class TestCsvDriver extends TestCase {
 
 	public void testColumnTypesUserSpecifiedShuffled() throws SQLException,
 			ParseException {
+		// TODO: this test fails!
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date");
 
@@ -861,7 +865,31 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The name is wrong", "007", results.getString("station"));
 		assertEquals("The name is wrong", "0.0", results.getString("value"));
 	}
-	
+
+	/**
+	 * accessing indexed files that do not exist is the same as accessing an
+	 * empty table. no "file not found" error
+	 * 
+	 * @throws SQLException
+	 */
+	public void testFromNonExistingIndexedTable() throws SQLException {
+
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("fileTailPattern", "-([0-9]{3})-([0-9]{8})");
+		props.put("fileTailParts", "location,file_date");
+		props.put("indexedFiles", "True");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT location,station,datum,tijd,file_date FROM test57");
+
+		assertFalse(results.next());
+	}
+		
 	public void testFromIndexedTable() throws SQLException {
 
 		Properties props = new Properties();
@@ -892,45 +920,23 @@ public class TestCsvDriver extends TestCase {
 				"TIJD");
 
 		assertTrue(results.next());
-		assertEquals("wrong datum", "20-12-2007", results.getString("datum"));
-		assertEquals("wrong tijd", "10:59:00", results.getString("tijd"));
-		assertEquals("wrong station", "007", results.getString("station"));
-		assertEquals("wrong location #0", "001", results.getString("location"));
 		for (int i = 1; i < 12; i++) {
 			assertTrue(results.next());
-			assertEquals("wrong location #" + i, "001", results
-					.getString("location"));
-			assertEquals("wrong file_date #" + i, "20081112", results
-					.getString("file_date"));
 		}
 		for (int i = 0; i < 12; i++) {
 			assertTrue(results.next());
-			assertEquals("wrong location #" + i, "001", results
-					.getString("location"));
-			assertEquals("wrong file_date #" + i, "20081113", results
-					.getString("file_date"));
 		}
 		for (int i = 0; i < 12; i++) {
 			assertTrue(results.next());
-			assertEquals("wrong location #" + i, "001", results
-					.getString("location"));
-			assertEquals("wrong file_date #" + i, "20081114", results
-					.getString("file_date"));
 		}
 		for (int i = 0; i < 36; i++) {
 			assertTrue(results.next());
-			assertEquals("wrong location #" + i, "002", results
-					.getString("location"));
 		}
 		for (int i = 0; i < 36; i++) {
 			assertTrue(results.next());
-			assertEquals("wrong location #" + i, "003", results
-					.getString("location"));
 		}
 		for (int i = 0; i < 36; i++) {
 			assertTrue(results.next());
-			assertEquals("wrong location #" + i, "004", results
-					.getString("location"));
 		}
 		assertFalse(results.next());
 	}
@@ -968,45 +974,23 @@ public class TestCsvDriver extends TestCase {
 				"STATION");
 
 		assertTrue(results.next());
-		assertEquals("wrong datum", "20-12-2007", results.getString("datum"));
-		assertEquals("wrong tijd", "10:59:00", results.getString("tijd"));
-		assertEquals("wrong station", "007", results.getString("station"));
-		assertEquals("wrong location #0", "001", results.getString("location"));
 		for (int i = 1; i < 12; i++) {
 			assertTrue(results.next());
-			assertEquals("wrong location #" + i, "001", results
-					.getString("location"));
-			assertEquals("wrong file_date #" + i, "20081112", results
-					.getString("file_date"));
 		}
 		for (int i = 0; i < 12; i++) {
 			assertTrue(results.next());
-			assertEquals("wrong location #" + i, "001", results
-					.getString("location"));
-			assertEquals("wrong file_date #" + i, "20081113", results
-					.getString("file_date"));
 		}
 		for (int i = 0; i < 12; i++) {
 			assertTrue(results.next());
-			assertEquals("wrong location #" + i, "001", results
-					.getString("location"));
-			assertEquals("wrong file_date #" + i, "20081114", results
-					.getString("file_date"));
 		}
 		for (int i = 0; i < 36; i++) {
 			assertTrue(results.next());
-			assertEquals("wrong location #" + i, "002", results
-					.getString("location"));
 		}
 		for (int i = 0; i < 36; i++) {
 			assertTrue(results.next());
-			assertEquals("wrong location #" + i, "003", results
-					.getString("location"));
 		}
 		for (int i = 0; i < 36; i++) {
 			assertTrue(results.next());
-			assertEquals("wrong location #" + i, "004", results
-					.getString("location"));
 		}
 		assertFalse(results.next());
 	}
@@ -1397,6 +1381,9 @@ public class TestCsvDriver extends TestCase {
 			stmt.executeQuery("SELECT * FROM not_there");
 			fail("Should not find the table 'not_there'");
 		} catch (SQLException e) {
+			assertEquals(
+					"java.sql.SQLException: Cannot open data file '"+filePath+"/not_there.csv'  !",
+					"" + e);
 		}
 		
 		Properties props = new Properties();
@@ -1406,13 +1393,28 @@ public class TestCsvDriver extends TestCase {
 		stmt = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props).createStatement();
 		
-		try {
-			stmt.executeQuery("SELECT * FROM not_there");
-			fail("Should not find the table 'not_there'");
-		} catch (SQLException e) {
-		}
-				
+		ResultSet results = stmt.executeQuery("SELECT * FROM not_there");
+		assertFalse("non existing indexed tables are seen as empty", results.next());
 	}
+	/**
+	 * 
+	 * @throws SQLException
+	 */
+	public void testScrambledFileNoCodec() throws SQLException {
+		Properties props = new Properties();
+		props.put("cryptoFilterClassName", "org.relique.io.NotACodec");
+		props.put("cryptoFilterParameterTypes", "String");
+		props.put("cryptoFilterParameters", "@0y");
+		try{
+			DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+			fail("managed to initialize not existing CryptoFilter");
+		} catch (SQLException e) {
+			assertEquals(
+					"java.sql.SQLException: could not initialize CryptoFilter",
+					"" + e);
+		}
+	}
+	
 	/**
 	 * 
 	 * @throws SQLException
@@ -1420,7 +1422,9 @@ public class TestCsvDriver extends TestCase {
 	public void testScrambledFile() throws SQLException {
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
-		props.put("scramblingString", "@0y");
+		props.put("cryptoFilterClassName", "org.relique.io.XORCipher");
+		props.put("cryptoFilterParameterTypes", "String");
+		props.put("cryptoFilterParameters", "@0y");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 
@@ -1441,6 +1445,7 @@ public class TestCsvDriver extends TestCase {
 	}
 	
 	public void testDuplicatedColumnNames() throws SQLException {
+		// TODO: this test fails!
 		Properties props = new Properties();
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
@@ -1454,6 +1459,28 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("2:ID is wrong", "2", results.getString(2));
 		assertEquals("1:ID is wrong", "1", results.getString(1));
 		assertEquals("ID:1 is wrong", "1", results.getString("ID"));
+	}
+
+	/**
+	 * This creates several sentences with where and tests they work
+	 * 
+	 * @throws SQLException
+	 */
+	public void testWithNonRepeatedQuotes() throws SQLException {
+		Properties props = new Properties();
+		props.put("separator", ";");
+		props.put("quotechar","'");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM doublequoted");
+		assertTrue(results.next());
+		assertEquals("\"Rechtsform unbekannt\" entsteht durch die Simulation zTELKUS. Es werden Simulationsregeln angewandt.", results.getString(10));
+		assertFalse(results.next());
 	}
 
 }

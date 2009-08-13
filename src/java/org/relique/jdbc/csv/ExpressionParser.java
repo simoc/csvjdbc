@@ -5,6 +5,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.math.BigInteger;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Map;
 import java.util.List;
 import java.util.LinkedList;
@@ -103,7 +104,8 @@ class BinaryOperation extends Expression{
       if (op == '+')return new Double(bdl.add(bdr).toString());
       if (op == '-')return new Double(bdl.subtract(bdr).toString());
       if (op == '*')return new Double(bdl.multiply(bdr).toString());
-      if (op == '/')return new Double(bdl.divide(bdr).toString());
+      MathContext mc = new MathContext("precision=14 roundingMode=HALF_UP");
+      if (op == '/')return new Double(bdl.divide(bdr, mc.getPrecision(), mc.getRoundingMode()).toString());
     }
     catch (ClassCastException e){}try {
       if (op == '+'){

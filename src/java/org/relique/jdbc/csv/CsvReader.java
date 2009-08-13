@@ -24,6 +24,8 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 
+import org.relique.io.CryptoFilter;
+
 /**
  * This class is a helper class that handles the reading and parsing of data
  * from a .csv file.
@@ -36,7 +38,7 @@ import java.sql.SQLException;
  * @author Christoph Langer
  * @author Chetan Gupta
  * @created 25 November 2001
- * @version $Id: CsvReader.java,v 1.24 2009/02/06 13:07:13 mfrasca Exp $
+ * @version $Id: CsvReader.java,v 1.25 2009/08/13 09:31:04 mfrasca Exp $
  */
 
 public class CsvReader extends CSVReaderAdapter {
@@ -53,7 +55,7 @@ public class CsvReader extends CSVReaderAdapter {
 	public CsvReader(String fileName) throws Exception {
 		this(new BufferedReader(new InputStreamReader(new FileInputStream(
 				fileName))), ',', false, '"', (char) 0, "",
-				CsvDriver.DEFAULT_EXTENSION, true, 0, false);
+				CsvDriver.DEFAULT_EXTENSION, true, 0, false, null);
 	}
 
 	/**
@@ -69,6 +71,7 @@ public class CsvReader extends CSVReaderAdapter {
 	 *            boolean
 	 * @param quoteChar
 	 *            char
+	 * @param filter the decrypting filter
 	 * @exception java.lang.Exception
 	 *                The exception description.
 	 * @throws SQLException
@@ -80,11 +83,11 @@ public class CsvReader extends CSVReaderAdapter {
 	public CsvReader(BufferedReader in, char separator,
 			boolean suppressHeaders, char quoteChar, char commentChar,
 			String headerLine, String extension, boolean trimHeaders, 
-			int skipLeadingLines, boolean ignoreUnparseableLines)
+			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter)
 			throws IOException, SQLException {
 		super(in, separator, suppressHeaders, quoteChar, commentChar,
 				headerLine, extension, trimHeaders, skipLeadingLines,
-				ignoreUnparseableLines);
+				ignoreUnparseableLines, filter);
 	}
 
 	/**

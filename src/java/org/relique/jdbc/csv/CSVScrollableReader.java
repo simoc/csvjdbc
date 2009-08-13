@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.relique.io.CryptoFilter;
+
 /**
  *This class Class provides facility to navigate on the Result Set.
  * 
@@ -54,6 +56,7 @@ public class CSVScrollableReader extends CSVReaderAdapter {
 	 *            char
 	 * @param suppressHeaders
 	 *            boolean
+	 * @param object 
 	 * @throws SQLException
 	 * @throws IOException
 	 * @throws FileNotFoundException
@@ -66,11 +69,12 @@ public class CSVScrollableReader extends CSVReaderAdapter {
 			boolean suppressHeaders, char quoteChar,
 			String headerLine, String extension, boolean trimHeaders,
 			List queryEnvironment, ExpressionParser whereClause, int skipLeadingLines, 
-			boolean ignoreUnparseableLines)
+			boolean ignoreUnparseableLines, CryptoFilter filter)
 			throws IOException, SQLException {
 
 		super(fileName, separator, suppressHeaders, quoteChar, (char)0,
-				headerLine, extension, trimHeaders, skipLeadingLines, ignoreUnparseableLines);
+				headerLine, extension, trimHeaders, skipLeadingLines, 
+				ignoreUnparseableLines, filter);
 
 		loopAndFetchData(input, buf, queryEnvironment, whereClause);
 		iRecordNo = FIRST_RECORD - 1;
