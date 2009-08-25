@@ -33,8 +33,7 @@ import java.util.Vector;
 
 import org.relique.io.CryptoFilter;
 import org.relique.io.EncryptedFileInputStream;
-
-import nl.nelen_schuurmans.io.ScrambledInputStream;
+import org.relique.io.FileSetInputStream;
 
 /**
  * This class implements the Statement interface for the CsvJdbc driver.
@@ -46,7 +45,7 @@ import nl.nelen_schuurmans.io.ScrambledInputStream;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.28 2009/08/13 09:31:04 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.29 2009/08/25 13:15:48 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -365,7 +364,7 @@ public class CsvStatement implements Statement {
 				String dirName = connection.getPath();
 				in = new FileSetInputStream(dirName, fileNamePattern,
 						nameParts, connection.getSeparator(), connection.isFileTailPrepend(),
-						filter);
+						connection.isSuppressHeaders(), filter);
 			} else if (filter==null) {
 				in = new FileInputStream(fileName);
 			} else{

@@ -20,7 +20,6 @@ package org.relique.jdbc.csv;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
@@ -38,9 +37,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-
 import org.relique.io.CryptoFilter;
 
 /**
@@ -51,7 +47,7 @@ import org.relique.io.CryptoFilter;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.27 2009/08/13 09:31:04 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.28 2009/08/25 13:15:48 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 

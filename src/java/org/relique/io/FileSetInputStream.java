@@ -17,10 +17,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.relique.jdbc.csv;
+package org.relique.io;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
@@ -28,8 +27,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.relique.io.CryptoFilter;
-import org.relique.io.EncryptedFileInputStream;
 
 /**
  * Class that collapses a set of files into one input stream. All files matching
@@ -55,6 +52,7 @@ public class FileSetInputStream extends InputStream {
 	private boolean doingTail;
 	private int currentLineLength;
 	private CryptoFilter filter;
+	private boolean headerless;
 
 	/**
 	 * 
@@ -70,14 +68,16 @@ public class FileSetInputStream extends InputStream {
 	 * @param prepend
 	 *            whether the extra fields should precede the ones from the file
 	 *            content.
+	 * @param headerless 
 	 * @throws IOException
 	 */
 	public FileSetInputStream(String dirName, String fileNamePattern,
 			String[] fieldsInName, char separator, boolean prepend,
-			CryptoFilter filter)
+			boolean headerless, CryptoFilter filter)
 			throws IOException {
 
 		this.filter = filter;
+		this.headerless = headerless;
 		
 		// Initialising tail for header...
 		this.prepend = prepend;
@@ -116,6 +116,8 @@ public class FileSetInputStream extends InputStream {
 		readingHeader = true;
 		String currentName = (String) fileNames.remove(0);
 		dataTail = getTailFromName(currentName);
+		if (headerless)
+			tail = dataTail;
 		currentFile = new EncryptedFileInputStream(currentName, filter);
 		lookahead = currentFile.read();
 		doingTail = prepend;
@@ -183,7 +185,7 @@ public class FileSetInputStream extends InputStream {
 		}
 		if (ch < 0) {
 			currentFile.close();
-			// open next file and skip header
+			// open next file and possibly skip header
 			pos = 0;
 			String currentName;
 			try {
@@ -194,11 +196,13 @@ public class FileSetInputStream extends InputStream {
 			}
 			tail = getTailFromName(currentName);
 			currentFile = new EncryptedFileInputStream(currentName, filter);
-			// skip the header
-			int ch2;
-			do{
-				ch2 = currentFile.read();
-			} while (ch2 != '\n');
+			// if files do contain a header, skip it
+			if (!this.headerless){
+				int ch2;
+				do{
+					ch2 = currentFile.read();
+				} while (ch2 != '\n');
+			}
 			doingTail = prepend;
 			if (doingTail)
 				pos = 1;

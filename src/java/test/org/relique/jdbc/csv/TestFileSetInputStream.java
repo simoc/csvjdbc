@@ -9,7 +9,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.relique.jdbc.csv.FileSetInputStream;
+import org.relique.io.FileSetInputStream;
 
 public class TestFileSetInputStream extends TestCase {
 
@@ -39,7 +39,7 @@ public class TestFileSetInputStream extends TestCase {
 		BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ',', false, null)));
+								"location", "file_date" }, ',', false, false, null)));
 
 		Set refSet = new HashSet();
 		Set testSet = new HashSet();
@@ -63,12 +63,34 @@ public class TestFileSetInputStream extends TestCase {
 		BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ',', true, null)));
+								"location", "file_date" }, ',', true, false, null)));
 
 		Set refSet = new HashSet();
 		Set testSet = new HashSet();
 		inputRef.readLine();
 		inputTest.readLine();
+		String lineRef, lineTest;
+		do {
+			lineRef = inputRef.readLine();
+			lineTest = inputTest.readLine();
+			refSet.add(lineRef);
+			testSet.add(lineTest);
+		} while (lineRef != null && lineTest != null);
+		assertTrue("refSet contains testSet", refSet.containsAll(testSet));
+		assertTrue("testSet contains refSet", testSet.containsAll(refSet));
+	}
+
+	public void testGlueAsLeadingHeaderless() throws IOException {
+		BufferedReader inputRef = new BufferedReader(new InputStreamReader(
+				new FileInputStream(filePath + "headerless-glued-leading.txt")));
+
+		BufferedReader inputTest = new BufferedReader(new InputStreamReader(
+				new FileSetInputStream(filePath,
+						"headerless-([0-9]{3})-([0-9]{8}).txt", new String[] {
+								"location", "file_date" }, ',', true, true, null)));
+
+		Set refSet = new HashSet();
+		Set testSet = new HashSet();
 		String lineRef, lineTest;
 		do {
 			lineRef = inputRef.readLine();
