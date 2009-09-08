@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.39 2009/08/13 09:31:04 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.40 2009/09/08 07:33:56 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1483,4 +1483,22 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	public void testWithNoData() throws SQLException {
+		Properties props = new Properties();
+		props.put("commentChar", "#");
+		props.put("fileExtension", ".txt");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM nodata");
+
+		ResultSetMetaData metadata = results.getMetaData();
+		assertEquals("Aleph", metadata.getColumnName(1));
+		assertEquals("Beth", metadata.getColumnName(2));
+		assertEquals("Ghimel", metadata.getColumnName(3));
+		assertEquals("Daleth", metadata.getColumnName(4));
+
+		assertFalse(results.next());
+	}
+	
 }
