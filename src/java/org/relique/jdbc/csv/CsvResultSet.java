@@ -51,7 +51,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.39 2009/08/13 09:31:04 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.40 2009/10/09 09:10:41 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -164,7 +164,7 @@ public class CsvResultSet implements ResultSet {
     	this.mustInferTypeNames = columnTypes.equals("");
     	if (!this.mustInferTypeNames){
         	String[] typeNamesLoc = columnTypes.split(",");
-        	for(int i=0; i<typeNamesLoc.length; i++){
+        	for(int i=0; i<Math.min(typeNamesLoc.length, this.typeNames.length); i++){
         		this.typeNames[i] = typeNamesLoc[i].trim();
         	}
         	for(int i=typeNamesLoc.length; i<this.typeNames.length; i++){
