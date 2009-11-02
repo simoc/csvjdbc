@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.40 2009/09/08 07:33:56 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.41 2009/11/02 09:32:10 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1410,7 +1410,7 @@ public class TestCsvDriver extends TestCase {
 			fail("managed to initialize not existing CryptoFilter");
 		} catch (SQLException e) {
 			assertEquals(
-					"java.sql.SQLException: could not initialize CryptoFilter",
+					"java.sql.SQLException: could not find codec class org.relique.io.NotACodec",
 					"" + e);
 		}
 	}

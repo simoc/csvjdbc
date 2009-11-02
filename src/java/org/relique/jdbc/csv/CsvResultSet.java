@@ -29,11 +29,14 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.DatabaseMetaData;
 import java.sql.Date;
+import java.sql.NClob;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -51,7 +54,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.40 2009/10/09 09:10:41 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.41 2009/11/02 09:32:10 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -2843,6 +2846,54 @@ public class CsvResultSet implements ResultSet {
 				return i+1;
 		}
 		return 0;
+	}
+	public NClob getNClob(int arg0) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public NClob getNClob(String arg0) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public RowId getRowId(int arg0) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public RowId getRowId(String arg0) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public SQLXML getSQLXML(int arg0) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public SQLXML getSQLXML(String arg0) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public void updateNClob(int arg0, NClob arg1) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+	public void updateNClob(String arg0, NClob arg1) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+	public void updateRowId(int arg0, RowId arg1) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+	public void updateRowId(String arg0, RowId arg1) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+	public void updateSQLXML(int arg0, SQLXML arg1) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+	public void updateSQLXML(String arg0, SQLXML arg1) throws SQLException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

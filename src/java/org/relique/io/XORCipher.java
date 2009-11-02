@@ -16,7 +16,10 @@ public class XORCipher implements CryptoFilter {
 	}
 
 	public int read(InputStream in) throws IOException {
-		return (byte)scrambleInt(in.read());
+		if (in.available() > 0) {
+			return (byte) scrambleInt(in.read());
+		} else
+			return -1;
 	}
 
 	public String toString(){

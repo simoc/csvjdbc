@@ -26,9 +26,12 @@ import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
@@ -47,7 +50,7 @@ import org.relique.io.CryptoFilter;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.28 2009/08/25 13:15:48 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.29 2009/11/02 09:32:10 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -204,7 +207,7 @@ public class CsvConnection implements Connection {
 				} catch (NoSuchMethodException e) {
 					e.printStackTrace();
 				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+					throw new SQLException("could not find codec class " + className);
 				}
 				if(decryptingFilter==null){
 					throw new SQLException("could not initialize CryptoFilter");
@@ -1050,6 +1053,27 @@ public class CsvConnection implements Connection {
 
 	public CryptoFilter getDecryptingCodec() {
 		return this.decryptingFilter;
+	}
+
+	public NClob createNClob() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public SQLXML createSQLXML() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setClientInfo(Properties arg0) throws SQLClientInfoException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setClientInfo(String arg0, String arg1)
+			throws SQLClientInfoException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
