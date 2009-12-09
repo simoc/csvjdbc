@@ -23,7 +23,7 @@ import java.sql.*;
  *
  * @author     Jonathan Ackerman
  * @created    25 November 2001
- * @version    $Id: CsvDatabaseMetaData.java,v 1.6 2009/11/02 09:32:10 mfrasca Exp $
+ * @version    $Id: CsvDatabaseMetaData.java,v 1.7 2009/12/09 14:12:11 mfrasca Exp $
  */
 public class CsvDatabaseMetaData implements DatabaseMetaData
 {
@@ -397,7 +397,8 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 
 	public String getURL() throws SQLException
 	{
-		return null;
+		return "jdbc:relique:csv:"
+				+ ((CsvConnection) createdByConnection).getPath();
 	}
 
 	public String getUserName() throws SQLException

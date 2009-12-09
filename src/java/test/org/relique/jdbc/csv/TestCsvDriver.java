@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.41 2009/11/02 09:32:10 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.42 2009/12/09 14:12:09 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1501,4 +1501,11 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 	
+	public void testConnectionName() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+		String url = conn.getMetaData().getURL();
+		assertTrue(url.startsWith("jdbc:relique:csv:"));
+		assertTrue(url.endsWith("/testdata/"));
+	}
 }
