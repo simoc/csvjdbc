@@ -10,6 +10,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringConverter {
 
@@ -93,24 +95,58 @@ public class StringConverter {
 		}
 	}
 
+	/**
+	 * transforms the date string into its equivalent ISO8601
+	 * 
+	 * @param date
+	 * @param format
+	 * @return
+	 */
+	private String makeISODate(String date, String format) {
+		// first memorize the original order of the groups.
+		format = format.toLowerCase();
+		int dpos = format.indexOf('d');
+		int mpos = format.indexOf('m');
+		int ypos = format.indexOf('y');
+
+		int day = 1, month = 1, year = 1;
+		if(dpos > mpos) day+=1; else month+=1;
+		if(dpos > ypos) day+=1; else year+=1;
+		if(mpos > ypos) month+=1; else year+=1;
+
+		// then build the regular expression
+		Pattern part;
+		Matcher m;
+		
+		part = Pattern.compile("d+");
+		m = part.matcher(format);
+		if (m.find())
+			format = format.replace(m.group(), "([0-9]{" + (m.end()-m.start()) + ",2})");
+		
+		part = Pattern.compile("m+");
+		m = part.matcher(format);
+		if (m.find())
+			format = format.replace(m.group(), "([0-9]{" + (m.end()-m.start()) + ",2})");
+
+		part = Pattern.compile("y+");
+		m = part.matcher(format);
+		if (m.find())
+			format = format.replace(m.group(), "([0-9]{" + (m.end()-m.start()) + ",4})");
+		
+		format = format + ".*";
+		
+		Pattern pattern = Pattern.compile(format);
+		m = pattern.matcher(date);
+		if(m.matches())
+			// and return the groups in the ISO8601 order.
+			return m.group(year) + "-" + m.group(month) + "-" + m.group(day);
+		else
+			return "1970-01-01";
+	}
+	
 	public Date parseDate(String str) {
 		try {
-			String year = "1970";
-			int pos = dateFormat.indexOf('y'); 
-			if (pos != -1){
-				year = str.substring(pos, pos+4);
-			}
-			String month = "01";
-			pos = dateFormat.indexOf('M'); 
-			if (pos != -1){
-				month = str.substring(pos, pos+2);
-			}
-			String day_of_month = "01";
-			pos = dateFormat.indexOf('d'); 
-			if (pos != -1){
-				day_of_month = str.substring(pos, pos+2);
-			}
-			Date sqlResult = Date.valueOf(year + "-" + month + "-" + day_of_month);
+			Date sqlResult = Date.valueOf(makeISODate(str, dateFormat));
 			return sqlResult;
 		} catch (RuntimeException e) {
 			return null;
