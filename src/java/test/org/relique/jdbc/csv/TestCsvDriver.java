@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.42 2009/12/09 14:12:09 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.43 2010/03/04 11:00:45 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -377,7 +377,6 @@ public class TestCsvDriver extends TestCase {
 
 	public void testColumnTypesUserSpecified() throws SQLException,
 			ParseException {
-		// TODO: this test fails!
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date");
 
@@ -402,7 +401,6 @@ public class TestCsvDriver extends TestCase {
 
 	public void testColumnTypesUserSpecifiedShuffled() throws SQLException,
 			ParseException {
-		// TODO: this test fails!
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date");
 
@@ -889,7 +887,7 @@ public class TestCsvDriver extends TestCase {
 
 		assertFalse(results.next());
 	}
-		
+
 	public void testFromIndexedTable() throws SQLException {
 
 		Properties props = new Properties();
@@ -1020,7 +1018,7 @@ public class TestCsvDriver extends TestCase {
 				.getString("mix"));
 		assertTrue(!results.next());
 	}
-	
+
 	public void testReadingTime() throws SQLException {
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date,Time");
@@ -1031,56 +1029,67 @@ public class TestCsvDriver extends TestCase {
 		Object expect;
 		Statement stmt = conn.createStatement();
 
-		ResultSet results = stmt.executeQuery("SELECT id, timeoffset FROM sample5");
+		ResultSet results = stmt
+				.executeQuery("SELECT id, timeoffset FROM sample5");
 
 		assertTrue(results.next());
 		expect = java.sql.Time.valueOf("12:30:00");
-		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect.getClass(), results.getObject(
+				"timeoffset").getClass());
 		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
 
 		assertTrue(results.next());
 		expect = java.sql.Time.valueOf("12:35:00");
-		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect.getClass(), results.getObject(
+				"timeoffset").getClass());
 		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
 
 		assertTrue(results.next());
 		expect = java.sql.Time.valueOf("12:40:00");
-		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect.getClass(), results.getObject(
+				"timeoffset").getClass());
 		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
 
 		assertTrue(results.next());
 		expect = java.sql.Time.valueOf("12:45:00");
-		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect.getClass(), results.getObject(
+				"timeoffset").getClass());
 		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
 
 		assertTrue(results.next());
 		expect = java.sql.Time.valueOf("01:00:00");
-		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect.getClass(), results.getObject(
+				"timeoffset").getClass());
 		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
 
 		assertTrue(results.next());
 		expect = java.sql.Time.valueOf("01:00:00");
-		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect.getClass(), results.getObject(
+				"timeoffset").getClass());
 		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
 
 		assertTrue(results.next());
 		expect = java.sql.Time.valueOf("01:00:00");
-		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect.getClass(), results.getObject(
+				"timeoffset").getClass());
 		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
 
 		assertTrue(results.next());
 		expect = java.sql.Time.valueOf("00:00:00");
-		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect.getClass(), results.getObject(
+				"timeoffset").getClass());
 		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
 
 		assertTrue(results.next());
 		expect = java.sql.Time.valueOf("00:10:00");
-		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect.getClass(), results.getObject(
+				"timeoffset").getClass());
 		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
 
 		assertTrue(results.next());
 		expect = java.sql.Time.valueOf("01:23:00");
-		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect.getClass(), results.getObject(
+				"timeoffset").getClass());
 		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
 
 		assertFalse(results.next());
@@ -1102,24 +1111,30 @@ public class TestCsvDriver extends TestCase {
 
 		assertTrue(results.next());
 		expect = java.sql.Date.valueOf("2001-04-02");
-		assertEquals("Date is a Date", expect.getClass(), results.getObject("start").getClass());
+		assertEquals("Date is a Date", expect.getClass(), results.getObject(
+				"start").getClass());
 		assertEquals("Date is a Date", expect, results.getObject("start"));
 		expect = java.sql.Time.valueOf("12:30:00");
-		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect.getClass(), results.getObject(
+				"timeoffset").getClass());
 		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
 		expect = java.sql.Timestamp.valueOf("2001-04-02 12:30:00");
-		assertEquals("adding Date to Time", expect.getClass(), results.getObject("ts").getClass());
+		assertEquals("adding Date to Time", expect.getClass(), results
+				.getObject("ts").getClass());
 		assertEquals("adding Date to Time", expect, results.getObject("ts"));
 
 		assertTrue(results.next());
 		expect = java.sql.Date.valueOf("2004-04-02");
-		assertEquals("Date is a Date", expect.getClass(), results.getObject("start").getClass());
+		assertEquals("Date is a Date", expect.getClass(), results.getObject(
+				"start").getClass());
 		assertEquals("Date is a Date", expect, results.getObject("start"));
 		expect = java.sql.Time.valueOf("01:00:00");
-		assertEquals("Time is a Time", expect.getClass(), results.getObject("timeoffset").getClass());
+		assertEquals("Time is a Time", expect.getClass(), results.getObject(
+				"timeoffset").getClass());
 		assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
 		expect = java.sql.Timestamp.valueOf("2004-04-02 01:00:00");
-		assertEquals("adding Date to Time", expect.getClass(), results.getObject("ts").getClass());
+		assertEquals("adding Date to Time", expect.getClass(), results
+				.getObject("ts").getClass());
 		assertEquals("adding Date to Time", expect, results.getObject("ts"));
 
 		assertFalse(results.next());
@@ -1149,7 +1164,7 @@ public class TestCsvDriver extends TestCase {
 		assertEquals(new Integer(3), results.getObject(2));
 		assertFalse(results.next());
 	}
-	
+
 	public void testWithoutComments() throws SQLException {
 		Properties props = new Properties();
 		props.put("commentChar", "");
@@ -1186,7 +1201,7 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("09", results.getObject(1));
 		assertFalse(results.next());
 	}
-	
+
 	public void testSkippingLeadingLines() throws SQLException {
 		Properties props = new Properties();
 		props.put("columnTypes", "String,Int,Float,String");
@@ -1211,7 +1226,7 @@ public class TestCsvDriver extends TestCase {
 		assertEquals(new Integer(3), results.getObject(2));
 		assertFalse(results.next());
 	}
-	
+
 	public void testNonParseableWithColumnTypes() throws SQLException {
 		Properties props = new Properties();
 		props.put("columnTypes", "String,String,String,String,Int,Float");
@@ -1222,7 +1237,8 @@ public class TestCsvDriver extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 		Statement stmt = conn.createStatement();
-		ResultSet results = stmt.executeQuery("SELECT * FROM with_leading_trash");
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM with_leading_trash");
 
 		assertTrue(results.next());
 		assertEquals("12:20", results.getString(2));
@@ -1232,7 +1248,7 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("12:40", results.getObject(2));
 		assertFalse(results.next());
 	}
-	
+
 	public void testNonParseableWithHeaderline() throws SQLException {
 		Properties props = new Properties();
 		props.put("headerline", "Date;Time;TimeZone;Unit;Quality;Value");
@@ -1243,7 +1259,8 @@ public class TestCsvDriver extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 		Statement stmt = conn.createStatement();
-		ResultSet results = stmt.executeQuery("SELECT * FROM with_leading_trash");
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM with_leading_trash");
 
 		assertTrue(results.next());
 		assertEquals("12:20", results.getString(2));
@@ -1253,7 +1270,7 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("12:40", results.getObject(2));
 		assertFalse(results.next());
 	}
-	
+
 	public void testNonParseable() throws SQLException {
 		Properties props = new Properties();
 		props.put("ignoreNonParseableLines", "True");
@@ -1262,7 +1279,8 @@ public class TestCsvDriver extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 		Statement stmt = conn.createStatement();
-		ResultSet results = stmt.executeQuery("SELECT * FROM with_leading_trash");
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM with_leading_trash");
 
 		ResultSetMetaData metadata = results.getMetaData();
 		assertEquals("12:20", metadata.getColumnName(2));
@@ -1273,7 +1291,7 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("12:40", results.getObject(2));
 		assertFalse(results.next());
 	}
-	
+
 	public void testVariableColumnCount() throws SQLException {
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
@@ -1289,7 +1307,7 @@ public class TestCsvDriver extends TestCase {
 
 		ResultSet results = null;
 		ResultSetMetaData metadata;
-		
+
 		results = stmt.executeQuery("SELECT * FROM varlen1");
 		metadata = results.getMetaData();
 		assertEquals("file_date", metadata.getColumnName(1));
@@ -1351,7 +1369,7 @@ public class TestCsvDriver extends TestCase {
 
 		ResultSet results = null;
 		ResultSetMetaData metadata = null;
-		
+
 		results = stmt.executeQuery("SELECT * FROM varlen1");
 		metadata = results.getMetaData();
 		assertEquals("file_date", metadata.getColumnName(1));
@@ -1372,30 +1390,31 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("P000", metadata.getColumnName(5));
 		assertEquals("P001", metadata.getColumnName(6));
 	}
-	
-	public void testNonExistingTable() throws SQLException{
-		Statement stmt = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath).createStatement();
-		
+
+	public void testNonExistingTable() throws SQLException {
+		Statement stmt = DriverManager.getConnection(
+				"jdbc:relique:csv:" + filePath).createStatement();
+
 		try {
 			stmt.executeQuery("SELECT * FROM not_there");
 			fail("Should not find the table 'not_there'");
 		} catch (SQLException e) {
-			assertEquals(
-					"java.sql.SQLException: Cannot open data file '"+filePath+"/not_there.csv'  !",
-					"" + e);
+			assertEquals("java.sql.SQLException: Cannot open data file '"
+					+ filePath + "/not_there.csv'  !", "" + e);
 		}
-		
+
 		Properties props = new Properties();
 		props.put("indexedFiles", "True");
 		props.put("fileTailPattern", "-([0-9]{8})");
 		props.put("fileTailParts", "file_date");
-		stmt = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath, props).createStatement();
-		
+		stmt = DriverManager.getConnection("jdbc:relique:csv:" + filePath,
+				props).createStatement();
+
 		ResultSet results = stmt.executeQuery("SELECT * FROM not_there");
-		assertFalse("non existing indexed tables are seen as empty", results.next());
+		assertFalse("non existing indexed tables are seen as empty", results
+				.next());
 	}
+
 	/**
 	 * 
 	 * @throws SQLException
@@ -1405,7 +1424,7 @@ public class TestCsvDriver extends TestCase {
 		props.put("cryptoFilterClassName", "org.relique.io.NotACodec");
 		props.put("cryptoFilterParameterTypes", "String");
 		props.put("cryptoFilterParameters", "@0y");
-		try{
+		try {
 			DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 			fail("managed to initialize not existing CryptoFilter");
 		} catch (SQLException e) {
@@ -1414,7 +1433,7 @@ public class TestCsvDriver extends TestCase {
 					"" + e);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @throws SQLException
@@ -1430,8 +1449,7 @@ public class TestCsvDriver extends TestCase {
 
 		Statement stmt = conn.createStatement();
 
-		ResultSet results = stmt
-				.executeQuery("SELECT * FROM scrambled");
+		ResultSet results = stmt.executeQuery("SELECT * FROM scrambled");
 		assertTrue(results.next());
 		assertEquals("The key is wrong", "1", results.getString("key"));
 		assertEquals("The value is wrong", "uno", results.getString("value"));
@@ -1443,10 +1461,34 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The value is wrong", "tre", results.getString("value"));
 		assertTrue(!results.next());
 	}
-	
-	public void testDuplicatedColumnNames() throws SQLException {
-		// TODO: this test fails!
+
+	public void testDuplicatedColumnNamesPlainFails() throws SQLException {
+		// no bug report, check discussion thread
+		// https://sourceforge.net/projects/csvjdbc/forums/forum/56965/topic/2608197
 		Properties props = new Properties();
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		// load CSV driver
+		try {
+			stmt.executeQuery("SELECT * FROM duplicate_headers");
+			fail("expected exception java.sql.SQLException: Table contains duplicated column names");
+		} catch (SQLException e) {
+			assertEquals("wrong exception and/or exception text!",
+					"java.sql.SQLException: Table contains duplicated column names",
+					"" + e);
+		}
+	}
+
+	public void testDuplicatedColumnNamesSuppressHeader() throws SQLException {
+		// no bug report, check discussion thread
+		// https://sourceforge.net/projects/csvjdbc/forums/forum/56965/topic/2608197
+		Properties props = new Properties();
+		props.put("suppressHeaders", "true");
+		props.put("skipLeadingLines", "1");
+
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 
@@ -1454,11 +1496,20 @@ public class TestCsvDriver extends TestCase {
 
 		ResultSet results = stmt
 				.executeQuery("SELECT * FROM duplicate_headers");
-		
+
 		assertTrue(results.next());
-		assertEquals("2:ID is wrong", "2", results.getString(2));
 		assertEquals("1:ID is wrong", "1", results.getString(1));
-		assertEquals("ID:1 is wrong", "1", results.getString("ID"));
+		assertEquals("2:ID is wrong", "2", results.getString(2));
+		assertEquals("3:ID is wrong", "george", results.getString(3));
+		assertEquals("4:ID is wrong", "joe", results.getString(4));
+
+		assertTrue(results.next());
+		assertEquals("1:ID is wrong", "2", results.getString(1));
+		assertEquals("2:ID is wrong", "2", results.getString(2));
+		assertEquals("3:ID is wrong", "aworth", results.getString(3));
+		assertEquals("4:ID is wrong", "smith", results.getString(4));
+
+		assertFalse(results.next());
 	}
 
 	/**
@@ -1469,17 +1520,18 @@ public class TestCsvDriver extends TestCase {
 	public void testWithNonRepeatedQuotes() throws SQLException {
 		Properties props = new Properties();
 		props.put("separator", ";");
-		props.put("quotechar","'");
+		props.put("quotechar", "'");
 
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 
 		Statement stmt = conn.createStatement();
 
-		ResultSet results = stmt
-				.executeQuery("SELECT * FROM doublequoted");
+		ResultSet results = stmt.executeQuery("SELECT * FROM doublequoted");
 		assertTrue(results.next());
-		assertEquals("\"Rechtsform unbekannt\" entsteht durch die Simulation zTELKUS. Es werden Simulationsregeln angewandt.", results.getString(10));
+		assertEquals(
+				"\"Rechtsform unbekannt\" entsteht durch die Simulation zTELKUS. Es werden Simulationsregeln angewandt.",
+				results.getString(10));
 		assertFalse(results.next());
 	}
 
@@ -1500,7 +1552,7 @@ public class TestCsvDriver extends TestCase {
 
 		assertFalse(results.next());
 	}
-	
+
 	public void testConnectionName() throws SQLException {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);

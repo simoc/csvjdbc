@@ -21,6 +21,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import org.relique.io.CryptoFilter;
@@ -38,7 +40,7 @@ import org.relique.io.CryptoFilter;
  * @author Christoph Langer
  * @author Mario Frasca
  * @created 01 March 2004
- * @version $Id: CSVReaderAdapter.java,v 1.18 2009/08/13 09:31:04 mfrasca Exp $
+ * @version $Id: CSVReaderAdapter.java,v 1.19 2010/03/04 11:00:34 mfrasca Exp $
  */
 
 public abstract class CSVReaderAdapter {
@@ -134,6 +136,11 @@ public abstract class CSVReaderAdapter {
 		} else {
 			String tmpHeaderLine = getNextDataLine();
 			this.columnNames = parseCsvLine(tmpHeaderLine, trimHeaders);
+			Set uniqueNames = new HashSet();
+			for (int i = 0; i < this.columnNames.length; i++)
+				uniqueNames.add(this.columnNames[i]);
+			if (uniqueNames.size() != this.columnNames.length)
+				throw new SQLException("Table contains duplicated column names");
 		}
 	}
 

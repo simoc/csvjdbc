@@ -45,7 +45,7 @@ import org.relique.io.FileSetInputStream;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.29 2009/08/25 13:15:48 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.30 2010/03/04 11:00:34 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -396,6 +396,8 @@ public class CsvStatement implements Statement {
 			}
 		} catch (IOException e) {
 			throw new SQLException("Error reading data file. Message was: " + e);
+		} catch (SQLException e) {
+			throw e;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new SQLException(""+e);
