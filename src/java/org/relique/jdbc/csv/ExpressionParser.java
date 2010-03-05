@@ -678,7 +678,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   }
   /** Constructor with InputStream and supplied encoding */
   public ExpressionParser(java.io.InputStream stream, String encoding) {
-    try { jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
+    try { jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e.getMessage()); }
     token_source = new ExpressionParserTokenManager(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
@@ -692,7 +692,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   }
   /** Reinitialise. */
   public void ReInit(java.io.InputStream stream, String encoding) {
-    try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
+    try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e.getMessage()); }
     token_source.ReInit(jj_input_stream);
     token = new Token();
     jj_ntk = -1;

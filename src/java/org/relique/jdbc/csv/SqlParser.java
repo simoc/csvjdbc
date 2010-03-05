@@ -33,7 +33,7 @@ import java.util.StringTokenizer;
  * @author Juan Pablo Morales
  * @author Mario Frasca
  * @created 25 November 2001
- * @version $Id: SqlParser.java,v 1.11 2008/11/20 15:59:55 mfrasca Exp $
+ * @version $Id: SqlParser.java,v 1.12 2010/03/05 10:48:11 mfrasca Exp $
  */
 public class SqlParser
 {
@@ -150,13 +150,11 @@ public ExpressionParser getWhereClause() {
 
 
 public String getAlias(int i) {
-	// TODO Auto-generated method stub
 	Object[] o = (Object[]) environment.get(i);
 	return (String) o[0];
 }
 
 public Expression getExpression(int i) {
-	// TODO Auto-generated method stub
 	Object[] o = (Object[]) environment.get(i);
 	return (Expression) o[1];
 }
