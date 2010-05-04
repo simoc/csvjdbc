@@ -40,7 +40,7 @@ import org.relique.io.CryptoFilter;
  * @author Christoph Langer
  * @author Mario Frasca
  * @created 01 March 2004
- * @version $Id: CSVReaderAdapter.java,v 1.19 2010/03/04 11:00:34 mfrasca Exp $
+ * @version $Id: CSVReaderAdapter.java,v 1.20 2010/05/04 14:58:34 mfrasca Exp $
  */
 
 public abstract class CSVReaderAdapter {
@@ -99,7 +99,7 @@ public abstract class CSVReaderAdapter {
 	public CSVReaderAdapter(BufferedReader in, char separator,
 			boolean suppressHeaders, char quoteChar, char commentChar,
 			String headerLine, String extension, boolean trimHeaders, 
-			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter)
+			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter, boolean defectiveHeaders, int skipLeadingDataLines)
 			throws UnsupportedEncodingException, FileNotFoundException,
 			IOException, SQLException {
 		this.separator = separator;
@@ -142,6 +142,16 @@ public abstract class CSVReaderAdapter {
 			if (uniqueNames.size() != this.columnNames.length)
 				throw new SQLException("Table contains duplicated column names");
 		}
+		// some column names may be missing and should be corrected
+		if (defectiveHeaders)
+			for (int i = 0; i < this.columnNames.length; i++)
+				if (this.columnNames[i].length() == 0)
+					this.columnNames[i] = "COLUMN" + String.valueOf(i + 1);
+
+		for (int i=0; i<skipLeadingDataLines; i++){
+			in.readLine();
+		}
+
 	}
 
 	public CSVReaderAdapter(String dirName, String pathNamePattern,

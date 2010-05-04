@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.44 2010/05/04 13:58:08 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.45 2010/05/04 14:58:34 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1573,10 +1573,8 @@ public class TestCsvDriver extends TestCase {
 
 		ResultSetMetaData metadata = results.getMetaData();
 
-		assertEquals("Incorrect Column Name 1", metadata.getColumnName(1),
-				"COLUMN1");
-		assertEquals("Incorrect Column Name 2", metadata.getColumnName(2),
-				"600-P1201");
+		assertEquals("Incorrect Column Name 1", "COLUMN1", metadata.getColumnName(1));
+		assertEquals("Incorrect Column Name 2", "600-P1201", metadata.getColumnName(2));
 
 		assertTrue(results.next());
 		assertEquals("1 is wrong", "", results.getString(1));

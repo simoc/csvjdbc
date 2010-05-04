@@ -50,7 +50,7 @@ import org.relique.io.CryptoFilter;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.29 2009/11/02 09:32:10 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.30 2010/05/04 14:58:34 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -104,6 +104,10 @@ public class CsvConnection implements Connection {
 	private boolean fileTailPrepend;
 
 	private CryptoFilter decryptingFilter;
+
+	private boolean defectiveHeaders;
+
+	private int skipLeadingDataLines;
 
 	/**
      * Creates a new CsvConnection that takes the supplied path
@@ -217,6 +221,8 @@ public class CsvConnection implements Connection {
             setDateFormat(info.getProperty(CsvDriver.DATE_FORMAT, CsvDriver.DEFAULT_DATE_FORMAT));
             setTimeFormat(info.getProperty(CsvDriver.TIME_FORMAT, CsvDriver.DEFAULT_TIME_FORMAT));
             setCommentChar(info.getProperty(CsvDriver.COMMENT_CHAR, CsvDriver.DEFAULT_COMMENT_CHAR));
+            setDefectiveHeaders(info.getProperty(CsvDriver.DEFECTIVE_HEADERS, CsvDriver.DEFAULT_DEFECTIVE_HEADERS));
+            setSkipLeadingDataLines(info.getProperty(CsvDriver.SKIP_LEADING_DATA_LINES, CsvDriver.DEFAULT_SKIP_LEADING_DATA_LINES));
             setSkipLeadingLines(info.getProperty(CsvDriver.SKIP_LEADING_LINES, CsvDriver.DEFAULT_SKIP_LEADING_LINES));
             setIgnoreUnparseableLines(Boolean.parseBoolean(info.getProperty(
 					CsvDriver.IGNORE_UNPARSEABLE_LINES,
@@ -884,6 +890,22 @@ public class CsvConnection implements Connection {
     }
 
     /**
+     * accessor method for defectiveHeaders property
+     * @return
+     */
+    protected boolean isDefectiveHeaders() {
+    	return defectiveHeaders;
+    }
+    
+    /**
+     * accessor method for defectiveHeaders property
+     * @return
+     */
+    protected int getSkipLeadingDataLines() {
+    	return skipLeadingDataLines;
+    }
+    
+    /**
      * Accessor method for the charset property
      * @return current value for the suppressHeaders property
      */
@@ -944,6 +966,14 @@ public class CsvConnection implements Connection {
 	public Object unwrap(Class arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	private void setDefectiveHeaders(String property) {
+		this.defectiveHeaders = Boolean.parseBoolean(property);
+	}
+
+	private void setSkipLeadingDataLines(String property) {
+		this.skipLeadingDataLines = Integer.parseInt(property);
 	}
 
 	public void setColumnTypes(String columnTypes) {

@@ -45,7 +45,7 @@ import org.relique.io.FileSetInputStream;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.30 2010/03/04 11:00:34 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.31 2010/05/04 14:58:34 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -384,7 +384,8 @@ public class CsvStatement implements Statement {
 						connection.getExtension(), connection.getTrimHeaders(),
 						parser.environment, parser.getWhereClause(), 
 						connection.getSkipLeadingLines(), connection.isIgnoreUnparseableLines(),
-						connection.getDecryptingCodec());
+						connection.getDecryptingCodec(), connection.isDefectiveHeaders(), 
+						connection.getSkipLeadingDataLines());
 			} else {
 				reader = new CsvReader(input, connection.getSeparator(),
 						connection.isSuppressHeaders(), connection
@@ -392,7 +393,8 @@ public class CsvStatement implements Statement {
 						connection.getHeaderline(), connection.getExtension(),
 						connection.getTrimHeaders(), connection.getSkipLeadingLines(),
 						connection.isIgnoreUnparseableLines(),
-						connection.getDecryptingCodec());
+						connection.getDecryptingCodec(), connection.isDefectiveHeaders(), 
+						connection.getSkipLeadingDataLines());
 			}
 		} catch (IOException e) {
 			throw new SQLException("Error reading data file. Message was: " + e);

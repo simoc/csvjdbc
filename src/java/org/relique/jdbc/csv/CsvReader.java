@@ -38,7 +38,7 @@ import org.relique.io.CryptoFilter;
  * @author Christoph Langer
  * @author Chetan Gupta
  * @created 25 November 2001
- * @version $Id: CsvReader.java,v 1.25 2009/08/13 09:31:04 mfrasca Exp $
+ * @version $Id: CsvReader.java,v 1.26 2010/05/04 14:58:34 mfrasca Exp $
  */
 
 public class CsvReader extends CSVReaderAdapter {
@@ -55,7 +55,7 @@ public class CsvReader extends CSVReaderAdapter {
 	public CsvReader(String fileName) throws Exception {
 		this(new BufferedReader(new InputStreamReader(new FileInputStream(
 				fileName))), ',', false, '"', (char) 0, "",
-				CsvDriver.DEFAULT_EXTENSION, true, 0, false, null);
+				CsvDriver.DEFAULT_EXTENSION, true, 0, false, null, false, 0);
 	}
 
 	/**
@@ -72,6 +72,8 @@ public class CsvReader extends CSVReaderAdapter {
 	 * @param quoteChar
 	 *            char
 	 * @param filter the decrypting filter
+	 * @param defectiveHeaders 
+	 * @param skipLeadingDataLines 
 	 * @exception java.lang.Exception
 	 *                The exception description.
 	 * @throws SQLException
@@ -83,11 +85,11 @@ public class CsvReader extends CSVReaderAdapter {
 	public CsvReader(BufferedReader in, char separator,
 			boolean suppressHeaders, char quoteChar, char commentChar,
 			String headerLine, String extension, boolean trimHeaders, 
-			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter)
+			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter, boolean defectiveHeaders, int skipLeadingDataLines)
 			throws IOException, SQLException {
 		super(in, separator, suppressHeaders, quoteChar, commentChar,
 				headerLine, extension, trimHeaders, skipLeadingLines,
-				ignoreUnparseableLines, filter);
+				ignoreUnparseableLines, filter, defectiveHeaders, skipLeadingDataLines);
 	}
 
 	/**
