@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.43 2010/03/04 11:00:45 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.44 2010/05/04 13:58:08 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1559,5 +1559,55 @@ public class TestCsvDriver extends TestCase {
 		String url = conn.getMetaData().getURL();
 		assertTrue(url.startsWith("jdbc:relique:csv:"));
 		assertTrue(url.endsWith("/testdata/"));
+	}
+	
+	public void testWithDefectiveHeaders() throws SQLException, ParseException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("defectiveHeaders", "True");
+		
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM twoheaders");
+
+		ResultSetMetaData metadata = results.getMetaData();
+
+		assertEquals("Incorrect Column Name 1", metadata.getColumnName(1),
+				"COLUMN1");
+		assertEquals("Incorrect Column Name 2", metadata.getColumnName(2),
+				"600-P1201");
+
+		assertTrue(results.next());
+		assertEquals("1 is wrong", "", results.getString(1));
+		assertEquals("1 is wrong", "", results.getString("COLUMN1"));
+
+		assertEquals("2 is wrong", "WNS925", results.getString(2));
+		assertEquals("2 is wrong", "WNS925", results.getString("600-P1201"));
+
+	}
+	
+	public void testSkipLeadingDataLines() throws SQLException, ParseException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("columnTypes", "Timestamp,Double");
+		props.put("defectiveHeaders", "True");
+		props.put("skipLeadingDataLines", "1");
+		
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM twoheaders");
+
+		DateFormat dfp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		assertTrue(results.next());
+		assertEquals("1 is wrong", "2010-02-21 00:00:00", results.getString(1));
+		assertEquals("1 is wrong", dfp.parse(results.getString(1)), results
+				.getObject(1));
+		assertEquals("2 is wrong", new Double(21), results.getObject(2));
+		assertEquals("3 is wrong", new Double(20), results.getObject(3));
+		assertEquals("4 is wrong", new Double(24), results.getObject(4));
+
 	}
 }
