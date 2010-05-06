@@ -54,7 +54,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.41 2009/11/02 09:32:10 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.42 2010/05/06 07:35:14 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -2839,6 +2839,8 @@ public class CsvResultSet implements ResultSet {
 	}
 
 	public int findColumn(String columnLabel) throws SQLException {
+		if (columnLabel.equals(""))
+			throw new SQLException("Can't access columns with empty name by name");
 		for (int i = 0; i < this.queryEnvironment.size(); i++)
 		{
 			Object[] queryEnvEntry = (Object[]) this.queryEnvironment.get(i);

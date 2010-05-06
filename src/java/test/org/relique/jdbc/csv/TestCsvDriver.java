@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.45 2010/05/04 14:58:34 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.46 2010/05/06 07:35:10 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -329,6 +329,7 @@ public class TestCsvDriver extends TestCase {
 	public void testMetadataWithColumnTypeShuffled() throws SQLException {
 		// TODO: this test fails!
 		Properties props = new Properties();
+		// header in file: ID,Name,Job,Start,timeoffset
 		props.put("columnTypes", "Int,String,String,Timestamp");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
@@ -1561,6 +1562,46 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(url.endsWith("/testdata/"));
 	}
 	
+	/**
+	 * you can access columns that do not have a name by number
+	 * 
+	 * @throws SQLException
+	 * @throws ParseException
+	 */
+	public void testNumericDefectiveHeaders() throws SQLException, ParseException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		//props.put("defectiveHeaders", "True");
+		
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM twoheaders");
+
+		ResultSetMetaData metadata = results.getMetaData();
+
+		assertEquals("Empty Column Name 1", "", metadata.getColumnName(1));
+
+		assertTrue(results.next());
+		assertEquals("1 is wrong", "", results.getString(1));
+		try {
+			results.getString("");
+			fail("expected exception java.sql.SQLException: Can't access columns with empty name by name");
+		} catch (SQLException e) {
+			assertEquals("wrong exception and/or exception text!",
+					"java.sql.SQLException: Can't access columns with empty name by name",
+					"" + e);
+		}
+
+		assertEquals("2 is wrong", "WNS925", results.getString(2));
+		assertEquals("2 is wrong", "WNS925", results.getString("600-P1201"));
+
+		assertTrue(results.next());
+		assertEquals("1 is wrong", "2010-02-21 00:00:00", results.getObject(1));
+		assertEquals("2 is wrong", "21", results.getString(2));
+		assertEquals("3 is wrong", "20", results.getString(3));
+	}
+	
 	public void testWithDefectiveHeaders() throws SQLException, ParseException {
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
@@ -1583,6 +1624,11 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("2 is wrong", "WNS925", results.getString(2));
 		assertEquals("2 is wrong", "WNS925", results.getString("600-P1201"));
 
+		assertTrue(results.next());
+		assertEquals("1 is wrong", "2010-02-21 00:00:00", results.getObject(1));
+		assertEquals("1 is wrong", "2010-02-21 00:00:00", results.getObject("COLUMN1"));
+		assertEquals("2 is wrong", "21", results.getObject(2));
+		assertEquals("3 is wrong", "20", results.getObject(3));
 	}
 	
 	public void testSkipLeadingDataLines() throws SQLException, ParseException {
@@ -1600,9 +1646,10 @@ public class TestCsvDriver extends TestCase {
 		DateFormat dfp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		assertTrue(results.next());
-		assertEquals("1 is wrong", "2010-02-21 00:00:00", results.getString(1));
-		assertEquals("1 is wrong", dfp.parse(results.getString(1)), results
+		assertEquals("1 is wrong", dfp.parse("2010-02-21 00:00:00"), results
 				.getObject(1));
+		assertEquals("1 is wrong", dfp.parse("2010-02-21 00:00:00"), results
+				.getObject("COLUMN1"));
 		assertEquals("2 is wrong", new Double(21), results.getObject(2));
 		assertEquals("3 is wrong", new Double(20), results.getObject(3));
 		assertEquals("4 is wrong", new Double(24), results.getObject(4));
