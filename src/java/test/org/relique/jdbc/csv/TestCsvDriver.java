@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.46 2010/05/06 07:35:10 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.47 2010/05/06 13:18:06 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1655,4 +1655,31 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("4 is wrong", new Double(24), results.getObject(4));
 
 	}
+	
+	public void testSkipLeadingDataFromIndexedFile() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("indexedFiles", "True");
+		props.put("fileTailPattern", "-([0-9]{8})");
+		props.put("fileTailParts", "file_date");
+		props.put("fileTailPrepend", "True");
+		props.put("skipLeadingDataLines", "1");
+		// Datum,Tijd,Station,P000,P001,P002,P003
+		props.put("columnTypes", "String,Date,Time,String,Double");
+
+		ResultSet results = null;
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+
+		results = stmt.executeQuery("SELECT * FROM varlen1");
+		assertTrue(results.next());
+		assertEquals("007", results.getObject("Station"));
+		assertEquals(new Double("26.54"), results.getObject("P003"));
+		assertTrue(results.next());
+		assertEquals("001", results.getObject("Station"));
+		assertEquals(new Double("26.55"), results.getObject("P003"));
+		assertFalse(results.next());
+	}	
 }

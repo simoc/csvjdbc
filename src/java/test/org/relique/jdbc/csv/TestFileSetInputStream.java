@@ -39,7 +39,7 @@ public class TestFileSetInputStream extends TestCase {
 		BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ',', false, false, null)));
+								"location", "file_date" }, ',', false, false, null, 0)));
 
 		Set refSet = new HashSet();
 		Set testSet = new HashSet();
@@ -63,7 +63,7 @@ public class TestFileSetInputStream extends TestCase {
 		BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ',', true, false, null)));
+								"location", "file_date" }, ',', true, false, null, 0)));
 
 		Set refSet = new HashSet();
 		Set testSet = new HashSet();
@@ -87,7 +87,7 @@ public class TestFileSetInputStream extends TestCase {
 		BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"headerless-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ',', true, true, null)));
+								"location", "file_date" }, ',', true, true, null, 0)));
 
 		Set refSet = new HashSet();
 		Set testSet = new HashSet();

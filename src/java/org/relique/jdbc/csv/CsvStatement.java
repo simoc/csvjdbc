@@ -45,7 +45,7 @@ import org.relique.io.FileSetInputStream;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.31 2010/05/04 14:58:34 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.32 2010/05/06 13:18:07 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -364,7 +364,7 @@ public class CsvStatement implements Statement {
 				String dirName = connection.getPath();
 				in = new FileSetInputStream(dirName, fileNamePattern,
 						nameParts, connection.getSeparator(), connection.isFileTailPrepend(),
-						connection.isSuppressHeaders(), filter);
+						connection.isSuppressHeaders(), filter, connection.getSkipLeadingDataLines());
 			} else if (filter==null) {
 				in = new FileInputStream(fileName);
 			} else{

@@ -52,7 +52,7 @@ public class FileSetInputStream extends InputStream {
 	private boolean doingTail;
 	private int currentLineLength;
 	private CryptoFilter filter;
-	private boolean headerless;
+	private int skipLeadingDataLines;
 
 	/**
 	 * 
@@ -69,15 +69,18 @@ public class FileSetInputStream extends InputStream {
 	 *            whether the extra fields should precede the ones from the file
 	 *            content.
 	 * @param headerless 
+	 * @param skipLeadingDataLines 
 	 * @throws IOException
 	 */
 	public FileSetInputStream(String dirName, String fileNamePattern,
 			String[] fieldsInName, char separator, boolean prepend,
-			boolean headerless, CryptoFilter filter)
+			boolean headerless, CryptoFilter filter, int skipLeadingDataLines)
 			throws IOException {
 
 		this.filter = filter;
-		this.headerless = headerless;
+		this.skipLeadingDataLines = skipLeadingDataLines;
+		if (!headerless)
+			this.skipLeadingDataLines++;
 		
 		// Initialising tail for header...
 		this.prepend = prepend;
@@ -197,7 +200,7 @@ public class FileSetInputStream extends InputStream {
 			tail = getTailFromName(currentName);
 			currentFile = new EncryptedFileInputStream(currentName, filter);
 			// if files do contain a header, skip it
-			if (!this.headerless){
+			for(int i = 0; i < this.skipLeadingDataLines; i++){
 				int ch2;
 				do{
 					ch2 = currentFile.read();
