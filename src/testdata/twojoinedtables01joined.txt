@@ -1,0 +1,16 @@
+L,P,K,U,W,D,T,V
+l1,p1,k1,u1,w1,d1,t1,v11
+l2,p2,k2,u2,w2,d1,t1,v12
+l3,p3,k3,u3,w3,d1,t1,v13
+l1,p1,k1,u1,w1,d2,t2,v21
+l2,p2,k2,u2,w2,d2,t2,v22
+l3,p3,k3,u3,w3,d2,t2,v23
+l1,p1,k1,u1,w1,d3,t3,v31
+l2,p2,k2,u2,w2,d3,t3,v32
+l3,p3,k3,u3,w3,d3,t3,v33
+l1,p1,k1,u1,w1,d4,t4,v41
+l2,p2,k2,u2,w2,d4,t4,v42
+l3,p3,k3,u3,w3,d4,t4,v43
+l1,p1,k1,u1,w1,d5,t5,v51
+l2,p2,k2,u2,w2,d5,t5,v52
+l3,p3,k3,u3,w3,d5,t5,v53
