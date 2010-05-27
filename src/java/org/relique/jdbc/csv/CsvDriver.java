@@ -28,7 +28,7 @@ import java.io.File;
  * @author     JD Evora
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvDriver.java,v 1.22 2010/05/04 14:58:34 mfrasca Exp $
+ * @version    $Id: CsvDriver.java,v 1.23 2010/05/27 14:48:54 mfrasca Exp $
  */
 
 public class CsvDriver implements Driver
@@ -70,6 +70,8 @@ public class CsvDriver implements Driver
   public static final String SCRAMBLING_STRING = "scramblingString";
   public static final String DEFECTIVE_HEADERS = "defectiveHeaders";
   public static final String SKIP_LEADING_DATA_LINES = "skipLeadingDataLines";
+  public static final String TRANSPOSED_LINES = "transposedLines";
+  public static final String TRANSPOSED_FIELDS_TO_SKIP = "transposedFieldsToSkip";
   
   public static final String CHARSET = "charset";
   private final static String URL_PREFIX = "jdbc:relique:csv:";

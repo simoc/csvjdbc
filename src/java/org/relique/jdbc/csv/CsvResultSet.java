@@ -54,7 +54,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.45 2010/05/27 12:52:41 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.46 2010/05/27 14:48:54 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -67,7 +67,7 @@ public class CsvResultSet implements ResultSet {
     protected int isScrollable = ResultSet.TYPE_SCROLL_SENSITIVE;
     
     /** Helper class that performs the actual file reads */
-    protected CsvRawReader reader;
+    protected CsvReader reader;
 
     /** Table referenced by the Statement */
     protected String tableName;
@@ -121,7 +121,7 @@ public class CsvResultSet implements ResultSet {
      * @throws ClassNotFoundException 
      * @throws SQLException 
      */
-    protected CsvResultSet(CsvStatement statement, CsvRawReader reader,
+    protected CsvResultSet(CsvStatement statement, CsvReader reader,
 			String tableName, List queryEnvironment, int isScrollable,
 			ExpressionParser whereClause) throws ClassNotFoundException, SQLException {
 		this(statement, reader, tableName, queryEnvironment, isScrollable,
@@ -140,7 +140,7 @@ public class CsvResultSet implements ResultSet {
      * @throws ClassNotFoundException in case the typed columns fail
      * @throws SQLException 
      */
-    protected CsvResultSet(CsvStatement statement, CsvRawReader reader,
+    protected CsvResultSet(CsvStatement statement, CsvReader reader,
 			String tableName, List queryEnvironment, int isScrollable, 
 			ExpressionParser whereClause, String columnTypes, int skipLeadingLines) throws ClassNotFoundException, SQLException {
         this.statement = statement;
@@ -247,8 +247,8 @@ public class CsvResultSet implements ResultSet {
     	if(!thereWasAnAnswer) {
     		return;
     	}
-		for (int i = 0; i<reader.columnNames.length; i++){
-			String key = reader.columnNames[i].toUpperCase();
+		for (int i = 0; i<reader.getColumnNames().length; i++){
+			String key = reader.getColumnNames()[i].toUpperCase();
 			Object value = converter.convert(typeNames[i], reader.fieldValues[i]);
 			recordEnvironment.put(key, value);
 		}

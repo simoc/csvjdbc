@@ -37,7 +37,7 @@ public class TestJoinedTables extends TestCase {
 		// TODO - this test fails
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
-		props.put("headerLine", "L,P,K,U,W,D,T,V");
+		props.put("headerline", "L,P,K,U,W,D,T,V");
 
 		// setting both transposedLines and skipTransposedFields informs the
 		// driver we are receiving a compacted join
@@ -46,7 +46,9 @@ public class TestJoinedTables extends TestCase {
 		props.put("transposedLines", "5"); 
 		
 		// the first column in the transposed table holds the (ignored) header.
-		props.put("transposedFieldsToSkip", "1"); 
+		props.put("transposedFieldsToSkip", "1");
+		// the driver must be told that there is no header.
+		props.put("suppressHeaders", "true");
 
 		ResultSet results = null;
 
@@ -55,7 +57,7 @@ public class TestJoinedTables extends TestCase {
 		Statement stmt = conn.createStatement();
 
 		results = stmt.executeQuery("SELECT * FROM twojoinedtables01");
-		assertTrue(results.next());
+		assertTrue("there should be results", results.next());
 		assertEquals("l1", results.getObject("L"));
 		assertEquals("p1", results.getObject("P"));
 		assertEquals("k1", results.getObject("K"));
@@ -65,7 +67,7 @@ public class TestJoinedTables extends TestCase {
 		assertEquals("t1", results.getObject("T"));
 		assertEquals("v11", results.getObject("V"));
 
-		assertTrue(results.next());
+		assertTrue("there should be results", results.next());
 		assertEquals("l2", results.getObject("L"));
 		assertEquals("p2", results.getObject("P"));
 		assertEquals("k2", results.getObject("K"));
@@ -212,7 +214,7 @@ public class TestJoinedTables extends TestCase {
 		// TODO - this test fails
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
-		props.put("headerLine", "P,D,T,V");
+		props.put("headerline", "P,D,T,V");
 		
 		// setting both transposedLines and skipTransposedFields informs the
 		// driver we are receiving a compacted join
@@ -224,6 +226,8 @@ public class TestJoinedTables extends TestCase {
 		// transposedFieldsToSkip <- 2; the file looks like a regular CSV (with
 		// variable header)
 		props.put("transposedFieldsToSkip", "2");
+		// the driver must be told that there is no header.
+		props.put("suppressHeaders", "true");
 
 		ResultSet results = null;
 

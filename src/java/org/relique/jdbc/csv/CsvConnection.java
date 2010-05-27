@@ -50,7 +50,7 @@ import org.relique.io.CryptoFilter;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.30 2010/05/04 14:58:34 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.31 2010/05/27 14:48:54 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -108,6 +108,10 @@ public class CsvConnection implements Connection {
 	private boolean defectiveHeaders;
 
 	private int skipLeadingDataLines;
+
+	private int transposedLines;
+
+	private int transposedFieldsToSkip;
 
 	/**
      * Creates a new CsvConnection that takes the supplied path
@@ -217,6 +221,9 @@ public class CsvConnection implements Connection {
 					throw new SQLException("could not initialize CryptoFilter");
 				}
 			}
+            setTransposedLines(Integer.parseInt(info.getProperty(CsvDriver.TRANSPOSED_LINES, "0")));
+        	setTransposedFieldsToSkip(Integer.parseInt(info.getProperty(CsvDriver.TRANSPOSED_FIELDS_TO_SKIP, "0")));
+			
             setTimestampFormat(info.getProperty(CsvDriver.TIMESTAMP_FORMAT, CsvDriver.DEFAULT_TIMESTAMP_FORMAT));
             setDateFormat(info.getProperty(CsvDriver.DATE_FORMAT, CsvDriver.DEFAULT_DATE_FORMAT));
             setTimeFormat(info.getProperty(CsvDriver.TIME_FORMAT, CsvDriver.DEFAULT_TIME_FORMAT));
@@ -1104,6 +1111,22 @@ public class CsvConnection implements Connection {
 			throws SQLClientInfoException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public int getTransposedLines() {
+		return transposedLines;
+	}
+
+	private void setTransposedLines(int i) {
+		transposedLines = i;
+	}
+
+	public int getTransposedFieldsToSkip() {
+		return transposedFieldsToSkip;
+	}
+
+	public void setTransposedFieldsToSkip(int i) {
+		transposedFieldsToSkip = i;
 	}
 
 }

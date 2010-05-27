@@ -45,7 +45,7 @@ import org.relique.io.FileSetInputStream;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.35 2010/05/27 12:52:41 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.36 2010/05/27 14:48:54 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -53,6 +53,7 @@ public class CsvStatement implements Statement {
 	private Vector resultSets = new Vector();
 
 	protected int isScrollable = ResultSet.TYPE_SCROLL_INSENSITIVE;
+	private CsvRawReader rawReader;
 
 	/**
 	 *Constructor for the CsvStatement object
@@ -352,7 +353,7 @@ public class CsvStatement implements Statement {
 						+ "'  not readable !");
 			}
 		}
-		CsvRawReader reader = null;
+		CsvReader reader = null;
 		try {
 			InputStream in;
 			CryptoFilter filter = connection.getDecryptingCodec();
@@ -377,14 +378,16 @@ public class CsvStatement implements Statement {
 			} else {
 				input = new BufferedReader(new InputStreamReader(in));
 			}
-				reader = new CsvRawReader(input, connection.getSeparator(),
-						connection.isSuppressHeaders(), connection
-								.getQuotechar(), connection.getCommentChar(),
-						connection.getHeaderline(), connection.getExtension(),
-						connection.getTrimHeaders(), connection.getSkipLeadingLines(),
-						connection.isIgnoreUnparseableLines(),
-						connection.getDecryptingCodec(), connection.isDefectiveHeaders(), 
-						connection.getSkipLeadingDataLines());
+			CsvRawReader rawReader = new CsvRawReader(input, connection.getSeparator(),
+					connection.isSuppressHeaders(), connection.getQuotechar(),
+					connection.getCommentChar(), connection.getHeaderline(),
+					connection.getExtension(), connection.getTrimHeaders(),
+					connection.getSkipLeadingLines(), connection
+							.isIgnoreUnparseableLines(), connection
+							.getDecryptingCodec(), connection
+							.isDefectiveHeaders(), connection
+							.getSkipLeadingDataLines());
+			reader = new CsvReader(rawReader, connection.getTransposedLines(), connection.getTransposedFieldsToSkip(), connection.getHeaderline());
 		} catch (IOException e) {
 			throw new SQLException("Error reading data file. Message was: " + e);
 		} catch (SQLException e) {
