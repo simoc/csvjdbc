@@ -26,8 +26,7 @@ import junit.framework.TestCase;
  * This class is used to test the CsvJdbc Scrollable driver.
  * 
  * @author Chetan Gupta
- * @version $Id: TestScrollableDriver.java,v 1.9 2010/03/04 13:16:01 mfrasca Exp
- *          $
+ * @version $Id: TestScrollableDriver.java,v 1.11 2010/05/27 12:00:09 mfrasca Exp $
  */
 public class TestScrollableDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
