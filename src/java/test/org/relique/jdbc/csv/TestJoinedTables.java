@@ -38,10 +38,15 @@ public class TestJoinedTables extends TestCase {
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("headerLine", "L,P,K,U,W,D,T,V");
+
+		// setting both transposedLines and skipTransposedFields informs the
+		// driver we are receiving a compacted join
+		
 		// L,P,K,U,W, leaving D,T as regular fields, V as matrix of joined values 
 		props.put("transposedLines", "5"); 
+		
 		// the first column in the transposed table holds the (ignored) header.
-		props.put("skipTransposedFields", "1"); 
+		props.put("transposedFieldsToSkip", "1"); 
 
 		ResultSet results = null;
 
@@ -208,10 +213,17 @@ public class TestJoinedTables extends TestCase {
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("headerLine", "P,D,T,V");
-		// P, leaving D,T as regular fields, V as matrix of joined values
+		
+		// setting both transposedLines and skipTransposedFields informs the
+		// driver we are receiving a compacted join
+		
+		// transposedLines <- 1; leaving D,T as regular fields, V as matrix of
+		// joined values
 		props.put("transposedLines", "1");
-		// the file looks like a regular CSV (with variable header)
-		props.put("skipTransposedFields", "2"); 
+		
+		// transposedFieldsToSkip <- 2; the file looks like a regular CSV (with
+		// variable header)
+		props.put("transposedFieldsToSkip", "2");
 
 		ResultSet results = null;
 
