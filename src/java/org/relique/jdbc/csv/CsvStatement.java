@@ -45,7 +45,7 @@ import org.relique.io.FileSetInputStream;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.33 2010/05/27 11:56:46 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.34 2010/05/27 12:51:07 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -352,7 +352,7 @@ public class CsvStatement implements Statement {
 						+ "'  not readable !");
 			}
 		}
-		CSVReaderAdapter reader = null;
+		CsvReader reader = null;
 		try {
 			InputStream in;
 			CryptoFilter filter = connection.getDecryptingCodec();
