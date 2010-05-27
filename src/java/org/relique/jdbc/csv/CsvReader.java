@@ -69,18 +69,20 @@ public class CsvReader {
 			fieldValues = rawReader.fieldValues;
 			return result;
 		} else {
-			if(joiningValues == null || joiningValueNo > valuesToJoin) {
+			if(joiningValues == null || joiningValueNo + getTransposedFieldsToSkip() == valuesToJoin) {
 				String line;
 				try {
 					line = rawReader.getNextDataLine();
 				} catch (IOException e) {
 					throw new SQLException("" + e);
 				}
+				if(line == null)
+					return false;
 				joiningValues = rawReader.parseCsvLine(line, false);
 				joiningValueNo = 0;
 			}
 			for(int i=0; i<transposedLines; i++) {
-				fieldValues[i] = ((String[])firstTable.get(i))[joiningValueNo+this.getTransposedFieldsToSkip()];
+				fieldValues[i] = ((String[])firstTable.get(i))[joiningValueNo + getTransposedFieldsToSkip()];
 			}
 			for(int i=transposedLines; i<columnNames.length-1; i++) {
 				fieldValues[i] = joiningValues[i-transposedLines]; 
