@@ -41,10 +41,10 @@ import org.relique.io.CryptoFilter;
  * @author Christoph Langer
  * @author Chetan Gupta
  * @created 25 November 2001
- * @version $Id: CsvReader.java,v 1.27 2010/05/27 12:51:07 mfrasca Exp $
+ * @version $Id: CsvRawReader.java,v 1.1 2010/05/27 12:52:41 mfrasca Exp $
  */
 
-public class CsvReader {
+public class CsvRawReader {
 
 	protected BufferedReader input;
 	protected String[] columnNames;
@@ -70,7 +70,7 @@ public class CsvReader {
 	 *                Description of Exception
 	 * @since
 	 */
-	public CsvReader(String fileName) throws Exception {
+	public CsvRawReader(String fileName) throws Exception {
 		this(new BufferedReader(new InputStreamReader(new FileInputStream(
 				fileName))), ',', false, '"', (char) 0, "",
 				CsvDriver.DEFAULT_EXTENSION, true, 0, false, null, false, 0);
@@ -100,7 +100,7 @@ public class CsvReader {
 	 * @throws UnsupportedEncodingException
 	 * @since
 	 */
-	public CsvReader(BufferedReader in, char separator,
+	public CsvRawReader(BufferedReader in, char separator,
 			boolean suppressHeaders, char quoteChar, char commentChar,
 			String headerLine, String extension, boolean trimHeaders, 
 			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter, boolean defectiveHeaders, int skipLeadingDataLines)

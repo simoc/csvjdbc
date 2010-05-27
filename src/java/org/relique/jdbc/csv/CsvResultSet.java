@@ -54,7 +54,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.44 2010/05/27 12:51:07 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.45 2010/05/27 12:52:41 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -67,7 +67,7 @@ public class CsvResultSet implements ResultSet {
     protected int isScrollable = ResultSet.TYPE_SCROLL_SENSITIVE;
     
     /** Helper class that performs the actual file reads */
-    protected CsvReader reader;
+    protected CsvRawReader reader;
 
     /** Table referenced by the Statement */
     protected String tableName;
@@ -121,7 +121,7 @@ public class CsvResultSet implements ResultSet {
      * @throws ClassNotFoundException 
      * @throws SQLException 
      */
-    protected CsvResultSet(CsvStatement statement, CsvReader reader,
+    protected CsvResultSet(CsvStatement statement, CsvRawReader reader,
 			String tableName, List queryEnvironment, int isScrollable,
 			ExpressionParser whereClause) throws ClassNotFoundException, SQLException {
 		this(statement, reader, tableName, queryEnvironment, isScrollable,
@@ -140,7 +140,7 @@ public class CsvResultSet implements ResultSet {
      * @throws ClassNotFoundException in case the typed columns fail
      * @throws SQLException 
      */
-    protected CsvResultSet(CsvStatement statement, CsvReader reader,
+    protected CsvResultSet(CsvStatement statement, CsvRawReader reader,
 			String tableName, List queryEnvironment, int isScrollable, 
 			ExpressionParser whereClause, String columnTypes, int skipLeadingLines) throws ClassNotFoundException, SQLException {
         this.statement = statement;
