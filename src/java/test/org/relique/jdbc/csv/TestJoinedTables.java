@@ -34,7 +34,6 @@ public class TestJoinedTables extends TestCase {
 	}
 	
 	public void testHeaderIsTransposedFirstTable() throws SQLException {
-		// TODO - this test fails
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("headerline", "L,P,K,U,W,D,T,V");
@@ -211,7 +210,6 @@ public class TestJoinedTables extends TestCase {
 	}
 
 	public void testHeaderLooksLikeHeader() throws SQLException {
-		// TODO - this test fails
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("headerline", "P,D,T,V");
