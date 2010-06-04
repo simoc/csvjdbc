@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.47 2010/05/06 13:18:06 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.48 2010/06/04 15:09:28 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1681,5 +1681,19 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("001", results.getObject("Station"));
 		assertEquals(new Double("26.55"), results.getObject("P003"));
 		assertFalse(results.next());
-	}	
+	}
+
+	// Actually this is more a Connection test than a Driver test
+	public void testRaiseUnsupportedOperationException() throws SQLException {
+		Properties props = new Properties();
+		props.put("raiseUnsupportedOperationException", "false");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		conn.setAutoCommit(true);
+		conn.getAutoCommit();
+		conn.setReadOnly(true);
+	}
+
 }

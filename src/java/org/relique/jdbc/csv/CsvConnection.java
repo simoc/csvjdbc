@@ -50,7 +50,7 @@ import org.relique.io.CryptoFilter;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.31 2010/05/27 14:48:54 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.32 2010/06/04 15:09:28 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -66,7 +66,16 @@ public class CsvConnection implements Connection {
     /** Field quotechar to use */
     private char quotechar = CsvDriver.DEFAULT_QUOTECHAR;
 
-    /** Field headerline to use */
+    public boolean isRaiseUnsupportedOperationException() {
+		return raiseUnsupportedOperationException;
+	}
+
+	public void setRaiseUnsupportedOperationException(
+			boolean raiseUnsupportedOperationException) {
+		this.raiseUnsupportedOperationException = raiseUnsupportedOperationException;
+	}
+
+	/** Field headerline to use */
     private String headerline = CsvDriver.DEFAULT_HEADERLINE; 
 
     /** Should headers be suppressed */
@@ -80,6 +89,11 @@ public class CsvConnection implements Connection {
 
     /** how to interpret string values before returning them to the caller */
     private String columnTypes = CsvDriver.DEFAULT_COLUMN_TYPES;
+
+    /** whether ot not to raise a UnsupportedOperationException when calling a method
+        irrelevant in this context (ex: autocommit whereas there is only readonly accesses)
+     */
+    private boolean raiseUnsupportedOperationException;
 
     /** Collection of all created Statements */
     private Vector statements = new Vector();
@@ -112,6 +126,8 @@ public class CsvConnection implements Connection {
 	private int transposedLines;
 
 	private int transposedFieldsToSkip;
+
+	private boolean autoCommit;
 
 	/**
      * Creates a new CsvConnection that takes the supplied path
@@ -234,6 +250,10 @@ public class CsvConnection implements Connection {
             setIgnoreUnparseableLines(Boolean.parseBoolean(info.getProperty(
 					CsvDriver.IGNORE_UNPARSEABLE_LINES,
 					CsvDriver.DEFAULT_IGNORE_UNPARSEABLE_LINES)));
+            
+            setRaiseUnsupportedOperationException(Boolean.parseBoolean(info.getProperty(
+            		CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION,
+					CsvDriver.DEFAULT_RAISE_UNSUPPORTED_OPERATION_EXCEPTION)));
         }
     }
 
@@ -369,8 +389,12 @@ public class CsvConnection implements Connection {
      * @see #getAutoCommit
      */
     public void setAutoCommit(boolean autoCommit) throws SQLException {
-        throw new UnsupportedOperationException(
+        if (raiseUnsupportedOperationException) {
+          throw new UnsupportedOperationException(
                 "Connection.setAutoCommit(boolean) unsupported");
+        } else {
+          this.autoCommit = autoCommit;
+        }
     }
 
     /**
@@ -383,8 +407,12 @@ public class CsvConnection implements Connection {
      * @see #setAutoCommit
      */
     public boolean getAutoCommit() throws SQLException {
-        throw new UnsupportedOperationException(
+        if (raiseUnsupportedOperationException) {
+          throw new UnsupportedOperationException(
                 "Connection.getAutoCommit() unsupported");
+        } else {
+          return this.autoCommit;
+        }
     }
 
     /**
@@ -399,7 +427,7 @@ public class CsvConnection implements Connection {
      * @see #setAutoCommit
      */
     public void commit() throws SQLException {
-        throw new UnsupportedOperationException(
+        if (raiseUnsupportedOperationException) throw new UnsupportedOperationException(
                 "Connection.commit() unsupported");
     }
 
@@ -414,7 +442,7 @@ public class CsvConnection implements Connection {
      * @see #setAutoCommit
      */
     public void rollback() throws SQLException {
-        throw new UnsupportedOperationException(
+        if (raiseUnsupportedOperationException) throw new UnsupportedOperationException(
                 "Connection.rollback() unsupported");
     }
 
@@ -491,7 +519,7 @@ public class CsvConnection implements Connection {
      *            method is called during a transaction
      */
     public void setReadOnly(boolean readOnly) throws SQLException {
-        throw new UnsupportedOperationException(
+        if (raiseUnsupportedOperationException) throw new UnsupportedOperationException(
                 "Connection.setReadOnly(boolean) unsupported");
     }
 
@@ -602,8 +630,12 @@ public class CsvConnection implements Connection {
      * @see SQLWarning
      */
     public SQLWarning getWarnings() throws SQLException {
-        throw new UnsupportedOperationException(
+        if (raiseUnsupportedOperationException) {
+          throw new UnsupportedOperationException(
                 "Connection.getWarnings() unsupported");
+        } else {
+          return null;
+        }
     }
 
     /**
@@ -615,7 +647,7 @@ public class CsvConnection implements Connection {
      * @exception SQLException if a database access error occurs
      */
     public void clearWarnings() throws SQLException {
-        throw new UnsupportedOperationException(
+        if (raiseUnsupportedOperationException) throw new UnsupportedOperationException(
                 "Connection.getWarnings() unsupported");
     }
 

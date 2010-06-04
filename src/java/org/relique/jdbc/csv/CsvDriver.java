@@ -28,7 +28,7 @@ import java.io.File;
  * @author     JD Evora
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvDriver.java,v 1.23 2010/05/27 14:48:54 mfrasca Exp $
+ * @version    $Id: CsvDriver.java,v 1.24 2010/06/04 15:09:28 mfrasca Exp $
  */
 
 public class CsvDriver implements Driver
@@ -39,6 +39,7 @@ public class CsvDriver implements Driver
   public static final char DEFAULT_QUOTECHAR ='"';
   public static final String DEFAULT_HEADERLINE = null;
   public static final boolean DEFAULT_SUPPRESS = false;
+  public static final String DEFAULT_RAISE_UNSUPPORTED_OPERATION_EXCEPTION = "true";
   public static final boolean DEFAULT_TRIM_HEADERS = true;
   public static final String DEFAULT_COLUMN_TYPES = "String";
   public static final boolean DEFAULT_INDEXED_FILES = false;
@@ -74,6 +75,7 @@ public class CsvDriver implements Driver
   public static final String TRANSPOSED_FIELDS_TO_SKIP = "transposedFieldsToSkip";
   
   public static final String CHARSET = "charset";
+  public static final String RAISE_UNSUPPORTED_OPERATION_EXCEPTION = "raiseUnsupportedOperationException";
   private final static String URL_PREFIX = "jdbc:relique:csv:";
   public static final String CRYPTO_FILTER_CLASS_NAME = "cryptoFilterClassName";
   /**
