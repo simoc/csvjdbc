@@ -93,6 +93,8 @@ public class DemoDriver
 	          <dd>Used to specify a different file extension (Default is ".csv")</dd>
 	          <dt><b>charset</b></dt>
 	          <dd>Used to specify a different than default charset encoding of input file (default is same VM default charset)</dd>
+	          <dt><b>raiseUnsupportedOperationException</b></dt>
+	          <dd>Used to specify whether an UnsupportedOperationException must be raised when calling a connection method (such as setAutoCommit()) having no sense with csvJdbc (Default is "false")</dd>
 	         </dl>
 	        </p>
 
@@ -106,6 +108,7 @@ public class DemoDriver
   props.put("suppressHeaders","true");     // first line contains data
   props.put("fileExtension",".txt");       // file extension is .txt
   props.put("charset","ISO-8859-2");       // file encoding is "ISO-8859-2"
+  props.put("raiseUnsupportedOperationException","false");       // don't raise unsupported operation exception (when not relevant)
 
   Connection conn = Drivermanager.getConnection(&quot;jdbc:relique:csv:&quot; + args[0],props)
 

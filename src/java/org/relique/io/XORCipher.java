@@ -2,6 +2,7 @@ package org.relique.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public class XORCipher implements CryptoFilter {
 	
@@ -41,6 +42,14 @@ public class XORCipher implements CryptoFilter {
 		keyCounter++;
 		keyCounter %= scrambleKey.length;
 		return encrDataChar;
+	}
+
+	public void write(OutputStream out, int ch) throws IOException {
+		out.write(scrambleInt(ch));
+	}
+
+	public void reset() {
+		keyCounter = 0;		
 	}
 
 }

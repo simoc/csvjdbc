@@ -2,6 +2,7 @@ package org.relique.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * minimalistic approach to decrypting a file.
@@ -20,5 +21,7 @@ import java.io.InputStream;
 public interface CryptoFilter {
 
 	abstract public int read(InputStream in) throws IOException;
-
+	abstract public void write(OutputStream out, int ch) throws IOException;
+	abstract public void reset();
+	
 }

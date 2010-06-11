@@ -45,7 +45,7 @@ import org.relique.io.FileSetInputStream;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.36 2010/05/27 14:48:54 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.37 2010/06/11 12:37:43 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -369,6 +369,7 @@ public class CsvStatement implements Statement {
 			} else if (filter==null) {
 				in = new FileInputStream(fileName);
 			} else{
+				filter.reset();
 				in = new EncryptedFileInputStream(fileName, filter);
 			}
 			BufferedReader input;

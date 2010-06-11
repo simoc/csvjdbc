@@ -42,7 +42,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.48 2010/06/04 15:09:28 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.49 2010/06/11 12:37:43 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1444,7 +1444,7 @@ public class TestCsvDriver extends TestCase {
 		props.put("fileExtension", ".txt");
 		props.put("cryptoFilterClassName", "org.relique.io.XORCipher");
 		props.put("cryptoFilterParameterTypes", "String");
-		props.put("cryptoFilterParameters", "@0y");
+		props.put("cryptoFilterParameters", "gaius vipsanius agrippa");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 
@@ -1696,4 +1696,36 @@ public class TestCsvDriver extends TestCase {
 		conn.setReadOnly(true);
 	}
 
+	public void testSecondQuery() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("cryptoFilterClassName", "org.relique.io.XORCipher");
+		props.put("cryptoFilterParameterTypes", "String");
+		props.put("cryptoFilterParameters", "gaius vipsanius agrippa");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM scrambled");
+		assertTrue(results.next());
+		assertEquals("The key is wrong", "1", results.getString("key"));
+		assertEquals("The value is wrong", "uno", results.getString("value"));
+		assertTrue(results.next());
+		assertEquals("The key is wrong", "2", results.getString("key"));
+		assertEquals("The value is wrong", "due", results.getString("value"));
+
+		results = stmt.executeQuery("SELECT * FROM scrambled");
+		assertTrue(results.next());
+		assertEquals("The key is wrong", "1", results.getString("key"));
+		assertEquals("The value is wrong", "uno", results.getString("value"));
+		assertTrue(results.next());
+		assertEquals("The key is wrong", "2", results.getString("key"));
+		assertEquals("The value is wrong", "due", results.getString("value"));
+		assertTrue(results.next());
+		assertEquals("The key is wrong", "3", results.getString("key"));
+		assertEquals("The value is wrong", "tre", results.getString("value"));
+		assertTrue(!results.next());
+	}
+	
 }
