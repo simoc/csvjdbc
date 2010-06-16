@@ -24,21 +24,15 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Properties;
-import java.sql.Types;
+
+import junit.framework.TestCase;
 
 import org.relique.io.CryptoFilter;
 import org.relique.io.EncryptedFileOutputStream;
 import org.relique.io.XORCipher;
-import org.relique.jdbc.csv.CsvResultSet;
-
-import junit.framework.TestCase;
 
 /**
  * This class is used to test the CsvJdbc driver.
@@ -47,7 +41,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCryptoFilter.java,v 1.1 2010/06/16 11:14:04 mfrasca Exp $
+ * @version $Id: TestCryptoFilter.java,v 1.2 2010/06/16 11:16:18 mfrasca Exp $
  */
 public class TestCryptoFilter extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
