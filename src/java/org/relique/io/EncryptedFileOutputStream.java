@@ -23,10 +23,4 @@ public class EncryptedFileOutputStream extends OutputStream {
 			filter.write(out, b);
 	}
 
-	public void write(String string) throws IOException {
-		char[] chars = string.toCharArray();
-		for(int pos=0; pos<string.length(); pos++)
-			write(chars[pos]);
-	}
-
 }
