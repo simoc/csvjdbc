@@ -13,6 +13,7 @@ public class EncryptedFileOutputStream extends OutputStream {
 	public EncryptedFileOutputStream(String fileName, CryptoFilter filter) throws FileNotFoundException
 	{
 		this.filter = filter;
+		this.filter.reset();
 		out = new FileOutputStream(fileName);
 	}
 
