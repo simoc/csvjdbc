@@ -41,7 +41,7 @@ import org.relique.io.XORCipher;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCryptoFilter.java,v 1.2 2010/06/16 11:16:18 mfrasca Exp $
+ * @version $Id: TestCryptoFilter.java,v 1.3 2010/06/18 08:02:27 mfrasca Exp $
  */
 public class TestCryptoFilter extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -213,5 +213,52 @@ public class TestCryptoFilter extends TestCase {
 		assertEquals("The value is wrong", "tre", results.getString("value"));
 		assertTrue(!results.next());
 	}
-	
+
+	public void testScrambledFileSpeed() throws SQLException {
+		// creating variables - to be initialized later.
+		Properties props = null;
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rset = null;
+
+		// encrypted
+		props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("cryptoFilterClassName", "org.relique.io.XORCipher");
+		props.put("cryptoFilterParameterTypes", "String");
+		props.put("cryptoFilterParameters", "gaius vipsanius agrippa");
+		Connection connEncr = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		stmt = connEncr.createStatement();
+		long encryptStartMillis = System.currentTimeMillis();
+		rset = stmt.executeQuery("SELECT * FROM speedtest_decypher");
+		int encryptCount = 0;
+		while (rset.next())
+			encryptCount++;
+		long encryptEndMillis = System.currentTimeMillis();
+		
+		// non encrypted
+		props = new Properties();
+		props.put("fileExtension", ".csv");
+		conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		stmt = conn.createStatement();
+		long noEncryptStartMillis = System.currentTimeMillis();
+		rset = stmt.executeQuery("SELECT * FROM speedtest_decypher");
+		int noEncryptCount = 0;
+		while (rset.next())
+			noEncryptCount++;
+		long noEncryptEndMillis = System.currentTimeMillis();
+
+		// comparing results
+		assertEquals(noEncryptCount, encryptCount);
+
+		long timeNoEncrypt = noEncryptEndMillis - noEncryptStartMillis;
+		long timeEncrypt = encryptEndMillis - encryptStartMillis;
+		assertTrue("Period no encrypt = " + timeNoEncrypt
+				+ " (ms) Period encrypt = " + timeEncrypt + " (ms)",
+				timeEncrypt <= 1.2 * timeNoEncrypt);
+	}
+
+
 }

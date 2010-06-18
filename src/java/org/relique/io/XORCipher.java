@@ -22,6 +22,19 @@ public class XORCipher implements CryptoFilter {
 		} else
 			return -1;
 	}
+	
+	public int read(InputStream in,byte[] b) throws IOException {
+		int len;
+		len = in.read(b, 0, b.length);
+		scrambleArray(b);
+		return len;
+	}
+
+	public int read(InputStream in,byte[] b, int off, int len) throws IOException {
+		len = in.read(b, off, len);
+		scrambleArray(b);
+		return len;
+	}
 
 	public String toString(){
 		return "XORCipher("+scrambleKey.length+"):'"+scrambleKey+"'";
@@ -30,8 +43,9 @@ public class XORCipher implements CryptoFilter {
 	/**
 	 * Perform the scrambling algorithm (named bitwise XOR encryption) using
 	 * bitwise exclusive OR (byte) encrypted character = (byte) original
-	 * character ^ (byte) key character Note that ^ is the symbol for XOR (and
-	 * not the mathematical power)
+	 * character ^ (byte) key character.
+	 * <p/>
+	 * Note that ^ is the symbol for XOR (and not the mathematical power)
 	 * 
 	 * @param org
 	 *            is the original value
@@ -44,6 +58,25 @@ public class XORCipher implements CryptoFilter {
 		return encrDataChar;
 	}
 
+	/**
+	 * Perform the scrambling algorithm (named bitwise XOR encryption) using
+	 * bitwise exclusive OR (byte) encrypted character = (byte) original
+	 * character ^ (byte) key character.
+	 * <p/>
+	 * Note that ^ is the symbol for XOR (and not the mathematical power)
+	 * 
+	 * @param org
+	 *            is the original byte array
+	 * @return
+	 */
+	private void scrambleArray(byte[] org) {
+		for (int i = 0; i < org.length; i++) {
+			org[i] ^= scrambleKey[keyCounter];
+			keyCounter++;
+			keyCounter %= scrambleKey.length;
+		}
+	}
+	
 	public void write(OutputStream out, int ch) throws IOException {
 		out.write(scrambleInt(ch));
 	}
