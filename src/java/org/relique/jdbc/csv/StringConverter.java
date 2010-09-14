@@ -8,8 +8,10 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,10 +19,17 @@ public class StringConverter {
 
 	private String dateFormat;
 	private String timeFormat;
+	private GregorianCalendar calendar;
+	private Pattern timestampPattern;
 
-	public StringConverter(String dateformat, String timeformat){
+	public StringConverter(String dateformat, String timeformat, String timeZoneName){
 		dateFormat = dateformat;
 		timeFormat = timeformat;
+		TimeZone timeZone = TimeZone.getTimeZone(timeZoneName);
+		calendar = new GregorianCalendar();
+		calendar.clear();
+		calendar.setTimeZone(timeZone);
+		timestampPattern = Pattern.compile("([0-9][0-9][0-9][0-9])-([0-9]?[0-9])-([0-9]?[0-9])[ T]([0-9]?[0-9]):([0-9]?[0-9]):([0-9]?[0-9]).*");
 	}
 	
 	public String parseString(String str) {
@@ -182,11 +191,24 @@ public class StringConverter {
 	}
 
 	public Timestamp parseTimestamp(String str) {
+		Timestamp result = null;
 		try {
-			return (str == null) ? null : Timestamp.valueOf(str);
+			Matcher matcher = timestampPattern.matcher(str);
+			if(matcher.matches())
+			{
+				int year = Integer.parseInt(matcher.group(1));
+				int month = Integer.parseInt(matcher.group(2)) - 1;
+				int date = Integer.parseInt(matcher.group(3));
+				int hours = Integer.parseInt(matcher.group(4));
+				int minutes = Integer.parseInt(matcher.group(5));
+				int seconds = Integer.parseInt(matcher.group(6));
+				calendar.set(year, month, date, hours, minutes, seconds);
+				result = new Timestamp(calendar.getTimeInMillis());
+				return result;
+			}
 		} catch (RuntimeException e) {
-			return null;
 		}
+		return result;
 	}
 
 	public InputStream parseAsciiStream(String str) {

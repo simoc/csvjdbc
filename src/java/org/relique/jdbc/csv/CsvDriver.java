@@ -28,7 +28,7 @@ import java.io.File;
  * @author     JD Evora
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvDriver.java,v 1.24 2010/06/04 15:09:28 mfrasca Exp $
+ * @version    $Id: CsvDriver.java,v 1.25 2010/09/14 15:03:09 mfrasca Exp $
  */
 
 public class CsvDriver implements Driver
@@ -78,6 +78,11 @@ public class CsvDriver implements Driver
   public static final String RAISE_UNSUPPORTED_OPERATION_EXCEPTION = "raiseUnsupportedOperationException";
   private final static String URL_PREFIX = "jdbc:relique:csv:";
   public static final String CRYPTO_FILTER_CLASS_NAME = "cryptoFilterClassName";
+  
+  public static final String TIME_ZONE_NAME = "timeZoneName";
+  public static final String DEFAULT_TIME_ZONE_NAME = "UTC";
+  // choosing Rome makes sure we change chronology from Julian to Gregorian on 1582-10-04/15, as SQL does.
+  
   /**
    *Gets the propertyInfo attribute of the CsvDriver object
    *

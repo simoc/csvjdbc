@@ -54,7 +54,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.46 2010/05/27 14:48:54 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.47 2010/09/14 15:03:09 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -101,6 +101,8 @@ public class CsvResultSet implements ResultSet {
 	private String timeFormat;
 
 	private String dateFormat;
+
+	private String timeZone;
 
 	private StringConverter converter;
 
@@ -152,7 +154,8 @@ public class CsvResultSet implements ResultSet {
         timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
         timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
         dateFormat = ((CsvConnection)statement.getConnection()).getDateFormat();
-        this.converter = new StringConverter(dateFormat, timeFormat);
+        timeZone = ((CsvConnection)statement.getConnection()).getTimeZoneName();
+        this.converter = new StringConverter(dateFormat, timeFormat, timeZone);
         if (whereClause!= null)
         	this.usedColumns = whereClause.usedColumns();
         else
@@ -268,7 +271,7 @@ public class CsvResultSet implements ResultSet {
 	}
 	private void inferTypeNames() {
 		mustInferTypeNames = false;
-		StringConverter converter = new StringConverter(dateFormat, timeFormat);
+		StringConverter converter = new StringConverter(dateFormat, timeFormat, timeZone);
     	for (int i=0; i< this.typeNames.length; i++){
     		try {
     			String typeName = "String";
@@ -285,12 +288,12 @@ public class CsvResultSet implements ResultSet {
 					typeName = "Bytes";
 				} else if (value.equals(("" + converter.parseBigDecimal(value)))) {
 					typeName = "BigDecimal";
+				} else if (converter.parseTimestamp(value) != null) {
+					typeName = "Timestamp";
 				} else if (value.equals(("" + converter.parseDate(value) + "          ").substring(0, 10))) {
 					typeName = "Date";
 				} else if (value.equals(("" + converter.parseTime(value) + "        ").substring(0, 8))) {
 					typeName = "Time";
-				} else if (value.equals(("" + converter.parseTimestamp(value) + "                   ").substring(0, 19))) {
-					typeName = "Timestamp";
 				} else if (value.equals(("" + converter.parseAsciiStream(value)))) {
 					typeName = "AsciiStream";
 				}
@@ -538,7 +541,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Timestamp getTimestamp(int columnIndex) throws SQLException {
-        return converter.parseTimestamp(getString(columnIndex));
+        return (Timestamp)getObject(columnIndex);
     }
 
     /**

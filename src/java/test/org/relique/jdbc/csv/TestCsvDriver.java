@@ -25,10 +25,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Properties;
+import java.util.TimeZone;
 import java.sql.Types;
 
 import org.relique.jdbc.csv.CsvResultSet;
@@ -42,11 +44,12 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.50 2010/06/16 11:14:04 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.51 2010/09/14 15:03:09 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
 	private String filePath;
+	private DateFormat toUTC;
 
 	public TestCsvDriver(String name) {
 		super(name);
@@ -64,6 +67,8 @@ public class TestCsvDriver extends TestCase {
 		} catch (ClassNotFoundException e) {
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
+		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));  
 
 	}
 
@@ -506,10 +511,9 @@ public class TestCsvDriver extends TestCase {
 				+ "FROM sample5 WHERE Job = 'Project Manager'");
 
 		assertTrue(results.next());
-		java.sql.Timestamp shouldBe = java.sql.Timestamp
-				.valueOf("2001-01-02 12:30:00");
-		assertEquals("the start time is wrong", shouldBe, results
-				.getObject("start"));
+		String target = "2001-01-02 12:30:00";
+		assertEquals("the start time is wrong", target, toUTC.format(results
+				.getObject("start")));
 		assertEquals("The ID is wrong", new Integer(1), results.getObject("id"));
 		assertEquals("The Name is wrong", "Juan Pablo Morales", results
 				.getObject("name"));
@@ -1596,13 +1600,11 @@ public class TestCsvDriver extends TestCase {
 		Statement stmt = conn.createStatement();
 		ResultSet results = stmt.executeQuery("SELECT * FROM twoheaders");
 
-		DateFormat dfp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
 		assertTrue(results.next());
-		assertEquals("1 is wrong", dfp.parse("2010-02-21 00:00:00"), results
-				.getObject(1));
-		assertEquals("1 is wrong", dfp.parse("2010-02-21 00:00:00"), results
-				.getObject("COLUMN1"));
+		assertEquals("1 is wrong", "2010-02-21 00:00:00", toUTC.format(results
+				.getObject(1)));
+		assertEquals("1 is wrong", "2010-02-21 00:00:00", toUTC.format(results
+				.getObject("COLUMN1")));
 		assertEquals("2 is wrong", new Double(21), results.getObject(2));
 		assertEquals("3 is wrong", new Double(20), results.getObject(3));
 		assertEquals("4 is wrong", new Double(24), results.getObject(4));
@@ -1649,5 +1651,112 @@ public class TestCsvDriver extends TestCase {
 		conn.setReadOnly(true);
 	}
 
-	
+	public void testTimestampInTimeZoneRome() throws SQLException,
+			ParseException {
+		Properties props = new Properties();
+		props.put("timeZoneName", "Europe/Rome");
+		props.put("columnTypes", "Int,String,String,Timestamp");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM sample5 WHERE ID=9 OR ID=1");
+
+		assertTrue(results.next());
+		// TODO: getString miserably fails!
+		//assertEquals("2001-01-02 12:30:00.0", results.getString("start"));
+		Timestamp got = (Timestamp) results.getObject("start");
+		assertEquals("2001-01-02 11:30:00", toUTC.format(got));
+		got = results.getTimestamp("start");
+		assertEquals("2001-01-02 11:30:00", toUTC.format(got));
+
+		assertTrue(results.next());
+		got = results.getTimestamp("start");
+		assertEquals("2004-04-02 10:30:00", toUTC.format(got));
+
+		assertFalse(results.next());
+	}
+
+	public void testTimestampInTimeZoneSantiago() throws SQLException,
+			ParseException {
+		Properties props = new Properties();
+		props.put("timeZoneName", "America/Santiago");
+		props.put("columnTypes", "Int,String,String,Timestamp");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM sample5 WHERE ID=9 OR ID=1");
+
+		assertTrue(results.next());
+		// TODO: getString miserably fails!
+		//assertEquals("2001-01-02 12:30:00", results.getString("start"));
+		Timestamp got = (Timestamp) results.getObject("start");
+		assertEquals("2001-01-02 15:30:00", toUTC.format(got));
+		got = results.getTimestamp("start");
+		assertEquals("2001-01-02 15:30:00", toUTC.format(got));
+
+		assertTrue(results.next());
+		got = results.getTimestamp("start");
+		assertEquals("2004-04-02 16:30:00", toUTC.format(got));
+
+		assertFalse(results.next());
+	}
+
+	public void testTimestampInTimeZoneGMTPlus0400() throws SQLException,
+			ParseException {
+		Properties props = new Properties();
+		props.put("timeZoneName", "GMT+04:00");
+		props.put("columnTypes", "Int,String,String,Timestamp");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM sample5 WHERE ID=9 OR ID=1");
+
+		assertTrue(results.next());
+		// TODO: getString miserably fails!
+		// assertEquals("2001-01-02 12:30:00", results.getString("start"));
+		Timestamp got = (Timestamp) results.getObject("start");
+		assertEquals("2001-01-02 08:30:00", toUTC.format(got));
+		got = results.getTimestamp("start");
+		assertEquals("2001-01-02 08:30:00", toUTC.format(got));
+
+		assertTrue(results.next());
+		got = results.getTimestamp("start");
+		assertEquals("2004-04-02 08:30:00", toUTC.format(got));
+
+		assertFalse(results.next());
+	}
+
+	public void testTimestampInTimeZoneGMTMinus0400() throws SQLException,
+			ParseException {
+		Properties props = new Properties();
+		props.put("timeZoneName", "GMT-04:00");
+		props.put("columnTypes", "Int,String,String,Timestamp");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM sample5 WHERE ID=9 OR ID=1");
+
+		assertTrue(results.next());
+		// TODO: getString miserably fails!
+		// assertEquals("2001-01-02 12:30:00", results.getString("start"));
+		Timestamp got = (Timestamp) results.getObject("start");
+		assertEquals("2001-01-02 16:30:00", toUTC.format(got));
+		got = results.getTimestamp("start");
+		assertEquals("2001-01-02 16:30:00", toUTC.format(got));
+
+		assertTrue(results.next());
+		got = results.getTimestamp("start");
+		assertEquals("2004-04-02 16:30:00", toUTC.format(got));
+
+		assertFalse(results.next());
+	}
+
 }

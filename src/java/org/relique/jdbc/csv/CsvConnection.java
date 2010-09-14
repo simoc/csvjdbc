@@ -50,7 +50,7 @@ import org.relique.io.CryptoFilter;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.32 2010/06/04 15:09:28 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.33 2010/09/14 15:03:09 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -109,6 +109,7 @@ public class CsvConnection implements Connection {
 	private String timestampFormat;
 	private String dateFormat;
 	private String timeFormat;
+	private String timeZoneName;
 	private Character commentChar;
 
 	private int skipLeadingLines = 0;
@@ -205,7 +206,7 @@ public class CsvConnection implements Connection {
 							.split(",");
 					String[] parameterStrings = info.getProperty(
 							"cryptoFilterParameters", "").split(",");
-					StringConverter converter = new StringConverter("", "");
+					StringConverter converter = new StringConverter("", "", "");
 					Class[] parameterClasses = new Class[parameterStrings.length];
 					Object[] parameterValues = new Object[parameterStrings.length];
 					for (int i = 0; i < parameterStrings.length; i++) {
@@ -243,6 +244,7 @@ public class CsvConnection implements Connection {
             setTimestampFormat(info.getProperty(CsvDriver.TIMESTAMP_FORMAT, CsvDriver.DEFAULT_TIMESTAMP_FORMAT));
             setDateFormat(info.getProperty(CsvDriver.DATE_FORMAT, CsvDriver.DEFAULT_DATE_FORMAT));
             setTimeFormat(info.getProperty(CsvDriver.TIME_FORMAT, CsvDriver.DEFAULT_TIME_FORMAT));
+            setTimeZoneName(info.getProperty(CsvDriver.TIME_ZONE_NAME, CsvDriver.DEFAULT_TIME_ZONE_NAME));
             setCommentChar(info.getProperty(CsvDriver.COMMENT_CHAR, CsvDriver.DEFAULT_COMMENT_CHAR));
             setDefectiveHeaders(info.getProperty(CsvDriver.DEFECTIVE_HEADERS, CsvDriver.DEFAULT_DEFECTIVE_HEADERS));
             setSkipLeadingDataLines(info.getProperty(CsvDriver.SKIP_LEADING_DATA_LINES, CsvDriver.DEFAULT_SKIP_LEADING_DATA_LINES));
@@ -256,6 +258,14 @@ public class CsvConnection implements Connection {
 					CsvDriver.DEFAULT_RAISE_UNSUPPORTED_OPERATION_EXCEPTION)));
         }
     }
+
+	private void setTimeZoneName(String property) {
+		timeZoneName = property;
+	}
+
+	public String getTimeZoneName() {
+		return timeZoneName;
+	}
 
 	/**
      * Creates a <code>Statement</code> object for sending
