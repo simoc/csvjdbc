@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.51 2010/09/14 15:03:09 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.52 2010/09/16 11:34:23 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1126,7 +1126,8 @@ public class TestCsvDriver extends TestCase {
 		expect = java.sql.Timestamp.valueOf("2001-04-02 12:30:00");
 		assertEquals("adding Date to Time", expect.getClass(), results
 				.getObject("ts").getClass());
-		assertEquals("adding Date to Time", expect, results.getObject("ts"));
+		assertEquals("adding Date to Time", ((Timestamp) expect).toString(), toUTC
+				.format(results.getObject("ts")) + ".0");
 
 		assertTrue(results.next());
 		expect = java.sql.Date.valueOf("2004-04-02");
@@ -1140,7 +1141,8 @@ public class TestCsvDriver extends TestCase {
 		expect = java.sql.Timestamp.valueOf("2004-04-02 01:00:00");
 		assertEquals("adding Date to Time", expect.getClass(), results
 				.getObject("ts").getClass());
-		assertEquals("adding Date to Time", expect, results.getObject("ts"));
+		assertEquals("adding Date to Time", ((Timestamp) expect).toString(), toUTC
+				.format(results.getObject("ts")) + ".0");
 
 		assertFalse(results.next());
 	}
@@ -1755,6 +1757,88 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(results.next());
 		got = results.getTimestamp("start");
 		assertEquals("2004-04-02 16:30:00", toUTC.format(got));
+
+		assertFalse(results.next());
+	}
+
+	public void testAddingDateToTimeInTimeZoneAthens() throws SQLException,
+			ParseException {
+		Properties props = new Properties();
+		props.put("timeZoneName", "Europe/Athens");
+		props.put("columnTypes", "Int,String,Date,Time");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt
+				.executeQuery("SELECT ID, NAME, D + T as DT FROM sample8");
+
+		assertTrue(results.next());
+		// TODO: getString miserably fails!
+		//assertEquals("2001-01-02 12:30:00", results.getString("start"));
+		Timestamp got = (Timestamp) results.getObject("DT");
+		assertEquals("2010-01-01 23:30:00", toUTC.format(got));
+
+		assertTrue(results.next());
+		got = (Timestamp) results.getObject("DT");
+		assertEquals("2010-02-01 23:30:00", toUTC.format(got));
+
+		assertTrue(results.next());
+		got = (Timestamp) results.getObject("DT");
+		assertEquals("2010-03-27 23:30:00", toUTC.format(got));
+
+		assertTrue(results.next());
+		got = (Timestamp) results.getObject("DT");
+		assertEquals("2010-03-28 02:30:00", toUTC.format(got));
+
+		assertTrue(results.next());
+		got = (Timestamp) results.getObject("DT");
+		assertEquals("2009-10-24 22:30:00", toUTC.format(got));
+
+		assertTrue(results.next());
+		got = (Timestamp) results.getObject("DT");
+		assertEquals("2009-10-25 03:30:00", toUTC.format(got));
+
+		assertFalse(results.next());
+	}
+
+	public void testAddingDateToTimeInTimeZoneGMTMinus0500() throws SQLException,
+			ParseException {
+		Properties props = new Properties();
+		props.put("timeZoneName", "GMT-05:00");
+		props.put("columnTypes", "Int,String,Date,Time");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt
+				.executeQuery("SELECT ID, NAME, D + T as DT FROM sample8");
+
+		assertTrue(results.next());
+		// TODO: getString miserably fails!
+		//assertEquals("2001-01-02 12:30:00", results.getString("start"));
+		Timestamp got = (Timestamp) results.getObject("DT");
+		assertEquals("2010-01-02 06:30:00", toUTC.format(got));
+
+		assertTrue(results.next());
+		got = (Timestamp) results.getObject("DT");
+		assertEquals("2010-02-02 06:30:00", toUTC.format(got));
+
+		assertTrue(results.next());
+		got = (Timestamp) results.getObject("DT");
+		assertEquals("2010-03-28 06:30:00", toUTC.format(got));
+
+		assertTrue(results.next());
+		got = (Timestamp) results.getObject("DT");
+		assertEquals("2010-03-28 10:30:00", toUTC.format(got));
+
+		assertTrue(results.next());
+		got = (Timestamp) results.getObject("DT");
+		assertEquals("2009-10-25 06:30:00", toUTC.format(got));
+
+		assertTrue(results.next());
+		got = (Timestamp) results.getObject("DT");
+		assertEquals("2009-10-25 10:30:00", toUTC.format(got));
 
 		assertFalse(results.next());
 	}

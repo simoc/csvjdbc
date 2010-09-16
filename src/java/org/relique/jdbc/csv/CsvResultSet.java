@@ -54,7 +54,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.47 2010/09/14 15:03:09 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.48 2010/09/16 11:34:23 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -250,6 +250,7 @@ public class CsvResultSet implements ResultSet {
     	if(!thereWasAnAnswer) {
     		return;
     	}
+		recordEnvironment.put("@STRINGCONVERTER", converter);
 		for (int i = 0; i<reader.getColumnNames().length; i++){
 			String key = reader.getColumnNames()[i].toUpperCase();
 			Object value = converter.convert(typeNames[i], reader.fieldValues[i]);
@@ -513,7 +514,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Date getDate(int columnIndex) throws SQLException  {
-        return converter.parseDate(getString(columnIndex));
+        return (Date) getObject(columnIndex);
     }
 
     /**
@@ -527,7 +528,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Time getTime(int columnIndex) throws SQLException {
-        return converter.parseTime(getString(columnIndex));
+        return (Time) getObject(columnIndex);
     }
 
     /**
@@ -541,7 +542,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Timestamp getTimestamp(int columnIndex) throws SQLException {
-        return (Timestamp)getObject(columnIndex);
+        return (Timestamp) getObject(columnIndex);
     }
 
     /**

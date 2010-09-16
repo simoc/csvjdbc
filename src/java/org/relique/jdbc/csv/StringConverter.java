@@ -31,7 +31,7 @@ public class StringConverter {
 		calendar.setTimeZone(timeZone);
 		timestampPattern = Pattern.compile("([0-9][0-9][0-9][0-9])-([0-9]?[0-9])-([0-9]?[0-9])[ T]([0-9]?[0-9]):([0-9]?[0-9]):([0-9]?[0-9]).*");
 	}
-	
+
 	public String parseString(String str) {
 		return str;
 	}
