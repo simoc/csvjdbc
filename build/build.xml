@@ -5,7 +5,7 @@
  Build file for CsvJdbc. Built using Ant 1.6.1
 
  Authors: Jonathan Ackerman, Michael Maraya
- Version: $Id: build.xml,v 1.17 2010/09/24 11:58:08 mfrasca Exp $
+ Version: $Id: build.xml,v 1.18 2010/09/24 12:57:54 mfrasca Exp $
 
  CsvJdbc - a JDBC driver for CSV files
  Copyright (C) 2001  Jonathan Ackerman
@@ -35,6 +35,7 @@
   <!-- =================================================================== -->
   <!-- Project-wide properties and paths                                   -->
   <!-- =================================================================== -->
+  <property name="TALK" value="false" />
   <property name="name" value="csvjdbc"/>
   <property name="rel" value="r0-10"/>
   <property name="rel.name" value="${name}-${rel}"/>
@@ -48,14 +49,21 @@
   <property name="rel.dir" value="../release"/>
   <property name="junit.dir" value="/usr/share/java"/>
   <property name="jar.file" value="${rel.dir}/${name}.jar"/>
+  <property name="test.reports" value="../reports" /> 
   <path id="classpath">
     <pathelement path="."/>
     <pathelement path="${class.dir}"/>
     <fileset dir="${lib.dir}">
       <include name="**/*.jar"/>
     </fileset>
+  </path>
+  <path id="test.classpath">
+    <path refid="classpath"/>
     <fileset dir="${junit.dir}">
       <include name="junit*.jar"/>
+    </fileset>
+    <fileset dir="../classes/">
+      <include name="**/*.class"/>
     </fileset>
   </path>
 
@@ -136,15 +144,20 @@
   <!-- =================================================================== -->
   <target name="test" depends="compile"
           description="Creates and runs the test programs. See lib\readme.txt">
+    <mkdir dir="${test.reports}"/>
     <javac srcdir="${java.dir}" destdir="${class.dir}">
-      <classpath refid="classpath"/>
-      <include name="test/**/*.java"/>
+      <classpath refid="classpath" />
+      <include name="test/**/*.java" />
     </javac>
-    <java classname="test.org.relique.jdbc.csv.RunTests" fork="yes"
-          failonerror="yes">
-      <classpath refid="classpath"/>
-      <arg value="../src/testdata"/>
-    </java>
+    <junit fork="yes" printsummary="no" haltonfailure="no">
+      <formatter type="xml" />
+      <classpath refid="test.classpath" />
+      <batchtest fork="yes" todir="${test.reports}" >
+        <fileset dir="../classes/">
+          <include name="**/Test*.class" />
+        </fileset>
+      </batchtest>
+    </junit>
   </target>
 
   <!-- =================================================================== -->
