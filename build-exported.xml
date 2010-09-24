@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="csvjdbc">
+	<property name="TALK" value="false" />
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../usr/lib/eclipse"/>
+    <property name="LizardAnt.location" value="../LizardAnt"/>
+    <property name="LizardControlServer.location" value="../LizardControlServer"/>
+    <property name="junit.output.dir" value="junit"/>
+    <property name="apache-commons.location" value="../apache-commons"/>
+    <property name="ant.location" value="../ant"/>
+    <property name="jnens.location" value="../jnens"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.1"/>
+    <property name="source" value="1.3"/>
+    <path id="JUnit 4.libraryclasspath">
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.junit4_4.5.0.v20090824/junit.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.hamcrest.core_1.1.0.jar"/>
+    </path>
+    <path id="JUnit 3.libraryclasspath">
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.junit_3.8.2.v20090203-1005/junit.jar"/>
+    </path>
+    <path id="apache-commons.classpath">
+        <pathelement location="${apache-commons.location}/bin"/>
+        <path refid="JUnit 3.libraryclasspath"/>
+    </path>
+    <path id="ant.classpath">
+        <pathelement location="${ant.location}/bin"/>
+        <pathelement location="${ant.location}/../../../../usr/local/share/Java/apache.org/jakarta-regexp/jakarta-regexp-1.5.jar"/>
+        <pathelement location="${ant.location}/../../../../usr/local/share/Java/apache.org/jakarta-oro/jakarta-oro-2.0.8.jar"/>
+        <pathelement location="${ant.location}/../../../../usr/local/share/Java/apache.org/xmlbeans/xmlpublic.jar"/>
+        <pathelement location="${ant.location}/../../../../usr/local/share/Java/apache.org/bcel/bcel-5.2.jar"/>
+        <pathelement location="${ant.location}/../../../../usr/local/share/Java/com.jcraft.jsch_0.1.31.jar"/>
+        <pathelement location="${ant.location}/../../../../usr/local/share/Java/apache.org/commons-logging/commons-logging-1.1.1.jar"/>
+        <pathelement location="${ant.location}/../../../../usr/local/share/Java/bsf-2.4.0.jar"/>
+        <pathelement location="${ant.location}/../../../../usr/local/share/Java/jai-core-1.1.3-alpha.jar"/>
+        <path refid="apache-commons.classpath"/>
+        <pathelement location="${ant.location}/../../../../usr/local/share/Java/apache.org/commons-net/commons-net-1.4.1.jar"/>
+    </path>
+    <path id="jnens.classpath">
+        <pathelement location="${jnens.location}/bin"/>
+        <pathelement location="${jnens.location}/../../../../usr/local/share/Java/joda-time.sourceforge.net/joda-time-1.5.2.jar"/>
+        <pathelement location="${jnens.location}/../../../../usr/local/share/Java/wldelft.nl/fews/Delft_FEWS.jar"/>
+        <path refid="ant.classpath"/>
+        <pathelement location="${jnens.location}/../../../../usr/local/share/Java/apache.org/xmlbeans/xbean.jar"/>
+        <path refid="JUnit 4.libraryclasspath"/>
+        <pathelement location="${jnens.location}/../../../../usr/local/share/Java/jcifs.samba.org/jcifs-1.3.10.jar"/>
+    </path>
+    <path id="csvjdbc.classpath">
+        <pathelement location="classes"/>
+        <path refid="JUnit 4.libraryclasspath"/>
+        <path refid="jnens.classpath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="classes"/>
+        <copy includeemptydirs="false" todir="classes">
+            <fileset dir="src/java">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="classes"/>
+    </target>
+    <target depends="clean" name="cleanall">
+        <ant antfile="${apache-commons.location}/build-exported.xml" dir="${apache-commons.location}" inheritAll="false" target="clean"/>
+        <ant antfile="${ant.location}/build-exported.xml" dir="${ant.location}" inheritAll="false" target="clean"/>
+        <ant antfile="${jnens.location}/build-exported.xml" dir="${jnens.location}" inheritAll="false" target="clean"/>
+    </target>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects">
+        <ant antfile="${apache-commons.location}/build-exported.xml" dir="${apache-commons.location}" inheritAll="false" target="build-project">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="${ant.location}/build-exported.xml" dir="${ant.location}" inheritAll="false" target="build-project">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="${jnens.location}/build-exported.xml" dir="${jnens.location}" inheritAll="false" target="build-project">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="classes" source="${source}" target="${target}">
+            <src path="src/java"/>
+            <classpath refid="csvjdbc.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
+        <ant antfile="${LizardAnt.location}/build-exported.xml" dir="${LizardAnt.location}" inheritAll="false" target="clean"/>
+        <ant antfile="${LizardAnt.location}/build-exported.xml" dir="${LizardAnt.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="${LizardControlServer.location}/build-exported.xml" dir="${LizardControlServer.location}" inheritAll="false" target="clean"/>
+        <ant antfile="${LizardControlServer.location}/build-exported.xml" dir="${LizardControlServer.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="TestSqlParser">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="test.org.relique.jdbc.csv.TestSqlParser" todir="${junit.output.dir}"/>
+            <classpath refid="csvjdbc.classpath"/>
+        </junit>
+    </target>
+    <target name="TestFileSetInputStream">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="test.org.relique.jdbc.csv.TestFileSetInputStream" todir="${junit.output.dir}"/>
+            <classpath refid="csvjdbc.classpath"/>
+        </junit>
+    </target>
+    <target name="TestJoinedTables">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="test.org.relique.jdbc.csv.TestJoinedTables" todir="${junit.output.dir}"/>
+            <classpath refid="csvjdbc.classpath"/>
+        </junit>
+    </target>
+    <target name="test.org.relique.jdbc.csv">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="test.org.relique.jdbc.csv.RunTests" todir="${junit.output.dir}"/>
+            <test name="test.org.relique.jdbc.csv.TestCryptoFilter" todir="${junit.output.dir}"/>
+            <test name="test.org.relique.jdbc.csv.TestCsvDriver" todir="${junit.output.dir}"/>
+            <test name="test.org.relique.jdbc.csv.TestFileSetInputStream" todir="${junit.output.dir}"/>
+            <test name="test.org.relique.jdbc.csv.TestJoinedTables" todir="${junit.output.dir}"/>
+            <test name="test.org.relique.jdbc.csv.TestScrollableDriver" todir="${junit.output.dir}"/>
+            <test name="test.org.relique.jdbc.csv.TestSqlParser" todir="${junit.output.dir}"/>
+            <test name="test.org.relique.jdbc.csv.TestStringConverter" todir="${junit.output.dir}"/>
+            <classpath refid="csvjdbc.classpath"/>
+        </junit>
+    </target>
+    <target name="TestCsvDriver">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="test.org.relique.jdbc.csv.TestCsvDriver" todir="${junit.output.dir}"/>
+            <classpath refid="csvjdbc.classpath"/>
+        </junit>
+    </target>
+    <target name="RunTests">
+        <java classname="test.org.relique.jdbc.csv.RunTests" failonerror="true" fork="yes">
+            <classpath refid="csvjdbc.classpath"/>
+        </java>
+    </target>
+    <target name="RunTests (1)">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="test.org.relique.jdbc.csv.RunTests" todir="${junit.output.dir}"/>
+            <classpath refid="csvjdbc.classpath"/>
+        </junit>
+    </target>
+    <target name="TestStringConverter">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="test.org.relique.jdbc.csv.TestStringConverter" todir="${junit.output.dir}"/>
+            <classpath refid="csvjdbc.classpath"/>
+        </junit>
+    </target>
+    <target name="TestCsvDriver.testAddingDateToTime">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="test.org.relique.jdbc.csv.TestCsvDriver" todir="${junit.output.dir}"/>
+            <classpath refid="csvjdbc.classpath"/>
+        </junit>
+    </target>
+    <target name="TestCryptoFilter">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="test.org.relique.jdbc.csv.TestCryptoFilter" todir="${junit.output.dir}"/>
+            <classpath refid="csvjdbc.classpath"/>
+        </junit>
+    </target>
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
+</project>
