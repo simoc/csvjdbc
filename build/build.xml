@@ -5,7 +5,7 @@
  Build file for CsvJdbc. Built using Ant 1.6.1
 
  Authors: Jonathan Ackerman, Michael Maraya
- Version: $Id: build.xml,v 1.18 2010/09/24 12:57:54 mfrasca Exp $
+ Version: $Id: build.xml,v 1.19 2010/09/24 13:12:43 mfrasca Exp $
 
  CsvJdbc - a JDBC driver for CSV files
  Copyright (C) 2001  Jonathan Ackerman
@@ -147,6 +147,9 @@
     <mkdir dir="${test.reports}"/>
     <javac srcdir="${java.dir}" destdir="${class.dir}">
       <classpath refid="classpath" />
+      <fileset dir="${junit.dir}">
+        <include name="junit*.jar"/>
+      </fileset>
       <include name="test/**/*.java" />
     </javac>
     <junit fork="yes" printsummary="no" haltonfailure="no">
