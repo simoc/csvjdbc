@@ -41,7 +41,7 @@ import org.relique.io.XORCipher;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCryptoFilter.java,v 1.3 2010/06/18 08:02:27 mfrasca Exp $
+ * @version $Id: TestCryptoFilter.java,v 1.4 2010/09/27 07:14:40 mfrasca Exp $
  */
 public class TestCryptoFilter extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -257,7 +257,7 @@ public class TestCryptoFilter extends TestCase {
 		long timeEncrypt = encryptEndMillis - encryptStartMillis;
 		assertTrue("Period no encrypt = " + timeNoEncrypt
 				+ " (ms) Period encrypt = " + timeEncrypt + " (ms)",
-				timeEncrypt <= 1.2 * timeNoEncrypt);
+				timeEncrypt <= 2 * timeNoEncrypt);
 	}
 
 
