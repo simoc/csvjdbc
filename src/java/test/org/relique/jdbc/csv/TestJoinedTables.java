@@ -359,89 +359,26 @@ public class TestJoinedTables extends TestCase {
 		results = stmt.executeQuery("SELECT * FROM twojoinedtablesindex");
 		assertTrue(results.next());
 		assertEquals("p1", results.getObject("P"));
-		assertEquals("2", results.getObject("J"));
+		assertEquals("1", results.getObject("J"));
 		assertEquals("d1", results.getObject("D"));
 		assertEquals("t1", results.getObject("T"));
 		assertEquals("v11", results.getObject("V"));
 
 		assertTrue(results.next());
 		assertEquals("p2", results.getObject("P"));
-		assertEquals("2", results.getObject("J"));
+		assertEquals("1", results.getObject("J"));
 		assertEquals("d1", results.getObject("D"));
 		assertEquals("t1", results.getObject("T"));
 		assertEquals("v12", results.getObject("V"));
 
 		assertTrue(results.next());
 		assertEquals("p3", results.getObject("P"));
-		assertEquals("2", results.getObject("J"));
+		assertEquals("1", results.getObject("J"));
 		assertEquals("d1", results.getObject("D"));
 		assertEquals("t1", results.getObject("T"));
 		assertEquals("v13", results.getObject("V"));
 
 		assertTrue(results.next());
-		assertEquals("2", results.getObject("J"));
-		assertEquals("p1", results.getObject("P"));
-		assertEquals("d2", results.getObject("D"));
-		assertEquals("t2", results.getObject("T"));
-		assertEquals("v21", results.getObject("V"));
-
-		assertTrue(results.next());
-		assertEquals("2", results.getObject("J"));
-		assertEquals("p2", results.getObject("P"));
-		assertEquals("d2", results.getObject("D"));
-		assertEquals("t2", results.getObject("T"));
-		assertEquals("v22", results.getObject("V"));
-
-		assertTrue(results.next());
-		assertEquals("2", results.getObject("J"));
-		assertEquals("p3", results.getObject("P"));
-		assertEquals("d2", results.getObject("D"));
-		assertEquals("t2", results.getObject("T"));
-		assertEquals("v23", results.getObject("V"));
-
-		assertTrue(results.next());
-		assertEquals("p1", results.getObject("P"));
-		assertEquals("2", results.getObject("J"));
-		assertEquals("d3", results.getObject("D"));
-		assertEquals("t3", results.getObject("T"));
-		assertEquals("v31", results.getObject("V"));
-
-		assertTrue(results.next());
-		assertEquals("p2", results.getObject("P"));
-		assertEquals("2", results.getObject("J"));
-		assertEquals("d3", results.getObject("D"));
-		assertEquals("t3", results.getObject("T"));
-		assertEquals("v32", results.getObject("V"));
-
-		assertTrue(results.next());
-		assertEquals("p3", results.getObject("P"));
-		assertEquals("2", results.getObject("J"));
-		assertEquals("d3", results.getObject("D"));
-		assertEquals("t3", results.getObject("T"));
-		assertEquals("v33", results.getObject("V"));
-
-		assertTrue(results.next());
-		assertEquals("p1", results.getObject("P"));
-		assertEquals("1", results.getObject("J"));
-		assertEquals("d1", results.getObject("D")); // TODO (here I get a 'D')
-		//assertEquals("t1", results.getObject("T"));
-		//assertEquals("v11", results.getObject("V"));
-
-		assertTrue(results.next());
-		assertEquals("p2", results.getObject("P"));
-		assertEquals("1", results.getObject("J"));
-		//assertEquals("d1", results.getObject("D"));
-		//assertEquals("t1", results.getObject("T"));
-		//assertEquals("v12", results.getObject("V"));
-
-		assertTrue(results.next()); // TODO (here it crashes)
-		//assertEquals("p3", results.getObject("P"));
-		//assertEquals("1", results.getObject("J"));
-		//assertEquals("d1", results.getObject("D"));
-		//assertEquals("t1", results.getObject("T"));
-		//assertEquals("v13", results.getObject("V"));
-
-		assertTrue(results.next());
 		assertEquals("1", results.getObject("J"));
 		assertEquals("p1", results.getObject("P"));
 		assertEquals("d2", results.getObject("D"));
@@ -449,14 +386,14 @@ public class TestJoinedTables extends TestCase {
 		assertEquals("v21", results.getObject("V"));
 
 		assertTrue(results.next());
-		assertEquals("2", results.getObject("J"));
+		assertEquals("1", results.getObject("J"));
 		assertEquals("p2", results.getObject("P"));
 		assertEquals("d2", results.getObject("D"));
 		assertEquals("t2", results.getObject("T"));
 		assertEquals("v22", results.getObject("V"));
 
 		assertTrue(results.next());
-		assertEquals("2", results.getObject("J"));
+		assertEquals("1", results.getObject("J"));
 		assertEquals("p3", results.getObject("P"));
 		assertEquals("d2", results.getObject("D"));
 		assertEquals("t2", results.getObject("T"));
@@ -464,26 +401,160 @@ public class TestJoinedTables extends TestCase {
 
 		assertTrue(results.next());
 		assertEquals("p1", results.getObject("P"));
-		assertEquals("2", results.getObject("J"));
+		assertEquals("1", results.getObject("J"));
 		assertEquals("d3", results.getObject("D"));
 		assertEquals("t3", results.getObject("T"));
 		assertEquals("v31", results.getObject("V"));
 
 		assertTrue(results.next());
 		assertEquals("p2", results.getObject("P"));
-		assertEquals("2", results.getObject("J"));
+		assertEquals("1", results.getObject("J"));
 		assertEquals("d3", results.getObject("D"));
 		assertEquals("t3", results.getObject("T"));
 		assertEquals("v32", results.getObject("V"));
 
 		assertTrue(results.next());
 		assertEquals("p3", results.getObject("P"));
-		assertEquals("2", results.getObject("J"));
+		assertEquals("1", results.getObject("J"));
 		assertEquals("d3", results.getObject("D"));
 		assertEquals("t3", results.getObject("T"));
 		assertEquals("v33", results.getObject("V"));
 
-		assertFalse(results.next());
+		assertTrue(results.next());
+		assertEquals("p1", results.getObject("P"));
+		assertEquals("2", results.getObject("J"));
+		assertEquals("d7", results.getObject("D"));
+		assertEquals("t7", results.getObject("T"));
+		assertEquals("v71", results.getObject("V"));
+
+		assertTrue(results.next());
+		assertEquals("p2", results.getObject("P"));
+		assertEquals("2", results.getObject("J"));
+		assertEquals("d7", results.getObject("D"));
+		assertEquals("t7", results.getObject("T"));
+		assertEquals("v72", results.getObject("V"));
+
+		assertTrue(results.next());
+		assertEquals("p3", results.getObject("P"));
+		assertEquals("2", results.getObject("J"));
+		assertEquals("d7", results.getObject("D"));
+		assertEquals("t7", results.getObject("T"));
+		assertEquals("v73", results.getObject("V"));
+
+		assertTrue(results.next());
+		assertEquals("p1", results.getObject("P"));
+		assertEquals("2", results.getObject("J"));
+		assertEquals("d8", results.getObject("D"));
+		assertEquals("t8", results.getObject("T"));
+		assertEquals("v81", results.getObject("V"));
+
+		assertTrue(results.next());
+		assertEquals("2", results.getObject("J"));
+		assertEquals("p2", results.getObject("P"));
+		assertEquals("d8", results.getObject("D"));
+		assertEquals("t8", results.getObject("T"));
+		assertEquals("v82", results.getObject("V"));
+
+		assertTrue(results.next());
+		assertEquals("2", results.getObject("J"));
+		assertEquals("p3", results.getObject("P"));
+		assertEquals("d8", results.getObject("D"));
+		assertEquals("t8", results.getObject("T"));
+		assertEquals("v83", results.getObject("V"));
+
+		assertTrue(results.next());
+		assertEquals("p1", results.getObject("P"));
+		assertEquals("2", results.getObject("J"));
+		assertEquals("d9", results.getObject("D"));
+		assertEquals("t9", results.getObject("T"));
+		assertEquals("v91", results.getObject("V"));
+
+		assertTrue(results.next());
+		assertEquals("p2", results.getObject("P"));
+		assertEquals("2", results.getObject("J"));
+		assertEquals("d9", results.getObject("D"));
+		assertEquals("t9", results.getObject("T"));
+		assertEquals("v92", results.getObject("V"));
+
+		assertTrue(results.next());
+		assertEquals("p3", results.getObject("P"));
+		assertEquals("2", results.getObject("J"));
+		assertEquals("d9", results.getObject("D"));
+		assertEquals("t9", results.getObject("T"));
+		assertEquals("v93", results.getObject("V"));
+
+		// assertFalse(results.next()); don't test this: I've added a third file for an other test.
 	}
 
+	public void testHeaderLooksLikeHeaderIndexedDifferentLength() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("headerline", "P,J,D,T,V");
+		
+		// setting both transposedLines and skipTransposedFields informs the
+		// driver we are receiving a compacted join
+		
+		// transposedLines <- 1; leaving D,T as regular fields, V as matrix of
+		// joined values
+		props.put("transposedLines", "1");
+		
+		// transposedFieldsToSkip <- 2; the file looks like a regular CSV (with
+		// variable header)
+		props.put("transposedFieldsToSkip", "3");
+		// the driver must be told that there is no header.
+		props.put("suppressHeaders", "true");
+		
+		props.put("indexedFiles", "True");
+		props.put("fileTailPattern", "_(.*)");
+		props.put("fileTailParts", "junk");
+		props.put("fileTailPrepend", "true");
+
+		ResultSet results = null;
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+
+		results = stmt.executeQuery("SELECT * FROM twojoinedtablesindex");
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+
+		assertTrue(results.next());
+		assertEquals("p1", results.getObject("P"));
+		assertEquals("3", results.getObject("J"));
+		assertEquals("d1", results.getObject("D"));
+		assertEquals("t1", results.getObject("T"));
+		assertEquals("v11", results.getObject("V"));
+
+		assertTrue(results.next());
+		assertEquals("p2", results.getObject("P"));
+		assertEquals("3", results.getObject("J"));
+		assertEquals("d1", results.getObject("D"));
+		assertEquals("t1", results.getObject("T"));
+		assertEquals("v12", results.getObject("V"));
+
+		assertTrue(results.next()); // TODO: here it crashes
+		assertEquals("p1", results.getObject("P"));
+		assertEquals("3", results.getObject("J"));
+		assertEquals("d9", results.getObject("D"));
+		assertEquals("t9", results.getObject("T"));
+		assertEquals("v93", results.getObject("V"));
+
+}
 }

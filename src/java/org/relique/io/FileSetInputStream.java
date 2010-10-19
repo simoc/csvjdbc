@@ -22,6 +22,7 @@ package org.relique.io;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -72,6 +73,7 @@ public class FileSetInputStream extends InputStream {
 	 * @param skipLeadingDataLines 
 	 * @throws IOException
 	 */
+	@SuppressWarnings("unchecked")
 	public FileSetInputStream(String dirName, String fileNamePattern,
 			String[] fieldsInName, char separator, boolean prepend,
 			boolean headerless, CryptoFilter filter, int skipLeadingDataLines)
@@ -112,6 +114,7 @@ public class FileSetInputStream extends InputStream {
 				fileNames.add(dirName + candidates[i]);
 			}
 		}
+		Collections.sort(fileNames);
 		if (fileNames.size()==0){
 			return;
 		}
