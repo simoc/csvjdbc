@@ -41,7 +41,7 @@ import org.relique.io.CryptoFilter;
  * @author Christoph Langer
  * @author Chetan Gupta
  * @created 25 November 2001
- * @version $Id: CsvRawReader.java,v 1.2 2010/05/27 14:48:54 mfrasca Exp $
+ * @version $Id: CsvRawReader.java,v 1.3 2010/10/28 08:04:06 mfrasca Exp $
  */
 
 public class CsvRawReader {
@@ -339,7 +339,10 @@ public class CsvRawReader {
 				// Remove extra , added at start
 				value = value.substring(0, value.length() - 1);
 				try {
-					line = "\n" + input.readLine();
+					String additionalLine = input.readLine();
+					if (additionalLine == null) 
+						throw new SQLException("EOF reached inside quoted mode");
+					line = "\n" + additionalLine;
 				} catch (IOException e) {
 					throw new SQLException(e.toString());
 				}

@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.52 2010/09/16 11:34:23 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.53 2010/10/28 08:04:06 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -848,6 +848,33 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The name is wrong", "123\n456\n789", results
 				.getString("value"));
 		assertTrue(!results.next());
+	}
+
+	/**
+	 * @throws SQLException
+	 */
+	public void test3091923() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".csv");
+		props.put("separator", ";");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM badquoted");
+		assertTrue(results.next());
+		assertEquals("The name is wrong", "Rechtsform unbekannt", results.getString("F2"));
+		assertTrue(results.next());
+		assertEquals("The name is wrong", "Rechtsform \nunbekannt", results.getString("F2"));
+		assertTrue(results.next());
+		assertEquals("The name is wrong", "Rechtsform unbekannt", results.getString("F2"));
+		try {
+			results.next();
+			fail("Should raise a java.sqlSQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: EOF reached inside quoted mode", "" + e);
+		}
 	}
 
 	public void testColumnWithDot() throws SQLException {
