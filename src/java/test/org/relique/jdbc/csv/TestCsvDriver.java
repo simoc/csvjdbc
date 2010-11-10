@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.53 2010/10/28 08:04:06 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.54 2010/11/10 09:27:06 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1519,7 +1519,83 @@ public class TestCsvDriver extends TestCase {
 		assertEquals(
 				"\"Rechtsform unbekannt\" entsteht durch die Simulation zTELKUS. Es werden Simulationsregeln angewandt.",
 				results.getString(10));
+	}
+
+	public void testWithNonRepeatedQuotesExplicitSQLStyle() throws SQLException {
+		Properties props = new Properties();
+		props.put("separator", ";");
+		props.put("quotechar", "'");
+		props.put("quotestyle", "SQL");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM doublequoted");
+		assertTrue(results.next());
+		assertEquals(
+				"\"Rechtsform unbekannt\" entsteht durch die Simulation zTELKUS. Es werden Simulationsregeln angewandt.",
+				results.getString(10));
+	}
+
+	public void testWithNonRepeatedQuotesExplicitCStyle() throws SQLException {
+		Properties props = new Properties();
+		props.put("separator", ";");
+		props.put("quotechar", "'");
+		props.put("quotestyle", "C");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM doublequoted");
+		// TODO: this should actually fail!  have a look at testEscapingQuotecharExplicitSQLStyle for the way to check an exception.
+		assertTrue(results.next());
+		assertEquals(
+				"\"Rechtsform unbekannt\" entsteht durch die Simulation zTELKUS. Es werden Simulationsregeln angewandt.",
+				results.getString(10));
+	}
+
+	public void testEscapingQuotecharExplicitCStyle() throws SQLException {
+		Properties props = new Properties();
+		props.put("separator", ";");
+		props.put("quotechar", "'");
+		props.put("quotestyle", "C");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT F1 FROM doublequoted");
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
 		assertFalse(results.next());
+	}
+
+	public void testEscapingQuotecharExplicitSQLStyle() throws SQLException {
+		Properties props = new Properties();
+		props.put("separator", ";");
+		props.put("quotechar", "'");
+		props.put("quotestyle", "SQL");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT F1 FROM doublequoted");
+		assertTrue(results.next());
+		assertTrue(results.next());
+		try {
+			results.next();
+			fail("Should raise a java.sqlSQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: EOF reached inside quoted mode", "" + e);
+		}
 	}
 
 	public void testWithNoData() throws SQLException {
