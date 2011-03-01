@@ -1,0 +1,7 @@
+COLUMN1,COLUMN2,COLUMN3
+1,uno,one
+2,a 'quote' (source unknown),two
+3,another "quote" (also unkown),three
+4,a 'quote" that gives error,four
+5,another not parsable "quote',five
+6,collecting quotes ""'',six

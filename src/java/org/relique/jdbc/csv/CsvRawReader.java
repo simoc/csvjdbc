@@ -41,7 +41,7 @@ import org.relique.io.CryptoFilter;
  * @author Christoph Langer
  * @author Chetan Gupta
  * @created 25 November 2001
- * @version $Id: CsvRawReader.java,v 1.3 2010/10/28 08:04:06 mfrasca Exp $
+ * @version $Id: CsvRawReader.java,v 1.4 2011/03/01 11:30:56 mfrasca Exp $
  */
 
 public class CsvRawReader {
@@ -60,6 +60,7 @@ public class CsvRawReader {
 	protected char commentChar = 0;
 	private boolean ignoreUnparseableLines;
 	protected CryptoFilter filter;
+	private String quoteStyle;
 
 	/**
 	 *Constructor for the CsvReader object
@@ -73,7 +74,7 @@ public class CsvRawReader {
 	public CsvRawReader(String fileName) throws Exception {
 		this(new BufferedReader(new InputStreamReader(new FileInputStream(
 				fileName))), ',', false, '"', (char) 0, "",
-				CsvDriver.DEFAULT_EXTENSION, true, 0, false, null, false, 0);
+				CsvDriver.DEFAULT_EXTENSION, true, 0, false, null, false, 0, "SQL");
 	}
 
 	/**
@@ -103,7 +104,8 @@ public class CsvRawReader {
 	public CsvRawReader(BufferedReader in, char separator,
 			boolean suppressHeaders, char quoteChar, char commentChar,
 			String headerLine, String extension, boolean trimHeaders, 
-			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter, boolean defectiveHeaders, int skipLeadingDataLines)
+			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter, 
+			boolean defectiveHeaders, int skipLeadingDataLines, String quoteStyle)
 			throws IOException, SQLException {
 		this.separator = separator;
 		this.suppressHeaders = suppressHeaders;
@@ -115,6 +117,7 @@ public class CsvRawReader {
 		this.input = in;
 		this.ignoreUnparseableLines = ignoreUnparseableLines;
 		this.filter = filter;
+		this.quoteStyle = quoteStyle;
 
 		for (int i=0; i<skipLeadingLines; i++){
 			in.readLine();
@@ -274,6 +277,7 @@ public class CsvRawReader {
 	 */
 	protected String[] parseCsvLine(String line, boolean trimValues)
 			throws SQLException {
+		// TODO: quoteChar should be recognized ONLY when close to separator. 
 		Vector values = new Vector();
 		boolean inQuotedString = false;
 		String value = "";
@@ -283,27 +287,33 @@ public class CsvRawReader {
 
 		while (fullLine == 0) {
 			currentPos = 0;
-			line += separator;
+			line += separator; // this way fields are separator-terminated
 			while (currentPos < line.length()) {
 				char currentChar = line.charAt(currentPos);
 				if (value.length() == 0 && currentChar == quoteChar
 						&& !inQuotedString) {
-					currentPos++;
+					// acknowledge quoteChar only at beginning of value.
 					inQuotedString = true;
-					continue;
-				}
-				if (currentChar == quoteChar) {
+				} else if (currentChar == '\\' && "C".equals(quoteStyle)) {
+					// in C quoteStyle \\ escapes any character.
 					char nextChar = line.charAt(currentPos + 1);
-					if (nextChar == quoteChar) {
-						value += currentChar;
-						currentPos++;
-					} else {
-						if (!inQuotedString) {
-							throw new SQLException("Unexpected '" + quoteChar
-									+ "' in position " + currentPos + ". Line="
-									+ orgLine);
+					value += nextChar;
+					currentPos++;
+				} else if (currentChar == quoteChar) {
+					char nextChar = line.charAt(currentPos + 1);
+					if (!inQuotedString) {
+						// accepting the single quoteChar because the whole
+						// value is not quoted.
+						value += quoteChar;
+					} else if (nextChar == quoteChar) {
+						value += quoteChar;
+						if ("SQL".equals(quoteStyle)) {
+							// doubled quoteChar in quoted strings collapse to
+							// one single quoteChar in SQL quotestyle
+							currentPos++;
 						}
-						if (inQuotedString && nextChar != separator) {
+					} else {
+						if (nextChar != separator) {
 							throw new SQLException("Expecting " + separator
 									+ " in position " + (currentPos + 1)
 									+ ". Line=" + orgLine);
@@ -330,13 +340,16 @@ public class CsvRawReader {
 							value = "";
 						}
 					} else {
+						// default action
 						value += currentChar;
 					}
 				}
 				currentPos++;
 			}
 			if (inQuotedString) {
-				// Remove extra , added at start
+				// Line ended while looking for matching quoteChar. This means
+				// we are inside of a field (not yet fullLine).
+				// Remove extra separator added at start.
 				value = value.substring(0, value.length() - 1);
 				try {
 					String additionalLine = input.readLine();

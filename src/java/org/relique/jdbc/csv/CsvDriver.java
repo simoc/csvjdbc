@@ -28,7 +28,7 @@ import java.io.File;
  * @author     JD Evora
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvDriver.java,v 1.25 2010/09/14 15:03:09 mfrasca Exp $
+ * @version    $Id: CsvDriver.java,v 1.26 2011/03/01 11:30:56 mfrasca Exp $
  */
 
 public class CsvDriver implements Driver
@@ -82,6 +82,8 @@ public class CsvDriver implements Driver
   public static final String TIME_ZONE_NAME = "timeZoneName";
   public static final String DEFAULT_TIME_ZONE_NAME = "UTC";
   // choosing Rome makes sure we change chronology from Julian to Gregorian on 1582-10-04/15, as SQL does.
+public static final String QUOTE_STYLE = "quoteStyle";
+public static final String DEFAULT_QUOTE_STYLE = "SQL";
   
   /**
    *Gets the propertyInfo attribute of the CsvDriver object

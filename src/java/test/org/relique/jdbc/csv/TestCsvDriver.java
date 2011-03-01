@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.54 2010/11/10 09:27:06 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.55 2011/03/01 11:30:56 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1526,6 +1526,7 @@ public class TestCsvDriver extends TestCase {
 		props.put("separator", ";");
 		props.put("quotechar", "'");
 		props.put("quotestyle", "SQL");
+		props.put("commentChar", 'C');
 
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
@@ -1543,7 +1544,7 @@ public class TestCsvDriver extends TestCase {
 		Properties props = new Properties();
 		props.put("separator", ";");
 		props.put("quotechar", "'");
-		props.put("quotestyle", "C");
+		props.put("quoteStyle", "C");
 
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
@@ -1562,7 +1563,7 @@ public class TestCsvDriver extends TestCase {
 		Properties props = new Properties();
 		props.put("separator", ";");
 		props.put("quotechar", "'");
-		props.put("quotestyle", "C");
+		props.put("quoteStyle", "C");
 
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
@@ -1572,15 +1573,16 @@ public class TestCsvDriver extends TestCase {
 		ResultSet results = stmt.executeQuery("SELECT F1 FROM doublequoted");
 		assertTrue(results.next());
 		assertTrue(results.next());
+		assertEquals("doubling \"\"quotechar", results.getObject("F1"));
 		assertTrue(results.next());
-		assertFalse(results.next());
+		assertEquals("escaping quotechar\"", results.getObject("F1"));
 	}
 
 	public void testEscapingQuotecharExplicitSQLStyle() throws SQLException {
 		Properties props = new Properties();
 		props.put("separator", ";");
 		props.put("quotechar", "'");
-		props.put("quotestyle", "SQL");
+		props.put("quoteStyle", "SQL");
 
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
@@ -1588,6 +1590,9 @@ public class TestCsvDriver extends TestCase {
 		Statement stmt = conn.createStatement();
 
 		ResultSet results = stmt.executeQuery("SELECT F1 FROM doublequoted");
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertEquals("doubling \\\"\\\"quotechar", results.getObject("F1"));
 		assertTrue(results.next());
 		assertTrue(results.next());
 		try {
@@ -1943,6 +1948,33 @@ public class TestCsvDriver extends TestCase {
 		got = (Timestamp) results.getObject("DT");
 		assertEquals("2009-10-25 10:30:00", toUTC.format(got));
 
+		assertFalse(results.next());
+	}
+
+	public void testValuesContainQuotes() throws SQLException {
+		Properties props = new Properties();
+		props.put("separator", ",");
+		props.put("quotechar", "'");
+		props.put("fileExtension", ".txt");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM uses_quotes");
+		assertTrue(results.next());
+		assertEquals("uno", results.getObject("COLUMN2"));
+		assertTrue(results.next());
+		assertEquals("a 'quote' (source unknown)", results.getObject("COLUMN2"));
+		assertTrue(results.next());
+		assertEquals("another \"quote\" (also unkown)", results.getObject("COLUMN2"));
+		assertTrue(results.next());
+		assertEquals("a 'quote\" that gives error", results.getObject("COLUMN2"));
+		assertTrue(results.next());
+		assertEquals("another not parsable \"quote'", results.getObject("COLUMN2"));
+		assertTrue(results.next());
+		assertEquals("collecting quotes \"\"''", results.getObject("COLUMN2"));
 		assertFalse(results.next());
 	}
 

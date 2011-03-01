@@ -50,7 +50,7 @@ import org.relique.io.CryptoFilter;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.33 2010/09/14 15:03:09 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.34 2011/03/01 11:30:56 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -129,6 +129,8 @@ public class CsvConnection implements Connection {
 	private int transposedFieldsToSkip;
 
 	private boolean autoCommit;
+
+	private String quoteStyle;
 
 	/**
      * Creates a new CsvConnection that takes the supplied path
@@ -249,6 +251,7 @@ public class CsvConnection implements Connection {
             setDefectiveHeaders(info.getProperty(CsvDriver.DEFECTIVE_HEADERS, CsvDriver.DEFAULT_DEFECTIVE_HEADERS));
             setSkipLeadingDataLines(info.getProperty(CsvDriver.SKIP_LEADING_DATA_LINES, CsvDriver.DEFAULT_SKIP_LEADING_DATA_LINES));
             setSkipLeadingLines(info.getProperty(CsvDriver.SKIP_LEADING_LINES, CsvDriver.DEFAULT_SKIP_LEADING_LINES));
+            setQuoteStyle(info.getProperty(CsvDriver.QUOTE_STYLE, CsvDriver.DEFAULT_QUOTE_STYLE));
             setIgnoreUnparseableLines(Boolean.parseBoolean(info.getProperty(
 					CsvDriver.IGNORE_UNPARSEABLE_LINES,
 					CsvDriver.DEFAULT_IGNORE_UNPARSEABLE_LINES)));
@@ -258,6 +261,15 @@ public class CsvConnection implements Connection {
 					CsvDriver.DEFAULT_RAISE_UNSUPPORTED_OPERATION_EXCEPTION)));
         }
     }
+
+	private void setQuoteStyle(String property) {
+		// TODO Auto-generated method stub
+		quoteStyle = property;
+	}
+
+	public String getQuoteStyle() {
+		return quoteStyle;
+	}
 
 	private void setTimeZoneName(String property) {
 		timeZoneName = property;

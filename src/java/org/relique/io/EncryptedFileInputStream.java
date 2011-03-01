@@ -36,5 +36,12 @@ public class EncryptedFileInputStream extends InputStream {
 		else
 			return in.read(b);
 	}
+	
+	public void close() throws IOException {
+		if (in == null) {
+			return;
+		}
+		in.close();
+	}
 
 }
