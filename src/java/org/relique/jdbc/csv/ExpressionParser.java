@@ -111,7 +111,7 @@ class BinaryOperation extends Expression{
       if (op == '+'){
         Date leftD = (Date)leftEval;
         Time rightT = (Time)rightEval;
-        Expression stringConverter = new ColumnName("@STRINGCONVERTER");
+        Expression stringConverter = new ColumnName("@StringConverter");
         StringConverter sc = (StringConverter) stringConverter.eval(env);
         return sc.parseTimestamp(leftD.toString() + " " + rightT.toString());
       }

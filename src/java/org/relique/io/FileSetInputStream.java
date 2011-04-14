@@ -73,7 +73,6 @@ public class FileSetInputStream extends InputStream {
 	 * @param skipLeadingDataLines 
 	 * @throws IOException
 	 */
-	@SuppressWarnings("unchecked")
 	public FileSetInputStream(String dirName, String fileNamePattern,
 			String[] fieldsInName, char separator, boolean prepend,
 			boolean headerless, CryptoFilter filter, int skipLeadingDataLines)

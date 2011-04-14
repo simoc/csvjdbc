@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.55 2011/03/01 11:30:56 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.56 2011/04/14 12:18:21 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1526,7 +1526,7 @@ public class TestCsvDriver extends TestCase {
 		props.put("separator", ";");
 		props.put("quotechar", "'");
 		props.put("quotestyle", "SQL");
-		props.put("commentChar", 'C');
+		props.put("commentChar", "C");
 
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
