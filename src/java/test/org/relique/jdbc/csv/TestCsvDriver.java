@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.56 2011/04/14 12:18:21 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.57 2011/04/14 14:35:16 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1745,6 +1745,33 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(results.next());
 		assertEquals("001", results.getObject("Station"));
 		assertEquals(new Double("26.55"), results.getObject("P003"));
+		assertFalse(results.next());
+	}
+
+	public void testIgnoreUnparseableInIndexedFile() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("indexedFiles", "True");
+		props.put("fileTailPattern", "(.)-20081112");
+		props.put("fileTailParts", "index");
+		// Datum,Tijd,Station,P000,P001,P002,P003
+		props.put("columnNames", "Datum,Tijd,Station,P000,P001,P002,P003,INDEX");
+		props.put("ignoreNonParseableLines", "True");
+
+		ResultSet results = null;
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+
+		results = stmt.executeQuery("SELECT * FROM varlen");
+		assertTrue(results.next());
+		assertEquals("1", results.getObject("index"));
+		assertEquals("007", results.getObject("Station"));
+		assertEquals("26.54", results.getObject("P001"));
+		assertTrue(results.next());
+		assertEquals("007", results.getObject("Station"));
+		assertEquals("22.99", results.getObject("P001"));
 		assertFalse(results.next());
 	}
 
