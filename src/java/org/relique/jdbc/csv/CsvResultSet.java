@@ -54,7 +54,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.48 2010/09/16 11:34:23 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.49 2011/04/15 07:39:45 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -244,13 +244,15 @@ public class CsvResultSet implements ResultSet {
 		}
     }
 
-    private void updateRecordEnvironment(boolean thereWasAnAnswer) {
+    private void updateRecordEnvironment(boolean thereWasAnAnswer) throws SQLException {
 		recordEnvironment = new HashMap();
 		objectEnvironment = new HashMap();
     	if(!thereWasAnAnswer) {
     		return;
     	}
 		recordEnvironment.put("@STRINGCONVERTER", converter);
+		if(reader.fieldValues.length != reader.getColumnNames().length)
+			throw new SQLException("data contains " + reader.fieldValues.length + " columns, expected " + reader.getColumnNames().length);
 		for (int i = 0; i<reader.getColumnNames().length; i++){
 			String key = reader.getColumnNames()[i].toUpperCase();
 			Object value = converter.convert(typeNames[i], reader.fieldValues[i]);

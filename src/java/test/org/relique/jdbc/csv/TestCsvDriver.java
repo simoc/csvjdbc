@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.57 2011/04/14 14:35:16 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.58 2011/04/15 07:39:45 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -150,9 +150,10 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The name is wrong", "Maria Cristina Lucero", results
 				.getString("Name"));
 		try {
-			assertNull(results.getString("Job"));
+			results.getString("Job");
 			fail("Should not find the column 'Job'");
 		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: Column not found: invalid index: 0", "" + e);
 		}
 		assertTrue(!results.next());
 	}
@@ -786,9 +787,10 @@ public class TestCsvDriver extends TestCase {
 				.executeQuery("SELECT Name, Job FROM sample4 WHERE id = '04'");
 		assertTrue(results.next());
 		try {
-			assertNull(results.getString("id"));
+			results.getString("id");
 			fail("Should not find the column 'id'");
 		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: Column not found: invalid index: 0", "" + e);
 		}
 		assertEquals("The name is wrong", "Felipe Grajales", results
 				.getString("name"));
@@ -810,9 +812,10 @@ public class TestCsvDriver extends TestCase {
 		ResultSet results = stmt.executeQuery("SELECT * FROM jo");
 		assertTrue(results.next());
 		try {
-			assertNull(results.getString("id"));
+			results.getString("id");
 			fail("Should not find the column 'id'");
 		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: Column not found: invalid index: 0", "" + e);
 		}
 		assertEquals("The name is wrong", "3", results.getString("rc"));
 		// would like to test the full_name_nd, but can't insert the Arabic
@@ -1773,6 +1776,37 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("007", results.getObject("Station"));
 		assertEquals("22.99", results.getObject("P001"));
 		assertFalse(results.next());
+	}
+
+	public void testUnparseableInIndexedFileCausesSQLException() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("indexedFiles", "True");
+		props.put("fileTailPattern", "(.)-20081112");
+		props.put("fileTailParts", "index");
+		// Datum,Tijd,Station,P000,P001,P002,P003
+		props.put("columnNames", "Datum,Tijd,Station,P000,P001,P002,P003,INDEX");
+
+		ResultSet results = null;
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+
+		results = stmt.executeQuery("SELECT * FROM varlen");
+		assertTrue(results.next());
+		assertEquals("1", results.getObject("index"));
+		assertEquals("007", results.getObject("Station"));
+		assertEquals("26.54", results.getObject("P001"));
+		assertTrue(results.next());
+		assertEquals("007", results.getObject("Station"));
+		assertEquals("22.99", results.getObject("P001"));
+		try {
+			results.next();
+			fail("Should raise a java.sqlSQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: data contains 6 columns, expected 8", "" + e);
+		}
 	}
 
 	// Actually this is more a Connection test than a Driver test
