@@ -32,8 +32,10 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import org.relique.io.CryptoFilter;
+import org.relique.io.DataReader;
 import org.relique.io.EncryptedFileInputStream;
 import org.relique.io.FileSetInputStream;
+import org.relique.jdbc.dbf.DbfReader;
 
 /**
  * This class implements the Statement interface for the CsvJdbc driver.
@@ -45,7 +47,7 @@ import org.relique.io.FileSetInputStream;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.39 2011/03/01 11:30:56 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.40 2011/04/20 09:05:25 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -353,9 +355,12 @@ public class CsvStatement implements Statement {
 						+ "'  not readable !");
 			}
 		}
-		CsvReader reader = null;
+		DataReader reader = null;
 		try {
-			InputStream in;
+			if(connection.getExtension().equalsIgnoreCase(".dbf")) {
+				reader = new DbfReader(connection.getPath(), parser.getTableName());
+			} else {
+				InputStream in;
 			CryptoFilter filter = connection.getDecryptingCodec();
 			if (connection.isIndexedFiles()) {
 				String fileNamePattern = parser.getTableName()
@@ -389,13 +394,14 @@ public class CsvStatement implements Statement {
 							.isDefectiveHeaders(), connection
 							.getSkipLeadingDataLines(), connection.getQuoteStyle());
 			reader = new CsvReader(rawReader, connection.getTransposedLines(), connection.getTransposedFieldsToSkip(), connection.getHeaderline());
+			}
 		} catch (IOException e) {
 			throw new SQLException("Error reading data file. Message was: " + e);
 		} catch (SQLException e) {
 			throw e;
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new SQLException(""+e);
+			throw new SQLException("Error initializing DataReader: " + e);
 		}
 
 		CsvResultSet resultSet = null;

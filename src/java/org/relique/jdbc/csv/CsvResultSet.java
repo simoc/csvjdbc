@@ -47,6 +47,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.relique.io.DataReader;
+
 /**
  * This class implements the ResultSet interface for the CsvJdbc driver.
  *
@@ -54,7 +56,7 @@ import java.util.Map;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.49 2011/04/15 07:39:45 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.50 2011/04/20 09:05:25 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -67,7 +69,7 @@ public class CsvResultSet implements ResultSet {
     protected int isScrollable = ResultSet.TYPE_SCROLL_SENSITIVE;
     
     /** Helper class that performs the actual file reads */
-    protected CsvReader reader;
+    protected DataReader reader;
 
     /** Table referenced by the Statement */
     protected String tableName;
@@ -78,7 +80,6 @@ public class CsvResultSet implements ResultSet {
     /** InputStream to keep track of */
     protected InputStream is;
 
-	private boolean mustInferTypeNames;
 	private ExpressionParser whereClause;
 
 	private List queryEnvironment;
@@ -96,8 +97,6 @@ public class CsvResultSet implements ResultSet {
 
 	private List usedColumns;
 
-	private String timestampFormat;
-
 	private String timeFormat;
 
 	private String dateFormat;
@@ -106,7 +105,7 @@ public class CsvResultSet implements ResultSet {
 
 	private StringConverter converter;
 
-	private ArrayList bufferedFieldValues = null;
+	private List bufferedRecordEnvironments = null;
 
 	private int currentRow;
 
@@ -142,7 +141,7 @@ public class CsvResultSet implements ResultSet {
      * @throws ClassNotFoundException in case the typed columns fail
      * @throws SQLException 
      */
-    protected CsvResultSet(CsvStatement statement, CsvReader reader,
+    protected CsvResultSet(CsvStatement statement, DataReader reader,
 			String tableName, List queryEnvironment, int isScrollable, 
 			ExpressionParser whereClause, String columnTypes, int skipLeadingLines) throws ClassNotFoundException, SQLException {
         this.statement = statement;
@@ -151,11 +150,16 @@ public class CsvResultSet implements ResultSet {
         this.tableName = tableName;
         this.queryEnvironment = queryEnvironment;
         this.whereClause = whereClause;
-        timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
-        timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
-        dateFormat = ((CsvConnection)statement.getConnection()).getDateFormat();
-        timeZone = ((CsvConnection)statement.getConnection()).getTimeZoneName();
-        this.converter = new StringConverter(dateFormat, timeFormat, timeZone);
+        if(reader instanceof CsvReader) {
+        	// timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
+        	timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
+        	dateFormat = ((CsvConnection)statement.getConnection()).getDateFormat();
+        	timeZone = ((CsvConnection)statement.getConnection()).getTimeZoneName();
+        	this.converter = new StringConverter(dateFormat, timeFormat, timeZone);
+        	((CsvReader) reader).setConverter(converter);
+        	if(!"".equals(columnTypes))
+        		((CsvReader) reader).setColumnTypes(columnTypes);
+        }
         if (whereClause!= null)
         	this.usedColumns = whereClause.usedColumns();
         else
@@ -172,19 +176,8 @@ public class CsvResultSet implements ResultSet {
             	this.queryEnvironment.add(new Object[]{columnNames[i], new ColumnName(columnNames[i])});
 			}
         }
-        this.typeNames = new String[columnNames.length];
-    	this.mustInferTypeNames = columnTypes.equals("");
-    	if (!this.mustInferTypeNames){
-        	String[] typeNamesLoc = columnTypes.split(",");
-        	for(int i=0; i<Math.min(typeNamesLoc.length, this.typeNames.length); i++){
-        		this.typeNames[i] = typeNamesLoc[i].trim();
-        	}
-        	for(int i=typeNamesLoc.length; i<this.typeNames.length; i++){
-        		this.typeNames[i] = typeNamesLoc[typeNamesLoc.length-1].trim();
-        	}
-        }
     	if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
-    		bufferedFieldValues = new ArrayList();
+    		bufferedRecordEnvironments = new ArrayList();
     		hitTail = false;
     		currentRow = 0;
     	}
@@ -207,57 +200,55 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public boolean next() throws SQLException {
-    	if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE && currentRow < bufferedFieldValues.size()) {
+    	if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE && currentRow < bufferedRecordEnvironments.size()) {
     		currentRow++;
-    		reader.fieldValues = (String[]) bufferedFieldValues.get(currentRow - 1);
+    		recordEnvironment = (Map) bufferedRecordEnvironments.get(currentRow - 1);
 			updateRecordEnvironment(true);
 			return true;
     	} else {
     		boolean thereWasAnAnswer;
     		if(hitTail) 
     			thereWasAnAnswer = false;
-    		else
+    		else {
     			thereWasAnAnswer = reader.next();
+    			if(thereWasAnAnswer)
+    				recordEnvironment = reader.getEnvironment();
+    			else
+    				recordEnvironment = null;
+    		}
+    		
 			updateRecordEnvironment(thereWasAnAnswer);
 
-			if (this.mustInferTypeNames) {
-				inferTypeNames();
-			}
 			// We have a where clause, honor it
 			if (whereClause != null) {
 				while (thereWasAnAnswer) {
 					if (whereClause.isTrue(objectEnvironment))
 						break;
 					thereWasAnAnswer = reader.next();
+	    			if(thereWasAnAnswer)
+	    				recordEnvironment = reader.getEnvironment();
+	    			else
+	    				recordEnvironment = null;
 					updateRecordEnvironment(thereWasAnAnswer);
 				}
 			}
 			if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE)
 				if(thereWasAnAnswer) {
-					bufferedFieldValues.add(reader.fieldValues);
+					bufferedRecordEnvironments.add(reader.getEnvironment());
 					currentRow++;
 				} else {
 					hitTail = true;
-					currentRow = bufferedFieldValues.size() + 1;
+					currentRow = bufferedRecordEnvironments.size() + 1;
 				}
 			return thereWasAnAnswer;
 		}
     }
 
     private void updateRecordEnvironment(boolean thereWasAnAnswer) throws SQLException {
-		recordEnvironment = new HashMap();
 		objectEnvironment = new HashMap();
     	if(!thereWasAnAnswer) {
     		return;
     	}
-		recordEnvironment.put("@STRINGCONVERTER", converter);
-		if(reader.fieldValues.length != reader.getColumnNames().length)
-			throw new SQLException("data contains " + reader.fieldValues.length + " columns, expected " + reader.getColumnNames().length);
-		for (int i = 0; i<reader.getColumnNames().length; i++){
-			String key = reader.getColumnNames()[i].toUpperCase();
-			Object value = converter.convert(typeNames[i], reader.fieldValues[i]);
-			recordEnvironment.put(key, value);
-		}
 		for (int i = 0; i < queryEnvironment.size(); i++){
 			Object[] o = (Object[]) queryEnvironment.get(i);
 			String key = (String) o[0];
@@ -272,39 +263,7 @@ public class CsvResultSet implements ResultSet {
 			}
 		}
 	}
-	private void inferTypeNames() {
-		mustInferTypeNames = false;
-		StringConverter converter = new StringConverter(dateFormat, timeFormat, timeZone);
-    	for (int i=0; i< this.typeNames.length; i++){
-    		try {
-    			String typeName = "String";
-				String value = reader.getField(i);
-				if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
-					typeName = "Boolean";
-				} else if (value.equals(("" + converter.parseInt(value)))) {
-					typeName = "Int";
-				} else if (value.equals(("" + converter.parseLong(value)))) {
-					typeName = "Long";
-				} else if (value.equals(("" + converter.parseDouble(value)))) {
-					typeName = "Double";
-				} else if (value.equals(("" + converter.parseBytes(value)))) {
-					typeName = "Bytes";
-				} else if (value.equals(("" + converter.parseBigDecimal(value)))) {
-					typeName = "BigDecimal";
-				} else if (converter.parseTimestamp(value) != null) {
-					typeName = "Timestamp";
-				} else if (value.equals(("" + converter.parseDate(value) + "          ").substring(0, 10))) {
-					typeName = "Date";
-				} else if (value.equals(("" + converter.parseTime(value) + "        ").substring(0, 8))) {
-					typeName = "Time";
-				} else if (value.equals(("" + converter.parseAsciiStream(value)))) {
-					typeName = "AsciiStream";
-				}
-				typeNames[i] = typeName;
-			} catch (SQLException e) {
-			}
-    	}
-	}
+	
 
 	/**
      * Releases this <code>ResultSet</code> object's database and
@@ -988,6 +947,8 @@ public class CsvResultSet implements ResultSet {
      */
     public ResultSetMetaData getMetaData() throws SQLException {
         if (resultSetMetaData == null) {
+        	if(typeNames == null)
+        		typeNames = reader.getColumnTypes();
             resultSetMetaData = new CsvResultSetMetaData(tableName, queryEnvironment, typeNames);
         }
         return resultSetMetaData;
@@ -1170,7 +1131,7 @@ public class CsvResultSet implements ResultSet {
      */
     public boolean isAfterLast() throws SQLException {
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
-        	return currentRow == bufferedFieldValues.size() + 1;
+        	return currentRow == bufferedRecordEnvironments.size() + 1;
         } else {
           throw new UnsupportedOperationException(
                 "ResultSet.isAfterLast() unsupported");
@@ -1212,7 +1173,7 @@ public class CsvResultSet implements ResultSet {
         		next();
         		previous();
         	}
-        	return (currentRow == bufferedFieldValues.size());
+        	return (currentRow == bufferedRecordEnvironments.size());
         } else {
           throw new UnsupportedOperationException(
                 "ResultSet.isLast() unsupported");
@@ -1287,7 +1248,7 @@ public class CsvResultSet implements ResultSet {
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
         	afterLast();
         	previous();
-        	return (this.bufferedFieldValues.size() != 0);
+        	return (this.bufferedRecordEnvironments.size() != 0);
         } else {
           throw new UnsupportedOperationException("ResultSet.last() unsupported");
         }
@@ -1349,18 +1310,19 @@ public class CsvResultSet implements ResultSet {
         		last();
         		row = currentRow + row + 1;
         	} else {
-        		while((bufferedFieldValues.size() < row) && next());
+        		// this is a no-op if we have already buffered enough lines.
+        		while((bufferedRecordEnvironments.size() < row) && next());
         	}
         	if (row <= 0) {
         		found = false;
         		currentRow = 0;
-        	} else if(row > bufferedFieldValues.size()) {
+        	} else if(row > bufferedRecordEnvironments.size()) {
         		found = false;
-        		currentRow = bufferedFieldValues.size() + 1;
+        		currentRow = bufferedRecordEnvironments.size() + 1;
         	} else {
         		found = true;
         		currentRow = row;
-        		reader.fieldValues = (String[]) bufferedFieldValues.get(currentRow - 1);
+        		recordEnvironment = (Map) bufferedRecordEnvironments.get(currentRow - 1);
         	}
    			updateRecordEnvironment(found);
    			return found;
@@ -1417,12 +1379,12 @@ public class CsvResultSet implements ResultSet {
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
         	if(currentRow > 1) {
         		currentRow--;
-        		reader.fieldValues = (String[]) bufferedFieldValues.get(currentRow - 1);
+        		recordEnvironment = (Map) bufferedRecordEnvironments.get(currentRow - 1);
         		updateRecordEnvironment(true);
         		return true;
         	} else {
         		currentRow = 0;
-        		reader.fieldValues = null;
+        		recordEnvironment = null;
         		updateRecordEnvironment(false);
         		return false;
         	}
