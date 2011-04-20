@@ -21,9 +21,9 @@ public class DbfReader extends DataReader {
 	private Record record;
 	private int rowNo;
 
-	public DbfReader(String path, String tableName) throws SQLException {
+	public DbfReader(String path) throws SQLException {
 		super();
-		table = new Table(new File(path, tableName + ".dbf"));
+		table = new Table(new File(path));
 		try {
 			table.open();
 		} catch (CorruptedTableException e) {
