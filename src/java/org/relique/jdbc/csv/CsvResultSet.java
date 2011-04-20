@@ -56,7 +56,7 @@ import org.relique.io.DataReader;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.50 2011/04/20 09:05:25 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.51 2011/04/20 09:42:14 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -207,16 +207,16 @@ public class CsvResultSet implements ResultSet {
 			return true;
     	} else {
     		boolean thereWasAnAnswer;
-    		if(hitTail) 
+    		if(hitTail) {
     			thereWasAnAnswer = false;
-    		else {
+    		} else {
     			thereWasAnAnswer = reader.next();
-    			if(thereWasAnAnswer)
-    				recordEnvironment = reader.getEnvironment();
-    			else
-    				recordEnvironment = null;
     		}
     		
+			if(thereWasAnAnswer)
+				recordEnvironment = reader.getEnvironment();
+			else
+				recordEnvironment = null;
 			updateRecordEnvironment(thereWasAnAnswer);
 
 			// We have a where clause, honor it
@@ -247,6 +247,7 @@ public class CsvResultSet implements ResultSet {
     private void updateRecordEnvironment(boolean thereWasAnAnswer) throws SQLException {
 		objectEnvironment = new HashMap();
     	if(!thereWasAnAnswer) {
+    		recordEnvironment = null;
     		return;
     	}
 		for (int i = 0; i < queryEnvironment.size(); i++){
