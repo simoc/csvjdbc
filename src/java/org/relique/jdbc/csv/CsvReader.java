@@ -132,6 +132,7 @@ public class CsvReader extends DataReader {
 
 	public Map getEnvironment() throws SQLException {
 		Map result = new HashMap();
+		result.put("@STRINGCONVERTER", converter);
 		if(fieldValues.length != getColumnNames().length)
 			throw new SQLException("data contains " + fieldValues.length + " columns, expected " + getColumnNames().length);
 		if(columnTypes == null)

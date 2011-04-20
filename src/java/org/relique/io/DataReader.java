@@ -1,6 +1,5 @@
 package org.relique.io;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -12,7 +11,7 @@ public abstract class DataReader {
 
 	abstract public boolean next() throws SQLException;
 
-	abstract public String[] getColumnNames();
+	abstract public String[] getColumnNames() throws SQLException;
 
 	abstract public Object getField(int i) throws SQLException;
 

@@ -1,79 +1,107 @@
 package org.relique.jdbc.dbf;
 
-import nl.knaw.dans.common.dbflib.CorruptedTableException;
-import nl.knaw.dans.common.dbflib.Field;
-import nl.knaw.dans.common.dbflib.Record;
-import nl.knaw.dans.common.dbflib.Table;
-
 import java.io.File;
-import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import org.relique.io.DataReader;
 
 public class DbfReader extends DataReader {
-	private Table table = null;
+	private Object table = null;
 	private List fields;
-	private Record record;
+	private Object record;
 	private int rowNo;
+	private Class fieldClass;
+	private Class recordClass;
+	private Class tableClass;
+	private Method tableOpenMethod;
+	private Method tableGetFieldsMethod;
+	private Method tableCloseMethod;
+	private Method fieldGetNameMethod;
+	private Method tableGetRecordAtMethod;
+	private Method recordGetTypedValueMethod;
 
 	public DbfReader(String path) throws SQLException {
 		super();
-		table = new Table(new File(path));
 		try {
-			table.open();
-		} catch (CorruptedTableException e) {
-			throw new SQLException("" + e);
-		} catch (IOException e) {
-			throw new SQLException("" + e);
+			fieldClass = Class.forName("nl.knaw.dans.common.dbflib.Field");
+			recordClass = Class.forName("nl.knaw.dans.common.dbflib.Record");
+			tableClass = Class.forName("nl.knaw.dans.common.dbflib.Table");
+		} catch (ClassNotFoundException e) {
+			throw new SQLException("can't find the 'dans' library.");
 		}
-		fields = table.getFields();
-		record = null;
-		rowNo = -1;
+		try {
+			tableOpenMethod = tableClass.getMethod("open", new Class[] {});
+			tableCloseMethod = tableClass.getMethod("close", new Class[] {});
+			tableGetFieldsMethod = tableClass.getMethod("getFields",
+					new Class[] {});
+			fieldGetNameMethod = fieldClass.getMethod("getName", new Class[] {});
+			tableGetRecordAtMethod = tableClass.getMethod("getRecordAt", new Class[] {Integer.TYPE}); 
+			recordGetTypedValueMethod = recordClass.getMethod("getTypedValue", new Class[] {String.class});
+		} catch (Exception e) {
+			throw new SQLException("Error while being smart:" + e);
+		}
+		try {
+			Constructor tableConstructor = tableClass.getConstructor(new Class[] {File.class});
+			table = tableConstructor
+					.newInstance(new Object[] { new File(path) });
+			tableOpenMethod.invoke(table, new Object[] {});
+			fields = (List) tableGetFieldsMethod.invoke(table, new Object[] {});
+			record = null;
+			rowNo = -1;
+		} catch (Exception e) {
+			throw new SQLException("Error while being smart:" + e);
+		}
 	}
 
 	public void close() throws SQLException {
 		if(table != null)
 			try {
-				table.close();
-			} catch (IOException e) {
-				throw new SQLException("" + e);
+				tableCloseMethod.invoke(table, new Object[] {});
+			} catch (Exception e) {
+				throw new SQLException("Error while being smart:" + e);
 			}
 		table = null;
 	}
 
-	public String[] getColumnNames() {
+	public String[] getColumnNames() throws SQLException {
 		int columnCount = fields.size();
 		String[] result = new String[columnCount];
 		for(int i=0; i < columnCount; i++) {
-			result[i] = ((Field) fields.get(i)).getName();
+			Object field = fields.get(i);
+			try {
+				result[i] = (String) fieldGetNameMethod.invoke(field, new Object[] {});
+			} catch (Exception e) {
+				throw new SQLException("Error while being smart:" + e);
+			}
 		}
 		return result;
 	}
 
 	public Object getField(int i) throws SQLException {
-		String fieldName = ((Field) fields.get(i - 1)).getName();
-		Object result = record.getTypedValue(fieldName);
-		if(result instanceof String)
-			result = ((String) result).trim();
-		return result;
+		Object field = fields.get(i - 1);
+		try {
+			String fieldName = (String) fieldGetNameMethod.invoke(field, new Object[] {});
+			Object result = recordGetTypedValueMethod.invoke(record, new Object[] {fieldName});
+			if(result instanceof String)
+				result = ((String) result).trim();
+			return result;
+		} catch (Exception e) {
+			throw new SQLException("Error while being smart: " + e);
+		}
 	}
 
 	public boolean next() throws SQLException {
 		rowNo++;
 		try {
-			record = table.getRecordAt(rowNo);
-		} catch (CorruptedTableException e) {
-			throw new SQLException("" + e);
-		} catch (IOException e) {
+			record = tableGetRecordAtMethod.invoke(table, new Object[]{Integer.valueOf(rowNo)});
+		} catch (Exception e) {
 			return false;
-		} catch (NoSuchElementException e) {
-			return false;
-		}
+		} 
 		return true;
 	}
 
@@ -85,8 +113,13 @@ public class DbfReader extends DataReader {
 	public Map getEnvironment() throws SQLException {
 		Map result = new HashMap();
 		for(int i=0; i < fields.size(); i++) {
-			String name = ((Field) fields.get(i)).getName();
-			result.put(name, getField(i + 1));
+			Object field = fields.get(i);
+			try {
+				String fieldName = (String) fieldGetNameMethod.invoke(field, new Object[] {});
+				result.put(fieldName, getField(i + 1));
+			} catch (Exception e) {
+				throw new SQLException("Error while being smart: " + e);
+			}
 		}
 		return result;
 	}
