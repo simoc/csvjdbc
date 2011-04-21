@@ -21,6 +21,7 @@ package test.org.relique.jdbc.csv;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
@@ -34,7 +35,7 @@ import junit.framework.TestCase;
  * This class is used to test the CsvJdbc driver.
  * 
  * @author Mario Frasca
- * @version $Id: TestDbfDriver.java,v 1.1 2011/04/20 09:05:25 mfrasca Exp $
+ * @version $Id: TestDbfDriver.java,v 1.2 2011/04/21 07:48:51 mfrasca Exp $
  */
 public class TestDbfDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -149,5 +150,27 @@ public class TestDbfDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	public void testTypedColumns() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM fox_samp");
+		assertTrue(results.next());
+		ResultSetMetaData metadata = results.getMetaData();
+
+		assertEquals("Incorrect Table Name", "fox_samp", metadata
+				.getTableName(0));
+		assertEquals("Incorrect Column Count", 57, metadata.getColumnCount());
+		assertEquals("Incorrect Column Type", 12, metadata.getColumnType(1));
+		assertEquals("Incorrect Column Type", 16, metadata.getColumnType(2));
+		assertEquals("Incorrect Column Type", 8, metadata.getColumnType(3));
+	}
+	
 
 }

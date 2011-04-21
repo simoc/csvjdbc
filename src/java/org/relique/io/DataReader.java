@@ -19,7 +19,7 @@ public abstract class DataReader {
 
 	abstract public Map getEnvironment() throws SQLException;
 	
-	abstract public String[] getColumnTypes();
+	abstract public String[] getColumnTypes() throws SQLException;
 
 	abstract public void setFieldValues(String[] strings) throws SQLException;
 

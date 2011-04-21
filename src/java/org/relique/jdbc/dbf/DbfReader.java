@@ -24,6 +24,8 @@ public class DbfReader extends DataReader {
 	private Method fieldGetNameMethod;
 	private Method tableGetRecordAtMethod;
 	private Method recordGetTypedValueMethod;
+	private Method fieldGetTypeMethod;
+	private Map dbfTypeToSQLType;
 
 	public DbfReader(String path) throws SQLException {
 		super();
@@ -42,6 +44,7 @@ public class DbfReader extends DataReader {
 			fieldGetNameMethod = fieldClass.getMethod("getName", new Class[] {});
 			tableGetRecordAtMethod = tableClass.getMethod("getRecordAt", new Class[] {Integer.TYPE}); 
 			recordGetTypedValueMethod = recordClass.getMethod("getTypedValue", new Class[] {String.class});
+			fieldGetTypeMethod = fieldClass.getMethod("getType", new Class[] {});
 		} catch (Exception e) {
 			throw new SQLException("Error while being smart:" + e);
 		}
@@ -56,6 +59,11 @@ public class DbfReader extends DataReader {
 		} catch (Exception e) {
 			throw new SQLException("Error while being smart:" + e);
 		}
+		dbfTypeToSQLType = new HashMap();
+		dbfTypeToSQLType.put("CHARACTER", "String");
+		dbfTypeToSQLType.put("NUMBER", "Double");
+		dbfTypeToSQLType.put("LOGICAL", "Boolean");
+		dbfTypeToSQLType.put("DATE", "Date");
 	}
 
 	public void close() throws SQLException {
@@ -105,9 +113,17 @@ public class DbfReader extends DataReader {
 		return true;
 	}
 
-	public String[] getColumnTypes() {
-		// TODO Auto-generated method stub
-		return null;
+	public String[] getColumnTypes() throws SQLException {
+		String[] result = new String[fields.size()];
+		for(int i=0; i<fields.size(); i++) {
+			try {
+				String dbfType = fieldGetTypeMethod.invoke(fields.get(i), new Object[] {}).toString();
+				result[i] = (String) dbfTypeToSQLType.get(dbfType);
+			} catch (Exception e) {
+				throw new SQLException("Error while being smart:" + e);
+			}
+		}
+		return result;
 	}
 
 	public Map getEnvironment() throws SQLException {
