@@ -31,7 +31,8 @@ import junit.framework.TestCase;
  * This class is used to test the CsvJdbc driver.
  * 
  * @author Mario Frasca
- * @version $Id: TestPrepareStatement.java,v 1.2 2011/04/22 10:40:46 mfrasca Exp $
+ * @version $Id: TestPrepareStatement.java,v 1.2 2011/04/22 10:40:46 mfrasca Exp
+ *          $
  */
 public class TestPrepareStatement extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -51,13 +52,14 @@ public class TestPrepareStatement extends TestCase {
 		}
 
 	}
-	
+
 	protected void tearDown() {
 		// and delete the files when ready
-	}	
+	}
 
 	/**
 	 * using a wrong codec will cause an exception.
+	 * 
 	 * @throws SQLException
 	 */
 	public void testCanPrepareStatement() throws SQLException {
@@ -69,7 +71,7 @@ public class TestPrepareStatement extends TestCase {
 		String queryString = "SELECT * FROM sample5 WHERE id BETWEEN ? AND ?";
 		try {
 			conn.prepareStatement(queryString);
-		} catch(UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException e) {
 			fail("can't prepareStatement!");
 		}
 	}
@@ -85,16 +87,12 @@ public class TestPrepareStatement extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 		String queryString = "SELECT * FROM sample5 WHERE id BETWEEN ? AND ?";
-		PreparedStatement prepstmt = null;
-		try {
-			prepstmt = conn.prepareStatement(queryString);
-		} catch(UnsupportedOperationException e) {
-			fail("can't prepareStatement!");
-		}
+		PreparedStatement prepstmt = conn.prepareStatement(queryString);
+
 		prepstmt.setInt(1, 1);
 		prepstmt.setInt(2, 3);
 		ResultSet results = prepstmt.executeQuery();
-		
+
 		assertTrue(results.next());
 		assertEquals("Integer column ID is wrong", new Integer(1), results
 				.getObject("id"));
@@ -107,5 +105,72 @@ public class TestPrepareStatement extends TestCase {
 		assertFalse(results.next());
 	}
 
+	public void testCanReuseAPreparedStatement() throws SQLException {
+		Properties props = new Properties();
+		props.put("extension", ".csv");
+		props.put("columnTypes", "Int,String,String,Timestamp,String");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		String queryString = "SELECT * FROM sample5 WHERE id BETWEEN ? AND ?";
+		PreparedStatement prepstmt = conn.prepareStatement(queryString);
 
+		prepstmt.setInt(1, 1);
+		prepstmt.setInt(2, 3);
+		ResultSet results = prepstmt.executeQuery();
+
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertFalse(results.next());
+
+		prepstmt.setInt(1, 30);
+		prepstmt.setInt(2, 50);
+		results = prepstmt.executeQuery();
+
+		assertTrue(results.next());
+		assertEquals("Integer column ID is wrong", new Integer(41), results
+				.getObject("id"));
+		assertFalse(results.next());
+	}
+
+	public void testCanUsePreparedStatementOnStrings() throws SQLException {
+		Properties props = new Properties();
+		props.put("extension", ".csv");
+		props.put("columnTypes", "Int,String,String,Timestamp,String");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		String queryString = "SELECT * FROM sample5 WHERE job = ?";
+		PreparedStatement prepstmt = conn.prepareStatement(queryString);
+
+		prepstmt.setString(1, "Project Manager");
+		ResultSet results = prepstmt.executeQuery();
+		
+		assertTrue(results.next());
+		assertEquals("Integer column ID is wrong", new Integer(1), results
+				.getObject("id"));
+		assertTrue(results.next());
+		assertEquals("Integer column ID is wrong", new Integer(3), results
+				.getObject("id"));
+		assertTrue(results.next());
+		assertEquals("Integer column ID is wrong", new Integer(4), results
+				.getObject("id"));
+		assertFalse(results.next());
+		
+		prepstmt.setString(1, "Office Employee");
+		results = prepstmt.executeQuery();
+		
+		assertTrue(results.next());
+		assertEquals("Integer column ID is wrong", new Integer(6), results
+				.getObject("id"));
+		assertTrue(results.next());
+		assertEquals("Integer column ID is wrong", new Integer(7), results
+				.getObject("id"));
+		assertTrue(results.next());
+		assertEquals("Integer column ID is wrong", new Integer(8), results
+				.getObject("id"));
+		assertTrue(results.next());
+		assertEquals("Integer column ID is wrong", new Integer(9), results
+				.getObject("id"));
+		assertFalse(results.next());
+	}
 }

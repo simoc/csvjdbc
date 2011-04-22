@@ -51,8 +51,9 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public void clearParameters() throws SQLException {
-		// TODO Auto-generated method stub
-
+		for(int i=1; i<parameters.length; i++) {
+			parameters[i] = null;
+		}
 	}
 
 	public boolean execute() throws SQLException {
@@ -82,13 +83,11 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public void setArray(int arg0, Array arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setAsciiStream(int arg0, InputStream arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setAsciiStream(int arg0, InputStream arg1, int arg2)
@@ -104,13 +103,11 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public void setBigDecimal(int arg0, BigDecimal arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setBinaryStream(int arg0, InputStream arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setBinaryStream(int arg0, InputStream arg1, int arg2)
@@ -126,13 +123,11 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public void setBlob(int arg0, Blob arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setBlob(int arg0, InputStream arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setBlob(int arg0, InputStream arg1, long arg2)
@@ -142,13 +137,11 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public void setBoolean(int arg0, boolean arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = Boolean.valueOf(arg1);
 	}
 
 	public void setByte(int arg0, byte arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = Byte.valueOf(arg1);
 	}
 
 	public void setBytes(int arg0, byte[] arg1) throws SQLException {
@@ -157,8 +150,7 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public void setCharacterStream(int arg0, Reader arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setCharacterStream(int arg0, Reader arg1, int arg2)
@@ -174,13 +166,11 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public void setClob(int arg0, Clob arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setClob(int arg0, Reader arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setClob(int arg0, Reader arg1, long arg2) throws SQLException {
@@ -189,8 +179,7 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public void setDate(int arg0, Date arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setDate(int arg0, Date arg1, Calendar arg2) throws SQLException {
@@ -204,8 +193,7 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public void setFloat(int arg0, float arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = Float.valueOf(arg1);
 	}
 
 	public void setInt(int arg0, int arg1) throws SQLException {
@@ -213,13 +201,11 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public void setLong(int arg0, long arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = Long.valueOf(arg1);
 	}
 
 	public void setNCharacterStream(int arg0, Reader arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setNCharacterStream(int arg0, Reader arg1, long arg2)
@@ -229,13 +215,11 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public void setNClob(int arg0, NClob arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setNClob(int arg0, Reader arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setNClob(int arg0, Reader arg1, long arg2) throws SQLException {
@@ -259,8 +243,7 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public void setObject(int arg0, Object arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setObject(int arg0, Object arg1, int arg2) throws SQLException {
@@ -275,33 +258,27 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public void setRef(int arg0, Ref arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setRowId(int arg0, RowId arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setSQLXML(int arg0, SQLXML arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setShort(int arg0, short arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = Short.valueOf(arg1);
 	}
 
 	public void setString(int arg0, String arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setTime(int arg0, Time arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setTime(int arg0, Time arg1, Calendar arg2) throws SQLException {
@@ -310,8 +287,7 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public void setTimestamp(int arg0, Timestamp arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setTimestamp(int arg0, Timestamp arg1, Calendar arg2)
@@ -321,8 +297,7 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public void setURL(int arg0, URL arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.parameters[arg0] = arg1;
 	}
 
 	public void setUnicodeStream(int arg0, InputStream arg1, int arg2)
