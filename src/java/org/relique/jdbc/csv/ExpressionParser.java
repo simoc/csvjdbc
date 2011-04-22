@@ -358,16 +358,22 @@ public class ExpressionParser implements ExpressionParserConstants {
     content = queryEnvEntry();
   }
   public boolean isTrue(Map env){
-    Map useThisEnv = new HashMap();
-    useThisEnv.putAll(env);
-    useThisEnv.putAll(placeholders);
-    return content.isTrue(useThisEnv);
+    if(placeholders != null) {
+      Map useThisEnv = new HashMap();
+      useThisEnv.putAll(env);
+      useThisEnv.putAll(placeholders);
+      env = useThisEnv;
+    }
+    return content.isTrue(env);
   }
   public Object eval(Map env){
-    Map useThisEnv = new HashMap();
-    useThisEnv.putAll(env);
-    useThisEnv.putAll(placeholders);
-    return content.eval(useThisEnv);
+    if(placeholders != null) {
+      Map useThisEnv = new HashMap();
+      useThisEnv.putAll(env);
+      useThisEnv.putAll(placeholders);
+      env = useThisEnv;
+    }
+    return content.eval(env);
   }
   public String toString(){
     return ""+content;
