@@ -31,7 +31,7 @@ import junit.framework.TestCase;
  * This class is used to test the CsvJdbc driver.
  * 
  * @author Mario Frasca
- * @version $Id: TestPrepareStatement.java,v 1.1 2011/04/22 07:51:53 mfrasca Exp $
+ * @version $Id: TestPrepareStatement.java,v 1.2 2011/04/22 10:40:46 mfrasca Exp $
  */
 public class TestPrepareStatement extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -81,6 +81,7 @@ public class TestPrepareStatement extends TestCase {
 	public void testCanUsePreparedStatement() throws SQLException {
 		Properties props = new Properties();
 		props.put("extension", ".csv");
+		props.put("columnTypes", "Int,String,String,Timestamp,String");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 		String queryString = "SELECT * FROM sample5 WHERE id BETWEEN ? AND ?";

@@ -50,7 +50,7 @@ import org.relique.io.CryptoFilter;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.34 2011/03/01 11:30:56 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.35 2011/04/22 10:40:45 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -330,8 +330,7 @@ public class CsvConnection implements Connection {
      * @exception SQLException if a database access error occurs
      */
     public PreparedStatement prepareStatement(String sql) throws SQLException {
-      throw new UnsupportedOperationException(
-              "Connection.prepareStatement(String) unsupported");
+    	return new CsvPreparedStatement(this, sql, java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE);
     }
 
     /**

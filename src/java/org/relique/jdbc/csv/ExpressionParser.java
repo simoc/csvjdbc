@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 import org.relique.jdbc.csv.Expression;
@@ -35,6 +36,23 @@ class StringConstant extends Expression{
   }
   public String toString(){
     return "'"+value+"'";
+  }
+  public List usedColumns(){
+    return new LinkedList();
+  }
+}
+class Placeholder extends Expression{
+  static int nextIndex = 1;
+  Integer index;
+  public Placeholder(){
+    index = Integer.valueOf(nextIndex);
+    nextIndex++;
+  }
+  public Object eval(Map env){
+    return env.get(index);
+  }
+  public String toString(){
+    return "?";
   }
   public List usedColumns(){
     return new LinkedList();
@@ -330,23 +348,40 @@ class LikeExpression extends LogicalExpression{
 }
 public class ExpressionParser implements ExpressionParserConstants {
   ParsedExpression content;
+  private Map placeholders;
   public void parseLogicalExpression()throws ParseException{
+    Placeholder.nextIndex = 1;
+    placeholders = new HashMap();
     content = logicalExpression();
   }
   public void parseQueryEnvEntry()throws ParseException{
     content = queryEnvEntry();
   }
   public boolean isTrue(Map env){
-    return content.isTrue(env);
+    Map useThisEnv = new HashMap();
+    useThisEnv.putAll(env);
+    useThisEnv.putAll(placeholders);
+    return content.isTrue(useThisEnv);
   }
   public Object eval(Map env){
-    return content.eval(env);
+    Map useThisEnv = new HashMap();
+    useThisEnv.putAll(env);
+    useThisEnv.putAll(placeholders);
+    return content.eval(useThisEnv);
   }
   public String toString(){
     return ""+content;
   }
   public List usedColumns(){
     return content.usedColumns();
+  }
+  public int getPlaceholdersCount(){
+    return Placeholder.nextIndex - 1;
+  }
+  public void setPlaceholdersValues(Object[] values){
+    for(int i=1; i<values.length; i++){
+      placeholders.put(Integer.valueOf(i), values[i]);
+    }
   }
 
   final public ParsedExpression logicalExpression() throws ParseException {
@@ -362,6 +397,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case UNSIGNEDNUMBER:
     case NULL:
+    case PLACEHOLDER:
     case NAME:
     case STRING:
     case MINUS:
@@ -458,14 +494,15 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = logicalUnaryExpression();
     {if (true) return new NotExpression(arg);}
       break;
-    case 20:
-      jj_consume_token(20);
-      arg = logicalOrExpression();
+    case 21:
       jj_consume_token(21);
+      arg = logicalOrExpression();
+      jj_consume_token(22);
     {if (true) return arg;}
       break;
     case UNSIGNEDNUMBER:
     case NULL:
+    case PLACEHOLDER:
     case NAME:
     case STRING:
     case MINUS:
@@ -588,6 +625,10 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_consume_token(NULL);
     {if (true) return null;}
       break;
+    case PLACEHOLDER:
+      jj_consume_token(PLACEHOLDER);
+    {if (true) return new Placeholder();}
+      break;
     default:
       jj_la1[9] = jj_gen;
       jj_consume_token(-1);
@@ -670,7 +711,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x800,0x4800,0x6c050,0x100,0x80,0x14c250,0x13400,0xe0000,0xe0000,0x4c050,0x40000,0x8000,};
+      jj_la1_0 = new int[] {0x800,0x8800,0xdc050,0x100,0x80,0x29c250,0x23400,0x1c0000,0x1c0000,0x9c050,0x80000,0x10000,};
    }
 
   /** Constructor with InputStream. */
@@ -787,7 +828,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[22];
+    boolean[] la1tokens = new boolean[23];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -801,7 +842,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 22; i++) {
+    for (int i = 0; i < 23; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

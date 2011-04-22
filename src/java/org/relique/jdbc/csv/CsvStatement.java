@@ -47,7 +47,7 @@ import org.relique.jdbc.dbf.DbfReader;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.42 2011/04/20 13:23:17 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.43 2011/04/22 10:40:45 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -329,6 +329,11 @@ public class CsvStatement implements Statement {
 			throw new SQLException("Syntax Error. " + e.getMessage());
 		}
 
+		return executeParsedQuery(parser);
+	}
+
+	protected ResultSet executeParsedQuery(SqlParser parser)
+			throws SQLException {
 		DriverManager.println("Connection Path: " + connection.getPath());
 		DriverManager.println("Parser Table Name: " + parser.getTableName());
 		DriverManager.println("Connection Extension: "
