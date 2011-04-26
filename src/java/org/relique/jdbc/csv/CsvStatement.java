@@ -47,7 +47,7 @@ import org.relique.jdbc.dbf.DbfReader;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.43 2011/04/22 10:40:45 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.44 2011/04/26 08:22:57 mfrasca Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -83,7 +83,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public void setMaxFieldSize(int p0) throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("setMaxFieldSize(int " + p0 + ") not Supported !");
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public void setMaxRows(int p0) throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("setMaxRows(int " + p0 + ") not Supported !");
 	}
 
 	/**
@@ -109,7 +109,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public void setEscapeProcessing(boolean p0) throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("setEscapeProcessing(boolean " + p0 + ") not Supported !");
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public void setQueryTimeout(int p0) throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("setQueryTimeout(int " + p0 + ") not Supported !");
 	}
 
 	/**
@@ -135,7 +135,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public void setCursorName(String p0) throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("setCursorName(String \"" + p0 + "\") not Supported !");
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public void setFetchDirection(int p0) throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("setFetchDirection(int " + p0 + ") not Supported !");
 	}
 
 	/**
@@ -161,7 +161,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public void setFetchSize(int p0) throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("setFetchSize(int " + p0 + ") not Supported !");
 	}
 
 	/**
@@ -173,7 +173,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public int getMaxFieldSize() throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("getMaxFieldSize() not Supported !");
 	}
 
 	/**
@@ -185,7 +185,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public int getMaxRows() throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("getMaxRows() not Supported !");
 	}
 
 	/**
@@ -197,7 +197,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public int getQueryTimeout() throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("getQueryTimeout() not Supported !");
 	}
 
 	/**
@@ -209,7 +209,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public SQLWarning getWarnings() throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("getWarnings() not Supported !");
 	}
 
 	/**
@@ -221,7 +221,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public ResultSet getResultSet() throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("getResultSet() not Supported !");
 	}
 
 	/**
@@ -233,7 +233,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public int getUpdateCount() throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("getUpdateCount() not Supported !");
 	}
 
 	/**
@@ -245,7 +245,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public boolean getMoreResults() throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("getMoreResults() not Supported !");
 	}
 
 	/**
@@ -257,7 +257,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public int getFetchDirection() throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("getFetchDirection() not Supported !");
 	}
 
 	/**
@@ -269,7 +269,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public int getFetchSize() throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("getFetchSize() not Supported !");
 	}
 
 	/**
@@ -281,7 +281,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public int getResultSetConcurrency() throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("getResultSetConcurrency() not Supported !");
 	}
 
 	/**
@@ -432,7 +432,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public int executeUpdate(String sql) throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("executeUpdate(String \"" + sql + "\") not Supported !");
 	}
 
 	/**
@@ -468,7 +468,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public void cancel() throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("cancel() not Supported !");
 	}
 
 	/**
@@ -479,7 +479,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public void clearWarnings() throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("clearWarnings() not Supported !");
 	}
 
 	/**
@@ -493,7 +493,12 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public boolean execute(String p0) throws SQLException {
-		throw new SQLException("Not Supported !");
+		try{
+			executeQuery(p0);
+			return true;
+		} catch (Exception e) {
+			throw new SQLException("execute(String \"" + p0 + "\") not Supported !");
+		}
 	}
 
 	/**
@@ -506,7 +511,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public void addBatch(String p0) throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("addBatch(String \"" + p0 + "\") not Supported !");
 	}
 
 	/**
@@ -517,7 +522,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public void clearBatch() throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("clearBatch() not Supported !");
 	}
 
 	/**
@@ -529,7 +534,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public int[] executeBatch() throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("executeBatch() not Supported !");
 	}
 
 	// ---------------------------------------------------------------------

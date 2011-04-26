@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" hostname="nens-lt-41" name="test.org.relique.jdbc.csv.TestScrollableDriver" tests="6" time="0.219" timestamp="2011-04-26T07:00:39">
+  <properties>
+    <property name="java.vendor" value="Sun Microsystems Inc." />
+    <property name="lib.dir" value="../lib" />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="eclipse.pdebuild.templates" value="/usr/lib/eclipse/plugins/org.eclipse.pde.build_3.5.2.R35x_20100114/templates//" />
+    <property name="sun.management.compiler" value="HotSpot Tiered Compilers" />
+    <property name="os.name" value="Linux" />
+    <property name="sun.boot.class.path" value="/usr/lib/jvm/java-6-openjdk/jre/lib/resources.jar:/usr/lib/jvm/java-6-openjdk/jre/lib/rt.jar:/usr/lib/jvm/java-6-openjdk/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-6-openjdk/jre/lib/jsse.jar:/usr/lib/jvm/java-6-openjdk/jre/lib/jce.jar:/usr/lib/jvm/java-6-openjdk/jre/lib/charsets.jar:/usr/lib/jvm/java-6-openjdk/jre/lib/netx.jar:/usr/lib/jvm/java-6-openjdk/jre/lib/plugin.jar:/usr/lib/jvm/java-6-openjdk/jre/lib/rhino.jar:/usr/lib/jvm/java-6-openjdk/jre/lib/modules/jdk.boot.jar:/usr/lib/jvm/java-6-openjdk/jre/classes" />
+    <property name="ant.file.type.CsvJdbc" value="file" />
+    <property name="sun.desktop" value="gnome" />
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="ant.home" value="/usr/lib/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145" />
+    <property name="java.runtime.version" value="1.6.0_20-b20" />
+    <property name="user.name" value="mario" />
+    <property name="build.dir" value="../build" />
+    <property name="user.language" value="en" />
+    <property name="class.dir" value="../classes" />
+    <property name="sun.boot.library.path" value="/usr/lib/jvm/java-6-openjdk/jre/lib/i386" />
+    <property name="ant.project.default-target" value="main" />
+    <property name="doc.dir" value="../src/doc" />
+    <property name="ant.project.name" value="CsvJdbc" />
+    <property name="java.version" value="1.6.0_20" />
+    <property name="user.timezone" value="" />
+    <property name="sun.arch.data.model" value="32" />
+    <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-6-openjdk/jre/lib/endorsed" />
+    <property name="sun.cpu.isalist" value="" />
+    <property name="sun.jnu.encoding" value="ANSI_X3.4-1968" />
+    <property name="file.encoding.pkg" value="sun.io" />
+    <property name="file.separator" value="/" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="java.class.version" value="50.0" />
+    <property name="user.country" value="US" />
+    <property name="java.home" value="/usr/lib/jvm/java-6-openjdk/jre" />
+    <property name="java.vm.info" value="mixed mode" />
+    <property name="ant.file" value="/home/mario/workspace/csvjdbc/build/build.xml" />
+    <property name="os.version" value="2.6.35-28-generic" />
+    <property name="ant.file.CsvJdbc" value="/home/mario/workspace/csvjdbc/build/build.xml" />
+    <property name="test.reports" value="../reports" />
+    <property name="TALK" value="false" />
+    <property name="path.separator" value=":" />
+    <property name="java.vm.version" value="19.0-b09" />
+    <property name="rel" value="r0-10" />
+    <property name="rel.dir" value="../release" />
+    <property name="ant.library.dir" value="/usr/lib/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib" />
+    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob" />
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+    <property name="eclipse.pdebuild.scripts" value="/usr/lib/eclipse/plugins/org.eclipse.pde.build_3.5.2.R35x_20100114/scripts//" />
+    <property name="user.home" value="/home/mario" />
+    <property name="java.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="jar.file" value="../release/csvjdbc.jar" />
+    <property name="junit.dir" value="/usr/share/java" />
+    <property name="java.library.path" value="/usr/lib/jvm/java-6-openjdk/jre/lib/i386/server:/usr/lib/jvm/java-6-openjdk/jre/lib/i386:/usr/lib/jvm/java-6-openjdk/jre/../lib/i386:/usr/lib/jvm/java-6-openjdk/jre/lib/i386/client:/usr/lib/jvm/java-6-openjdk/jre/lib/i386:/usr/lib/xulrunner-1.9.2.16:/usr/lib/xulrunner-1.9.2.16:/usr/java/packages/lib/i386:/usr/lib/jni:/lib:/usr/lib" />
+    <property name="name" value="csvjdbc" />
+    <property name="java.vendor.url" value="http://java.sun.com/" />
+    <property name="java.vm.vendor" value="Sun Microsystems Inc." />
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment" />
+    <property name="java.class.path" value="/home/mario/workspace/csvjdbc/build:/home/mario/workspace/csvjdbc/classes:/home/mario/workspace/csvjdbc/lib/dans-dbf-lib-1.0.0-beta-09.jar:/usr/share/java/junit-3.8.2.jar:/usr/share/java/junit.jar:/usr/share/java/junit4-4.8.2.jar:/usr/share/java/junit4.jar:/home/mario/workspace/csvjdbc/classes/org/relique/io/CryptoFilter.class:/home/mario/workspace/csvjdbc/classes/org/relique/io/DataReader.class:/home/mario/workspace/csvjdbc/classes/org/relique/io/EncryptedFileInputStream.class:/home/mario/workspace/csvjdbc/classes/org/relique/io/EncryptedFileOutputStream.class:/home/mario/workspace/csvjdbc/classes/org/relique/io/FileSetInputStream.class:/home/mario/workspace/csvjdbc/classes/org/relique/io/XORCipher.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/AndExpression.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/BetweenExpression.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/BinaryOperation.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/ColumnName.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/CsvConnection.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/CsvDatabaseMetaData.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/CsvDriver.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/CsvPreparedStatement.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/CsvRawReader.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/CsvReader.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/CsvResultSet.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/CsvResultSetMetaData$1.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/CsvResultSetMetaData.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/CsvStatement.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/Expression.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/ExpressionParser.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/ExpressionParserConstants.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/ExpressionParserTokenManager.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/IsNullExpression.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/LikeExpression.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/LogicalExpression.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/NotExpression.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/NumericConstant.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/OrExpression.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/ParseException.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/ParsedExpression.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/Placeholder.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/QueryEnvEntry.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/RelopExpression.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/ScrollableCsvReader.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/SimpleCharStream.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/SqlParser.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/StringConstant.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/StringConverter$1.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/StringConverter$2.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/StringConverter.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/Token.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/csv/TokenMgrError.class:/home/mario/workspace/csvjdbc/classes/org/relique/jdbc/dbf/DbfReader.class:/home/mario/workspace/csvjdbc/classes/test/org/relique/jdbc/csv/RunTests.class:/home/mario/workspace/csvjdbc/classes/test/org/relique/jdbc/csv/TestCryptoFilter.class:/home/mario/workspace/csvjdbc/classes/test/org/relique/jdbc/csv/TestCsvDriver.class:/home/mario/workspace/csvjdbc/classes/test/org/relique/jdbc/csv/TestDbfDriver.class:/home/mario/workspace/csvjdbc/classes/test/org/relique/jdbc/csv/TestFileSetInputStream.class:/home/mario/workspace/csvjdbc/classes/test/org/relique/jdbc/csv/TestJoinedTables.class:/home/mario/workspace/csvjdbc/classes/test/org/relique/jdbc/csv/TestPrepareStatement.class:/home/mario/workspace/csvjdbc/classes/test/org/relique/jdbc/csv/TestScrollableDriver.class:/home/mario/workspace/csvjdbc/classes/test/org/relique/jdbc/csv/TestSqlParser.class:/home/mario/workspace/csvjdbc/classes/test/org/relique/jdbc/csv/TestStringConverter.class:/usr/share/java/ant-launcher-1.8.0.jar:/usr/share/java/ant-1.8.0.jar:/usr/share/java/ant-junit-1.8.0.jar" />
+    <property name="ant.version" value="Apache Ant version 1.8.0 compiled on May 9 2010" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="java.vm.specification.version" value="1.0" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="sun.os.patch.level" value="unknown" />
+    <property name="java.dir" value="../src/java" />
+    <property name="eclipse.pdebuild.home" value="/usr/lib/eclipse/plugins/org.eclipse.pde.build_3.5.2.R35x_20100114/.//" />
+    <property name="java.io.tmpdir" value="/tmp" />
+    <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi" />
+    <property name="os.arch" value="i386" />
+    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment" />
+    <property name="java.ext.dirs" value="/usr/lib/jvm/java-6-openjdk/jre/lib/ext:/usr/java/packages/lib/ext" />
+    <property name="user.dir" value="/home/mario/workspace/csvjdbc/build" />
+    <property name="line.separator" value="
+" />
+    <property name="java.vm.name" value="OpenJDK Server VM" />
+    <property name="basedir" value="/home/mario/workspace/csvjdbc/build" />
+    <property name="ant.java.version" value="1.6" />
+    <property name="ant.core.lib" value="/usr/share/java/ant-1.8.0.jar" />
+    <property name="file.encoding" value="ANSI_X3.4-1968" />
+    <property name="java.specification.version" value="1.6" />
+    <property name="src.dir" value="../src" />
+    <property name="ant.project.invoked-targets" value="main,compile,test,jar" />
+    <property name="javadoc.dir" value="../javadoc" />
+    <property name="rel.name" value="csvjdbc-r0-10" />
+  </properties>
+  <testcase classname="test.org.relique.jdbc.csv.TestScrollableDriver" name="testScroll" time="0.065" />
+  <testcase classname="test.org.relique.jdbc.csv.TestScrollableDriver" name="testIsFirstIsLast" time="0.003" />
+  <testcase classname="test.org.relique.jdbc.csv.TestScrollableDriver" name="testScrollWithMultiLineText" time="0.032" />
+  <testcase classname="test.org.relique.jdbc.csv.TestScrollableDriver" name="testWhereNoResults" time="0.004" />
+  <testcase classname="test.org.relique.jdbc.csv.TestScrollableDriver" name="testWhereSingleRecord" time="0.003" />
+  <testcase classname="test.org.relique.jdbc.csv.TestScrollableDriver" name="testWhereMultipleResult" time="0.004" />
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -57,7 +57,7 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	public boolean execute() throws SQLException {
-		throw new SQLException("Not Supported !");
+		throw new SQLException("execute() not Supported !");
 	}
 
 	public ResultSet executeQuery() throws SQLException {

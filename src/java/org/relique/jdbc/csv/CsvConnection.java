@@ -28,6 +28,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -50,7 +51,7 @@ import org.relique.io.CryptoFilter;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvConnection.java,v 1.35 2011/04/22 10:40:45 mfrasca Exp $
+ * @version    $Id: CsvConnection.java,v 1.36 2011/04/26 08:22:57 mfrasca Exp $
  */
 public class CsvConnection implements Connection {
 
@@ -730,7 +731,7 @@ public class CsvConnection implements Connection {
     public PreparedStatement prepareStatement(String sql, int resultSetType,
             int resultSetConcurrency) throws SQLException {
         throw new UnsupportedOperationException(
-                "Connection.prepareStatement(String, int, int) unsupported");
+                "Connection.prepareStatement(String \"" + sql + "\", int " + resultSetType + ", int " + resultSetConcurrency + ") unsupported");
     }
 
     /**
