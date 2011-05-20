@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.59 2011/04/20 09:05:25 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.60 2011/05/20 12:09:55 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -377,9 +377,9 @@ public class TestCsvDriver extends TestCase {
 				.executeQuery("SELECT id, start+timeoffset AS ts FROM sample5");
 		ResultSetMetaData metadata = results.getMetaData();
 
-		// TODO: this fails
 		assertEquals("type of column 1 is incorrect", Types.INTEGER, metadata
 				.getColumnType(1));
+		// TODO: this fails
 		assertEquals("type of column 2 is incorrect", Types.TIMESTAMP, metadata
 				.getColumnType(2));
 	}

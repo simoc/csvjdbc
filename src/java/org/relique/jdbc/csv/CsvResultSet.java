@@ -56,7 +56,7 @@ import org.relique.io.DataReader;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.51 2011/04/20 09:42:14 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.52 2011/05/20 12:09:56 mfrasca Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -948,8 +948,28 @@ public class CsvResultSet implements ResultSet {
      */
     public ResultSetMetaData getMetaData() throws SQLException {
         if (resultSetMetaData == null) {
-        	if(typeNames == null)
-        		typeNames = reader.getColumnTypes();
+        	if(typeNames == null) {
+        		String[] readerTypeNames = reader.getColumnTypes(); 
+    			String[] readerColumnNames = reader.getColumnNames();
+        		int columnCount = queryEnvironment.size();
+        		typeNames = new String[columnCount];
+        		for(int i=0; i<columnCount; i++) {
+        			int columnIndex = -1;
+    				Object[] o = (Object[]) queryEnvironment.get(i);
+    				if (o[1] instanceof ColumnName) {
+    					ColumnName cn = (ColumnName) o[1];
+    					String lookFor = cn.columnName;
+            			for (int j=0; j<readerColumnNames.length; j++) {
+            				if (readerColumnNames[j].equalsIgnoreCase(lookFor))
+            					columnIndex = j;
+            			}
+    				} 
+					if (columnIndex == -1)
+						typeNames[i] = "expression";
+					else
+						typeNames[i] = readerTypeNames[columnIndex];
+        		}
+        	}
             resultSetMetaData = new CsvResultSetMetaData(tableName, queryEnvironment, typeNames);
         }
         return resultSetMetaData;

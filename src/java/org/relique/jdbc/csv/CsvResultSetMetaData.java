@@ -1,6 +1,7 @@
 /*
  *  CsvJdbc - a JDBC driver for CSV files
  *  Copyright (C) 2001  Jonathan Ackerman
+ *  Copyright (C) 2008, 2011  Mario Frasca
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
@@ -27,8 +28,7 @@ import java.util.Map;
  * 
  * @author Jonathan Ackerman
  * @author JD Evora
- * @version $Id: CsvResultSetMetaData.java,v 1.6 2008/11/11 13:23:06 mfrasca Exp
- *          $
+ * @version $Id: CsvResultSetMetaData.java,v 1.9 2011/05/20 12:09:56 mfrasca Exp $
  */
 public class CsvResultSetMetaData implements ResultSetMetaData {
 	/** Default value for getColumnDisplaySize */
@@ -107,7 +107,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 	}
 
 	/**
-	 * Gets the auto increment falg for the specfied column.
+	 * Gets the auto increment flag for the specified column.
 	 * 
 	 * @param column
 	 *            The column to get the flag for
@@ -120,7 +120,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 	}
 
 	/**
-	 * Returns the case sensitivity flag for the specfied column
+	 * Returns the case sensitivity flag for the specified column
 	 * 
 	 * @param column
 	 *            The column to return the flag for
@@ -161,7 +161,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 	}
 
 	/**
-	 * Returns the nullable flag for the specfied column
+	 * Returns the nullable flag for the specified column
 	 * 
 	 * @param column
 	 *            The column to return the flag for
@@ -174,7 +174,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 	}
 
 	/**
-	 * Returns the signed flag for the specfied column
+	 * Returns the signed flag for the specified column
 	 * 
 	 * @param column
 	 *            The column to return the flag for
@@ -264,6 +264,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 			put("Timestamp", new Integer(Types.TIMESTAMP));
 			put("Blob", new Integer(Types.BLOB));
 			put("Clob", new Integer(Types.CLOB));
+			put("expression", new Integer(Types.BLOB));
 		}
 	};
 
