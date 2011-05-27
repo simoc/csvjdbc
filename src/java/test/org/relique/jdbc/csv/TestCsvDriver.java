@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.60 2011/05/20 12:09:55 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.61 2011/05/27 08:57:20 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -2041,4 +2041,29 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	public void testWithDifferentDecimalSeparator() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", "");
+		props.put("separator", ";");
+		props.put("columnTypes", "String,String,Double");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT NAME,ID,EXTRA_FIELD FROM sample");
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next()); // Mackie Messer
+		assertEquals(new Double(34.1), results.getObject(3));
+		assertTrue(results.next()); // Polly Peachum
+		assertEquals(new Double(30.5), results.getObject(3));
+		
+	}	
 }

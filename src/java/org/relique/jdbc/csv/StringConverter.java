@@ -74,6 +74,8 @@ public class StringConverter {
 
 	public float parseFloat(String str) {
 		try {
+			if(str != null)
+				str = str.replace(",", ".");
 			return (str == null) ? 0 : Float.parseFloat(str);
 		} catch (RuntimeException e) {
 			return 0;
@@ -82,6 +84,8 @@ public class StringConverter {
 
 	public double parseDouble(String str) {
 		try {
+			if(str != null)
+				str = str.replace(",", ".");
 			return (str == null) ? 0 : Double.parseDouble(str);
 		} catch (RuntimeException e) {
 			return 0;
@@ -224,6 +228,7 @@ public class StringConverter {
 				put("Byte", Class.forName("java.lang.Byte"));
 				put("Short", Class.forName("java.lang.Short"));
 				put("Int", Class.forName("java.lang.Integer"));
+				put("Integer", Class.forName("java.lang.Integer"));
 				put("Long", Class.forName("java.lang.Long"));
 				put("Float", Class.forName("java.lang.Float"));
 				put("Double", Class.forName("java.lang.Double"));
@@ -251,6 +256,7 @@ public class StringConverter {
 				put("Byte", containerClass.getMethod("parseByte", argTypes));
 				put("Short", containerClass.getMethod("parseShort", argTypes));
 				put("Int", containerClass.getMethod("parseInt", argTypes));
+				put("Integer", containerClass.getMethod("parseInt", argTypes));
 				put("Long", containerClass.getMethod("parseLong", argTypes));
 				put("Float", containerClass.getMethod("parseFloat", argTypes));
 				put("Double", containerClass.getMethod("parseDouble", argTypes));
