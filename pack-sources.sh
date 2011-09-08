@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JAR=../LizardAnt/dist/csvjdbc.jar
+JAR=../LizardConverter/dist/csvjdbc.jar
 SOURCES=$(find src/java/org/relique/ -iname "*.java")
 TESTSOURCES=src/java/test/org/relique/jdbc/csv/*.java
 TESTDATA=$(find src/testdata -maxdepth 1 -type f -not -name "*~")

@@ -134,6 +134,16 @@ class BinaryOperation extends Expression{
         return sc.parseTimestamp(leftD.toString() + " " + rightT.toString());
       }
     }
+    catch (ClassCastException e){}try {
+      if (op == '+' || op == '-'){
+        Timestamp leftD = (Timestamp)leftEval;
+        long time = leftD.getTime();
+        Number rightN = (Number)rightEval;
+        BigDecimal bdr = new BigDecimal(rightN.toString());
+        if (op == '+')return new Timestamp(time + bdr.longValue());
+        if (op == '-')return new Timestamp(time - bdr.longValue());
+      }
+    }
     catch (ClassCastException e){}
     if(op == '+')return ""+leftEval+rightEval;
     return null;

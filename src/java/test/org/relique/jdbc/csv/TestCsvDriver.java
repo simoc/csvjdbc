@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.61 2011/05/27 08:57:20 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.62 2011/09/08 13:44:18 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1132,7 +1132,7 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testAddingDateToTime() throws SQLException {
+	public void testAddingDatePlusTime() throws SQLException {
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date,Time");
 		props.put("timeFormat", "HHmm");
@@ -1175,6 +1175,49 @@ public class TestCsvDriver extends TestCase {
 				.getObject("ts").getClass());
 		assertEquals("adding Date to Time", ((Timestamp) expect).toString(), toUTC
 				.format(results.getObject("ts")) + ".0");
+
+		assertFalse(results.next());
+	}
+
+	public void testAddingTimestampPlusInteger() throws SQLException {
+		// misusing Date+Time to get a Timestamp, but here we are just
+		// interested in doing Timestamp +/- Integer
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Date,Time");
+		props.put("timeFormat", "HHmm");
+		props.put("dateFormat", "yyyy-MM-dd");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Object expect;
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT id, start+timeoffset+61000 AS ts, start+timeoffset-61000 AS ts2 FROM sample5 WHERE id=41 OR id=4");
+
+		assertTrue(results.next());
+		expect = java.sql.Timestamp.valueOf("2001-04-02 12:31:01");
+		assertEquals("adding Date + Time + Int", expect.getClass(), results
+				.getObject("ts").getClass());
+		assertEquals("adding Date to Time", ((Timestamp) expect).toString(), toUTC
+				.format(results.getObject("ts")) + ".0");
+		expect = java.sql.Timestamp.valueOf("2001-04-02 12:28:59");
+		assertEquals("adding Date + Time - Int", expect.getClass(), results
+				.getObject("ts2").getClass());
+		assertEquals("adding Date to Time", ((Timestamp) expect).toString(), toUTC
+				.format(results.getObject("ts2")) + ".0");
+
+		assertTrue(results.next());
+		expect = java.sql.Timestamp.valueOf("2004-04-02 01:01:01");
+		assertEquals("adding Date to Time", expect.getClass(), results
+				.getObject("ts").getClass());
+		assertEquals("adding Date to Time", ((Timestamp) expect).toString(), toUTC
+				.format(results.getObject("ts")) + ".0");
+		expect = java.sql.Timestamp.valueOf("2004-04-02 00:58:59");
+		assertEquals("adding Date to Time", expect.getClass(), results
+				.getObject("ts2").getClass());
+		assertEquals("adding Date to Time", ((Timestamp) expect).toString(), toUTC
+				.format(results.getObject("ts2")) + ".0");
 
 		assertFalse(results.next());
 	}
