@@ -173,4 +173,21 @@ public class TestPrepareStatement extends TestCase {
 				.getObject("id"));
 		assertFalse(results.next());
 	}
+
+	/**
+	 * @throws SQLException
+	 */
+	public void testNoWhereClause() throws SQLException {
+		Properties props = new Properties();
+		props.put("extension", ".csv");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		String queryString = "SELECT * FROM sample5";
+		try {
+			conn.prepareStatement(queryString);
+		} catch (UnsupportedOperationException e) {
+			fail("can't prepareStatement!");
+		}
+	}
 }
