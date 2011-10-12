@@ -23,7 +23,7 @@ import junit.framework.*;
 /**This class is used to test the CsvJdbc driver.
 *
 * @author Jonathan Ackerman
-* @version $Id: RunTests.java,v 1.14 2011/04/22 10:40:46 mfrasca Exp $
+* @version $Id: RunTests.java,v 1.15 2011/10/12 11:12:22 mfrasca Exp $
 */
 public class RunTests
 {
@@ -41,6 +41,7 @@ public class RunTests
     suite.addTestSuite(TestJoinedTables.class);
     suite.addTestSuite(TestCryptoFilter.class);
     suite.addTestSuite(TestPrepareStatement.class);
+    suite.addTestSuite(TestStringConverter.class);
     return suite;
   }
 
