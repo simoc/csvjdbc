@@ -102,4 +102,25 @@ public class TestFileSetInputStream extends TestCase {
 		assertTrue("testSet contains refSet", testSet.containsAll(refSet));
 	}
 
+	public void testGlueAsEmpty() throws IOException {
+		BufferedReader inputRef = new BufferedReader(new InputStreamReader(
+				new FileInputStream(filePath + "empty-glued.txt")));
+
+		BufferedReader inputTest = new BufferedReader(new InputStreamReader(
+				new FileSetInputStream(filePath,
+						"empty-([0-9]+).txt", new String[] {
+							"EMPTY_ID"}, ',', false, false, null, 0)));
+
+		Set refSet = new HashSet();
+		Set testSet = new HashSet();
+		String lineRef, lineTest;
+		do {
+			lineRef = inputRef.readLine();
+			lineTest = inputTest.readLine();
+			refSet.add(lineRef);
+			testSet.add(lineTest);
+		} while (lineRef != null && lineTest != null);
+		assertTrue("refSet contains testSet", refSet.containsAll(testSet));
+		assertTrue("testSet contains refSet", testSet.containsAll(refSet));
+	}
 }
