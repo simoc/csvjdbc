@@ -206,7 +206,7 @@ public class FileSetInputStream extends InputStream {
 				int ch2;
 				do{
 					ch2 = currentFile.read();
-				} while (ch2 != '\n');
+				} while (ch2 != '\n' && ch2 != -1);
 			}
 			doingTail = prepend;
 			if (doingTail)
