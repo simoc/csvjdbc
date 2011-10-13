@@ -150,16 +150,26 @@ public class StringConverter {
 		
 		Pattern pattern = Pattern.compile(format);
 		m = pattern.matcher(date);
-		if(m.matches())
-			// and return the groups in the ISO8601 order.
-			return m.group(year) + "-" + m.group(month) + "-" + m.group(day);
+		if (m.matches()) {
+			// and return the groups in ISO8601 format.
+			String yearGroup = m.group(year);
+			String monthGroup = m.group(month);
+			if (monthGroup.length() < 2)
+				monthGroup = "0" + monthGroup;
+			String dayGroup = m.group(day);
+			if (dayGroup.length() < 2)
+				dayGroup = "0" + dayGroup;
+			String retval = yearGroup + "-" + monthGroup + "-" + dayGroup;
+			return retval;
+		}
 		else
 			return "1970-01-01";
 	}
 	
 	public Date parseDate(String str) {
 		try {
-			Date sqlResult = Date.valueOf(makeISODate(str, dateFormat));
+			String isoDate = makeISODate(str, dateFormat);
+			Date sqlResult = Date.valueOf(isoDate);
 			return sqlResult;
 		} catch (RuntimeException e) {
 			return null;
