@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.62 2011/09/08 13:44:18 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.63 2011/10/14 13:47:13 mfrasca Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -2108,5 +2108,26 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(results.next()); // Polly Peachum
 		assertEquals(new Double(30.5), results.getObject(3));
 		
-	}	
+	}
+
+	public void testLiteral() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT name, id, 'Bananas' as t FROM sample");
+
+		results.next();
+		assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
+		assertEquals("Incorrect ID Value", "Bananas", results.getString("T"));
+		assertEquals("Incorrect ID Value", "Bananas", results.getString("t"));
+		results.next();
+		assertEquals("Incorrect ID Value", "Bananas", results.getString("T"));
+		results.next();
+		assertEquals("Incorrect ID Value", "Bananas", results.getString("T"));
+		results.next();
+		assertEquals("Incorrect ID Value", "Bananas", results.getString("T"));
+	}
 }

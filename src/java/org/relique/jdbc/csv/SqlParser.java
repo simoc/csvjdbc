@@ -33,7 +33,7 @@ import java.util.StringTokenizer;
  * @author Juan Pablo Morales
  * @author Mario Frasca
  * @created 25 November 2001
- * @version $Id: SqlParser.java,v 1.14 2011/10/12 16:33:08 simoc Exp $
+ * @version $Id: SqlParser.java,v 1.15 2011/10/14 13:47:14 mfrasca Exp $
  */
 public class SqlParser
 {
@@ -131,7 +131,7 @@ public class SqlParser
 		} else {
 			whereClause = null;
 		}
-		StringTokenizer tokenizer = new StringTokenizer(upperSql.substring(7,
+		StringTokenizer tokenizer = new StringTokenizer(sql.substring(7,
 				fromPos), ",");
 
 		environment = new ArrayList();
