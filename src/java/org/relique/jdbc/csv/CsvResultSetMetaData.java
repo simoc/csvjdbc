@@ -28,7 +28,7 @@ import java.util.Map;
  * 
  * @author Jonathan Ackerman
  * @author JD Evora
- * @version $Id: CsvResultSetMetaData.java,v 1.9 2011/05/20 12:09:56 mfrasca Exp $
+ * @version $Id: CsvResultSetMetaData.java,v 1.10 2011/10/17 13:47:40 simoc Exp $
  */
 public class CsvResultSetMetaData implements ResultSetMetaData {
 	/** Default value for getColumnDisplaySize */
@@ -255,6 +255,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 			put("Byte", new Integer(Types.TINYINT));
 			put("Short", new Integer(Types.SMALLINT));
 			put("Int", new Integer(Types.INTEGER));
+			put("Integer", new Integer(Types.INTEGER));
 			put("Long", new Integer(Types.BIGINT));
 			put("Float", new Integer(Types.FLOAT));
 			put("Double", new Integer(Types.DOUBLE));

@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.63 2011/10/14 13:47:13 mfrasca Exp $
+ * @version $Id: TestCsvDriver.java,v 1.64 2011/10/17 13:47:40 simoc Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -482,6 +482,39 @@ public class TestCsvDriver extends TestCase {
 				.getColumnType(3));
 		assertEquals("type of column 4 is incorrect", Types.TIMESTAMP, metadata
 				.getColumnType(4));
+	}
+
+	/**
+	 * @throws SQLException
+	 * @throws ParseException
+	 */
+	public void testColumnTypesNumeric() throws SQLException,
+			ParseException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Byte,Short,Integer,Long,Float,Double,BigDecimal");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT C1, C2, C3, C4, C5, C6, C7 "
+				+ "FROM numeric");
+
+		assertTrue(results.next());
+		ResultSetMetaData metadata = results.getMetaData();
+		assertEquals("type of column 1 is incorrect", Types.TINYINT, metadata
+				.getColumnType(1));
+		assertEquals("type of column 2 is incorrect", Types.SMALLINT, metadata
+				.getColumnType(2));
+		assertEquals("type of column 3 is incorrect", Types.INTEGER, metadata
+				.getColumnType(3));
+		assertEquals("type of column 4 is incorrect", Types.BIGINT, metadata
+				.getColumnType(4));
+		assertEquals("type of column 5 is incorrect", Types.FLOAT, metadata
+				.getColumnType(5));
+		assertEquals("type of column 6 is incorrect", Types.DOUBLE, metadata
+				.getColumnType(6));
+		assertEquals("type of column 7 is incorrect", Types.DECIMAL, metadata
+				.getColumnType(7));
 	}
 
 	public void testColumnTypesDefaultBehaviour() throws SQLException,
