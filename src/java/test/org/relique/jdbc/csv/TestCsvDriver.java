@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.64 2011/10/17 13:47:40 simoc Exp $
+ * @version $Id: TestCsvDriver.java,v 1.65 2011/10/18 20:34:42 simoc Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -533,6 +533,26 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The ID is wrong", "01", results.getObject("id"));
 		assertEquals("The Name is wrong", "Juan Pablo Morales", results
 				.getObject("name"));
+	}
+
+	/**
+	 * @throws SQLException
+	 */
+	public void testBadColumnTypesFails() throws SQLException {		
+		try {
+			Properties props = new Properties();
+			props.put("columnTypes", "Varchar,Varchar");
+			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+					+ filePath, props);
+
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt
+					.executeQuery("SELECT Id, Name FROM sample");
+			fail("Should raise a java.sqlSQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: Invalid column type: Varchar", "" + e);
+		}
 	}
 
 	public void testColumnTypesWithSelectStar() throws SQLException,

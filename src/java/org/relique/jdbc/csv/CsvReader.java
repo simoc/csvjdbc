@@ -145,11 +145,14 @@ public class CsvReader extends DataReader {
 		return result;
 	}
 	
-	public void setColumnTypes(String line) {
+	public void setColumnTypes(String line) throws SQLException {
     	String[] typeNamesLoc = line.split(",");
     	columnTypes = new String[getColumnNames().length];
     	for(int i=0; i<Math.min(typeNamesLoc.length, columnTypes.length); i++){
-    		columnTypes[i] = typeNamesLoc[i].trim();
+    		String typeName = typeNamesLoc[i].trim();
+    		if (converter.forSQLName(typeName) == null)
+    			throw new SQLException("Invalid column type: " + typeName);
+    		columnTypes[i] = typeName;
     	}
     	for(int i=typeNamesLoc.length; i < columnTypes.length; i++){
     		columnTypes[i] = typeNamesLoc[typeNamesLoc.length-1].trim();
