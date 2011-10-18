@@ -28,7 +28,7 @@ import java.io.File;
  * @author     JD Evora
  * @author     Tomasz Skutnik
  * @author     Christoph Langer
- * @version    $Id: CsvDriver.java,v 1.26 2011/03/01 11:30:56 mfrasca Exp $
+ * @version    $Id: CsvDriver.java,v 1.27 2011/10/18 14:37:05 simoc Exp $
  */
 
 public class CsvDriver implements Driver
@@ -68,7 +68,6 @@ public class CsvDriver implements Driver
   public static final String SKIP_LEADING_LINES = "skipLeadingLines";
   public static final String IGNORE_UNPARSEABLE_LINES = "ignoreNonParseableLines";
   public static final String FILE_TAIL_PREPEND = "fileTailPrepend";
-  public static final String SCRAMBLING_STRING = "scramblingString";
   public static final String DEFECTIVE_HEADERS = "defectiveHeaders";
   public static final String SKIP_LEADING_DATA_LINES = "skipLeadingDataLines";
   public static final String TRANSPOSED_LINES = "transposedLines";
