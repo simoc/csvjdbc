@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.65 2011/10/18 20:34:42 simoc Exp $
+ * @version $Id: TestCsvDriver.java,v 1.66 2011/10/20 21:50:57 simoc Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1719,6 +1719,17 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("Ghimel", metadata.getColumnName(3));
 		assertEquals("Daleth", metadata.getColumnName(4));
 
+		assertFalse(results.next());
+	}
+
+	public void testWithNoHeader() throws SQLException {
+		Properties props = new Properties();
+		props.put("commentChar", "#");
+		props.put("fileExtension", ".txt");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM only_comments");
 		assertFalse(results.next());
 	}
 

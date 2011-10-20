@@ -41,7 +41,7 @@ import org.relique.io.CryptoFilter;
  * @author Christoph Langer
  * @author Chetan Gupta
  * @created 25 November 2001
- * @version $Id: CsvRawReader.java,v 1.5 2011/04/15 07:39:45 mfrasca Exp $
+ * @version $Id: CsvRawReader.java,v 1.6 2011/10/20 21:50:57 simoc Exp $
  */
 
 public class CsvRawReader {
@@ -215,7 +215,7 @@ public class CsvRawReader {
 	protected String getNextDataLine() throws IOException {
 		String tmp = input.readLine();
 		if (commentChar != 0 && tmp != null) {
-			while (tmp.length() == 0 || tmp.charAt(0) == commentChar)
+			while (tmp != null && (tmp.length() == 0 || tmp.charAt(0) == commentChar))
 				tmp = input.readLine();
 			// set it to 0: we don't skip data lines, only pre-header lines...
 			commentChar = 0;
