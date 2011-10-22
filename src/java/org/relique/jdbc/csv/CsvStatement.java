@@ -47,7 +47,7 @@ import org.relique.jdbc.dbf.DbfReader;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.44 2011/04/26 08:22:57 mfrasca Exp $
+ * @version $Id: CsvStatement.java,v 1.45 2011/10/22 19:42:42 simoc Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -410,7 +410,7 @@ public class CsvStatement implements Statement {
 		CsvResultSet resultSet = null;
 		try {
 			resultSet = new CsvResultSet(this, reader, parser.getTableName(),
-					parser.environment, this.isScrollable, parser
+					parser.getColumns(), this.isScrollable, parser
 							.getWhereClause(), connection.getColumnTypes(), 
 							connection.getSkipLeadingLines());
 			resultSets.add(resultSet);

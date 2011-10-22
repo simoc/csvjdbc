@@ -33,7 +33,7 @@ import java.util.StringTokenizer;
  * @author Juan Pablo Morales
  * @author Mario Frasca
  * @created 25 November 2001
- * @version $Id: SqlParser.java,v 1.15 2011/10/14 13:47:14 mfrasca Exp $
+ * @version $Id: SqlParser.java,v 1.16 2011/10/22 19:42:42 simoc Exp $
  */
 public class SqlParser
 {
@@ -42,15 +42,15 @@ public class SqlParser
    *
    * @since
    */
-  public String tableName;
+  private String tableName;
   /**
    *Description of the Field
    *
    * @since
    */
-  public String[] columns;
+  private String[] columns;
   private ExpressionParser whereClause;
-  public List environment;
+  private List environment;
   
   public void setPlaceholdersValues(Object[] values)
   {

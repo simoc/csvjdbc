@@ -31,7 +31,7 @@ import org.relique.jdbc.csv.TokenMgrError;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.21 2009/05/22 08:28:14 mfrasca Exp $
+ * @version $Id: TestSqlParser.java,v 1.22 2011/10/22 19:42:42 simoc Exp $
  */
 public class TestSqlParser extends TestCase {
 	public TestSqlParser(String name) {
@@ -64,7 +64,7 @@ public class TestSqlParser extends TestCase {
 		assertTrue("Incorrect table name", parser.getTableName()
 				.equals("total"));
 
-		assertEquals("Incorrect Column Count", 4, parser.environment.size());
+		assertEquals("Incorrect Column Count", 4, parser.getColumns().size());
 
 		List cols = parser.getColumns();
 		assertEquals("Incorrect Column Count", 4, cols.size());
