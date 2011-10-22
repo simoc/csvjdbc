@@ -56,7 +56,7 @@ import org.relique.io.DataReader;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.52 2011/05/20 12:09:56 mfrasca Exp $
+ * @version    $Id: CsvResultSet.java,v 1.53 2011/10/22 07:17:48 simoc Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -111,23 +111,6 @@ public class CsvResultSet implements ResultSet {
 
 	private boolean hitTail = false;
 
-	/**
-     * Constructor for the CsvResultSet object
-     *
-     * @param statement Statement that produced this ResultSet
-     * @param reader Helper class that performs the actual file reads
-     * @param tableName Table referenced by the Statement
-     * @param typeNames Array of available columns for referenced table
-     * @param whereColumnName 
-     * @throws ClassNotFoundException 
-     * @throws SQLException 
-     */
-    protected CsvResultSet(CsvStatement statement, CsvReader reader,
-			String tableName, List queryEnvironment, int isScrollable,
-			ExpressionParser whereClause) throws ClassNotFoundException, SQLException {
-		this(statement, reader, tableName, queryEnvironment, isScrollable,
-				whereClause, CsvDriver.DEFAULT_COLUMN_TYPES, 0);
-    }
     /**
      * Constructor for the CsvResultSet object 
      *
