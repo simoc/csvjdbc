@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.67 2011/10/25 12:56:18 simoc Exp $
+ * @version $Id: TestCsvDriver.java,v 1.68 2011/10/25 17:24:38 simoc Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -382,6 +382,23 @@ public class TestCsvDriver extends TestCase {
 		// TODO: this fails
 		assertEquals("type of column 2 is incorrect", Types.TIMESTAMP, metadata
 				.getColumnType(2));
+	}
+
+	public void testMetadataWithTableAlias() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("select sx.id, sx.name as name from sample as sx");
+
+		ResultSetMetaData metadata = results.getMetaData();
+
+		assertEquals("Incorrect Table Name", "sample", metadata.getTableName(0));
+
+		assertEquals("Incorrect Column Name 1", "ID", metadata.getColumnName(1));
+		assertEquals("Incorrect Column Name 2", "NAME", metadata.getColumnName(2));
 	}
 
 	public void testColumnTypesUserSpecified() throws SQLException,
@@ -2193,5 +2210,38 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("Incorrect ID Value", "Bananas", results.getString("T"));
 		results.next();
 		assertEquals("Incorrect ID Value", "Bananas", results.getString("T"));
+	}
+
+	public void testTableAlias() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT S.id, s.Extra_field FROM sample S");
+
+		results.next();
+		assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
+		assertEquals("Incorrect ID Value", "F", results.getString("EXTRA_FIELD"));
+		assertEquals("Incorrect ID Value", "Q123", results.getString(1));
+		assertEquals("Incorrect ID Value", "F", results.getString(2));
+	}
+	
+	public void testTableAliasWithWhere() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM sample AS S where S.ID='A123'");
+
+		results.next();
+		assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
+		assertEquals("Incorrect ID Value", "A", results.getString("EXTRA_FIELD"));
+		assertEquals("Incorrect ID Value", "A123", results.getString(1));
+		assertEquals("Incorrect ID Value", "A", results.getString(3));
+		assertFalse(results.next());
 	}
 }

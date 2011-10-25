@@ -137,10 +137,18 @@ public class CsvReader extends DataReader {
 			throw new SQLException("data contains " + fieldValues.length + " columns, expected " + getColumnNames().length);
 		if(columnTypes == null)
 			getColumnTypes();
+		String tableAlias = rawReader.getTableAlias();
 		for (int i = 0; i < getColumnNames().length; i++) {
 			String key = getColumnNames()[i].toUpperCase();
 			Object value = converter.convert(columnTypes[i], fieldValues[i]);
 			result.put(key, value);
+			if (tableAlias != null) {
+				/*
+				 * Also allow column value to be accessed as S.ID  if table alias S is set.
+				 */
+				result.put(tableAlias + "." + key, value);
+			}
+			
 		}
 		return result;
 	}

@@ -26,8 +26,9 @@ public class DbfReader extends DataReader {
 	private Method recordGetTypedValueMethod;
 	private Method fieldGetTypeMethod;
 	private Map dbfTypeToSQLType;
+	private String tableAlias;
 
-	public DbfReader(String path) throws SQLException {
+	public DbfReader(String path, String tableAlias) throws SQLException {
 		super();
 		try {
 			fieldClass = Class.forName("nl.knaw.dans.common.dbflib.Field");
@@ -56,6 +57,7 @@ public class DbfReader extends DataReader {
 			fields = (List) tableGetFieldsMethod.invoke(table, new Object[] {});
 			record = null;
 			rowNo = -1;
+			this.tableAlias = tableAlias;
 		} catch (Exception e) {
 			throw new SQLException("Error while being smart:" + e);
 		}
@@ -132,7 +134,14 @@ public class DbfReader extends DataReader {
 			Object field = fields.get(i);
 			try {
 				String fieldName = (String) fieldGetNameMethod.invoke(field, new Object[] {});
-				result.put(fieldName, getField(i + 1));
+				Object o = getField(i + 1);
+				result.put(fieldName, o);
+				if (tableAlias != null) {
+					/*
+					 * Also allow field value to be accessed as S.ID  if table alias S is set.
+					 */
+					result.put(tableAlias + "." + fieldName, o);
+				}
 			} catch (Exception e) {
 				throw new SQLException("Error while being smart: " + e);
 			}

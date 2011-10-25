@@ -39,12 +39,13 @@ import org.relique.io.CryptoFilter;
  * @author Christoph Langer
  * @author Chetan Gupta
  * @created 25 November 2001
- * @version $Id: CsvRawReader.java,v 1.8 2011/10/25 08:35:29 simoc Exp $
+ * @version $Id: CsvRawReader.java,v 1.9 2011/10/25 17:24:38 simoc Exp $
  */
 
 public class CsvRawReader {
 
 	protected BufferedReader input;
+	protected String tableAlias;
 	protected String[] columnNames;
 	protected String[] fieldValues;
 	protected java.lang.String buf = null;
@@ -83,12 +84,13 @@ public class CsvRawReader {
 	 * @throws UnsupportedEncodingException
 	 * @since
 	 */
-	public CsvRawReader(BufferedReader in, char separator,
+	public CsvRawReader(BufferedReader in, String tableAlias, char separator,
 			boolean suppressHeaders, char quoteChar, char commentChar,
 			String headerLine, String extension, boolean trimHeaders, 
 			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter, 
 			boolean defectiveHeaders, int skipLeadingDataLines, String quoteStyle)
 			throws IOException, SQLException {
+		this.tableAlias = tableAlias;
 		this.separator = separator;
 		this.suppressHeaders = suppressHeaders;
 		this.quoteChar = quoteChar;
@@ -228,6 +230,10 @@ public class CsvRawReader {
 	 */
 	public String[] getColumnNames() {
 		return columnNames;
+	}
+
+	public String getTableAlias() {
+		return tableAlias;
 	}
 
 	/**

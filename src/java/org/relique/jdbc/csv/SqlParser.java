@@ -33,7 +33,7 @@ import java.util.StringTokenizer;
  * @author Juan Pablo Morales
  * @author Mario Frasca
  * @created 25 November 2001
- * @version $Id: SqlParser.java,v 1.16 2011/10/22 19:42:42 simoc Exp $
+ * @version $Id: SqlParser.java,v 1.17 2011/10/25 17:24:38 simoc Exp $
  */
 public class SqlParser
 {
@@ -43,6 +43,7 @@ public class SqlParser
    * @since
    */
   private String tableName;
+  private String tableAlias;
   /**
    *Description of the Field
    *
@@ -77,6 +78,10 @@ public class SqlParser
     return tableName;
   }
 
+  public String getTableAlias()
+  {
+    return tableAlias;
+  }
 
   /**
    *Gets the columnNames attribute of the SqlParser object
@@ -98,6 +103,7 @@ public class SqlParser
    */
   public void parse(String sql) throws Exception {
 		tableName = null;
+		tableAlias = null;
 		columns = new String[0];
 
 		String upperSql = sql.toUpperCase();
@@ -123,6 +129,21 @@ public class SqlParser
 		} else {
 			tableName = sql.substring(fromPos + 6, wherePos).trim();
 		}
+		StringTokenizer tokenizer = new StringTokenizer(tableName);
+		if (tokenizer.countTokens() > 1) {
+			/*
+			 * Parse the table alias.
+			 */
+			tableName = tokenizer.nextToken();
+			tableAlias = tokenizer.nextToken().toUpperCase();
+			if (tableAlias.equals("AS")) {
+				if (!tokenizer.hasMoreTokens())
+					throw new Exception("Invalid table alias");
+				tableAlias = tokenizer.nextToken().toUpperCase();
+			}
+			if (tokenizer.hasMoreTokens())
+				throw new Exception("Invalid table alias");
+		}
 
 		// if we have a "WHERE" parse the expression
 		if (wherePos > -1) {
@@ -131,7 +152,7 @@ public class SqlParser
 		} else {
 			whereClause = null;
 		}
-		StringTokenizer tokenizer = new StringTokenizer(sql.substring(7,
+		tokenizer = new StringTokenizer(sql.substring(7,
 				fromPos), ",");
 
 		environment = new ArrayList();
@@ -143,7 +164,10 @@ public class SqlParser
 			cs.parseQueryEnvEntry();
 			if (cs.content != null) {
 				QueryEnvEntry cc = (QueryEnvEntry)cs.content.content;
-				environment.add(new Object[]{cc.key, cc.expression});
+				String key = cc.key;
+				if (tableAlias != null && key.startsWith(tableAlias + "."))
+					key = key.substring(tableAlias.length() + 1);
+				environment.add(new Object[]{key, cc.expression});
 			}
 		}
 	}

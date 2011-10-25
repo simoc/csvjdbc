@@ -47,7 +47,7 @@ import org.relique.jdbc.dbf.DbfReader;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.45 2011/10/22 19:42:42 simoc Exp $
+ * @version $Id: CsvStatement.java,v 1.46 2011/10/25 17:24:38 simoc Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -361,7 +361,7 @@ public class CsvStatement implements Statement {
 		DataReader reader = null;
 		try {
 			if(connection.getExtension().equalsIgnoreCase(".dbf")) {
-				reader = new DbfReader(fileName);
+				reader = new DbfReader(fileName, parser.getTableAlias());
 			} else {
 				InputStream in;
 			CryptoFilter filter = connection.getDecryptingCodec();
@@ -387,7 +387,7 @@ public class CsvStatement implements Statement {
 			} else {
 				input = new BufferedReader(new InputStreamReader(in));
 			}
-			CsvRawReader rawReader = new CsvRawReader(input, connection.getSeparator(),
+			CsvRawReader rawReader = new CsvRawReader(input, parser.getTableAlias(), connection.getSeparator(),
 					connection.isSuppressHeaders(), connection.getQuotechar(),
 					connection.getCommentChar(), connection.getHeaderline(),
 					connection.getExtension(), connection.getTrimHeaders(),
