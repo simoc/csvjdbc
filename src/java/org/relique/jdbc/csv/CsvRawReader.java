@@ -41,7 +41,7 @@ import org.relique.io.CryptoFilter;
  * @author Christoph Langer
  * @author Chetan Gupta
  * @created 25 November 2001
- * @version $Id: CsvRawReader.java,v 1.6 2011/10/20 21:50:57 simoc Exp $
+ * @version $Id: CsvRawReader.java,v 1.7 2011/10/25 07:56:03 simoc Exp $
  */
 
 public class CsvRawReader {
@@ -61,21 +61,6 @@ public class CsvRawReader {
 	private boolean ignoreUnparseableLines;
 	protected CryptoFilter filter;
 	private String quoteStyle;
-
-	/**
-	 *Constructor for the CsvReader object
-	 * 
-	 * @param fileName
-	 *            Description of Parameter
-	 * @exception Exception
-	 *                Description of Exception
-	 * @since
-	 */
-	public CsvRawReader(String fileName) throws Exception {
-		this(new BufferedReader(new InputStreamReader(new FileInputStream(
-				fileName))), ',', false, '"', (char) 0, "",
-				CsvDriver.DEFAULT_EXTENSION, true, 0, false, null, false, 0, "SQL");
-	}
 
 	/**
 	 * Insert the method's description here.
