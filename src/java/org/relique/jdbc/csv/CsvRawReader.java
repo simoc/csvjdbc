@@ -17,10 +17,8 @@
 package org.relique.jdbc.csv;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -41,7 +39,7 @@ import org.relique.io.CryptoFilter;
  * @author Christoph Langer
  * @author Chetan Gupta
  * @created 25 November 2001
- * @version $Id: CsvRawReader.java,v 1.7 2011/10/25 07:56:03 simoc Exp $
+ * @version $Id: CsvRawReader.java,v 1.8 2011/10/25 08:35:29 simoc Exp $
  */
 
 public class CsvRawReader {
@@ -53,7 +51,6 @@ public class CsvRawReader {
 	protected char separator = ',';
 	protected String headerLine = "";
 	protected boolean suppressHeaders = false;
-	protected String tableName;
 	protected char quoteChar = '"';
 	protected String extension = CsvDriver.DEFAULT_EXTENSION;
 	protected boolean trimHeaders = true;
@@ -131,7 +128,7 @@ public class CsvRawReader {
 			for (int i = 0; i < this.columnNames.length; i++)
 				uniqueNames.add(this.columnNames[i]);
 			if (uniqueNames.size() != this.columnNames.length)
-				throw new SQLException("Table contains duplicated column names");
+				throw new SQLException("Table contains duplicate column names");
 		}
 		// some column names may be missing and should be corrected
 		if (defectiveHeaders)
