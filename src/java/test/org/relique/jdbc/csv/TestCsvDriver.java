@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.66 2011/10/20 21:50:57 simoc Exp $
+ * @version $Id: TestCsvDriver.java,v 1.67 2011/10/25 12:56:18 simoc Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -1562,10 +1562,10 @@ public class TestCsvDriver extends TestCase {
 		// load CSV driver
 		try {
 			stmt.executeQuery("SELECT * FROM duplicate_headers");
-			fail("expected exception java.sql.SQLException: Table contains duplicated column names");
+			fail("expected exception java.sql.SQLException: Table contains duplicate column names");
 		} catch (SQLException e) {
 			assertEquals("wrong exception and/or exception text!",
-					"java.sql.SQLException: Table contains duplicated column names",
+					"java.sql.SQLException: Table contains duplicate column names",
 					"" + e);
 		}
 	}
