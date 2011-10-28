@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.68 2011/10/25 17:24:38 simoc Exp $
+ * @version $Id: TestCsvDriver.java,v 1.69 2011/10/28 18:44:00 simoc Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -374,7 +374,8 @@ public class TestCsvDriver extends TestCase {
 		Statement stmt = conn.createStatement();
 
 		ResultSet results = stmt
-				.executeQuery("SELECT id, start+timeoffset AS ts FROM sample5");
+				.executeQuery("SELECT id, start+timeoffset AS ts, 999 as C3, id - 4 as C4, " +
+						"ID * 1.1 as C5, Name+JOB AS c6, '.com' as C7, 'Mr '+Name as C8 FROM sample5");
 		ResultSetMetaData metadata = results.getMetaData();
 
 		assertEquals("type of column 1 is incorrect", Types.INTEGER, metadata
@@ -382,6 +383,18 @@ public class TestCsvDriver extends TestCase {
 		// TODO: this fails
 		assertEquals("type of column 2 is incorrect", Types.TIMESTAMP, metadata
 				.getColumnType(2));
+		assertEquals("type of column 3 is incorrect", Types.INTEGER, metadata
+				.getColumnType(3));
+		assertEquals("type of column 4 is incorrect", Types.INTEGER, metadata
+				.getColumnType(4));
+		assertEquals("type of column 5 is incorrect", Types.DOUBLE, metadata
+				.getColumnType(5));
+		assertEquals("type of column 6 is incorrect", Types.VARCHAR, metadata
+				.getColumnType(6));
+		assertEquals("type of column 7 is incorrect", Types.VARCHAR, metadata
+				.getColumnType(7));
+		assertEquals("type of column 8 is incorrect", Types.VARCHAR, metadata
+				.getColumnType(8));
 	}
 
 	public void testMetadataWithTableAlias() throws SQLException {
