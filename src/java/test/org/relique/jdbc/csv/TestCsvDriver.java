@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.69 2011/10/28 18:44:00 simoc Exp $
+ * @version $Id: TestCsvDriver.java,v 1.70 2011/10/28 19:17:09 simoc Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -363,7 +363,6 @@ public class TestCsvDriver extends TestCase {
 	}
 
 	public void testMetadataWithOperations() throws SQLException {
-		// TODO: this test fails!
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date,Time");
 		props.put("timeFormat", "HHmm");
@@ -380,7 +379,6 @@ public class TestCsvDriver extends TestCase {
 
 		assertEquals("type of column 1 is incorrect", Types.INTEGER, metadata
 				.getColumnType(1));
-		// TODO: this fails
 		assertEquals("type of column 2 is incorrect", Types.TIMESTAMP, metadata
 				.getColumnType(2));
 		assertEquals("type of column 3 is incorrect", Types.INTEGER, metadata

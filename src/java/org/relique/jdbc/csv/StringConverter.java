@@ -316,4 +316,76 @@ public class StringConverter {
 	public Class forSQLName(String string) {
 		return (Class)forSQLNameMap.get(string);
 	}
+
+	/**
+	 * Get a value that has the type of an SQL data type.
+	 * @param sqlTypeName name of SQL data type.
+	 * @return a constant value with this data type.
+	 */
+	public static Object getLiteralForTypeName(String sqlTypeName) {
+		Object retval = null;
+		if (sqlTypeName.equals("String"))
+			retval = "";
+		else if (sqlTypeName.equals("Boolean"))
+			retval = Boolean.FALSE;
+		else if (sqlTypeName.equals("Byte"))
+			retval = Byte.valueOf((byte)1);
+		else if (sqlTypeName.equals("Short"))
+			retval = Short.valueOf((short)1);
+		else if (sqlTypeName.equals("Int") || sqlTypeName.equals("Integer"))
+			retval = Integer.valueOf(1);
+		else if (sqlTypeName.equals("Long"))
+			retval = Long.valueOf(1);
+		else if (sqlTypeName.equals("Float"))
+			retval = Float.valueOf(1);
+		else if (sqlTypeName.equals("Double"))
+			retval = Double.valueOf(1);
+		else if (sqlTypeName.equals("BigDecimal"))
+			retval = BigDecimal.valueOf(1);
+		else if (sqlTypeName.equals("Date"))
+			retval = Date.valueOf("1970-01-01");
+		else if (sqlTypeName.equals("Time"))
+			retval = Time.valueOf("00:00:00");
+		else if (sqlTypeName.equals("Timestamp"))
+			retval = Timestamp.valueOf("1970-01-01 00:00:00");
+		else if (sqlTypeName.equals("AsciiStream"))
+			retval = new ByteArrayInputStream(new byte[]{});
+		return retval;
+	}
+
+	/**
+	 * Get SQL data type of an object.
+	 * @param literal object to get SQL data type for.
+	 * @return SQL data type name.
+	 */
+	public static String getTypeNameForLiteral(Object literal) {
+		String retval = null;
+		if (literal instanceof String)
+			retval = "String";
+		else if (literal instanceof Boolean)
+			retval = "Boolean";
+		else if (literal instanceof Byte)
+			retval = "Byte";
+		else if (literal instanceof Short)
+			retval = "Short";
+		else if (literal instanceof Integer)
+			retval = "Int";
+		else if (literal instanceof Long)
+			retval = "Long";
+		else if (literal instanceof Float)
+			retval = "Float";
+		else if (literal instanceof Double)
+			retval = "Double";
+		else if (literal instanceof BigDecimal)
+			retval = "BigDecimal";
+		else if (literal instanceof Date)
+			retval = "Date";
+		else if (literal instanceof Time)
+			retval = "Time";
+		else if (literal instanceof Timestamp)
+			retval = "Timestamp";
+		else if (literal instanceof InputStream)
+			retval = "AsciiStream";
+		return retval;
+	}
 }

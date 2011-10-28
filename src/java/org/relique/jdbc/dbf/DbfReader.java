@@ -153,4 +153,7 @@ public class DbfReader extends DataReader {
 		throw new SQLException("can't set fieldValues on DbfReader");
 	}
 
+	public String getTableAlias() {
+		return tableAlias;
+	}
 }

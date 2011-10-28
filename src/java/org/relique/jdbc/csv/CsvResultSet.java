@@ -56,7 +56,7 @@ import org.relique.io.DataReader;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.53 2011/10/22 07:17:48 simoc Exp $
+ * @version    $Id: CsvResultSet.java,v 1.54 2011/10/28 19:17:09 simoc Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -934,23 +934,42 @@ public class CsvResultSet implements ResultSet {
         	if(typeNames == null) {
         		String[] readerTypeNames = reader.getColumnTypes(); 
     			String[] readerColumnNames = reader.getColumnNames();
+    			String tableAlias = reader.getTableAlias();
         		int columnCount = queryEnvironment.size();
         		typeNames = new String[columnCount];
+        		
+        		/*
+        		 * Create a record containing dummy values.
+        		 */
+        		HashMap env = new HashMap();
+        		for(int i=0; i<readerTypeNames.length; i++) {
+        			Object literal = StringConverter.getLiteralForTypeName(readerTypeNames[i]);
+        			String columnName = readerColumnNames[i].toUpperCase();
+        			env.put(columnName, literal);
+        			if (tableAlias != null)
+        				env.put(tableAlias + "." + columnName, literal);
+        		}
+        		if (converter != null)
+        			env.put("@STRINGCONVERTER", converter);
+
         		for(int i=0; i<columnCount; i++) {
         			int columnIndex = -1;
     				Object[] o = (Object[]) queryEnvironment.get(i);
-    				if (o[1] instanceof ColumnName) {
-    					ColumnName cn = (ColumnName) o[1];
-    					String lookFor = cn.columnName;
-            			for (int j=0; j<readerColumnNames.length; j++) {
-            				if (readerColumnNames[j].equalsIgnoreCase(lookFor))
-            					columnIndex = j;
-            			}
-    				} 
-					if (columnIndex == -1)
-						typeNames[i] = "expression";
-					else
-						typeNames[i] = readerTypeNames[columnIndex];
+    				
+    				/*
+    				 * Evaluate each expression to determine what data type it returns.
+    				 */
+    				Object result = null;
+    				try {
+    					result = ((Expression)o[1]).eval(env);
+    				} catch (NullPointerException e) {
+    					/* Expression is invalid */
+    					// TODO: should we throw an SQLException here?
+    				}
+    				if (result != null)
+    					typeNames[i] = StringConverter.getTypeNameForLiteral(result);
+    				else
+    					typeNames[i] = "expression";
         		}
         	}
             resultSetMetaData = new CsvResultSetMetaData(tableName, queryEnvironment, typeNames);
