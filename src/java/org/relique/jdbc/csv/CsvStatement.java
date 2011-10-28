@@ -47,7 +47,7 @@ import org.relique.jdbc.dbf.DbfReader;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.46 2011/10/25 17:24:38 simoc Exp $
+ * @version $Id: CsvStatement.java,v 1.47 2011/10/28 13:16:02 simoc Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -185,7 +185,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public int getMaxRows() throws SQLException {
-		throw new SQLException("getMaxRows() not Supported !");
+		return 0;
 	}
 
 	/**
@@ -197,7 +197,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public int getQueryTimeout() throws SQLException {
-		throw new SQLException("getQueryTimeout() not Supported !");
+		return 0;
 	}
 
 	/**
