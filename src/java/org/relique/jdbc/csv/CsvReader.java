@@ -68,10 +68,6 @@ public class CsvReader extends DataReader {
 		return transposedLines;
 	}
 
-	public CsvRawReader getRawReader() {
-		return rawReader;
-	}
-
 	public String getHeaderline() {
 		return headerline;
 	}
