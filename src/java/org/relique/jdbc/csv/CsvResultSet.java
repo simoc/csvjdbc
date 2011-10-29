@@ -56,7 +56,7 @@ import org.relique.io.DataReader;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.54 2011/10/28 19:17:09 simoc Exp $
+ * @version    $Id: CsvResultSet.java,v 1.55 2011/10/29 20:57:46 simoc Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -154,6 +154,7 @@ public class CsvResultSet implements ResultSet {
         	this.columnPositions.put(columnNames[i], new Integer(i));
         }
         if(queryEnvironment.size() == 0) {
+        	/* no named columns means user wants "select * from table" */
         	this.queryEnvironment = new ArrayList();
             for (int i = 0; i < columnNames.length; i++) {
             	this.queryEnvironment.add(new Object[]{columnNames[i], new ColumnName(columnNames[i])});
