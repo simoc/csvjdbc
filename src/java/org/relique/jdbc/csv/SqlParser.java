@@ -33,7 +33,7 @@ import java.util.StringTokenizer;
  * @author Juan Pablo Morales
  * @author Mario Frasca
  * @created 25 November 2001
- * @version $Id: SqlParser.java,v 1.17 2011/10/25 17:24:38 simoc Exp $
+ * @version $Id: SqlParser.java,v 1.18 2011/10/30 16:44:08 simoc Exp $
  */
 public class SqlParser
 {
@@ -152,6 +152,8 @@ public class SqlParser
 		} else {
 			whereClause = null;
 		}
+		if (fromPos < 7)
+			throw new Exception("Malformed SQL. Missing columns");
 		tokenizer = new StringTokenizer(sql.substring(7,
 				fromPos), ",");
 
