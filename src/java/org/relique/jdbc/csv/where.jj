@@ -1,1 +1,677 @@
-/* *  CsvJdbc - a JDBC driver for CSV files *  Copyright (C) 2008  Mario Frasca * *  This library is free software; you can redistribute it and/or *  modify it under the terms of the GNU Lesser General Public *  License as published by the Free Software Foundation; either *  version 2.1 of the License, or (at your option) any later version. * *  This library is distributed in the hope that it will be useful, *  but WITHOUT ANY WARRANTY; without even the implied warranty of *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU *  Lesser General Public License for more details. * *  You should have received a copy of the GNU Lesser General Public *  License along with this library; if not, write to the Free Software *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */options{  STATIC = false;  LOOKAHEAD = 1;  IGNORE_CASE = true;  JDK_VERSION = "1.3";}PARSER_BEGIN(ExpressionParser)package org.relique.jdbc.csv;import java.sql.Date;import java.sql.Time;import java.sql.Timestamp;import java.math.BigInteger;import java.math.BigDecimal;import java.math.MathContext;import java.util.Map;import java.util.HashMap;import java.util.List;import java.util.LinkedList;import org.relique.jdbc.csv.Expression;class NumericConstant extends Expression{  Number value;  public NumericConstant(Number d){    value = d;  }  public Object eval(Map env){    return value;  }  public String toString(){    return value.toString();  }  public List usedColumns(){    return new LinkedList();  }}class StringConstant extends Expression{  String value;  public StringConstant(String s){    value = s;  }  public Object eval(Map env){    return value;  }  public String toString(){    return "'"+value+"'";  }  public List usedColumns(){    return new LinkedList();  }}class Placeholder extends Expression{  static int nextIndex = 1;  Integer index;  public Placeholder(){    index = Integer.valueOf(nextIndex);    nextIndex++;  }  public Object eval(Map env){    return env.get(index);  }  public String toString(){    return "?";  }  public List usedColumns(){    return new LinkedList();  }}  class ColumnName extends Expression{  String columnName;  public ColumnName(String columnName){    this .columnName = columnName.toUpperCase();  }  public Object eval(Map env){    return env.get(columnName);  }  public String toString(){    return "["+columnName+"]";  }  public List usedColumns(){    List result = new LinkedList();    result.add(columnName);    return result;  }}class QueryEnvEntry extends Expression{  String key;  Expression expression;  public QueryEnvEntry(String fieldName){    this .key = fieldName.toUpperCase();    this .expression = new ColumnName(fieldName);  }  public QueryEnvEntry(String fieldName, Expression exp){    this .key = fieldName.toUpperCase();    this .expression = exp;  }  public Object eval(Map env){    return expression.eval(env);  }  public String toString(){    return key+": "+expression.toString();  }}class BinaryOperation extends Expression{  char op;  Expression left, right;  public BinaryOperation(char op, Expression left, Expression right){    this .op = op;    this .left = left;    this .right = right;  }  public Object eval(Map env){    Object leftEval = left.eval(env);    Object rightEval = right.eval(env);    try {      Integer leftInt = (Integer)leftEval;      BigInteger bil = new BigInteger(leftInt.toString());      Integer rightInt = (Integer)rightEval;      BigInteger bir = new BigInteger(rightInt.toString());      if (op == '+')return new Integer(bil.add(bir).toString());      if (op == '-')return new Integer(bil.subtract(bir).toString());      if (op == '*')return new Integer(bil.multiply(bir).toString());      if (op == '/')return new Integer(bil.divide(bir).toString());    }    catch (ClassCastException e){}try {      Number leftN = (Number)leftEval;      BigDecimal bdl = new BigDecimal(leftN.toString());      Number rightN = (Number)rightEval;      BigDecimal bdr = new BigDecimal(rightN.toString());      if (op == '+')return new Double(bdl.add(bdr).toString());      if (op == '-')return new Double(bdl.subtract(bdr).toString());      if (op == '*')return new Double(bdl.multiply(bdr).toString());      MathContext mc = new MathContext("precision=14 roundingMode=HALF_UP");      if (op == '/')return new Double(bdl.divide(bdr, mc.getPrecision(), mc.getRoundingMode()).toString());    }    catch (ClassCastException e){}try {      if (op == '+'){        Date leftD = (Date)leftEval;        Time rightT = (Time)rightEval;        Expression stringConverter = new ColumnName("@StringConverter");        StringConverter sc = (StringConverter) stringConverter.eval(env);        return sc.parseTimestamp(leftD.toString() + " " + rightT.toString());      }    }    catch (ClassCastException e){}try {      if (op == '+' || op == '-'){        Timestamp leftD = (Timestamp)leftEval;        long time = leftD.getTime();        Number rightN = (Number)rightEval;        BigDecimal bdr = new BigDecimal(rightN.toString());        if (op == '+')return new Timestamp(time + bdr.longValue());        if (op == '-')return new Timestamp(time - bdr.longValue());      }    }    catch (ClassCastException e){}    if(op == '+')return ""+leftEval+rightEval;    return null;  }  public String toString(){    return ""+op+" "+left+" "+right;  }  public List usedColumns(){    List result = new LinkedList();    result.addAll(left.usedColumns());    result.addAll(right.usedColumns());    return result;  }}abstract class LogicalExpression extends Expression{  public boolean isTrue(Map env){    return false;  }}class ParsedExpression extends LogicalExpression{  public Expression content;  public ParsedExpression(Expression left){    content = left;  }  public boolean isTrue(Map env){    return ((LogicalExpression)content).isTrue(env);  }  public Object eval(Map env){    return content.eval(env);  }  public String toString(){    return content.toString();  }  public List usedColumns(){    return content.usedColumns();  }}class NotExpression extends LogicalExpression{  LogicalExpression content;  public NotExpression(LogicalExpression arg){    this .content = arg;  }  public boolean isTrue(Map env){    return !content.isTrue(env);  }  public String toString(){    return "NOT "+content;  }  public List usedColumns(){    return content.usedColumns();  }}class OrExpression extends LogicalExpression{  LogicalExpression left, right;  public OrExpression(LogicalExpression left, LogicalExpression right){    this .left = left;    this .right = right;  }  public boolean isTrue(Map env){    return left.isTrue(env) || right.isTrue(env);  }  public String toString(){    return "OR "+left+" "+right;  }  public List usedColumns(){    List result = new LinkedList();    result.addAll(left.usedColumns());    result.addAll(right.usedColumns());    return result;  }}class AndExpression extends LogicalExpression{  LogicalExpression left, right;  public AndExpression(LogicalExpression left, LogicalExpression right){    this .left = left;    this .right = right;  }  public boolean isTrue(Map env){    return left.isTrue(env) && right.isTrue(env);  }  public String toString(){    return "AND "+left+" "+right;  }  public List usedColumns(){    List result = new LinkedList();    result.addAll(left.usedColumns());    result.addAll(right.usedColumns());    return result;  }}class RelopExpression extends LogicalExpression{  String op;  Expression left, right;  public RelopExpression(String op, Expression left, Expression right){    this .op = op;    this .left = left;    this .right = right;  }  public boolean isTrue(Map env){    Comparable leftValue = (Comparable)left.eval(env);    Comparable rightValue = (Comparable)right.eval(env);    boolean result = false;    Integer leftComparedToRightObj = null;    try {      leftComparedToRightObj = new Integer(leftValue.compareTo(rightValue));    }    catch (ClassCastException e){}try {      Double leftDouble = new Double(((Number)leftValue).toString());      Double rightDouble = new Double(((Number)rightValue).toString());      leftComparedToRightObj = new Integer(leftDouble.compareTo(rightDouble));    }    catch (ClassCastException e){}catch (NumberFormatException e){}if (leftComparedToRightObj != null){      int leftComparedToRight = leftComparedToRightObj.intValue();      if (leftValue != null && rightValue != null){        if (op.equals("=")){          result = leftComparedToRight == 0;        }        else if (op.equals("<>") || op.equals("!=")){          result = leftComparedToRight != 0;        }        else if (op.equals(">")){          result = leftComparedToRight>0;        }        else if (op.equals("<")){          result = leftComparedToRight<0;        }        else if (op.equals("<=") || op.equals("=<")){          result = leftComparedToRight <= 0;        }        else if (op.equals(">=") || op.equals("=>")){          result = leftComparedToRight >= 0;        }      }    }    return result;  }  public String toString(){    return op+" "+left+" "+right;  }  public List usedColumns(){    List result = new LinkedList();    result.addAll(left.usedColumns());    result.addAll(right.usedColumns());    return result;  }}class BetweenExpression extends LogicalExpression{  Expression obj, left, right;  public BetweenExpression(Expression obj, Expression left, Expression right){    this .obj = obj;    this .left = left;    this .right = right;  }  public boolean isTrue(Map env){    Comparable leftValue = (Comparable)left.eval(env);    Comparable rightValue = (Comparable)right.eval(env);    Comparable objValue = (Comparable)obj.eval(env);    boolean result = true;    try {      if (objValue.compareTo(leftValue)<0)result = false;      if (objValue.compareTo(rightValue)>0)result = false;    }    catch (ClassCastException e){}return result;  }  public String toString(){    return "B "+obj+" "+left+" "+right;  }  public List usedColumns(){    List result = new LinkedList();    result.addAll(obj.usedColumns());    result.addAll(left.usedColumns());    result.addAll(right.usedColumns());    return result;  }}class IsNullExpression extends LogicalExpression{  Object arg;  public IsNullExpression(Object arg){    this .arg = arg;  }  public boolean isTrue(Map env){    if (env.get(arg) == null)return true;    return false;  }  public String toString(){    return "N "+arg;  }  public List usedColumns(){    List result = new LinkedList();    result.add(arg);    return result;  }}class LikeExpression extends LogicalExpression{  Object arg1, arg2;  public LikeExpression(Object arg1, Object arg2){    this .arg1 = arg1;    this .arg2 = arg2;  }  public boolean isTrue(Map env){    return true;  }  public String toString(){    return "L "+arg1+" "+arg2;  }  public List usedColumns(){    List result = new LinkedList();    result.add(arg1);    result.add(arg2);    return result;  }}public class ExpressionParser{  ParsedExpression content;  private Map placeholders;  public void parseLogicalExpression()throws ParseException{    Placeholder.nextIndex = 1;    placeholders = new HashMap();    content = logicalExpression();  }  public void parseQueryEnvEntry()throws ParseException{    content = queryEnvEntry();  }  public boolean isTrue(Map env){    if(placeholders != null) {      Map useThisEnv = new HashMap();      useThisEnv.putAll(env);      useThisEnv.putAll(placeholders);      env = useThisEnv;    }     return content.isTrue(env);  }  public Object eval(Map env){    if(placeholders != null) {      Map useThisEnv = new HashMap();      useThisEnv.putAll(env);      useThisEnv.putAll(placeholders);      env = useThisEnv;    }     return content.eval(env);  }  public String toString(){    return ""+content;  }  public List usedColumns(){    return content.usedColumns();  }  public int getPlaceholdersCount(){    return Placeholder.nextIndex - 1;  }  public void setPlaceholdersValues(Object[] values){    for(int i=1; i<values.length; i++){      placeholders.put(Integer.valueOf(i), values[i]);    }  }}PARSER_END(ExpressionParser)SKIP:{  " "  | "\t"  | "\n"}TOKEN:{  <UNSIGNEDNUMBER:<DIGITS>  | <DIGITS>"."<DIGITS>  | "."<DIGITS>  | <DIGITS>".">}TOKEN:{  <#DIGITS:(["0"-"9"])+>}TOKEN:{  <NULL:"NULL">}TOKEN:{  <AND:"AND">}TOKEN:{  <OR:"OR">}TOKEN:{  <NOT:"NOT">}TOKEN:{  <IS:"IS">}TOKEN:{  <AS:"AS">}TOKEN:{  <LIKE:"LIKE">}TOKEN:{  <BETWEEN:"BETWEEN">}TOKEN:{  <PLACEHOLDER:"?">}TOKEN:{  <NAME:(["0"-"9", "A"-"Z", "a"-"z", "_", "."])+>}TOKEN:{  <STRING:"'"([" "-"&", "("-"~"])*"'">}TOKEN:{  <RELOP:(">"  | "<"  | ">="  | "<="  | "<>"  | "="  | "!=")>}TOKEN:{  <ASTERISK:"*">}TOKEN:{  <MINUS:"-">}TOKEN:{  <BINOP:("+"  | "/")>}ParsedExpression logicalExpression():{  LogicalExpression left;}{  left = logicalOrExpression()<EOF>{    return new ParsedExpression(left);  }}ParsedExpression queryEnvEntry():{  Expression expression, alias, result;}{  {    result = null;  }  (expression = binaryOperation()((<AS>)?alias = columnName(){    result = new QueryEnvEntry(((ColumnName)alias).columnName, expression);  }  )?<EOF>{    if (result == null){      try {        result = new QueryEnvEntry(((ColumnName)expression).columnName, expression);      }      catch (ClassCastException e){        throw new ParseException("can't accept expression '"+expression+"' without an alias");      }    }    return new ParsedExpression(result);  }  )  | <ASTERISK>{    return null;  }}LogicalExpression logicalOrExpression():{  LogicalExpression left, right;}{  left = logicalAndExpression()(<OR>right = logicalAndExpression(){    left = new OrExpression(left, right);  }  )*{    return left;  }}LogicalExpression logicalAndExpression():{  LogicalExpression left, right;}{  left = logicalUnaryExpression()(<AND>right = logicalUnaryExpression(){    left = new AndExpression(left, right);  }  )*{    return left;  }}LogicalExpression logicalUnaryExpression():{  LogicalExpression arg;}{  <NOT>arg = logicalUnaryExpression(){    return new NotExpression(arg);  }  | "("arg = logicalOrExpression()")"{    return arg;  }  | arg = relationalExpression(){    return arg;  }}LogicalExpression relationalExpression():{  Expression arg1, arg2, arg3;  String op;  Token t;}{  arg1 = simpleExpression()(op = relOp()arg2 = simpleExpression(){    return new RelopExpression(op, arg1, arg2);  }  | <BETWEEN>arg2 = simpleExpression()<AND>arg3 = simpleExpression(){    return new BetweenExpression(arg1, arg2, arg3);  }  | <IS><NULL>{    return new IsNullExpression(arg1);  }  | <LIKE>t = <STRING>{    return new LikeExpression(arg1, new StringConstant(t.image.substring(1, t.image.length()-1)));  }  )}String relOp():{  Token t;}{  t = <RELOP>{    return new String(t.image);  }}char binOp():{  Token t;}{  (t = <BINOP>|t=<ASTERISK>|t=<MINUS>){    return t.image.charAt(0);  }}Expression binaryOperation():{  Expression left, right;  char op;}{  left = simpleExpression()(op = binOp()right = simpleExpression(){    left = new BinaryOperation(op, left, right);  }  )*{    return left;  }}Expression simpleExpression():{  Expression arg;}{  arg = columnName(){    return arg;  }  | arg = numericConstant(){    return arg;  }  | arg = stringConstant(){    return arg;  }  | <NULL>{    return null;  }  | <PLACEHOLDER>{    return new Placeholder();  }}Expression columnName():{  Token t;}{  t = <NAME>{    return new ColumnName(t.image);  }}Expression numericConstant():{  Token t;  String sign;}{  {sign="";}  (t=<MINUS>{sign=t.image;})?  t = <UNSIGNEDNUMBER>{    Number value = null;    try {      value = new Integer(sign+t.image);    }    catch (NumberFormatException e){      value = new Double(sign+t.image);    }    return new NumericConstant(value);  }}Expression stringConstant():{  String left, right;}{  left = stringConstantAtom()(right = stringConstantAtom(){    left = left+"'"+right;  }  )*{    return new StringConstant(left);  }}String stringConstantAtom():{  Token t;}{  t = <STRING>{    return t.image.substring(1, t.image.length()-1);  }}
+/*
+ *  CsvJdbc - a JDBC driver for CSV files
+ *  Copyright (C) 2008  Mario Frasca
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+options{
+  STATIC = false;
+  LOOKAHEAD = 1;
+  IGNORE_CASE = true;
+  JDK_VERSION = "1.3";
+}
+PARSER_BEGIN(ExpressionParser)
+package org.relique.jdbc.csv;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.math.BigInteger;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
+import org.relique.jdbc.csv.Expression;
+class NumericConstant extends Expression{
+  Number value;
+  public NumericConstant(Number d){
+    value = d;
+  }
+  public Object eval(Map env){
+    return value;
+  }
+  public String toString(){
+    return value.toString();
+  }
+  public List usedColumns(){
+    return new LinkedList();
+  }
+}
+class StringConstant extends Expression{
+  String value;
+  public StringConstant(String s){
+    value = s;
+  }
+  public Object eval(Map env){
+    return value;
+  }
+  public String toString(){
+    return "'"+value+"'";
+  }
+  public List usedColumns(){
+    return new LinkedList();
+  }
+}
+class Placeholder extends Expression{
+  static int nextIndex = 1;
+  Integer index;
+  public Placeholder(){
+    index = Integer.valueOf(nextIndex);
+    nextIndex++;
+  }
+  public Object eval(Map env){
+    return env.get(index);
+  }
+  public String toString(){
+    return "?";
+  }
+  public List usedColumns(){
+    return new LinkedList();
+  }
+}  
+class ColumnName extends Expression{
+  String columnName;
+  public ColumnName(String columnName){
+    this .columnName = columnName.toUpperCase();
+  }
+  public Object eval(Map env){
+    return env.get(columnName);
+  }
+  public String toString(){
+    return "["+columnName+"]";
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.add(columnName);
+    return result;
+  }
+}
+class QueryEnvEntry extends Expression{
+  String key;
+  Expression expression;
+  public QueryEnvEntry(String fieldName){
+    this .key = fieldName.toUpperCase();
+    this .expression = new ColumnName(fieldName);
+  }
+  public QueryEnvEntry(String fieldName, Expression exp){
+    this .key = fieldName.toUpperCase();
+    this .expression = exp;
+  }
+  public Object eval(Map env){
+    return expression.eval(env);
+  }
+  public String toString(){
+    return key+": "+expression.toString();
+  }
+}
+class BinaryOperation extends Expression{
+  char op;
+  Expression left, right;
+  public BinaryOperation(char op, Expression left, Expression right){
+    this .op = op;
+    this .left = left;
+    this .right = right;
+  }
+  public Object eval(Map env){
+    Object leftEval = left.eval(env);
+    Object rightEval = right.eval(env);
+    try {
+      Integer leftInt = (Integer)leftEval;
+      BigInteger bil = new BigInteger(leftInt.toString());
+      Integer rightInt = (Integer)rightEval;
+      BigInteger bir = new BigInteger(rightInt.toString());
+      if (op == '+')return new Integer(bil.add(bir).toString());
+      if (op == '-')return new Integer(bil.subtract(bir).toString());
+      if (op == '*')return new Integer(bil.multiply(bir).toString());
+      if (op == '/')return new Integer(bil.divide(bir).toString());
+    }
+    catch (ClassCastException e){}try {
+      Number leftN = (Number)leftEval;
+      BigDecimal bdl = new BigDecimal(leftN.toString());
+      Number rightN = (Number)rightEval;
+      BigDecimal bdr = new BigDecimal(rightN.toString());
+      if (op == '+')return new Double(bdl.add(bdr).toString());
+      if (op == '-')return new Double(bdl.subtract(bdr).toString());
+      if (op == '*')return new Double(bdl.multiply(bdr).toString());
+      MathContext mc = new MathContext("precision=14 roundingMode=HALF_UP");
+      if (op == '/')return new Double(bdl.divide(bdr, mc.getPrecision(), mc.getRoundingMode()).toString());
+    }
+    catch (ClassCastException e){}try {
+      if (op == '+'){
+        Date leftD = (Date)leftEval;
+        Time rightT = (Time)rightEval;
+        Expression stringConverter = new ColumnName("@StringConverter");
+        StringConverter sc = (StringConverter) stringConverter.eval(env);
+        return sc.parseTimestamp(leftD.toString() + " " + rightT.toString());
+      }
+    }
+    catch (ClassCastException e){}try {
+      if (op == '+' || op == '-'){
+        Timestamp leftD = (Timestamp)leftEval;
+        long time = leftD.getTime();
+        Number rightN = (Number)rightEval;
+        BigDecimal bdr = new BigDecimal(rightN.toString());
+        if (op == '+')return new Timestamp(time + bdr.longValue());
+        if (op == '-')return new Timestamp(time - bdr.longValue());
+      }
+    }
+    catch (ClassCastException e){}
+    if(op == '+')return ""+leftEval+rightEval;
+    return null;
+  }
+  public String toString(){
+    return ""+op+" "+left+" "+right;
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.addAll(left.usedColumns());
+    result.addAll(right.usedColumns());
+    return result;
+  }
+}
+abstract class LogicalExpression extends Expression{
+  public boolean isTrue(Map env){
+    return false;
+  }
+}
+class ParsedExpression extends LogicalExpression{
+  public Expression content;
+  public ParsedExpression(Expression left){
+    content = left;
+  }
+  public boolean isTrue(Map env){
+    return ((LogicalExpression)content).isTrue(env);
+  }
+  public Object eval(Map env){
+    return content.eval(env);
+  }
+  public String toString(){
+    return content.toString();
+  }
+  public List usedColumns(){
+    return content.usedColumns();
+  }
+}
+class NotExpression extends LogicalExpression{
+  LogicalExpression content;
+  public NotExpression(LogicalExpression arg){
+    this .content = arg;
+  }
+  public boolean isTrue(Map env){
+    return !content.isTrue(env);
+  }
+  public String toString(){
+    return "NOT "+content;
+  }
+  public List usedColumns(){
+    return content.usedColumns();
+  }
+}
+class OrExpression extends LogicalExpression{
+  LogicalExpression left, right;
+  public OrExpression(LogicalExpression left, LogicalExpression right){
+    this .left = left;
+    this .right = right;
+  }
+  public boolean isTrue(Map env){
+    return left.isTrue(env) || right.isTrue(env);
+  }
+  public String toString(){
+    return "OR "+left+" "+right;
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.addAll(left.usedColumns());
+    result.addAll(right.usedColumns());
+    return result;
+  }
+}
+class AndExpression extends LogicalExpression{
+  LogicalExpression left, right;
+  public AndExpression(LogicalExpression left, LogicalExpression right){
+    this .left = left;
+    this .right = right;
+  }
+  public boolean isTrue(Map env){
+    return left.isTrue(env) && right.isTrue(env);
+  }
+  public String toString(){
+    return "AND "+left+" "+right;
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.addAll(left.usedColumns());
+    result.addAll(right.usedColumns());
+    return result;
+  }
+}
+class RelopExpression extends LogicalExpression{
+  String op;
+  Expression left, right;
+  public RelopExpression(String op, Expression left, Expression right){
+    this .op = op;
+    this .left = left;
+    this .right = right;
+  }
+  public boolean isTrue(Map env){
+    Comparable leftValue = (Comparable)left.eval(env);
+    Comparable rightValue = (Comparable)right.eval(env);
+    boolean result = false;
+    Integer leftComparedToRightObj = null;
+    try {
+      leftComparedToRightObj = new Integer(leftValue.compareTo(rightValue));
+    }
+    catch (ClassCastException e){}try {
+      Double leftDouble = new Double(((Number)leftValue).toString());
+      Double rightDouble = new Double(((Number)rightValue).toString());
+      leftComparedToRightObj = new Integer(leftDouble.compareTo(rightDouble));
+    }
+    catch (ClassCastException e){}catch (NumberFormatException e){}if (leftComparedToRightObj != null){
+      int leftComparedToRight = leftComparedToRightObj.intValue();
+      if (leftValue != null && rightValue != null){
+        if (op.equals("=")){
+          result = leftComparedToRight == 0;
+        }
+        else if (op.equals("<>") || op.equals("!=")){
+          result = leftComparedToRight != 0;
+        }
+        else if (op.equals(">")){
+          result = leftComparedToRight>0;
+        }
+        else if (op.equals("<")){
+          result = leftComparedToRight<0;
+        }
+        else if (op.equals("<=") || op.equals("=<")){
+          result = leftComparedToRight <= 0;
+        }
+        else if (op.equals(">=") || op.equals("=>")){
+          result = leftComparedToRight >= 0;
+        }
+      }
+    }
+    return result;
+  }
+  public String toString(){
+    return op+" "+left+" "+right;
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.addAll(left.usedColumns());
+    result.addAll(right.usedColumns());
+    return result;
+  }
+}
+class BetweenExpression extends LogicalExpression{
+  Expression obj, left, right;
+  public BetweenExpression(Expression obj, Expression left, Expression right){
+    this .obj = obj;
+    this .left = left;
+    this .right = right;
+  }
+  public boolean isTrue(Map env){
+    Comparable leftValue = (Comparable)left.eval(env);
+    Comparable rightValue = (Comparable)right.eval(env);
+    Comparable objValue = (Comparable)obj.eval(env);
+    boolean result = true;
+    try {
+      if (objValue.compareTo(leftValue)<0)result = false;
+      if (objValue.compareTo(rightValue)>0)result = false;
+    }
+    catch (ClassCastException e){}return result;
+  }
+  public String toString(){
+    return "B "+obj+" "+left+" "+right;
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.addAll(obj.usedColumns());
+    result.addAll(left.usedColumns());
+    result.addAll(right.usedColumns());
+    return result;
+  }
+}
+class IsNullExpression extends LogicalExpression{
+  Object arg;
+  public IsNullExpression(Object arg){
+    this .arg = arg;
+  }
+  public boolean isTrue(Map env){
+    if (env.get(arg) == null)return true;
+    return false;
+  }
+  public String toString(){
+    return "N "+arg;
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.add(arg);
+    return result;
+  }
+}
+class LikeExpression extends LogicalExpression{
+  Object arg1, arg2;
+  public LikeExpression(Object arg1, Object arg2){
+    this .arg1 = arg1;
+    this .arg2 = arg2;
+  }
+  public boolean isTrue(Map env){
+    return true;
+  }
+  public String toString(){
+    return "L "+arg1+" "+arg2;
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.add(arg1);
+    result.add(arg2);
+    return result;
+  }
+}
+public class ExpressionParser{
+  ParsedExpression content;
+  private Map placeholders;
+  public void parseLogicalExpression()throws ParseException{
+    Placeholder.nextIndex = 1;
+    placeholders = new HashMap();
+    content = logicalExpression();
+  }
+  public void parseQueryEnvEntry()throws ParseException{
+    content = queryEnvEntry();
+  }
+  public boolean isTrue(Map env){
+    if(placeholders != null) {
+      Map useThisEnv = new HashMap();
+      useThisEnv.putAll(env);
+      useThisEnv.putAll(placeholders);
+      env = useThisEnv;
+    } 
+    return content.isTrue(env);
+  }
+  public Object eval(Map env){
+    if(placeholders != null) {
+      Map useThisEnv = new HashMap();
+      useThisEnv.putAll(env);
+      useThisEnv.putAll(placeholders);
+      env = useThisEnv;
+    } 
+    return content.eval(env);
+  }
+  public String toString(){
+    return ""+content;
+  }
+  public List usedColumns(){
+    return content.usedColumns();
+  }
+  public int getPlaceholdersCount(){
+    return Placeholder.nextIndex - 1;
+  }
+  public void setPlaceholdersValues(Object[] values){
+    for(int i=1; i<values.length; i++){
+      placeholders.put(Integer.valueOf(i), values[i]);
+    }
+  }
+}
+PARSER_END(ExpressionParser)
+SKIP:{
+  " "
+  | "\t"
+  | "\n"
+}
+TOKEN:{
+  <UNSIGNEDNUMBER:<DIGITS>
+  | <DIGITS>"."<DIGITS>
+  | "."<DIGITS>
+  | <DIGITS>".">
+}
+TOKEN:{
+  <#DIGITS:(["0"-"9"])+>
+}
+TOKEN:{
+  <NULL:"NULL">
+}
+TOKEN:{
+  <AND:"AND">
+}
+TOKEN:{
+  <OR:"OR">
+}
+TOKEN:{
+  <NOT:"NOT">
+}
+TOKEN:{
+  <IS:"IS">
+}
+TOKEN:{
+  <AS:"AS">
+}
+TOKEN:{
+  <LIKE:"LIKE">
+}
+TOKEN:{
+  <BETWEEN:"BETWEEN">
+}
+TOKEN:{
+  <PLACEHOLDER:"?">
+}
+TOKEN:{
+  <NAME:(["0"-"9", "A"-"Z", "a"-"z", "_", "."])+>
+}
+TOKEN:{
+  <STRING:"'"([" "-"&", "("-"~"])*"'">
+}
+TOKEN:{
+  <RELOP:(">"
+  | "<"
+  | ">="
+  | "<="
+  | "<>"
+  | "="
+  | "!=")>
+}
+TOKEN:{
+  <ASTERISK:"*">
+}
+TOKEN:{
+  <MINUS:"-">
+}
+TOKEN:{
+  <BINOP:("+"
+  | "/")>
+}
+ParsedExpression logicalExpression():{
+  LogicalExpression left;
+}
+{
+  left = logicalOrExpression()<EOF>{
+    return new ParsedExpression(left);
+  }
+}
+ParsedExpression queryEnvEntry():{
+  Expression expression, alias, result;
+}
+{
+  {
+    result = null;
+  }
+  (expression = binaryOperation()((<AS>)?alias = columnName(){
+    result = new QueryEnvEntry(((ColumnName)alias).columnName, expression);
+  }
+  )?<EOF>{
+    if (result == null){
+      try {
+        result = new QueryEnvEntry(((ColumnName)expression).columnName, expression);
+      }
+      catch (ClassCastException e){
+        throw new ParseException("can't accept expression '"+expression+"' without an alias");
+      }
+    }
+    return new ParsedExpression(result);
+  }
+  )
+  | <ASTERISK>{
+    return null;
+  }
+}
+LogicalExpression logicalOrExpression():{
+  LogicalExpression left, right;
+}
+{
+  left = logicalAndExpression()(<OR>right = logicalAndExpression(){
+    left = new OrExpression(left, right);
+  }
+  )*{
+    return left;
+  }
+}
+LogicalExpression logicalAndExpression():{
+  LogicalExpression left, right;
+}
+{
+  left = logicalUnaryExpression()(<AND>right = logicalUnaryExpression(){
+    left = new AndExpression(left, right);
+  }
+  )*{
+    return left;
+  }
+}
+LogicalExpression logicalUnaryExpression():{
+  LogicalExpression arg;
+}
+{
+  <NOT>arg = logicalUnaryExpression(){
+    return new NotExpression(arg);
+  }
+  | "("arg = logicalOrExpression()")"{
+    return arg;
+  }
+  | arg = relationalExpression(){
+    return arg;
+  }
+}
+LogicalExpression relationalExpression():{
+  Expression arg1, arg2, arg3;
+  String op;
+  Token t;
+}
+{
+  arg1 = simpleExpression()(op = relOp()arg2 = simpleExpression(){
+    return new RelopExpression(op, arg1, arg2);
+  }
+  | <BETWEEN>arg2 = simpleExpression()<AND>arg3 = simpleExpression(){
+    return new BetweenExpression(arg1, arg2, arg3);
+  }
+  | <IS><NULL>{
+    return new IsNullExpression(arg1);
+  }
+  | <LIKE>t = <STRING>{
+    return new LikeExpression(arg1, new StringConstant(t.image.substring(1, t.image.length()-1)));
+  }
+  )
+}
+String relOp():{
+  Token t;
+}
+{
+  t = <RELOP>{
+    return new String(t.image);
+  }
+}
+char binOp():{
+  Token t;
+}
+{
+  (t = <BINOP>|t=<ASTERISK>|t=<MINUS>){
+    return t.image.charAt(0);
+  }
+}
+Expression binaryOperation():{
+  Expression left, right;
+  char op;
+}
+{
+  left = simpleExpression()(op = binOp()right = simpleExpression(){
+    left = new BinaryOperation(op, left, right);
+  }
+  )*{
+    return left;
+  }
+}
+Expression simpleExpression():{
+  Expression arg;
+}
+{
+  arg = columnName(){
+    return arg;
+  }
+  | arg = numericConstant(){
+    return arg;
+  }
+  | arg = stringConstant(){
+    return arg;
+  }
+  | <NULL>{
+    return null;
+  }
+  | <PLACEHOLDER>{
+    return new Placeholder();
+  }
+}
+Expression columnName():{
+  Token t;
+}
+{
+  t = <NAME>{
+    return new ColumnName(t.image);
+  }
+}
+Expression numericConstant():{
+  Token t;
+  String sign;
+}
+{
+  {sign="";}
+  (t=<MINUS>{sign=t.image;})?
+  t = <UNSIGNEDNUMBER>{
+    Number value = null;
+    try {
+      value = new Integer(sign+t.image);
+    }
+    catch (NumberFormatException e){
+      value = new Double(sign+t.image);
+    }
+    return new NumericConstant(value);
+  }
+}
+Expression stringConstant():{
+  String left, right;
+}
+{
+  left = stringConstantAtom()(right = stringConstantAtom(){
+    left = left+"'"+right;
+  }
+  )*{
+    return new StringConstant(left);
+  }
+}
+String stringConstantAtom():{
+  Token t;
+}
+{
+  t = <STRING>{
+    return t.image.substring(1, t.image.length()-1);
+  }
+}
+
