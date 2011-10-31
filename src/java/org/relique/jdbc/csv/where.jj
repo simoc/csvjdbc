@@ -344,20 +344,20 @@ class BetweenExpression extends LogicalExpression{
   }
 }
 class IsNullExpression extends LogicalExpression{
-  Object arg;
-  public IsNullExpression(Object arg){
+  Expression arg;
+  public IsNullExpression(Expression arg){
     this .arg = arg;
   }
   public boolean isTrue(Map env){
-    if (env.get(arg) == null)return true;
-    return false;
+    Object o = arg.eval(env);
+    return (o == null);
   }
   public String toString(){
     return "N "+arg;
   }
   public List usedColumns(){
     List result = new LinkedList();
-    result.add(arg);
+    result.addAll(arg.usedColumns());
     return result;
   }
 }
