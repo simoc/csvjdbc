@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.70 2011/10/28 19:17:09 simoc Exp $
+ * @version $Id: TestCsvDriver.java,v 1.71 2011/10/31 08:20:53 simoc Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -855,6 +855,44 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(results.next());
 		assertEquals("The ID is wrong", 3, results.getInt("ID"));
 		assertTrue(!results.next());
+	}
+
+	/**
+	 * @throws SQLException
+	 */
+	public void testWhereWithLikeOperatorPercent() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM sample4 WHERE Name LIKE 'Ma%'");
+
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", 2, results.getInt("ID"));
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", 3, results.getInt("ID"));
+		assertFalse(results.next());
+	}
+
+	/**
+	 * @throws SQLException
+	 */
+	public void testWhereWithLikeOperatorUnderscore() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("select id from sample where id like '_234'");
+
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", "B234", results.getString("ID"));
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", "X234", results.getString("ID"));
+		assertFalse(results.next());
 	}
 
 	/**
