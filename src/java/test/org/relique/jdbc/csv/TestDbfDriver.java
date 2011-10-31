@@ -36,7 +36,7 @@ import junit.framework.TestCase;
  * This class is used to test the CsvJdbc driver.
  * 
  * @author Mario Frasca
- * @version $Id: TestDbfDriver.java,v 1.3 2011/10/28 19:03:28 simoc Exp $
+ * @version $Id: TestDbfDriver.java,v 1.4 2011/10/31 12:49:31 simoc Exp $
  */
 public class TestDbfDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -148,6 +148,21 @@ public class TestDbfDriver extends TestCase {
 				.getString("Name"));
 		assertEquals("The name is wrong", "sleep", results
 				.getString("value"));
+		assertFalse(results.next());
+	}
+
+	public void testWhereWithIsNull() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM fox_samp WHERE COWNNAME IS NULL");
+		//TODO There *are* some records with COWNAME IS NULL but the dans-dbf-lib-1.0.0-beta-09.jar returns values as empty strings.
 		assertFalse(results.next());
 	}
 
