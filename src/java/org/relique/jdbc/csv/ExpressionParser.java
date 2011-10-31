@@ -338,21 +338,26 @@ class IsNullExpression extends LogicalExpression{
   }
 }
 class LikeExpression extends LogicalExpression{
-  Object arg1, arg2;
-  public LikeExpression(Object arg1, Object arg2){
+  Expression arg1, arg2;
+  public LikeExpression(Expression arg1, Expression arg2){
     this .arg1 = arg1;
     this .arg2 = arg2;
   }
   public boolean isTrue(Map env){
-    return true;
+    Object left = arg1.eval(env);
+    Object right = arg2.eval(env);
+    boolean result = false;
+    if (left != null && right != null)
+      result = LikePattern.matches(right.toString(), left.toString());
+    return result;
   }
   public String toString(){
     return "L "+arg1+" "+arg2;
   }
   public List usedColumns(){
     List result = new LinkedList();
-    result.add(arg1);
-    result.add(arg2);
+    result.addAll(arg1.usedColumns());
+    result.addAll(arg2.usedColumns());
     return result;
   }
 }
