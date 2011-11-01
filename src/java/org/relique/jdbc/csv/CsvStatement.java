@@ -47,7 +47,7 @@ import org.relique.jdbc.dbf.DbfReader;
  * @author Chetan Gupta
  * @author Christoph Langer
  * @created 25 November 2001
- * @version $Id: CsvStatement.java,v 1.47 2011/10/28 13:16:02 simoc Exp $
+ * @version $Id: CsvStatement.java,v 1.48 2011/11/01 07:55:49 simoc Exp $
  */
 
 public class CsvStatement implements Statement {
@@ -364,39 +364,39 @@ public class CsvStatement implements Statement {
 				reader = new DbfReader(fileName, parser.getTableAlias());
 			} else {
 				InputStream in;
-			CryptoFilter filter = connection.getDecryptingCodec();
-			if (connection.isIndexedFiles()) {
-				String fileNamePattern = parser.getTableName()
-						+ connection.getFileNamePattern()
-						+ connection.getExtension();
-				String[] nameParts = connection.getNameParts();
-				String dirName = connection.getPath();
-				in = new FileSetInputStream(dirName, fileNamePattern,
-						nameParts, connection.getSeparator(), connection.isFileTailPrepend(),
-						connection.isSuppressHeaders(), filter, connection.getSkipLeadingDataLines() + connection.getTransposedLines());
-			} else if (filter==null) {
-				in = new FileInputStream(fileName);
-			} else{
-				filter.reset();
-				in = new EncryptedFileInputStream(fileName, filter);
-			}
-			BufferedReader input;
-			if (connection.getCharset() != null) {
-				input = new BufferedReader(new InputStreamReader(in, connection
-						.getCharset()));
-			} else {
-				input = new BufferedReader(new InputStreamReader(in));
-			}
-			CsvRawReader rawReader = new CsvRawReader(input, parser.getTableAlias(), connection.getSeparator(),
-					connection.isSuppressHeaders(), connection.getQuotechar(),
-					connection.getCommentChar(), connection.getHeaderline(),
-					connection.getExtension(), connection.getTrimHeaders(),
-					connection.getSkipLeadingLines(), connection
-							.isIgnoreUnparseableLines(), connection
-							.getDecryptingCodec(), connection
-							.isDefectiveHeaders(), connection
-							.getSkipLeadingDataLines(), connection.getQuoteStyle());
-			reader = new CsvReader(rawReader, connection.getTransposedLines(), connection.getTransposedFieldsToSkip(), connection.getHeaderline());
+				CryptoFilter filter = connection.getDecryptingCodec();
+				if (connection.isIndexedFiles()) {
+					String fileNamePattern = parser.getTableName()
+							+ connection.getFileNamePattern()
+							+ connection.getExtension();
+					String[] nameParts = connection.getNameParts();
+					String dirName = connection.getPath();
+					in = new FileSetInputStream(dirName, fileNamePattern,
+							nameParts, connection.getSeparator(), connection.isFileTailPrepend(),
+							connection.isSuppressHeaders(), filter, connection.getSkipLeadingDataLines() + connection.getTransposedLines());
+				} else if (filter==null) {
+					in = new FileInputStream(fileName);
+				} else {
+					filter.reset();
+					in = new EncryptedFileInputStream(fileName, filter);
+				}
+				BufferedReader input;
+				if (connection.getCharset() != null) {
+					input = new BufferedReader(new InputStreamReader(in, connection
+							.getCharset()));
+				} else {
+					input = new BufferedReader(new InputStreamReader(in));
+				}
+				CsvRawReader rawReader = new CsvRawReader(input, parser.getTableAlias(), connection.getSeparator(),
+						connection.isSuppressHeaders(), connection.getQuotechar(),
+						connection.getCommentChar(), connection.getHeaderline(),
+						connection.getExtension(), connection.getTrimHeaders(),
+						connection.getSkipLeadingLines(), connection
+						.isIgnoreUnparseableLines(), connection
+						.getDecryptingCodec(), connection
+						.isDefectiveHeaders(), connection
+						.getSkipLeadingDataLines(), connection.getQuoteStyle());
+				reader = new CsvReader(rawReader, connection.getTransposedLines(), connection.getTransposedFieldsToSkip(), connection.getHeaderline());
 			}
 		} catch (IOException e) {
 			throw new SQLException("Error reading data file. Message was: " + e);
@@ -493,7 +493,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public boolean execute(String p0) throws SQLException {
-		try{
+		try {
 			executeQuery(p0);
 			return true;
 		} catch (Exception e) {
