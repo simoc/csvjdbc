@@ -43,6 +43,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,7 @@ import org.relique.io.DataReader;
  * @author     Michael Maraya
  * @author     Tomasz Skutnik
  * @author     Chetan Gupta
- * @version    $Id: CsvResultSet.java,v 1.55 2011/10/29 20:57:46 simoc Exp $
+ * @version    $Id: CsvResultSet.java,v 1.56 2011/11/01 13:23:00 simoc Exp $
  */
 public class CsvResultSet implements ResultSet {
 
@@ -159,6 +160,30 @@ public class CsvResultSet implements ResultSet {
             for (int i = 0; i < columnNames.length; i++) {
             	this.queryEnvironment.add(new Object[]{columnNames[i], new ColumnName(columnNames[i])});
 			}
+        } else if (!((CsvConnection)statement.getConnection()).isIndexedFiles()) {
+        	//TODO no check when indexedFiles=true because unit test TestCsvDriver.testFromNonExistingIndexedTable then fails.
+        	/*
+        	 * Check that each selected expression is valid, using only column names contained in the table.
+        	 */
+        	String tableAlias = reader.getTableAlias();
+    		HashSet allReaderColumns = new HashSet();
+    		for (int i = 0; i < columnNames.length; i++) {
+    			String columnName = columnNames[i].toUpperCase();
+    			allReaderColumns.add(columnName);
+    			if (tableAlias != null)
+    				allReaderColumns.add(tableAlias + "." + columnName);
+    		}
+
+    		for (int i = 0; i < queryEnvironment.size(); i++) {
+				Object[] o = (Object[]) queryEnvironment.get(i);
+				if (o[1] != null) {
+					List usedColumns = ((Expression)o[1]).usedColumns();
+					for (Object usedColumn : usedColumns) {
+						if (!allReaderColumns.contains(usedColumn))
+							throw new SQLException("Invalid column name: " + usedColumn);
+					}
+				}
+    		}
         }
     	if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
     		bufferedRecordEnvironments = new ArrayList();
