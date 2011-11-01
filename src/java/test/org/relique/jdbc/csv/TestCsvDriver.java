@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.71 2011/10/31 08:20:53 simoc Exp $
+ * @version $Id: TestCsvDriver.java,v 1.72 2011/11/01 10:53:42 simoc Exp $
  */
 public class TestCsvDriver extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
@@ -580,6 +580,25 @@ public class TestCsvDriver extends TestCase {
 			fail("Should raise a java.sqlSQLException");
 		} catch (SQLException e) {
 			assertEquals("java.sql.SQLException: Invalid column type: Varchar", "" + e);
+		}
+	}
+
+	/**
+	 * @throws SQLException
+	 */
+	public void testBadColumnNameFails() throws SQLException {		
+		try {
+			Properties props = new Properties();
+			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+					+ filePath, props);
+
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt
+					.executeQuery("SELECT Id, XXXX FROM sample");
+			fail("Should raise a java.sqlSQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: Invalid column name: XXXX", "" + e);
 		}
 	}
 
