@@ -154,6 +154,16 @@ public class CsvResultSet implements ResultSet {
         for (int i=0; i<columnNames.length; i++){
         	this.columnPositions.put(columnNames[i], new Integer(i));
         }
+        
+    	String tableAlias = reader.getTableAlias();
+		HashSet allReaderColumns = new HashSet();
+		for (int i = 0; i < columnNames.length; i++) {
+			String columnName = columnNames[i].toUpperCase();
+			allReaderColumns.add(columnName);
+			if (tableAlias != null)
+				allReaderColumns.add(tableAlias + "." + columnName);
+		}
+
         if(queryEnvironment.size() == 0) {
         	/* no named columns means user wants "select * from table" */
         	this.queryEnvironment = new ArrayList();
@@ -165,15 +175,6 @@ public class CsvResultSet implements ResultSet {
         	/*
         	 * Check that each selected expression is valid, using only column names contained in the table.
         	 */
-        	String tableAlias = reader.getTableAlias();
-    		HashSet allReaderColumns = new HashSet();
-    		for (int i = 0; i < columnNames.length; i++) {
-    			String columnName = columnNames[i].toUpperCase();
-    			allReaderColumns.add(columnName);
-    			if (tableAlias != null)
-    				allReaderColumns.add(tableAlias + "." + columnName);
-    		}
-
     		for (int i = 0; i < queryEnvironment.size(); i++) {
 				Object[] o = (Object[]) queryEnvironment.get(i);
 				if (o[1] != null) {
@@ -183,8 +184,21 @@ public class CsvResultSet implements ResultSet {
 							throw new SQLException("Invalid column name: " + usedColumn);
 					}
 				}
+				//TODO selected column aliases are allowed in WHERE clause (although this is invalid SQL) and unit tested in TestCsvDriver.testFieldAsAlias so add all aliases to list too.
+				allReaderColumns.add(o[0]);
     		}
         }
+        
+		/*
+		 * Check that all columns used in the WHERE clause do exist in the table.
+		 */
+		if (!((CsvConnection)statement.getConnection()).isIndexedFiles()) {
+			for (Object usedColumn : this.usedColumns) {
+				if (!allReaderColumns.contains(usedColumn))
+					throw new SQLException("Invalid column name: " + usedColumn);
+			}
+		}
+
     	if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
     		bufferedRecordEnvironments = new ArrayList();
     		hitTail = false;
