@@ -15,35 +15,37 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int DIGITS = 5;
   /** RegularExpression Id. */
-  int NULL = 6;
+  int EXPONENT = 6;
   /** RegularExpression Id. */
-  int AND = 7;
+  int NULL = 7;
   /** RegularExpression Id. */
-  int OR = 8;
+  int AND = 8;
   /** RegularExpression Id. */
-  int NOT = 9;
+  int OR = 9;
   /** RegularExpression Id. */
-  int IS = 10;
+  int NOT = 10;
   /** RegularExpression Id. */
-  int AS = 11;
+  int IS = 11;
   /** RegularExpression Id. */
-  int LIKE = 12;
+  int AS = 12;
   /** RegularExpression Id. */
-  int BETWEEN = 13;
+  int LIKE = 13;
   /** RegularExpression Id. */
-  int PLACEHOLDER = 14;
+  int BETWEEN = 14;
   /** RegularExpression Id. */
-  int NAME = 15;
+  int PLACEHOLDER = 15;
   /** RegularExpression Id. */
-  int STRING = 16;
+  int NAME = 16;
   /** RegularExpression Id. */
-  int RELOP = 17;
+  int STRING = 17;
   /** RegularExpression Id. */
-  int ASTERISK = 18;
+  int RELOP = 18;
   /** RegularExpression Id. */
-  int MINUS = 19;
+  int ASTERISK = 19;
   /** RegularExpression Id. */
-  int BINOP = 20;
+  int MINUS = 20;
+  /** RegularExpression Id. */
+  int BINOP = 21;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -56,6 +58,7 @@ public interface ExpressionParserConstants {
     "\"\\n\"",
     "<UNSIGNEDNUMBER>",
     "<DIGITS>",
+    "<EXPONENT>",
     "\"NULL\"",
     "\"AND\"",
     "\"OR\"",

@@ -959,6 +959,27 @@ public class TestCsvDriver extends TestCase {
 	/**
 	 * @throws SQLException
 	 */
+	public void testWhereWithExponentialNumbers() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Double");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT c4 FROM numeric WHERE c4 >= 2.00e+6 and c4 <= 9e15 and c1 < 1.e-1");
+		assertTrue(results.next());
+
+		double d = results.getDouble("c4");
+		long l = Math.round(d);
+		assertEquals("The c4 is wrong", l, 990000000000l);
+		assertFalse(results.next());
+	}
+
+	/**
+	 * @throws SQLException
+	 */
 	public void test1073375() throws SQLException {
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");

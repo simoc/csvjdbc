@@ -515,10 +515,10 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = logicalUnaryExpression();
     {if (true) return new NotExpression(arg);}
       break;
-    case 21:
-      jj_consume_token(21);
-      arg = logicalOrExpression();
+    case 22:
       jj_consume_token(22);
+      arg = logicalOrExpression();
+      jj_consume_token(23);
     {if (true) return arg;}
       break;
     case UNSIGNEDNUMBER:
@@ -732,7 +732,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x800,0x8800,0xdc050,0x100,0x80,0x29c250,0x23400,0x1c0000,0x1c0000,0x9c050,0x80000,0x10000,};
+      jj_la1_0 = new int[] {0x1000,0x11000,0x1b8090,0x200,0x100,0x538490,0x46800,0x380000,0x380000,0x138090,0x100000,0x20000,};
    }
 
   /** Constructor with InputStream. */
@@ -849,7 +849,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[23];
+    boolean[] la1tokens = new boolean[24];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -863,7 +863,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 23; i++) {
+    for (int i = 0; i < 24; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

@@ -436,13 +436,16 @@ SKIP:{
   | "\n"
 }
 TOKEN:{
-  <UNSIGNEDNUMBER:<DIGITS>
-  | <DIGITS>"."<DIGITS>
-  | "."<DIGITS>
-  | <DIGITS>".">
+  <UNSIGNEDNUMBER:<DIGITS> (<EXPONENT>)?
+  | <DIGITS>"."<DIGITS> (<EXPONENT>)?
+  | "."<DIGITS> (<EXPONENT>)?
+  | <DIGITS>"." (<EXPONENT>)?>
 }
 TOKEN:{
   <#DIGITS:(["0"-"9"])+>
+}
+TOKEN:{
+  <#EXPONENT: ["e","E"] (["+","-"])? <DIGITS>>
 }
 TOKEN:{
   <NULL:"NULL">
