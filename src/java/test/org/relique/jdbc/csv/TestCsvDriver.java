@@ -744,6 +744,7 @@ public class TestCsvDriver extends TestCase {
 
 		Statement stmt = conn.createStatement();
 
+		//TODO using alias j in the WHERE clause is not valid SQL.  Should we really test this?
 		ResultSet results = stmt
 				.executeQuery("SELECT ID as i, Name as n, Job as j FROM sample4 WHERE j='Project Manager'");
 		assertTrue(results.next());
