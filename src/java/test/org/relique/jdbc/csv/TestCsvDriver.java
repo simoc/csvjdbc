@@ -941,6 +941,24 @@ public class TestCsvDriver extends TestCase {
 	/**
 	 * @throws SQLException
 	 */
+	public void testWhereWithBadColumnName() throws SQLException {		
+		try {
+			Properties props = new Properties();
+			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+					+ filePath, props);
+
+			Statement stmt = conn.createStatement();
+
+			stmt.executeQuery("SELECT Id FROM sample where XXXX='123'");
+			fail("Should raise a java.sqlSQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: Invalid column name: XXXX", "" + e);
+		}
+	}
+
+	/**
+	 * @throws SQLException
+	 */
 	public void test1073375() throws SQLException {
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
