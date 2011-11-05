@@ -65,6 +65,17 @@ class StringConstant extends Expression{
     return new LinkedList();
   }
 }
+class NullConstant extends Expression{
+  public Object eval(Map env){
+    return null;
+  }
+  public String toString(){
+    return "null";
+  }
+  public List usedColumns(){
+    return new LinkedList();
+  }
+}
 class Placeholder extends Expression{
   static int nextIndex = 1;
   Integer index;
@@ -631,7 +642,7 @@ Expression simpleExpression():{
     return arg;
   }
   | <NULL>{
-    return null;
+    return new NullConstant();
   }
   | <PLACEHOLDER>{
     return new Placeholder();

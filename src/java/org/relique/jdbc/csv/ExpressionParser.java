@@ -41,6 +41,17 @@ class StringConstant extends Expression{
     return new LinkedList();
   }
 }
+class NullConstant extends Expression{
+  public Object eval(Map env){
+    return null;
+  }
+  public String toString(){
+    return "null";
+  }
+  public List usedColumns(){
+    return new LinkedList();
+  }
+}
 class Placeholder extends Expression{
   static int nextIndex = 1;
   Integer index;
@@ -644,7 +655,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       break;
     case NULL:
       jj_consume_token(NULL);
-    {if (true) return null;}
+    {if (true) return new NullConstant();}
       break;
     case PLACEHOLDER:
       jj_consume_token(PLACEHOLDER);

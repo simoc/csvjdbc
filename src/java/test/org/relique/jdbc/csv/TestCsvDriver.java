@@ -789,6 +789,21 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(!results.next());
 	}
 
+	public void testSelectNull() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT ID, null as ID2 FROM sample4");
+		assertEquals("ID2", results.getMetaData().getColumnName(2));
+		assertTrue(results.next());
+		assertEquals("The ID2 is wrong", null, results.getString("id2"));
+		assertTrue(results.next());
+		assertEquals("The ID2 is wrong", null, results.getObject("id2"));
+	}
+
 	public void testLiteralAsAlias() throws SQLException {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
