@@ -203,11 +203,6 @@ public class CsvReader extends DataReader {
 	    }
 	}
 
-	public void setFieldValues(String[] strings) throws SQLException {
-		for(int i=0; i<strings.length; i++)
-			fieldValues[i] = strings[i];
-	}
-
 	public String getTableAlias() {
 		return rawReader.getTableAlias();
 	}

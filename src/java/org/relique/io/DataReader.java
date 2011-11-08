@@ -21,7 +21,5 @@ public abstract class DataReader {
 	
 	abstract public String[] getColumnTypes() throws SQLException;
 
-	abstract public void setFieldValues(String[] strings) throws SQLException;
-
 	abstract public String getTableAlias();
 }
