@@ -28,7 +28,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -71,7 +70,7 @@ public class CsvConnection implements Connection {
 		return raiseUnsupportedOperationException;
 	}
 
-	public void setRaiseUnsupportedOperationException(
+	private void setRaiseUnsupportedOperationException(
 			boolean raiseUnsupportedOperationException) {
 		this.raiseUnsupportedOperationException = raiseUnsupportedOperationException;
 	}
@@ -413,7 +412,8 @@ public class CsvConnection implements Connection {
     public void setAutoCommit(boolean autoCommit) throws SQLException {
         if (raiseUnsupportedOperationException) {
           throw new UnsupportedOperationException(
-                "Connection.setAutoCommit(boolean) unsupported");
+                "Connection.setAutoCommit(boolean) unsupported. Set driver property " +
+                CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION + " to avoid this exception.");
         } else {
           this.autoCommit = autoCommit;
         }
@@ -431,7 +431,8 @@ public class CsvConnection implements Connection {
     public boolean getAutoCommit() throws SQLException {
         if (raiseUnsupportedOperationException) {
           throw new UnsupportedOperationException(
-                "Connection.getAutoCommit() unsupported");
+                "Connection.getAutoCommit() unsupported. Set driver property " +
+                CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION + " to avoid this exception.");
         } else {
           return this.autoCommit;
         }
@@ -450,7 +451,8 @@ public class CsvConnection implements Connection {
      */
     public void commit() throws SQLException {
         if (raiseUnsupportedOperationException) throw new UnsupportedOperationException(
-                "Connection.commit() unsupported");
+                "Connection.commit() unsupported. Set driver property " +
+                CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION + " to avoid this exception.");
     }
 
     /**
@@ -465,7 +467,8 @@ public class CsvConnection implements Connection {
      */
     public void rollback() throws SQLException {
         if (raiseUnsupportedOperationException) throw new UnsupportedOperationException(
-                "Connection.rollback() unsupported");
+                "Connection.rollback() unsupported. Set driver property " +
+                CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION + " to avoid this exception.");
     }
 
     /**
@@ -542,7 +545,8 @@ public class CsvConnection implements Connection {
      */
     public void setReadOnly(boolean readOnly) throws SQLException {
         if (raiseUnsupportedOperationException) throw new UnsupportedOperationException(
-                "Connection.setReadOnly(boolean) unsupported");
+                "Connection.setReadOnly(boolean) unsupported. Set driver property " +
+                CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION + " to avoid this exception.");
     }
 
     /**
@@ -654,7 +658,8 @@ public class CsvConnection implements Connection {
     public SQLWarning getWarnings() throws SQLException {
         if (raiseUnsupportedOperationException) {
           throw new UnsupportedOperationException(
-                "Connection.getWarnings() unsupported");
+                "Connection.getWarnings() unsupported. Set driver property " +
+                CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION + " to avoid this exception.");
         } else {
           return null;
         }
@@ -670,7 +675,8 @@ public class CsvConnection implements Connection {
      */
     public void clearWarnings() throws SQLException {
         if (raiseUnsupportedOperationException) throw new UnsupportedOperationException(
-                "Connection.getWarnings() unsupported");
+                "Connection.getWarnings() unsupported. Set driver property " +
+                CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION + " to avoid this exception.");
     }
 
     //--------------------------JDBC 2.0-----------------------------
