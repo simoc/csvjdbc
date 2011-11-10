@@ -2934,13 +2934,6 @@ public class CsvResultSet implements ResultSet {
 		return null;
 	}
 
-	/**
-	 * @return the environment in which aliases are associated to expressions
-	 */
-	public List getQueryEnvironment() {
-		return queryEnvironment;
-	}
-
 	public int findColumn(String columnLabel) throws SQLException {
 		if (columnLabel.equals(""))
 			throw new SQLException("Can't access columns with empty name by name");
