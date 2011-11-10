@@ -53,6 +53,7 @@ import org.relique.jdbc.dbf.DbfReader;
 public class CsvStatement implements Statement {
 	private CsvConnection connection;
 	private Vector resultSets = new Vector();
+	private int maxRows = 0;
 
 	protected int isScrollable = ResultSet.TYPE_SCROLL_INSENSITIVE;
 	/**
@@ -95,8 +96,8 @@ public class CsvStatement implements Statement {
 	 *                Description of Exception
 	 * @since
 	 */
-	public void setMaxRows(int p0) throws SQLException {
-		throw new SQLException("setMaxRows(int " + p0 + ") not Supported !");
+	public void setMaxRows(int max) throws SQLException {
+		maxRows = max;
 	}
 
 	/**
@@ -185,7 +186,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public int getMaxRows() throws SQLException {
-		return 0;
+		return maxRows;
 	}
 
 	/**

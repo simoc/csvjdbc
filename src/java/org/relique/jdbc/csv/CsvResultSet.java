@@ -112,6 +112,8 @@ public class CsvResultSet implements ResultSet {
 
 	private boolean hitTail = false;
 
+	private int maxRows;
+
     /**
      * Constructor for the CsvResultSet object 
      *
@@ -129,6 +131,7 @@ public class CsvResultSet implements ResultSet {
 			String tableName, List queryEnvironment, int isScrollable, 
 			ExpressionParser whereClause, String columnTypes, int skipLeadingLines) throws ClassNotFoundException, SQLException {
         this.statement = statement;
+        maxRows = statement.getMaxRows();
         this.isScrollable = isScrollable;
         this.reader = reader;
         this.tableName = tableName;
@@ -230,12 +233,15 @@ public class CsvResultSet implements ResultSet {
 			return true;
     	} else {
     		boolean thereWasAnAnswer;
-    		if(hitTail) {
+    		if(maxRows != 0 && currentRow >= maxRows) {
+    			// Do not fetch any more rows, we have reached the row limit set by caller.
+    			thereWasAnAnswer = false;
+    		} else if(hitTail) {
     			thereWasAnAnswer = false;
     		} else {
     			thereWasAnAnswer = reader.next();
     		}
-    		
+
 			if(thereWasAnAnswer)
 				recordEnvironment = reader.getEnvironment();
 			else
@@ -255,7 +261,7 @@ public class CsvResultSet implements ResultSet {
 					updateRecordEnvironment(thereWasAnAnswer);
 				}
 			}
-			if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE)
+			if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
 				if(thereWasAnAnswer) {
 					bufferedRecordEnvironments.add(reader.getEnvironment());
 					currentRow++;
@@ -263,6 +269,10 @@ public class CsvResultSet implements ResultSet {
 					hitTail = true;
 					currentRow = bufferedRecordEnvironments.size() + 1;
 				}
+			} else {
+				if (thereWasAnAnswer)
+					currentRow++;
+			}
 			return thereWasAnAnswer;
 		}
     }

@@ -2367,4 +2367,23 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("Incorrect ID Value", "A", results.getString(3));
 		assertFalse(results.next());
 	}
+
+	public void testMaxRows() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+		stmt.setMaxRows(4);
+		assertEquals("getMaxRows() incorrect", 4, stmt.getMaxRows());
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample5");
+		// The maxRows value at the time of the query should be used, not the value below.
+		stmt.setMaxRows(7);
+
+		assertTrue("Reading row 1 failed", results.next());
+		assertTrue("Reading row 2 failed", results.next());
+		assertTrue("Reading row 3 failed", results.next());
+		assertTrue("Reading row 4 failed", results.next());
+		assertFalse("Stopping after row 4 failed", results.next());
+	}
 }

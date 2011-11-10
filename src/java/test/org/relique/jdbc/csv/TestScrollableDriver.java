@@ -534,4 +534,24 @@ public class TestScrollableDriver extends TestCase {
 
 	}
 
+	public void testMaxRows() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		stmt.setMaxRows(4);
+		assertEquals("getMaxRows() incorrect", 4, stmt.getMaxRows());
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample5");
+
+		assertTrue("Moving to last record failed", results.last());
+		assertEquals("Last record wrong", 4, results.getRow());
+		assertEquals("The ID is wrong", "03", results.getString("ID"));
+		assertTrue("Moving to first record failed", results.first());
+		assertEquals("The ID is wrong", "41", results.getString("ID"));
+		assertTrue("Reading row 2 failed", results.next());
+		assertTrue("Reading row 3 failed", results.next());
+		assertTrue("Reading row 4 failed", results.next());
+		assertFalse("Stopping after row 4 failed", results.next());
+	}
 }
