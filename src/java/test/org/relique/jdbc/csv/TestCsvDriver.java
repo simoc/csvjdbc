@@ -423,6 +423,16 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	public void testDatabaseMetadataSchemas() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+		DatabaseMetaData metadata = conn.getMetaData();
+		ResultSet results = metadata.getSchemas();
+		assertTrue(results.next());
+		assertEquals("Wrong schema", "PUBLIC", results.getString(1));
+		assertFalse(results.next());
+	}
+
 	public void testColumnTypesUserSpecified() throws SQLException,
 			ParseException {
 		Properties props = new Properties();

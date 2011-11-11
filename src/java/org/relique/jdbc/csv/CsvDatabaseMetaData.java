@@ -327,7 +327,13 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 
 	public ResultSet getSchemas() throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getSchemas() unsupported");
+		String columnNames = "TABLE_SCHEM,TABLE_CATALOG";
+		String columnTypes = "String,String";
+		Object []data = new Object[]{"PUBLIC", null};
+		ArrayList columnValues = new ArrayList();
+		columnValues.add(data);
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
+		return retval;
 	}
 
 	public String getSchemaTerm() throws SQLException
