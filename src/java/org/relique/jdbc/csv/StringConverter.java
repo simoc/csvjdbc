@@ -5,11 +5,15 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.sql.DatabaseMetaData;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -386,6 +390,84 @@ public class StringConverter {
 			retval = "Timestamp";
 		else if (literal instanceof InputStream)
 			retval = "AsciiStream";
+		return retval;
+	}
+
+	public static List getTypeInfo()
+	{
+		Integer intZero = Integer.valueOf(0);
+		Short shortZero = Short.valueOf((short)0);
+		Short shortMax = Short.valueOf(Short.MAX_VALUE);
+		Short searchable = Short.valueOf((short)DatabaseMetaData.typeSearchable);
+		Short nullable = Short.valueOf((short)DatabaseMetaData.typeNullable);
+
+		ArrayList retval = new ArrayList();
+
+		retval.add(new Object[]{"String", Integer.valueOf(Types.VARCHAR), shortMax,
+			"'", "'", null, nullable, Boolean.TRUE,
+			searchable, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
+			shortZero, shortMax, intZero, intZero, intZero});
+
+		retval.add(new Object[]{"Boolean", Integer.valueOf(Types.BOOLEAN), shortMax,
+			null, null, null, nullable, Boolean.TRUE,
+			searchable, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
+			shortZero, shortMax, intZero, intZero, intZero});
+		
+		retval.add(new Object[]{"Byte", Integer.valueOf(Types.TINYINT), shortMax,
+			null, null, null, nullable, Boolean.TRUE,
+			searchable, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
+			shortZero, shortMax, intZero, intZero, intZero});
+
+		retval.add(new Object[]{"Short", Integer.valueOf(Types.SMALLINT), shortMax,
+			null, null, null, nullable, Boolean.TRUE,
+			searchable, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
+			shortZero, shortMax, intZero, intZero, intZero});
+
+		retval.add(new Object[]{"Integer", Integer.valueOf(Types.INTEGER), shortMax,
+			null, null, null, nullable, Boolean.TRUE,
+			searchable, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
+			shortZero, shortMax, intZero, intZero, intZero});
+
+		retval.add(new Object[]{"Long", Integer.valueOf(Types.BIGINT), shortMax,
+			null, null, null, nullable, Boolean.TRUE,
+			searchable, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
+			shortZero, shortMax, intZero, intZero, intZero});
+
+		retval.add(new Object[]{"Float", Integer.valueOf(Types.FLOAT), shortMax,
+			null, null, null, nullable, Boolean.TRUE,
+			searchable, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
+			shortZero, shortMax, intZero, intZero, intZero});
+
+		retval.add(new Object[]{"Double", Integer.valueOf(Types.DOUBLE), shortMax,
+			null, null, null, nullable, Boolean.TRUE,
+			searchable, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
+			shortZero, shortMax, intZero, intZero, intZero});
+
+		retval.add(new Object[]{"BigDecimal", Integer.valueOf(Types.DECIMAL), shortMax,
+			null, null, null, nullable, Boolean.TRUE,
+			searchable, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
+			shortZero, shortMax, intZero, intZero, intZero});
+
+		retval.add(new Object[]{"Date", Integer.valueOf(Types.DATE), shortMax,
+			"'", "'", null, nullable, Boolean.TRUE,
+			searchable, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
+			shortZero, shortMax, intZero, intZero, intZero});
+
+		retval.add(new Object[]{"Time", Integer.valueOf(Types.TIME), shortMax,
+			"'", "'", null, nullable, Boolean.TRUE,
+			searchable, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
+			shortZero, shortMax, intZero, intZero, intZero});
+
+		retval.add(new Object[]{"Timestamp", Integer.valueOf(Types.TIMESTAMP), shortMax,
+			null, null, null, nullable, Boolean.TRUE,
+			searchable, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
+			shortZero, shortMax, intZero, intZero, intZero});
+
+		retval.add(new Object[]{"Asciistream", Integer.valueOf(Types.CLOB), shortMax,
+			null, null, null, nullable, Boolean.TRUE,
+			searchable, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
+			shortZero, shortMax, intZero, intZero, intZero});
+
 		return retval;
 	}
 }

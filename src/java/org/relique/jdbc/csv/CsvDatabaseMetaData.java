@@ -83,7 +83,11 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 
 	public ResultSet getCatalogs() throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getCatalogs() unsupported");
+		String columnNames = "TABLE_CAT";
+		String columnTypes = "String";
+		ArrayList columnValues = new ArrayList();
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
+		return retval;
 	}
 
 	public String getCatalogSeparator() throws SQLException
@@ -442,7 +446,14 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 
 	public ResultSet getTypeInfo() throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getTypeInfo() unsupported");
+		String columnNames = "TYPE_NAME,DATA_TYPE,PRECISION,LITERAL_PREFIX,LITERAL_SUFFIX,CREATE_PARAMS," +
+			"NULLABLE,CASE_SENSITIVE,SEARCHABLE,UNSIGNED_ATTRIBUTE,FIXED_PREC_SCALE,AUTO_INCREMENT," +
+			"LOCAL_TYPE_NAME,MINIMUM_SCALE,MAXIMUM_SCALE,SQL_DATA_TYPE,SQL_DATETIME_SUB,NUM_PREC_RADIX";
+		String columnTypes = "String,Integer,Integer,String,String,String,Short,Boolean,Short," +
+			"Boolean,Boolean,Boolean,String,Short,Short,Integer,Integer,Integer";
+		List columnValues = StringConverter.getTypeInfo();
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
+		return retval;
 	}
 
 	public ResultSet getUDTs(String arg0, String arg1, String arg2, int[] arg3) throws SQLException
