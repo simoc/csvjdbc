@@ -31,6 +31,8 @@ import org.relique.io.ListDataReader;
  */
 public class CsvDatabaseMetaData implements DatabaseMetaData
 {
+	private static final String SCHEMA_NAME = "PUBLIC";
+
 	private Connection createdByConnection;
 	private CsvStatement internalStatement = null;
 
@@ -333,7 +335,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	{
 		String columnNames = "TABLE_SCHEM,TABLE_CATALOG";
 		String columnTypes = "String,String";
-		Object []data = new Object[]{"PUBLIC", null};
+		Object []data = new Object[]{SCHEMA_NAME, null};
 		ArrayList columnValues = new ArrayList();
 		columnValues.add(data);
 		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
@@ -385,9 +387,20 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		throw new UnsupportedOperationException("DatabaseMetaData.getTablePrivileges(String,String,String) unsupported");
 	}
 
-	public ResultSet getTables(String arg0, String arg1, String arg2, String[] arg3) throws SQLException
+	public ResultSet getTables(String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getTablePrivileges(String,String,String,String[]) unsupported");
+		String columnNames = "TABLE_CAT,TABLE_SCHEM,TABLE_NAME,TABLE_TYPE," +
+				"REMARKS,TYPE_CAT,TYPE_SCHEM,TYPE_NAME,SELF_REFERENCING_COL_NAME,REF_GENERATION";
+		String columnTypes = "String,String,String,String,String,String,String,String,String,String";
+		List tableNames = ((CsvConnection)createdByConnection).getTableNames();
+		ArrayList columnValues = new ArrayList(tableNames.size());
+		for (int i = 0; i < tableNames.size(); i++)
+		{
+			Object []data = new Object[]{null, SCHEMA_NAME, tableNames.get(i), "TABLE", "", null, null, null, null, null};
+			columnValues.add(data);
+		}
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
+		return retval;
 	}
 
 	private ResultSet createResultSet(String columnNames, String columnTypes, List columnValues)

@@ -18,6 +18,8 @@
  */
 package org.relique.jdbc.csv;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Array;
@@ -35,7 +37,9 @@ import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
@@ -1187,6 +1191,29 @@ public class CsvConnection implements Connection {
 
 	public void setTransposedFieldsToSkip(int i) {
 		transposedFieldsToSkip = i;
+	}
+
+	/**
+	 * Get list of table names (all files in the directory with the correct suffix).
+	 * @return list of table names.
+	 */
+	public List getTableNames() {
+
+		ArrayList tableNames = new ArrayList();
+		File []matchingFiles = new File(path).listFiles(new FilenameFilter() {
+
+			public boolean accept(File dir, String name) {
+				return name.endsWith(extension);
+			}
+		});
+		for (int i = 0; i < matchingFiles.length; i++) {
+			if (matchingFiles[i].isFile() && matchingFiles[i].canRead()) {
+				String filename = matchingFiles[i].getName();
+				String tableName = filename.substring(0, filename.length() - extension.length());
+				tableNames.add(tableName);
+			}
+		}
+		return tableNames;
 	}
 
 }

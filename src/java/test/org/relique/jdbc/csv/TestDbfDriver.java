@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package test.org.relique.jdbc.csv;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -186,6 +187,20 @@ public class TestDbfDriver extends TestCase {
 		assertEquals("Incorrect Column Type", Types.BOOLEAN, metadata.getColumnType(2));
 		assertEquals("Incorrect Column Type", Types.DOUBLE, metadata.getColumnType(3));
 	}
-	
+
+	public void testDatabaseMetadataTables() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		DatabaseMetaData metadata = conn.getMetaData();
+		ResultSet results = metadata.getTables(null, null, "*", null);
+		assertTrue(results.next());
+		assertEquals("Incorrect table name", "fox_samp", results.getString("TABLE_NAME"));
+		assertTrue(results.next());
+		assertEquals("Incorrect table name", "sample", results.getString("TABLE_NAME"));
+		assertFalse(results.next());
+	}
 
 }
