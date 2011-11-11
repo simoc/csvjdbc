@@ -306,9 +306,13 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		return "";
 	}
 
-	public ResultSet getPrimaryKeys(String arg0, String arg1, String arg2) throws SQLException
+	public ResultSet getPrimaryKeys(String catalog, String schema, String table) throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getPrimaryKeys(String,String,String) unsupported");
+		String columnNames = "TABLE_CAT,TABLE_SCHEM,TABLE_NAME,COLUMN_NAME,KEY_SEQ,PK_NAME";
+		String columnTypes = "String,String,String,String,Short,String";
+		ArrayList columnValues = new ArrayList();
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
+		return retval;
 	}
 
 	public ResultSet getProcedureColumns(String arg0, String arg1, String arg2, String arg3) throws SQLException
