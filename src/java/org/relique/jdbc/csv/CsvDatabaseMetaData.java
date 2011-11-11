@@ -16,6 +16,10 @@
 package org.relique.jdbc.csv;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.relique.io.ListDataReader;
 
 /**
  *This class will implement the DatabaseMetaData interface for the CsvJdbc driver.
@@ -28,6 +32,7 @@ import java.sql.*;
 public class CsvDatabaseMetaData implements DatabaseMetaData
 {
 	private Connection createdByConnection;
+	private CsvStatement internalStatement = null;
 
 	public CsvDatabaseMetaData(Connection createdByConnection)
 	{
@@ -375,9 +380,36 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		throw new UnsupportedOperationException("DatabaseMetaData.getTablePrivileges(String,String,String,String[]) unsupported");
 	}
 
+	private ResultSet createResultSet(String columnNames, String columnTypes, List columnValues)
+			throws SQLException
+	{
+		ListDataReader reader = new ListDataReader(columnNames.split(","), columnTypes.split(","), columnValues);
+		ArrayList queryEnvironment = new ArrayList();
+		ResultSet retval = null;
+
+		try
+		{
+			if (internalStatement == null)
+				internalStatement = (CsvStatement)createdByConnection.createStatement();
+			retval = new CsvResultSet(internalStatement, reader, "", queryEnvironment,
+				0, null, columnTypes, 0);
+		}
+		catch (ClassNotFoundException e)
+		{
+			throw new SQLException(e.getMessage());
+		}
+		return retval;
+	}
+
 	public ResultSet getTableTypes() throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getTableTypes() unsupported");
+		String columnNames = "TABLE_TYPE";
+		String columnTypes = "String";
+		Object []data = new Object[]{"TABLE"};
+		ArrayList columnValues = new ArrayList();
+		columnValues.add(data);
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
+		return retval;
 	}
 
 	public String getTimeDateFunctions() throws SQLException

@@ -20,6 +20,7 @@ package test.org.relique.jdbc.csv;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -410,6 +411,16 @@ public class TestCsvDriver extends TestCase {
 
 		assertEquals("Incorrect Column Name 1", "ID", metadata.getColumnName(1));
 		assertEquals("Incorrect Column Name 2", "NAME", metadata.getColumnName(2));
+	}
+
+	public void testDatabaseMetadataTableTypes() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+		DatabaseMetaData metadata = conn.getMetaData();
+		ResultSet results = metadata.getTableTypes();
+		assertTrue(results.next());
+		assertEquals("Wrong table type", "TABLE", results.getString(1));
+		assertFalse(results.next());
 	}
 
 	public void testColumnTypesUserSpecified() throws SQLException,
