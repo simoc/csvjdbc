@@ -114,6 +114,8 @@ public class CsvResultSet implements ResultSet {
 
 	private int maxRows;
 
+	private boolean isClosed = false;
+
     /**
      * Constructor for the CsvResultSet object 
      *
@@ -315,6 +317,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public void close() throws SQLException {
+    	isClosed = true;
         reader.close();
     }
 
@@ -2774,8 +2777,7 @@ public class CsvResultSet implements ResultSet {
 		return null;
 	}
 	public boolean isClosed() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		return isClosed;
 	}
 	public void updateAsciiStream(int columnIndex, InputStream x)
 			throws SQLException {

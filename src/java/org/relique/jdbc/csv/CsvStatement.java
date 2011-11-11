@@ -53,6 +53,7 @@ import org.relique.jdbc.dbf.DbfReader;
 public class CsvStatement implements Statement {
 	private CsvConnection connection;
 	private Vector resultSets = new Vector();
+	private ResultSet lastResultSet = null;
 	private int maxRows = 0;
 
 	protected int isScrollable = ResultSet.TYPE_SCROLL_INSENSITIVE;
@@ -213,40 +214,26 @@ public class CsvStatement implements Statement {
 		throw new SQLException("getWarnings() not Supported !");
 	}
 
-	/**
-	 *Gets the resultSet attribute of the CsvStatement object
-	 * 
-	 * @return The resultSet value
-	 * @exception SQLException
-	 *                Description of Exception
-	 * @since
-	 */
 	public ResultSet getResultSet() throws SQLException {
-		throw new SQLException("getResultSet() not Supported !");
+		return lastResultSet;
 	}
 
-	/**
-	 *Gets the updateCount attribute of the CsvStatement object
-	 * 
-	 * @return The updateCount value
-	 * @exception SQLException
-	 *                Description of Exception
-	 * @since
-	 */
 	public int getUpdateCount() throws SQLException {
-		throw new SQLException("getUpdateCount() not Supported !");
+		/*
+		 * Driver is read-only, so no updates are possible.
+		 */
+		return -1;
 	}
 
-	/**
-	 *Gets the moreResults attribute of the CsvStatement object
-	 * 
-	 * @return The moreResults value
-	 * @exception SQLException
-	 *                Description of Exception
-	 * @since
-	 */
 	public boolean getMoreResults() throws SQLException {
-		throw new SQLException("getMoreResults() not Supported !");
+		if (lastResultSet != null) {
+			/*
+			 * Close any ResultSet that is currently open.
+			 */
+			lastResultSet.close();
+			lastResultSet = null;
+		}
+		return false;
 	}
 
 	/**
@@ -415,6 +402,7 @@ public class CsvStatement implements Statement {
 							.getWhereClause(), connection.getColumnTypes(), 
 							connection.getSkipLeadingLines());
 			resultSets.add(resultSet);
+			lastResultSet = resultSet;
 		} catch (ClassNotFoundException e) {
 			DriverManager.println("" + e);
 		}
@@ -454,6 +442,7 @@ public class CsvStatement implements Statement {
 	 *                if a database access error occurs
 	 */
 	public void close() throws SQLException {
+		lastResultSet = null;
 		// close all result sets
 		for (Enumeration i = resultSets.elements(); i.hasMoreElements();) {
 			CsvResultSet resultSet = (CsvResultSet) i.nextElement();

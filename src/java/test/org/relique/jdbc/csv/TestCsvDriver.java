@@ -2415,4 +2415,23 @@ public class TestCsvDriver extends TestCase {
 		assertTrue("Reading row 4 failed", results.next());
 		assertFalse("Stopping after row 4 failed", results.next());
 	}
+
+	public void testResultSet() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+		// No query executed yet.
+		assertNull(stmt.getResultSet());
+		assertFalse(stmt.getMoreResults());
+		assertEquals("Update count wrong", -1, stmt.getUpdateCount());
+
+		ResultSet results1 = stmt.executeQuery("SELECT * FROM sample5");		
+		ResultSet results2 = stmt.getResultSet();
+		assertEquals("Result sets not equal", results1, results2);
+		assertEquals("Update count wrong", -1, stmt.getUpdateCount());
+		assertFalse(stmt.getMoreResults());
+		assertNull("Result set not null", stmt.getResultSet());
+		assertTrue("Result set was not closed", results1.isClosed());
+	}
 }
