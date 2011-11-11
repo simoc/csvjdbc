@@ -310,9 +310,13 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		throw new UnsupportedOperationException("DatabaseMetaData.getProcedureColumns(String,String,String,String) unsupported");
 	}
 
-	public ResultSet getProcedures(String arg0, String arg1, String arg2) throws SQLException
+	public ResultSet getProcedures(String catalog, String schemaPattern, String procedureNamePattern) throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getProcedures(String,String,String) unsupported");
+		String columnNames = "PROCEDURE_CAT,PROCEDURE_SCHEM,PROCEDURE_NAME,reserved4,reserved5,reserved6,REMARKS,PROCEDURE_TYPE,SPECIFIC_NAME";
+		String columnTypes = "String,String,String,String,String,String,String,Short,String";
+		ArrayList columnValues = new ArrayList();
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
+		return retval;
 	}
 
 	public String getProcedureTerm() throws SQLException
