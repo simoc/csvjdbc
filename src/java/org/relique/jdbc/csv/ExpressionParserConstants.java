@@ -71,7 +71,7 @@ public interface ExpressionParserConstants {
     "<NAME>",
     "<STRING>",
     "<RELOP>",
-    "\"*\"",
+    "<ASTERISK>",
     "\"-\"",
     "<BINOP>",
     "\"(\"",

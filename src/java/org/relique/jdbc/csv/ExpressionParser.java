@@ -372,6 +372,22 @@ class LikeExpression extends LogicalExpression{
     return result;
   }
 }
+class AsteriskExpression extends LogicalExpression{
+  String expression;
+  public AsteriskExpression(String expression){
+    this.expression = expression;
+  }
+  public boolean isTrue(Map env){
+    return false;
+  }
+  public String toString(){
+    return expression;
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    return result;
+  }
+}
 public class ExpressionParser implements ExpressionParserConstants {
   ParsedExpression content;
   private Map placeholders;
@@ -425,7 +441,8 @@ public class ExpressionParser implements ExpressionParserConstants {
   }
 
   final public ParsedExpression queryEnvEntry() throws ParseException {
-  Expression expression, alias, result;
+  Expression expression, alias, result, asterisk;
+  Token t;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case UNSIGNEDNUMBER:
     case NULL:
@@ -465,8 +482,9 @@ public class ExpressionParser implements ExpressionParserConstants {
     {if (true) return new ParsedExpression(result);}
       break;
     case ASTERISK:
-      jj_consume_token(ASTERISK);
-    {if (true) return null;}
+      t = jj_consume_token(ASTERISK);
+      asterisk = new AsteriskExpression(t.image);
+      {if (true) return new ParsedExpression(new QueryEnvEntry(t.image, asterisk));}
       break;
     default:
       jj_la1[2] = jj_gen;

@@ -887,6 +887,23 @@ public class TestCsvDriver extends TestCase {
 	}
 
 	/**
+	 * 
+	 * @throws SQLException
+	 */
+	public void testSelectStarWithTableAlias() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT tbl.* FROM sample4 tbl");
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", "01", results.getString("ID"));
+		assertEquals("The Job is wrong", "Project Manager", results.getString(3));
+	}
+
+	/**
 	 * @throws SQLException
 	 */
 	public void testWhereWithAndOperator() throws SQLException {

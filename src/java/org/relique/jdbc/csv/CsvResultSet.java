@@ -137,7 +137,7 @@ public class CsvResultSet implements ResultSet {
         this.isScrollable = isScrollable;
         this.reader = reader;
         this.tableName = tableName;
-        this.queryEnvironment = queryEnvironment;
+        this.queryEnvironment = new ArrayList(queryEnvironment);
         this.whereClause = whereClause;
         if(reader instanceof CsvReader) {
         	// timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
@@ -169,19 +169,34 @@ public class CsvResultSet implements ResultSet {
 				allReaderColumns.add(tableAlias + "." + columnName);
 		}
 
-        if(queryEnvironment.size() == 0) {
-        	/* no named columns means user wants "select * from table" */
-        	this.queryEnvironment = new ArrayList();
-            for (int i = 0; i < columnNames.length; i++) {
-            	this.queryEnvironment.add(new Object[]{columnNames[i], new ColumnName(columnNames[i])});
+		/*
+		 * Replace any "select *" with the list of column names in that table.
+		 */
+		for (int i = 0; i < this.queryEnvironment.size(); i++) {
+			Object[] o = (Object[])this.queryEnvironment.get(i);
+			if (o[1] instanceof AsteriskExpression) {
+				AsteriskExpression asteriskExpression = (AsteriskExpression)o[1];
+				
+				/*
+				 * Check that any table alias is valid.
+				 */
+				String asterisk = asteriskExpression.toString();
+				if (!(asterisk.equals("*") || (tableAlias != null && asterisk.equalsIgnoreCase(tableAlias + ".*"))))
+					throw new SQLException("Invalid column name: " + asterisk);
+				this.queryEnvironment.remove(i);
+				for (int j = 0; j < columnNames.length; j++) {
+					this.queryEnvironment.add(i + j, new Object[]{columnNames[j], new ColumnName(columnNames[j])});
+				}
 			}
-        } else if (!((CsvConnection)statement.getConnection()).isIndexedFiles()) {
+		}
+
+        if (!((CsvConnection)statement.getConnection()).isIndexedFiles()) {
         	//TODO no check when indexedFiles=true because unit test TestCsvDriver.testFromNonExistingIndexedTable then fails.
         	/*
         	 * Check that each selected expression is valid, using only column names contained in the table.
         	 */
-    		for (int i = 0; i < queryEnvironment.size(); i++) {
-				Object[] o = (Object[]) queryEnvironment.get(i);
+    		for (int i = 0; i < this.queryEnvironment.size(); i++) {
+				Object[] o = (Object[]) this.queryEnvironment.get(i);
 				if (o[1] != null) {
 					List usedColumns = ((Expression)o[1]).usedColumns();
 					for (Object usedColumn : usedColumns) {

@@ -158,7 +158,7 @@ public class TestSqlParser extends TestCase {
 		assertTrue("Incorrect table name", parser.getTableName().equals("test"));
 
 		String[] cols = parser.getColumnNames();
-		assertEquals("Incorrect Column Count", 0, cols.length);
+		assertEquals("Incorrect Column Count", 1, cols.length);
 	}
 
 	/**
@@ -390,7 +390,7 @@ public class TestSqlParser extends TestCase {
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("*"));
 		cs.parseQueryEnvEntry();
-		assertEquals("null", cs.toString());
+		assertEquals("*: *", cs.toString());
 		cs = new ExpressionParser(new StringReader("A"));
 		cs.parseQueryEnvEntry();
 		assertEquals("A: [A]", cs.toString());

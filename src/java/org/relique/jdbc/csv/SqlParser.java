@@ -172,6 +172,8 @@ public class SqlParser
 				environment.add(new Object[]{key, cc.expression});
 			}
 		}
+		if (environment.isEmpty())
+			throw new Exception("Malformed SQL. No columns");
 	}
 
 

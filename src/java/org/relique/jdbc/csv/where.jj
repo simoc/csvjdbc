@@ -396,6 +396,22 @@ class LikeExpression extends LogicalExpression{
     return result;
   }
 }
+class AsteriskExpression extends LogicalExpression{
+  String expression;
+  public AsteriskExpression(String expression){
+    this.expression = expression;
+  }
+  public boolean isTrue(Map env){
+    return false;
+  }
+  public String toString(){
+    return expression;
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    return result;
+  }
+}
 public class ExpressionParser{
   ParsedExpression content;
   private Map placeholders;
@@ -501,7 +517,8 @@ TOKEN:{
   | "!=")>
 }
 TOKEN:{
-  <ASTERISK:"*">
+  <ASTERISK:"*"
+  | <NAME>".*">
 }
 TOKEN:{
   <MINUS:"-">
@@ -519,7 +536,8 @@ ParsedExpression logicalExpression():{
   }
 }
 ParsedExpression queryEnvEntry():{
-  Expression expression, alias, result;
+  Expression expression, alias, result, asterisk;
+  Token t;
 }
 {
   {
@@ -540,9 +558,11 @@ ParsedExpression queryEnvEntry():{
     return new ParsedExpression(result);
   }
   )
-  | <ASTERISK>{
-    return null;
+  | (t=<ASTERISK>){
+      asterisk = new AsteriskExpression(t.image);
+      return new ParsedExpression(new QueryEnvEntry(t.image, asterisk));
   }
+
 }
 LogicalExpression logicalOrExpression():{
   LogicalExpression left, right;

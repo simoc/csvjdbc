@@ -416,6 +416,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	{
 		ListDataReader reader = new ListDataReader(columnNames.split(","), columnTypes.split(","), columnValues);
 		ArrayList queryEnvironment = new ArrayList();
+		queryEnvironment.add(new Object[]{"*", new AsteriskExpression("*")});
 		ResultSet retval = null;
 
 		try
