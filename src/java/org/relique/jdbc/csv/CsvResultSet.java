@@ -945,8 +945,7 @@ public class CsvResultSet implements ResultSet {
      *            is called on a closed result set
      */
     public SQLWarning getWarnings() throws SQLException {
-        throw new UnsupportedOperationException(
-                "ResultSet.getWarnings() unsupported");
+    	return null;
     }
 
     /**
@@ -958,8 +957,6 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public void clearWarnings() throws SQLException {
-        throw new UnsupportedOperationException(
-                "ResultSet.clearWarnings() unsupported");
     }
 
     /**
