@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.relique.io.DataReader;
+import org.relique.io.ListDataReader;
 
 /**
  * This class implements the ResultSet interface for the CsvJdbc driver.
@@ -139,15 +140,17 @@ public class CsvResultSet implements ResultSet {
         this.tableName = tableName;
         this.queryEnvironment = new ArrayList(queryEnvironment);
         this.whereClause = whereClause;
-        if(reader instanceof CsvReader) {
+        if(reader instanceof CsvReader || reader instanceof ListDataReader) {
         	// timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
         	timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
         	dateFormat = ((CsvConnection)statement.getConnection()).getDateFormat();
         	timeZone = ((CsvConnection)statement.getConnection()).getTimeZoneName();
         	this.converter = new StringConverter(dateFormat, timeFormat, timeZone);
-        	((CsvReader) reader).setConverter(converter);
-        	if(!"".equals(columnTypes))
-        		((CsvReader) reader).setColumnTypes(columnTypes);
+        	if (reader instanceof CsvReader) {
+        		((CsvReader) reader).setConverter(converter);
+        		if(!"".equals(columnTypes))
+        			((CsvReader) reader).setColumnTypes(columnTypes);
+        	}
         }
         if (whereClause!= null)
         	this.usedColumns = whereClause.usedColumns();

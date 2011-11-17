@@ -203,4 +203,21 @@ public class TestDbfDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	public void testDatabaseMetadataColumns() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		DatabaseMetaData metadata = conn.getMetaData();
+		ResultSet results = metadata.getColumns(null, null, "sample", "*");
+		assertTrue(results.next());
+		assertEquals("Incorrect table name", "sample", results.getString("TABLE_NAME"));
+		assertEquals("Incorrect column name", "NAME", results.getString("COLUMN_NAME"));
+		assertEquals("Incorrect column type", Types.VARCHAR, results.getInt("DATA_TYPE"));
+		assertEquals("Incorrect column type", "String", results.getString("TYPE_NAME"));
+		assertEquals("Incorrect ordinal position", 1, results.getInt("ORDINAL_POSITION"));
+		assertTrue(results.next());
+		assertEquals("Incorrect column name", "KEY", results.getString(4));
+	}
 }

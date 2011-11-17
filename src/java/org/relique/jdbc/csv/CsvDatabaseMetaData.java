@@ -105,9 +105,48 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		throw new UnsupportedOperationException("DatabaseMetaData.getColumnPrivileges(String,String,String,String) unsupported");
 	}
 
-	public ResultSet getColumns(String arg0, String arg1, String arg2, String arg3) throws SQLException
+	public ResultSet getColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getColumns(String,String,String,String) unsupported");
+		String columnNames = "TABLE_CAT,TABLE_SCHEM,TABLE_NAME,COLUMN_NAME,DATA_TYPE,TYPE_NAME,COLUMN_SIZE,BUFFER_LENGTH," +
+			"DECIMAL_DIGITS,NUM_PREC_RADIX,NULLABLE,REMARKS,COLUMN_DEF,SQL_DATA_TYPE,SQL_DATETIME_SUB,CHAR_OCTET_LENGTH," +
+			"ORDINAL_POSITION,IS_NULLABLE,SCOPE_CATLOG,SCOPE_SCHEMA,SCOPE_TABLE,SOURCE_DATA_TYPE,IS_AUTOINCREMENT";
+		String columnTypes = "String,String,String,String,Integer,String,Integer,Integer,Integer,Integer,Integer," +
+			"String,String,Integer,Integer,Integer,Integer,String,String,String,String,Short,String";
+		ArrayList columnValues = new ArrayList();
+		ResultSet resultSet = null;
+		try
+		{
+			if (internalStatement == null)
+				internalStatement = (CsvStatement)createdByConnection.createStatement();
+			resultSet = internalStatement.executeQuery("SELECT * from " + tableNamePattern);
+			ResultSetMetaData metadata = resultSet.getMetaData();
+			int nColumns = metadata.getColumnCount();
+			Integer columnSize = Integer.valueOf(Short.MAX_VALUE);
+			Integer decimalDigits = Integer.valueOf(Short.MAX_VALUE);
+			Integer zero = Integer.valueOf(0);
+			Integer radix = Integer.valueOf(10);
+			Integer nullable = Integer.valueOf(columnNullable);
+			String remarks = null;
+			String defaultValue = null;
+
+			for (int i = 0; i < nColumns; i++)
+			{
+				String columnName = metadata.getColumnName(i + 1);
+				int columnType = metadata.getColumnType(i + 1);
+				String columnTypeName = metadata.getColumnTypeName(i + 1);
+				Object data[] = {null, SCHEMA_NAME, tableNamePattern, columnName, Integer.valueOf(columnType),
+					columnTypeName, columnSize, zero, decimalDigits, radix, nullable, remarks, defaultValue,
+					zero, zero, columnSize, Integer.valueOf(i + 1), "YES", null, null, null, null, "NO"};
+				columnValues.add(data);
+			}
+		}
+		finally
+		{
+			if (resultSet != null)
+				resultSet.close();
+		}
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
+		return retval;
 	}
 
 	public Connection getConnection() throws SQLException
