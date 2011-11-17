@@ -500,9 +500,13 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		return retval;
 	}
 
-	public ResultSet getUDTs(String arg0, String arg1, String arg2, int[] arg3) throws SQLException
+	public ResultSet getUDTs(String catalog, String schemaPattern, String typeNamePattern, int[] types) throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getUDTs(String,String,String,int[]) unsupported");
+		String columnNames = "TYPE_CAT,TYPE_SCHEM,TYPE_NAME,CLASS_NAME,DATA_TYPE,REMARKS,BASE_TYPE";
+		String columnTypes = "String,String,String,String,Integer,String,Short";
+		ArrayList columnValues = new ArrayList();
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
+		return retval;
 	}
 
 	public String getURL() throws SQLException
