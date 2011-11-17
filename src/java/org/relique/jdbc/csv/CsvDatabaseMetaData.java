@@ -76,9 +76,13 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		throw new UnsupportedOperationException("DatabaseMetaData.getAttributes(String,String,String,String) unsupported");
 	}
 
-	public ResultSet getBestRowIdentifier(String arg0, String arg1, String arg2, int arg3, boolean arg4) throws SQLException
+	public ResultSet getBestRowIdentifier(String catalog, String schema, String table, int scope, boolean nullable) throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getBestRowIdentifier(String,String,String,int,boolean) unsupported");
+		String columnNames = "SCOPE,COLUMN_NAME,DATA_TYPE,TYPE_NAME,COLUMN_SIZE,BUFFER_LENGTH,DECIMAL_DIGITS,PSEUDO_COLUMN";
+		String columnTypes = "Short,String,Integer,String,Integer,Integer,Short,Short";
+		ArrayList columnValues = new ArrayList();
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
+		return retval;
 	}
 
 	public ResultSet getCatalogs() throws SQLException
@@ -100,9 +104,9 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		return "catalog";
 	}
 
-	public ResultSet getColumnPrivileges(String arg0, String arg1, String arg2, String arg3) throws SQLException
+	public ResultSet getColumnPrivileges(String catalog, String schema, String table, String columnNamePattern) throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getColumnPrivileges(String,String,String,String) unsupported");
+		return getTablePrivileges(catalog, schema, table);
 	}
 
 	public ResultSet getColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) throws SQLException
@@ -205,9 +209,14 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		return "1";
 	}
 
-	public ResultSet getExportedKeys(String arg0, String arg1, String arg2) throws SQLException
+	public ResultSet getExportedKeys(String catalog, String schema, String table) throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getExportedKeys(String,String,String) unsupported");
+		String columnNames = "PKTABLE_CAT,PKTABLE_SCHEM,PKTABLE_NAME,PKCOLUMN_NAME,FKTABLE_CAT,FKTABLE_SCHEM," +
+			"FKTABLE_NAME,FKCOLUMN_NAME,KEY_SEQ,UPDATE_RULE,DELETE_RULE,FK_NAME,PK_NAME,DEFERRABILITY";
+		String columnTypes = "String,String,String,String,String,String,String,String,Short,Short,Short,String,String,Short";
+		ArrayList columnValues = new ArrayList();
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
+		return retval;
 	}
 
 	public String getExtraNameCharacters() throws SQLException
@@ -220,14 +229,19 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		return " ";
 	}
 
-	public ResultSet getImportedKeys(String arg0, String arg1, String arg2) throws SQLException
+	public ResultSet getImportedKeys(String catalog, String schema, String table) throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getImportedKeys(String,String,String) unsupported");
+		return getExportedKeys(catalog, schema, table);
 	}
 
-	public ResultSet getIndexInfo(String arg0, String arg1, String arg2, boolean arg3, boolean arg4) throws SQLException
+	public ResultSet getIndexInfo(String catalog, String schema, String table, boolean unique, boolean approximate) throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getIndexInfo(String,String,String,boolean,boolean) unsupported");
+		String columnNames = "TABLE_CAT,TABLE_SCHEM,TABLE_NAME,NON_UNIQUE,INDEX_QUALIFIER,INDEX_NAME,TYPE," +
+			"ORDINAL_POSITION,COLUMN_NAME,ASC_OR_DESC,CARDINALITY,PAGES,FILTER_CONDITION";
+		String columnTypes = "String,String,String,Boolean,String,String,Short,Short,String,String,Integer,Integer,String";
+		ArrayList columnValues = new ArrayList();
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
+		return retval;
 	}
 
 	public int getJDBCMajorVersion() throws SQLException
@@ -429,9 +443,13 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		return "";
 	}
 
-	public ResultSet getTablePrivileges(String arg0, String arg1, String arg2) throws SQLException
+	public ResultSet getTablePrivileges(String catalog, String schemaPattern, String tableNamePattern) throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getTablePrivileges(String,String,String) unsupported");
+		String columnNames = "TABLE_CAT,TABLE_SCHEM,TABLE_NAME,GRANTOR,GRANTEE,PRIVILEGE,IS_GRANTABLE";
+		String columnTypes = "String,String,String,String,String,String,String";
+		ArrayList columnValues = new ArrayList();
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
+		return retval;
 	}
 
 	public ResultSet getTables(String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException
@@ -520,9 +538,9 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		return "unknown";
 	}
 
-	public ResultSet getVersionColumns(String arg0, String arg1, String arg2) throws SQLException
+	public ResultSet getVersionColumns(String catalog, String schema, String table) throws SQLException
 	{
-		throw new UnsupportedOperationException("DatabaseMetaData.getVersionColumns(String,String,String) unsupported");
+		return getBestRowIdentifier(catalog, schema, table, bestRowTemporary, false);
 	}
 
 	public boolean insertsAreDetected(int arg0) throws SQLException
