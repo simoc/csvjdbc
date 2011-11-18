@@ -49,7 +49,6 @@ public class SqlParser
    *
    * @since
    */
-  private String[] columns;
   private ExpressionParser whereClause;
   private List environment;
   
@@ -104,7 +103,6 @@ public class SqlParser
   public void parse(String sql) throws Exception {
 		tableName = null;
 		tableAlias = null;
-		columns = new String[0];
 
 		String upperSql = sql.toUpperCase();
 
