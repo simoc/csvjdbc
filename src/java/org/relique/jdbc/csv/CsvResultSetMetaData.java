@@ -20,7 +20,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,12 +31,13 @@ import java.util.Map;
  */
 public class CsvResultSetMetaData implements ResultSetMetaData {
 	/** Default value for getColumnDisplaySize */
-	final static int DISPLAY_SIZE = 20;
+	private final static int DISPLAY_SIZE = 20;
 	/** Names of columns */
-	protected String[] columnTypes;
+	private String []columnNames;
+	private String []columnLabels;
+	private String[] columnTypes;
 	/** Name of table */
-	protected String tableName;
-	private List queryEnvironment;
+	private String tableName;
 
 	/**
 	 * Constructor for the CsvResultSetMetaData object
@@ -47,10 +47,11 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 	 * @param columnTypes
 	 *            Names of columns in table
 	 */
-	CsvResultSetMetaData(String tableName, List queryEnvironment,
+	CsvResultSetMetaData(String tableName, String []columnNames, String []columnLabels,
 			String[] columnTypes) {
-		this.queryEnvironment = queryEnvironment;
 		this.tableName = tableName;
+		this.columnNames = columnNames;
+		this.columnLabels = columnLabels;
 		this.columnTypes = columnTypes;
 	}
 
@@ -197,8 +198,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 	 */
 	public String getColumnLabel(int column) throws SQLException {
 		// SQL column numbers start at 1
-		Object[] queryEnvEntry = (Object[]) queryEnvironment.get(column-1);
-		return queryEnvEntry[1].toString();
+		return columnLabels[column - 1];
 	}
 
 	/**
@@ -212,8 +212,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 	 */
 	public String getColumnName(int column) throws SQLException {
 		// SQL column numbers start at 1
-		Object[] queryEnvEntry = (Object[]) queryEnvironment.get(column-1);
-		return (String) queryEnvEntry[0];
+		return columnNames[column - 1];
 	}
 
 	/**
