@@ -101,103 +101,102 @@ public class SqlParser
    * @since
    */
   public void parse(String sql) throws Exception {
-		tableName = null;
-		tableAlias = null;
+	  tableName = null;
+	  tableAlias = null;
 
-		String upperSql = sql.toUpperCase();
+	  String upperSql = sql.toUpperCase();
 
-		if (!upperSql.startsWith("SELECT ")) {
-			throw new Exception("Malformed SQL. Missing SELECT statement.");
-		}
+	  if (!upperSql.startsWith("SELECT ")) {
+		  throw new Exception("Malformed SQL. Missing SELECT statement.");
+	  }
 
-		if (upperSql.lastIndexOf(" FROM ") == -1) {
-			throw new Exception("Malformed SQL. Missing FROM statement.");
-		}
+	  if (upperSql.lastIndexOf(" FROM ") == -1) {
+		  throw new Exception("Malformed SQL. Missing FROM statement.");
+	  }
 
-		int fromPos = upperSql.lastIndexOf(" FROM ");
+	  int fromPos = upperSql.lastIndexOf(" FROM ");
 
-		int wherePos = upperSql.lastIndexOf(" WHERE ");
-		/**
-		 * If we have a where clause then the table name is everything that sits
-		 * between FROM and WHERE. If we don't then it's everything from the
-		 * "FROM" up to the end of the sentence
-		 */
-		if (wherePos == -1) {
-			tableName = sql.substring(fromPos + 6).trim();
-		} else {
-			tableName = sql.substring(fromPos + 6, wherePos).trim();
-		}
-		StringTokenizer tokenizer = new StringTokenizer(tableName);
-		if (tokenizer.countTokens() > 1) {
-			/*
-			 * Parse the table alias.
-			 */
-			tableName = tokenizer.nextToken();
-			tableAlias = tokenizer.nextToken().toUpperCase();
-			if (tableAlias.equals("AS")) {
-				if (!tokenizer.hasMoreTokens())
-					throw new Exception("Invalid table alias");
-				tableAlias = tokenizer.nextToken().toUpperCase();
-			}
-			if (tokenizer.hasMoreTokens())
-				throw new Exception("Invalid table alias");
-		}
+	  int wherePos = upperSql.lastIndexOf(" WHERE ");
+	  /**
+	   * If we have a where clause then the table name is everything that sits
+	   * between FROM and WHERE. If we don't then it's everything from the
+	   * "FROM" up to the end of the sentence
+	   */
+	  if (wherePos == -1) {
+		  tableName = sql.substring(fromPos + 6).trim();
+	  } else {
+		  tableName = sql.substring(fromPos + 6, wherePos).trim();
+	  }
+	  StringTokenizer tokenizer = new StringTokenizer(tableName);
+	  if (tokenizer.countTokens() > 1) {
+		  /*
+		   * Parse the table alias.
+		   */
+		  tableName = tokenizer.nextToken();
+		  tableAlias = tokenizer.nextToken().toUpperCase();
+		  if (tableAlias.equals("AS")) {
+			  if (!tokenizer.hasMoreTokens())
+				  throw new Exception("Invalid table alias");
+			  tableAlias = tokenizer.nextToken().toUpperCase();
+		  }
+		  if (tokenizer.hasMoreTokens())
+			  throw new Exception("Invalid table alias");
+	  }
 
-		// if we have a "WHERE" parse the expression
-		if (wherePos > -1) {
-			whereClause = new ExpressionParser(new StringReader(sql.substring(wherePos + 6)));
-			whereClause.parseLogicalExpression();
-		} else {
-			whereClause = null;
-		}
-		if (fromPos < 7)
-			throw new Exception("Malformed SQL. Missing columns");
-		tokenizer = new StringTokenizer(sql.substring(7,
-				fromPos), ",");
+	  // if we have a "WHERE" parse the expression
+	  if (wherePos > -1) {
+		  whereClause = new ExpressionParser(new StringReader(sql.substring(wherePos + 6)));
+		  whereClause.parseLogicalExpression();
+	  } else {
+		  whereClause = null;
+	  }
+	  if (fromPos < 7)
+		  throw new Exception("Malformed SQL. Missing columns");
+	  tokenizer = new StringTokenizer(sql.substring(7,
+			  fromPos), ",");
 
-		environment = new ArrayList();
+	  environment = new ArrayList();
 
-		// parse the column specifications
-		while (tokenizer.hasMoreTokens()) {
-			String thisToken = tokenizer.nextToken().trim();
-			ExpressionParser cs = new ExpressionParser(new StringReader(thisToken));
-			cs.parseQueryEnvEntry();
-			if (cs.content != null) {
-				QueryEnvEntry cc = (QueryEnvEntry)cs.content.content;
-				String key = cc.key;
-				if (tableAlias != null && key.startsWith(tableAlias + "."))
-					key = key.substring(tableAlias.length() + 1);
-				environment.add(new Object[]{key, cc.expression});
-			}
-		}
-		if (environment.isEmpty())
-			throw new Exception("Malformed SQL. No columns");
-	}
+	  // parse the column specifications
+	  while (tokenizer.hasMoreTokens()) {
+		  String thisToken = tokenizer.nextToken().trim();
+		  ExpressionParser cs = new ExpressionParser(new StringReader(thisToken));
+		  cs.parseQueryEnvEntry();
+		  if (cs.content != null) {
+			  QueryEnvEntry cc = (QueryEnvEntry)cs.content.content;
+			  String key = cc.key;
+			  if (tableAlias != null && key.startsWith(tableAlias + "."))
+				  key = key.substring(tableAlias.length() + 1);
+			  environment.add(new Object[]{key, cc.expression});
+		  }
+	  }
+	  if (environment.isEmpty())
+		  throw new Exception("Malformed SQL. No columns");
+  }
+
+  public String[] getColumnNames() {
+	  String[] result = new String[environment.size()];
+	  for (int i=0; i<environment.size(); i++){
+		  Object[] entry = (Object[]) environment.get(i);
+		  result[i] = (String) entry[0];
+	  }
+	  return result;
+  }
+
+  public ExpressionParser getWhereClause() {
+	  return whereClause;
+  }
 
 
-public String[] getColumnNames() {
-	String[] result = new String[environment.size()];
-	for (int i=0; i<environment.size(); i++){
-		Object[] entry = (Object[]) environment.get(i);
-		result[i] = (String) entry[0];
-	}
-    return result;
-}
+  public String getAlias(int i) {
+	  Object[] o = (Object[]) environment.get(i);
+	  return (String) o[0];
+  }
 
-public ExpressionParser getWhereClause() {
-	return whereClause;
-}
-
-
-public String getAlias(int i) {
-	Object[] o = (Object[]) environment.get(i);
-	return (String) o[0];
-}
-
-public Expression getExpression(int i) {
-	Object[] o = (Object[]) environment.get(i);
-	return (Expression) o[1];
-}
+  public Expression getExpression(int i) {
+	  Object[] o = (Object[]) environment.get(i);
+	  return (Expression) o[1];
+  }
 
 }
 
