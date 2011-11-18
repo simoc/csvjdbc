@@ -21,7 +21,6 @@ import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Vector;
 
 public class CsvPreparedStatement extends CsvStatement implements
 		PreparedStatement {
