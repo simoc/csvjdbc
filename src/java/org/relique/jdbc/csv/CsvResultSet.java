@@ -86,8 +86,6 @@ public class CsvResultSet implements ResultSet {
 
 	private List queryEnvironment;
 
-	private Map columnPositions;
-
     /**
      * the types of the columns in the database table (not the result set).
      */
@@ -158,11 +156,7 @@ public class CsvResultSet implements ResultSet {
             this.usedColumns = new LinkedList();
 
         String[] columnNames = reader.getColumnNames();
-        this.columnPositions = new HashMap();
-        for (int i=0; i<columnNames.length; i++){
-        	this.columnPositions.put(columnNames[i], new Integer(i));
-        }
-        
+
     	String tableAlias = reader.getTableAlias();
 		HashSet allReaderColumns = new HashSet();
 		for (int i = 0; i < columnNames.length; i++) {
