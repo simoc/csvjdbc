@@ -604,8 +604,7 @@ public class TestCsvDriver extends TestCase {
 
 			Statement stmt = conn.createStatement();
 
-			ResultSet results = stmt
-					.executeQuery("SELECT Id, Name FROM sample");
+			stmt.executeQuery("SELECT Id, Name FROM sample");
 			fail("Should raise a java.sqlSQLException");
 		} catch (SQLException e) {
 			assertEquals("java.sql.SQLException: Invalid column type: Varchar", "" + e);
@@ -623,8 +622,7 @@ public class TestCsvDriver extends TestCase {
 
 			Statement stmt = conn.createStatement();
 
-			ResultSet results = stmt
-					.executeQuery("SELECT Id, XXXX FROM sample");
+			stmt.executeQuery("SELECT Id, XXXX FROM sample");
 			fail("Should raise a java.sqlSQLException");
 		} catch (SQLException e) {
 			assertEquals("java.sql.SQLException: Invalid column name: XXXX", "" + e);
