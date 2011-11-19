@@ -1051,10 +1051,6 @@ public class CsvConnection implements Connection {
 		return columnTypes;
 	}
 
-	public void setIndexedFiles(boolean indexedFiles) {
-		this.indexedFiles = indexedFiles;
-	}
-
 	public boolean isIndexedFiles() {
 		return indexedFiles;
 	}
