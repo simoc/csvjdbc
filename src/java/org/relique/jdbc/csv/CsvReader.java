@@ -151,6 +151,8 @@ public class CsvReader extends DataReader {
 	
 	public void setColumnTypes(String line) throws SQLException {
     	String[] typeNamesLoc = line.split(",");
+    	if (typeNamesLoc.length == 0)
+    		throw new SQLException("Invalid column types: " + line);
     	columnTypes = new String[getColumnNames().length];
     	for(int i=0; i<Math.min(typeNamesLoc.length, columnTypes.length); i++){
     		String typeName = typeNamesLoc[i].trim();
@@ -158,6 +160,9 @@ public class CsvReader extends DataReader {
     			throw new SQLException("Invalid column type: " + typeName);
     		columnTypes[i] = typeName;
     	}
+    	/*
+    	 * Use last column type for any remaining columns.
+    	 */
     	for(int i=typeNamesLoc.length; i < columnTypes.length; i++){
     		columnTypes[i] = typeNamesLoc[typeNamesLoc.length-1].trim();
     	}
