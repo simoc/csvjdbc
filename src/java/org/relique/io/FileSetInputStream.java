@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
  */
 public class FileSetInputStream extends InputStream {
 
-	private List fileNames;
+	private List<String> fileNames;
 	private EncryptedFileInputStream currentFile;
 	private boolean readingHeader;
 	private String tail;
@@ -101,7 +101,7 @@ public class FileSetInputStream extends InputStream {
 		else
 			tail += '\n';
 
-		fileNames = new LinkedList();
+		fileNames = new LinkedList<String>();
 		File root = new File(dirName);
 		String[] candidates = root.list();
 
