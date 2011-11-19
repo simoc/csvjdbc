@@ -1047,10 +1047,6 @@ public class CsvConnection implements Connection {
 		this.skipLeadingDataLines = Integer.parseInt(property);
 	}
 
-	public void setColumnTypes(String columnTypes) {
-		this.columnTypes = columnTypes;
-	}
-
 	public String getColumnTypes() {
 		return columnTypes;
 	}
