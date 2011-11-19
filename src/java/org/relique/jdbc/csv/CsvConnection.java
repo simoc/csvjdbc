@@ -18,8 +18,11 @@
  */
 package org.relique.jdbc.csv;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Array;
@@ -939,10 +942,29 @@ public class CsvConnection implements Connection {
 
     /**
      * Accessor method for the headerline property
+     * @param tableName name of database table.
      * @return current value for the headerline property
      */
-    public String getHeaderline() {
-        return headerline;
+    public String getHeaderline(String tableName) {
+		String retval = null;
+		if (headerline != null && headerline.indexOf('\n') >= 0) {
+			try {
+				BufferedReader reader = new BufferedReader(new StringReader(headerline));
+				String table = reader.readLine();
+				while (retval == null && table != null && table.trim().length() > 0) {
+					String line = reader.readLine();
+					if (table.equals(tableName)) {
+						retval = line;
+					}
+					table = reader.readLine();
+				}
+			} catch (IOException e) {
+				// Should be no IOExceptions when reading from a StringReader.
+			}
+		} else {
+			retval = headerline;
+		}
+		return retval;
     }
 
     /**
@@ -1050,7 +1072,7 @@ public class CsvConnection implements Connection {
 
 	/**
 	 * Parse list of column definitions for each database table into a map.
-	 * @param def column definition string such as T1:ID,NAME,T2:ID,AGE,WEIGHT.
+	 * @param def column definition string such as T1:Int,String,T2:Int,Int,Float.
 	 * @return map with list of tokens for each database table.
 	 */
 	private HashMap<String, List<String>> parseTableDefinition(String def) {

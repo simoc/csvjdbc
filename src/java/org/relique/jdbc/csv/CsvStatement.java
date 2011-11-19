@@ -328,8 +328,9 @@ public class CsvStatement implements Statement {
 				+ connection.getExtension());
 
 		String fileName = null;
+		String tableName = parser.getTableName();
 		if (!connection.isIndexedFiles()) {
-			fileName = connection.getPath() + parser.getTableName()
+			fileName = connection.getPath() + tableName
 					+ connection.getExtension();
 
 			DriverManager.println("CSV file name: " + fileName);
@@ -375,16 +376,17 @@ public class CsvStatement implements Statement {
 				} else {
 					input = new BufferedReader(new InputStreamReader(in));
 				}
+				String headerline = connection.getHeaderline(tableName);
 				CsvRawReader rawReader = new CsvRawReader(input, parser.getTableAlias(), connection.getSeparator(),
 						connection.isSuppressHeaders(), connection.getQuotechar(),
-						connection.getCommentChar(), connection.getHeaderline(),
+						connection.getCommentChar(), headerline,
 						connection.getExtension(), connection.getTrimHeaders(),
 						connection.getSkipLeadingLines(), connection
 						.isIgnoreUnparseableLines(), connection
 						.getDecryptingCodec(), connection
 						.isDefectiveHeaders(), connection
 						.getSkipLeadingDataLines(), connection.getQuoteStyle());
-				reader = new CsvReader(rawReader, connection.getTransposedLines(), connection.getTransposedFieldsToSkip(), connection.getHeaderline());
+				reader = new CsvReader(rawReader, connection.getTransposedLines(), connection.getTransposedFieldsToSkip(), headerline);
 			}
 		} catch (IOException e) {
 			throw new SQLException("Error reading data file. Message was: " + e);
@@ -397,7 +399,6 @@ public class CsvStatement implements Statement {
 
 		CsvResultSet resultSet = null;
 		try {
-			String tableName = parser.getTableName();
 			resultSet = new CsvResultSet(this, reader, tableName,
 					parser.getColumns(), this.isScrollable, parser
 							.getWhereClause(), connection.getColumnTypes(tableName), 

@@ -2475,4 +2475,25 @@ public class TestCsvDriver extends TestCase {
 		assertNull("Result set not null", stmt.getResultSet());
 		assertTrue("Result set was not closed", results1.isClosed());
 	}
+	
+	public void testHeaderlineWithMultipleTables() throws SQLException {
+		Properties props = new Properties();
+		props.put("headerline", "headerless-001-20081112\nDatum,Tijd,Station,AI007.000,AI007.001\nonly_comments\nC1,C2");
+		props.put("suppressHeaders", "true");
+		props.put("fileExtension", ".txt");
+		props.put("commentChar", "#");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM only_comments");
+		assertEquals("C1 wrong", "C1", results.getMetaData().getColumnName(1));
+		assertEquals("C2 wrong", "C2", results.getMetaData().getColumnName(2));
+		assertFalse(results.next());
+		results.close();
+		results = stmt.executeQuery("SELECT * FROM headerless-001-20081112");
+		assertTrue(results.next());
+		assertEquals("Tijd wrong", "10:59:00", results.getString(2));
+		assertEquals("Station wrong", "007", results.getString("Station"));
+
+	}
 }
