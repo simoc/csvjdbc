@@ -52,7 +52,7 @@ import org.relique.jdbc.dbf.DbfReader;
 
 public class CsvStatement implements Statement {
 	private CsvConnection connection;
-	private Vector resultSets = new Vector();
+	private Vector<CsvResultSet> resultSets = new Vector<CsvResultSet>();
 	private ResultSet lastResultSet = null;
 	private int maxRows = 0;
 
@@ -444,7 +444,7 @@ public class CsvStatement implements Statement {
 	public void close() throws SQLException {
 		lastResultSet = null;
 		// close all result sets
-		for (Enumeration i = resultSets.elements(); i.hasMoreElements();) {
+		for (Enumeration<CsvResultSet> i = resultSets.elements(); i.hasMoreElements();) {
 			CsvResultSet resultSet = (CsvResultSet) i.nextElement();
 			resultSet.close();
 		}
@@ -596,12 +596,12 @@ public class CsvStatement implements Statement {
 
 	}
 
-	public boolean isWrapperFor(Class arg0) throws SQLException {
+	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public Object unwrap(Class arg0) throws SQLException {
+	public <T> T unwrap(Class<T> arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
