@@ -86,11 +86,6 @@ public class CsvResultSet implements ResultSet {
 
 	private List queryEnvironment;
 
-    /**
-     * the types of the columns in the database table (not the result set).
-     */
-	private String[] typeNames;
-
 	private Map recordEnvironment;
 
 	private Map objectEnvironment;
@@ -993,48 +988,50 @@ public class CsvResultSet implements ResultSet {
      */
     public ResultSetMetaData getMetaData() throws SQLException {
         if (resultSetMetaData == null) {
-        	if(typeNames == null) {
-        		String[] readerTypeNames = reader.getColumnTypes(); 
-    			String[] readerColumnNames = reader.getColumnNames();
-    			String tableAlias = reader.getTableAlias();
-        		int columnCount = queryEnvironment.size();
-        		typeNames = new String[columnCount];
-        		
-        		/*
-        		 * Create a record containing dummy values.
-        		 */
-        		HashMap env = new HashMap();
-        		for(int i=0; i<readerTypeNames.length; i++) {
-        			Object literal = StringConverter.getLiteralForTypeName(readerTypeNames[i]);
-        			String columnName = readerColumnNames[i].toUpperCase();
-        			env.put(columnName, literal);
-        			if (tableAlias != null)
-        				env.put(tableAlias + "." + columnName, literal);
-        		}
-        		if (converter != null)
-        			env.put("@STRINGCONVERTER", converter);
+    		String[] readerTypeNames = reader.getColumnTypes(); 
+			String[] readerColumnNames = reader.getColumnNames();
+			String tableAlias = reader.getTableAlias();
+    		int columnCount = queryEnvironment.size();
+           	String []columnNames = new String[columnCount];
+        	String []columnLabels = new String[columnCount];
+    		String []typeNames = new String[columnCount];
 
-        		for(int i=0; i<columnCount; i++) {
-        			int columnIndex = -1;
-    				Object[] o = (Object[]) queryEnvironment.get(i);
-    				
-    				/*
-    				 * Evaluate each expression to determine what data type it returns.
-    				 */
-    				Object result = null;
-    				try {
-    					result = ((Expression)o[1]).eval(env);
-    				} catch (NullPointerException e) {
-    					/* Expression is invalid */
-    					// TODO: should we throw an SQLException here?
-    				}
-    				if (result != null)
-    					typeNames[i] = StringConverter.getTypeNameForLiteral(result);
-    				else
-    					typeNames[i] = "expression";
-        		}
-        	}
-            resultSetMetaData = new CsvResultSetMetaData(tableName, queryEnvironment, typeNames);
+    		/*
+    		 * Create a record containing dummy values.
+    		 */
+    		HashMap env = new HashMap();
+    		for(int i=0; i<readerTypeNames.length; i++) {
+    			Object literal = StringConverter.getLiteralForTypeName(readerTypeNames[i]);
+    			String columnName = readerColumnNames[i].toUpperCase();
+    			env.put(columnName, literal);
+    			if (tableAlias != null)
+    				env.put(tableAlias + "." + columnName, literal);
+    		}
+    		if (converter != null)
+    			env.put("@STRINGCONVERTER", converter);
+
+    		for(int i=0; i<columnCount; i++) {
+    			int columnIndex = -1;
+				Object[] o = (Object[]) queryEnvironment.get(i);
+				columnNames[i] = (String)o[0];
+				columnLabels[i] = o[1].toString();
+
+				/*
+				 * Evaluate each expression to determine what data type it returns.
+				 */
+				Object result = null;
+				try {
+					result = ((Expression)o[1]).eval(env);
+				} catch (NullPointerException e) {
+					/* Expression is invalid */
+					// TODO: should we throw an SQLException here?
+				}
+				if (result != null)
+					typeNames[i] = StringConverter.getTypeNameForLiteral(result);
+				else
+					typeNames[i] = "expression";
+    		}
+            resultSetMetaData = new CsvResultSetMetaData(tableName, columnNames, columnLabels, typeNames);
         }
         return resultSetMetaData;
     }
