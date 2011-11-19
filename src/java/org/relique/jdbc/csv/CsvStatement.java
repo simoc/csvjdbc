@@ -397,9 +397,10 @@ public class CsvStatement implements Statement {
 
 		CsvResultSet resultSet = null;
 		try {
-			resultSet = new CsvResultSet(this, reader, parser.getTableName(),
+			String tableName = parser.getTableName();
+			resultSet = new CsvResultSet(this, reader, tableName,
 					parser.getColumns(), this.isScrollable, parser
-							.getWhereClause(), connection.getColumnTypes(), 
+							.getWhereClause(), connection.getColumnTypes(tableName), 
 							connection.getSkipLeadingLines());
 			resultSets.add(resultSet);
 			lastResultSet = resultSet;

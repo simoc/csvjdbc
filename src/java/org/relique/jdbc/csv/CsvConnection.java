@@ -39,6 +39,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -1047,8 +1048,56 @@ public class CsvConnection implements Connection {
 		this.skipLeadingDataLines = Integer.parseInt(property);
 	}
 
-	public String getColumnTypes() {
-		return columnTypes;
+	/**
+	 * Parse list of column definitions for each database table into a map.
+	 * @param def column definition string such as T1:ID,NAME,T2:ID,AGE,WEIGHT.
+	 * @return map with list of tokens for each database table.
+	 */
+	private HashMap<String, List<String>> parseTableDefinition(String def) {
+		HashMap<String, List<String>> retval = new HashMap<String, List<String>>();
+		String tableName = null;
+		String []tokens = def.split(",");
+		for (int i = 0; i < tokens.length; i++) {
+			String token = tokens[i];
+			int colonIndex = token.indexOf(':');
+			if (colonIndex >= 0) {
+				tableName = token.substring(0, colonIndex);
+				token = token.substring(colonIndex + 1);
+			}
+			List<String> columnTypes = retval.get(tableName);
+			if (columnTypes == null) {
+				columnTypes = new ArrayList<String>();
+				retval.put(tableName, columnTypes);
+			}
+			columnTypes.add(token);
+		}
+		return retval;
+	}
+
+	public String getColumnTypes(String tableName) {
+		String retval;
+		if (columnTypes.indexOf(':') >= 0) {
+			HashMap<String, List<String>> lookup = parseTableDefinition(columnTypes);
+			List<String> list = lookup.get(tableName);
+			if (list == null)
+				list = lookup.get(null);
+			if (list == null) {
+				/*
+				 * If there is any column list without a table name then use that as default.
+				 */
+				list = new ArrayList<String>();
+			}
+			StringBuffer joined = new StringBuffer();
+			for (String name : list) {
+				if (joined.length() > 0)
+					joined.append(",");
+				joined.append(name);
+			}
+			retval = joined.toString();
+		} else {
+			retval = columnTypes;
+		}
+		return retval;
 	}
 
 	public boolean isIndexedFiles() {

@@ -649,6 +649,32 @@ public class TestCsvDriver extends TestCase {
 				.getObject("name"));
 	}
 
+	public void testColumnTypesWithMultipleTables() throws SQLException,
+			ParseException {
+		Properties props = new Properties();
+		props.put("columnTypes", "sample5:Int,String,String,Timestamp,sample:String");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * from sample5");
+		assertTrue(results.next());
+		assertEquals("The sample5 ID is wrong", new Integer(41), results.getObject("id"));
+		assertEquals("The sample5 Job is wrong", "Piloto", results.getObject("job"));
+		results.close();
+		results = stmt.executeQuery("SELECT ID,EXTRA_FIELD from sample");
+		assertTrue(results.next());
+		assertEquals("The sample ID is wrong", "Q123", results.getObject(1));
+		assertEquals("The sample EXTRA_FIELD is wrong", "F", results.getObject(2));
+		results.close();
+
+		// column types are inferred from data.
+		results = stmt.executeQuery("SELECT C2, 'X' as X from numeric");
+		assertTrue(results.next());
+		assertEquals("The numeric C2 is wrong", new Integer(-1010), results.getObject(1));
+		assertEquals("The numeric X is wrong", "X", results.getObject(2));
+	}
+
 	public void testWithSuppressedHeaders() throws SQLException {
 		Properties props = new Properties();
 		props.put("suppressHeaders", "true");
