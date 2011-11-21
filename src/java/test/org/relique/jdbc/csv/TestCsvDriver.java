@@ -629,6 +629,22 @@ public class TestCsvDriver extends TestCase {
 		}
 	}
 
+	public void testEmptyColumnTypesFails() throws SQLException {		
+		try {
+			Properties props = new Properties();
+			props.put("columnTypes", ",");
+			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+					+ filePath, props);
+
+			Statement stmt = conn.createStatement();
+
+			stmt.executeQuery("SELECT * FROM sample");
+			fail("Should raise a java.sqlSQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: Invalid column types: ,", "" + e);
+		}
+	}
+
 	public void testColumnTypesWithSelectStar() throws SQLException,
 			ParseException {
 		Properties props = new Properties();
