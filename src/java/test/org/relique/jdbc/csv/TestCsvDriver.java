@@ -441,6 +441,14 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	public void testDatabaseMetadataUDTs() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+		DatabaseMetaData metadata = conn.getMetaData();
+		ResultSet results = metadata.getUDTs(null, null, "test", null);
+		assertFalse(results.next());
+	}
+
 	public void testColumnTypesUserSpecified() throws SQLException,
 			ParseException {
 		Properties props = new Properties();
