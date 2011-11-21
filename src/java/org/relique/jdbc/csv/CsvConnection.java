@@ -1096,6 +1096,15 @@ public class CsvConnection implements Connection {
 		return retval;
 	}
 
+	/**
+	 * Set column types for SQL queries.
+	 * @param columnTypes comma-separated list of data types.
+	 * @deprecated Pass columnTypes when creating driver.  To be removed in a future version.
+	 */
+	public void setColumnTypes(String columnTypes) {
+		this.columnTypes = columnTypes;
+	}
+
 	public String getColumnTypes(String tableName) {
 		String retval;
 		if (columnTypes.indexOf(':') >= 0) {
@@ -1120,6 +1129,15 @@ public class CsvConnection implements Connection {
 			retval = columnTypes;
 		}
 		return retval;
+	}
+
+	/**
+	 * Set flag for reading indexed files.
+	 * @param indexedFiles flag true if indexed files are to be read.
+	 * @deprecated Pass indexedFiles when creating driver.  To be removed in a future version.
+	 */
+	public void setIndexedFiles(boolean indexedFiles) {
+		this.indexedFiles = indexedFiles;
 	}
 
 	public boolean isIndexedFiles() {
