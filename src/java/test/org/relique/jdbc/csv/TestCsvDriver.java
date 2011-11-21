@@ -2475,9 +2475,11 @@ public class TestCsvDriver extends TestCase {
 		assertNull("Result set not null", stmt.getResultSet());
 		assertTrue("Result set was not closed", results1.isClosed());
 	}
-	
+
 	public void testHeaderlineWithMultipleTables() throws SQLException {
 		Properties props = new Properties();
+		// Define a headerline with column names for table headerless-001-20081112 and a
+		// different headerline for table only_comments.
 		props.put("headerline", "headerless-001-20081112\nDatum,Tijd,Station,AI007.000,AI007.001\nonly_comments\nC1,C2");
 		props.put("suppressHeaders", "true");
 		props.put("fileExtension", ".txt");
@@ -2486,14 +2488,18 @@ public class TestCsvDriver extends TestCase {
 				+ filePath, props);
 		Statement stmt = conn.createStatement();
 		ResultSet results = stmt.executeQuery("SELECT * FROM only_comments");
+
+		// Check that column names from headerline are used for table only_comments.
 		assertEquals("C1 wrong", "C1", results.getMetaData().getColumnName(1));
 		assertEquals("C2 wrong", "C2", results.getMetaData().getColumnName(2));
 		assertFalse(results.next());
 		results.close();
 		results = stmt.executeQuery("SELECT * FROM headerless-001-20081112");
 		assertTrue(results.next());
-		assertEquals("Tijd wrong", "10:59:00", results.getString(2));
-		assertEquals("Station wrong", "007", results.getString("Station"));
 
+		// Check that column names given in headerline for table headerless-001-20081112
+		// are used and match the values in the CSV file.
+		assertEquals("Tijd wrong", "10:59:00", results.getString("Tijd"));
+		assertEquals("Station wrong", "007", results.getString("Station"));
 	}
 }
