@@ -2526,4 +2526,17 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("Tijd wrong", "10:59:00", results.getString("Tijd"));
 		assertEquals("Station wrong", "007", results.getString("Station"));
 	}
+	
+	public void testWarnings() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+		assertTrue(results.next());
+		assertNull("Warnings should be null", results.getWarnings());
+		results.clearWarnings();
+		assertNull("Warnings should still be null", results.getWarnings());
+	}
 }
