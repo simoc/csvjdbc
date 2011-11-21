@@ -457,6 +457,25 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	public void testDatabaseMetadataCatalogs() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+		DatabaseMetaData metadata = conn.getMetaData();
+		ResultSet results = metadata.getCatalogs();
+		assertFalse(results.next());
+	}
+
+	public void testDatabaseMetadataTypeInfo() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+		DatabaseMetaData metadata = conn.getMetaData();
+		ResultSet results = metadata.getTypeInfo();
+		assertTrue(results.next());
+		assertEquals("TYPE_NAME is wrong", "String", results.getString("TYPE_NAME"));
+		assertEquals("DATA_TYPE is wrong", Types.VARCHAR, results.getInt("DATA_TYPE"));
+		assertEquals("NULLABLE is wrong", DatabaseMetaData.typeNullable, results.getShort("NULLABLE"));
+	}
+
 	public void testColumnTypesUserSpecified() throws SQLException,
 			ParseException {
 		Properties props = new Properties();
