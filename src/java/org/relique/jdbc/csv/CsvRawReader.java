@@ -268,7 +268,7 @@ public class CsvRawReader {
 		// TODO: quoteChar should be recognized ONLY when close to separator. 
 		Vector values = new Vector();
 		boolean inQuotedString = false;
-		String value = "";
+		StringBuffer value = new StringBuffer(32);
 		String orgLine = line;
 		int currentPos = 0;
 		int fullLine = 0;
@@ -285,16 +285,16 @@ public class CsvRawReader {
 				} else if (currentChar == '\\' && "C".equals(quoteStyle)) {
 					// in C quoteStyle \\ escapes any character.
 					char nextChar = line.charAt(currentPos + 1);
-					value += nextChar;
+					value.append(nextChar);
 					currentPos++;
 				} else if (currentChar == quoteChar) {
 					char nextChar = line.charAt(currentPos + 1);
 					if (!inQuotedString) {
 						// accepting the single quoteChar because the whole
 						// value is not quoted.
-						value += quoteChar;
+						value.append(quoteChar);
 					} else if (nextChar == quoteChar) {
-						value += quoteChar;
+						value.append(quoteChar);
 						if ("SQL".equals(quoteStyle)) {
 							// doubled quoteChar in quoted strings collapse to
 							// one single quoteChar in SQL quotestyle
@@ -307,29 +307,29 @@ public class CsvRawReader {
 									+ ". Line=" + orgLine);
 						}
 						if (trimValues) {
-							values.add(value.trim());
+							values.add(value.toString().trim());
 						} else {
-							values.add(value);
+							values.add(value.toString());
 						}
-						value = "";
+						value.setLength(0);
 						inQuotedString = false;
 						currentPos++;
 					}
 				} else {
 					if (currentChar == separator) {
 						if (inQuotedString) {
-							value += currentChar;
+							value.append(currentChar);
 						} else {
 							if (trimValues) {
-								values.add(value.trim());
+								values.add(value.toString().trim());
 							} else {
-								values.add(value);
+								values.add(value.toString());
 							}
-							value = "";
+							value.setLength(0);
 						}
 					} else {
 						// default action
-						value += currentChar;
+						value.append(currentChar);
 					}
 				}
 				currentPos++;
@@ -338,7 +338,7 @@ public class CsvRawReader {
 				// Line ended while looking for matching quoteChar. This means
 				// we are inside of a field (not yet fullLine).
 				// Remove extra separator added at start.
-				value = value.substring(0, value.length() - 1);
+				value = new StringBuffer(value.substring(0, value.length() - 1));
 				try {
 					String additionalLine = input.readLine();
 					if (additionalLine == null) 
