@@ -1,0 +1,11 @@
+# Bank identification numbers (Bankleitzahlen) from bundesbank.de
+10000000,"Bundesbank (Berlin)"
+10010010,"Postbank (Berlin)"
+10010111,"SEB (Berlin)"
+10010222,"The Royal Bank of Scotland, Niederlassung Deutschland (Berlin)"
+10010424,"Aareal Bank (Berlin)"
+10019610,"Dexia Kommunalbank Deutschland (Berlin)"
+10020000,"Berliner Bank -alt- (Berlin)"
+10020200,"BHF-BANK (Berlin)"
+10020400,"Citadele Bank Zndl Deutschland (München)"
+10020500,"Bank für Sozialwirtschaft (Berlin)"

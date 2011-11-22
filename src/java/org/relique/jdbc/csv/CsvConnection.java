@@ -18,11 +18,8 @@
  */
 package org.relique.jdbc.csv;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Array;
@@ -43,6 +40,7 @@ import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -83,8 +81,8 @@ public class CsvConnection implements Connection {
 		this.raiseUnsupportedOperationException = raiseUnsupportedOperationException;
 	}
 
-	/** Field headerline to use */
-    private String headerline = CsvDriver.DEFAULT_HEADERLINE; 
+	/** Lookup table with headerline to use for each table */
+    private HashMap headerlines = new HashMap();
 
     /** Should headers be suppressed */
     private boolean suppressHeaders = CsvDriver.DEFAULT_SUPPRESS;
@@ -95,8 +93,8 @@ public class CsvConnection implements Connection {
     /** should files be grouped in one table - as if there was an index */
     private boolean indexedFiles = CsvDriver.DEFAULT_INDEXED_FILES;
 
-    /** how to interpret string values before returning them to the caller */
-    private String columnTypes = CsvDriver.DEFAULT_COLUMN_TYPES;
+    /** Lookup table with column data types for each table */
+    private HashMap columnTypes = new HashMap();
 
     /** whether ot not to raise a UnsupportedOperationException when calling a method
         irrelevant in this context (ex: autocommit whereas there is only readonly accesses)
@@ -151,6 +149,30 @@ public class CsvConnection implements Connection {
                     "'path' argument may not be empty or null");
         }
         this.path = path;
+
+        // set defaults
+        headerlines.put(null, CsvDriver.DEFAULT_HEADERLINE);
+        columnTypes.put(null, CsvDriver.DEFAULT_COLUMN_TYPES);
+    }
+
+    /**
+     * Create a table of all properties with keys that start with a given prefix.
+     * @param info properties.
+     * @param prefix property key prefix to match.
+     * @return matching properties, with key values having prefix removed.
+     */
+    private Map getMatchingProperties(Properties info, String prefix) {
+    	HashMap retval = new HashMap();
+        Iterator it = info.keySet().iterator();
+        while (it.hasNext()) {
+        	String key = (String)it.next();
+        	if (key.startsWith(prefix)) {
+        		String value = info.getProperty(key);
+        		key = key.substring(prefix.length());
+        		retval.put(key, value);
+        	}
+        }
+        return retval;
     }
 
     /**
@@ -161,6 +183,7 @@ public class CsvConnection implements Connection {
      */
     protected CsvConnection(String path, Properties info) throws SQLException {
         this(path);
+
         // check for properties
         if(info != null) {
             // set the file extension to be used
@@ -178,10 +201,12 @@ public class CsvConnection implements Connection {
             		throw new SQLException("Invalid " + CsvDriver.QUOTECHAR + ": " + prop);
                 quotechar = prop.charAt(0);
             }
-            // set the headerline to be used
+            // set the global headerline and headerline.tablename values. 
             if(info.getProperty(CsvDriver.HEADERLINE) != null) {
-                 headerline = info.getProperty(CsvDriver.HEADERLINE);
+                 headerlines.put(null, info.getProperty(CsvDriver.HEADERLINE));
             }
+            headerlines.putAll(getMatchingProperties(info, CsvDriver.HEADERLINE + "."));
+
             // set the header suppression flag
             if(info.getProperty(CsvDriver.SUPPRESS_HEADERS) != null) {
                 suppressHeaders = Boolean.valueOf(info.getProperty(
@@ -191,10 +216,12 @@ public class CsvConnection implements Connection {
             if (info.getProperty(CsvDriver.CHARSET) != null) {
                 charset = info.getProperty(CsvDriver.CHARSET);
             }
-            // default column types
+            // set global columnTypes and columnTypes.tablename values.
             if (info.getProperty(CsvDriver.COLUMN_TYPES) != null) {
-                columnTypes = info.getProperty(CsvDriver.COLUMN_TYPES);
+                columnTypes.put(null, info.getProperty(CsvDriver.COLUMN_TYPES));
             }
+            columnTypes.putAll(getMatchingProperties(info, CsvDriver.COLUMN_TYPES + "."));
+
             // are files indexed? ()
             if (info.getProperty(CsvDriver.INDEXED_FILES) != null) {
                 indexedFiles = Boolean.valueOf(
@@ -949,23 +976,10 @@ public class CsvConnection implements Connection {
      * @return current value for the headerline property
      */
     public String getHeaderline(String tableName) {
-		String retval = null;
-		if (headerline != null && headerline.indexOf('\n') >= 0) {
-			try {
-				BufferedReader reader = new BufferedReader(new StringReader(headerline));
-				String table = reader.readLine();
-				while (retval == null && table != null && table.trim().length() > 0) {
-					String line = reader.readLine();
-					if (table.equals(tableName)) {
-						retval = line;
-					}
-					table = reader.readLine();
-				}
-			} catch (IOException e) {
-				// Should be no IOExceptions when reading from a StringReader.
-			}
-		} else {
-			retval = headerline;
+		String retval = (String)headerlines.get(tableName);
+		if (retval == null) {
+			// Use default if no headerline defined for this table.
+			retval = (String)headerlines.get(null);
 		}
 		return retval;
     }
@@ -1105,31 +1119,14 @@ public class CsvConnection implements Connection {
 	 * @deprecated Pass columnTypes when creating driver.  To be removed in a future version.
 	 */
 	public void setColumnTypes(String columnTypes) {
-		this.columnTypes = columnTypes;
+		this.columnTypes.put(null, columnTypes);
 	}
 
 	public String getColumnTypes(String tableName) {
-		String retval;
-		if (columnTypes.indexOf(':') >= 0) {
-			HashMap<String, List<String>> lookup = parseTableDefinition(columnTypes);
-			List<String> list = lookup.get(tableName);
-			if (list == null)
-				list = lookup.get(null);
-			if (list == null) {
-				/*
-				 * If there is any column list without a table name then use that as default.
-				 */
-				list = new ArrayList<String>();
-			}
-			StringBuffer joined = new StringBuffer();
-			for (String name : list) {
-				if (joined.length() > 0)
-					joined.append(",");
-				joined.append(name);
-			}
-			retval = joined.toString();
-		} else {
-			retval = columnTypes;
+		String retval = (String)columnTypes.get(tableName);
+		if (retval == null) {
+			// Use default if no columnTypes defined for this table.
+			retval = (String)columnTypes.get(null);
 		}
 		return retval;
 	}

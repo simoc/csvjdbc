@@ -703,7 +703,10 @@ public class TestCsvDriver extends TestCase {
 	public void testColumnTypesWithMultipleTables() throws SQLException,
 			ParseException {
 		Properties props = new Properties();
-		props.put("columnTypes", "sample5:Int,String,String,Timestamp,sample:String");
+		props.put("columnTypes.sample5", "Int,String,String,Timestamp");
+		props.put("columnTypes.sample", "String");
+		// Give empty list so column types are inferred from data.
+		props.put("columnTypes.numeric", "");
 
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
@@ -2542,31 +2545,31 @@ public class TestCsvDriver extends TestCase {
 
 	public void testHeaderlineWithMultipleTables() throws SQLException {
 		Properties props = new Properties();
-		// Define a headerline with column names for table headerless-001-20081112 and a
-		// different headerline for table only_comments.
-		props.put("headerline", "headerless-001-20081112\nDatum,Tijd,Station,AI007.000,AI007.001\nonly_comments\nC1,C2");
+		// Define different headerline values for table banks and table transactions. 
+		props.put("headerline.banks", "BLZ,BANK_NAME");
+		props.put("headerline.transactions", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
 		props.put("suppressHeaders", "true");
 		props.put("fileExtension", ".txt");
 		props.put("commentChar", "#");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 		Statement stmt = conn.createStatement();
-		ResultSet results = stmt.executeQuery("SELECT * FROM only_comments");
+		ResultSet results = stmt.executeQuery("SELECT * FROM banks where BANK_NAME like 'Sparkasse%'");
 
-		// Check that column names from headerline are used for table only_comments.
-		assertEquals("C1 wrong", "C1", results.getMetaData().getColumnName(1));
-		assertEquals("C2 wrong", "C2", results.getMetaData().getColumnName(2));
+		// Check that column names from headerline are used for table banks.
+		assertEquals("BLZ wrong", "BLZ", results.getMetaData().getColumnName(1));
+		assertEquals("BANK_NAME wrong", "BANK_NAME", results.getMetaData().getColumnName(2));
 		assertFalse(results.next());
 		results.close();
-		results = stmt.executeQuery("SELECT * FROM headerless-001-20081112");
+		results = stmt.executeQuery("SELECT * FROM transactions");
 		assertTrue(results.next());
 
-		// Check that column names given in headerline for table headerless-001-20081112
-		// are used and match the values in the CSV file.
-		assertEquals("Tijd wrong", "10:59:00", results.getString("Tijd"));
-		assertEquals("Station wrong", "007", results.getString("Station"));
+		// Check that column names for table transactions are correct too.
+		assertEquals("TRANS_DATE wrong", "19-10-2011", results.getString("TRANS_DATE"));
+		assertEquals("FROM_ACCT wrong", "3670345", results.getString("FROM_ACCT"));
+		assertEquals("AMOUNT wrong", "250.00", results.getString("AMOUNT"));
 	}
-	
+
 	public void testWarnings() throws SQLException {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
