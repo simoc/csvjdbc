@@ -172,8 +172,11 @@ public class CsvConnection implements Connection {
                 separator = info.getProperty(CsvDriver.SEPARATOR).charAt(0);
             }
             // set the quotechar character to be used
-            if(info.getProperty(CsvDriver.QUOTECHAR) != null) {
-                quotechar = info.getProperty(CsvDriver.QUOTECHAR).charAt(0);
+            String prop = info.getProperty(CsvDriver.QUOTECHAR);
+            if(prop != null) {
+            	if (prop.length() != 1)
+            		throw new SQLException("Invalid " + CsvDriver.QUOTECHAR + ": " + prop);
+                quotechar = prop.charAt(0);
             }
             // set the headerline to be used
             if(info.getProperty(CsvDriver.HEADERLINE) != null) {

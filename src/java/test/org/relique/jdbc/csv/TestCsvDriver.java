@@ -1965,6 +1965,19 @@ public class TestCsvDriver extends TestCase {
 		}
 	}
 
+	public void testBadQuotechar() throws SQLException {
+		Properties props = new Properties();
+		props.put("quotechar", "()");
+
+		try {
+			DriverManager.getConnection("jdbc:relique:csv:"	+ filePath, props);
+			fail("expected exception java.sql.SQLException");
+		} catch (SQLException e) {
+			assertEquals("Wrong exception text",
+					"java.sql.SQLException: Invalid quotechar: ()", "" + e);
+		}
+	}
+
 	public void testWithNoData() throws SQLException {
 		Properties props = new Properties();
 		props.put("commentChar", "#");
