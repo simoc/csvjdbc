@@ -116,21 +116,22 @@ public class TestPrepareStatement extends TestCase {
 
 		prepstmt.setInt(1, 1);
 		prepstmt.setInt(2, 3);
-		ResultSet results = prepstmt.executeQuery();
+		ResultSet results1 = prepstmt.executeQuery();
 
-		assertTrue(results.next());
-		assertTrue(results.next());
-		assertTrue(results.next());
-		assertFalse(results.next());
+		assertTrue(results1.next());
+		assertTrue(results1.next());
+		assertTrue(results1.next());
+		assertFalse(results1.next());
 
 		prepstmt.setInt(1, 30);
 		prepstmt.setInt(2, 50);
-		results = prepstmt.executeQuery();
+		ResultSet results2 = prepstmt.executeQuery();
 
-		assertTrue(results.next());
-		assertEquals("Integer column ID is wrong", new Integer(41), results
+		assertTrue(results1.isClosed());
+		assertTrue(results2.next());
+		assertEquals("Integer column ID is wrong", new Integer(41), results2
 				.getObject("id"));
-		assertFalse(results.next());
+		assertFalse(results2.next());
 	}
 
 	public void testCanUsePreparedStatementOnStrings() throws SQLException {

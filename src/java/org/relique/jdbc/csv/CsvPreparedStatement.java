@@ -62,6 +62,17 @@ public class CsvPreparedStatement extends CsvStatement implements
 	public ResultSet executeQuery() throws SQLException {
 		DriverManager.println("CsvJdbc - CsvStatement:executeQuery() - sql= "
 				+ templateQuery);
+
+		/*
+		 * Close any previous ResultSet, as required by JDBC.
+		 */
+		try {
+			if (lastResultSet != null)
+				lastResultSet.close();
+		} finally {
+			lastResultSet = null;
+		}
+
 		parser.setPlaceholdersValues(parameters);
 		return executeParsedQuery(parser);
 	}

@@ -28,8 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
-import java.util.Enumeration;
-import java.util.Vector;
 
 import org.relique.io.CryptoFilter;
 import org.relique.io.DataReader;
@@ -52,8 +50,7 @@ import org.relique.jdbc.dbf.DbfReader;
 
 public class CsvStatement implements Statement {
 	private CsvConnection connection;
-	private Vector<CsvResultSet> resultSets = new Vector<CsvResultSet>();
-	private ResultSet lastResultSet = null;
+	protected ResultSet lastResultSet = null;
 	private int maxRows = 0;
 
 	protected int isScrollable = ResultSet.TYPE_SCROLL_INSENSITIVE;
@@ -226,11 +223,13 @@ public class CsvStatement implements Statement {
 	}
 
 	public boolean getMoreResults() throws SQLException {
-		if (lastResultSet != null) {
+		try {
 			/*
 			 * Close any ResultSet that is currently open.
 			 */
-			lastResultSet.close();
+			if (lastResultSet != null)
+				lastResultSet.close();
+		} finally {
 			lastResultSet = null;
 		}
 		return false;
@@ -309,6 +308,17 @@ public class CsvStatement implements Statement {
 	public ResultSet executeQuery(String sql) throws SQLException {
 		DriverManager.println("CsvJdbc - CsvStatement:executeQuery() - sql= "
 				+ sql);
+		
+		/*
+		 * Close any previous ResultSet, as required by JDBC.
+		 */
+		try {
+			if (lastResultSet != null)
+				lastResultSet.close();
+		} finally {
+			lastResultSet = null;
+		}
+
 		SqlParser parser = new SqlParser();
 		try {
 			parser.parse(sql);
@@ -403,7 +413,6 @@ public class CsvStatement implements Statement {
 					parser.getColumns(), this.isScrollable, parser
 							.getWhereClause(), connection.getColumnTypes(tableName), 
 							connection.getSkipLeadingLines());
-			resultSets.add(resultSet);
 			lastResultSet = resultSet;
 		} catch (ClassNotFoundException e) {
 			DriverManager.println("" + e);
@@ -426,29 +435,12 @@ public class CsvStatement implements Statement {
 		throw new SQLException("executeUpdate(String \"" + sql + "\") not Supported !");
 	}
 
-	/**
-	 * Releases this <code>Statement</code> object's database and JDBC resources
-	 * immediately instead of waiting for this to happen when it is
-	 * automatically closed. It is generally good practice to release resources
-	 * as soon as you are finished with them to avoid tying up database
-	 * resources.
-	 * <P>
-	 * Calling the method <code>close</code> on a <code>Statement</code> object
-	 * that is already closed has no effect.
-	 * <P>
-	 * <B>Note:</B> A <code>Statement</code> object is automatically closed when
-	 * it is garbage collected. When a <code>Statement</code> object is closed,
-	 * its current <code>ResultSet</code> object, if one exists, is also closed.
-	 * 
-	 * @exception SQLException
-	 *                if a database access error occurs
-	 */
 	public void close() throws SQLException {
-		lastResultSet = null;
-		// close all result sets
-		for (Enumeration<CsvResultSet> i = resultSets.elements(); i.hasMoreElements();) {
-			CsvResultSet resultSet = (CsvResultSet) i.nextElement();
-			resultSet.close();
+		try {
+			if (lastResultSet != null)
+				lastResultSet.close();
+		} finally {
+			lastResultSet = null;
 		}
 	}
 
@@ -598,12 +590,12 @@ public class CsvStatement implements Statement {
 
 	}
 
-	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
+	public boolean isWrapperFor(Class arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public <T> T unwrap(Class<T> arg0) throws SQLException {
+	public Object unwrap(Class arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}

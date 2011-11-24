@@ -2543,6 +2543,18 @@ public class TestCsvDriver extends TestCase {
 		assertTrue("Result set was not closed", results1.isClosed());
 	}
 
+	public void testResultSetClosed() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results1 = stmt.executeQuery("SELECT * FROM sample5");
+		ResultSet results2 = stmt.executeQuery("SELECT * FROM sample");
+		assertTrue("First result set is not closed", results1.isClosed());
+		assertFalse("Second result set is closed", results2.isClosed());
+	}
+
 	public void testHeaderlineWithMultipleTables() throws SQLException {
 		Properties props = new Properties();
 		// Define different headerline values for table banks and table transactions. 
