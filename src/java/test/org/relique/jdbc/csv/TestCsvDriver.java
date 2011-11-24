@@ -802,6 +802,25 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
+	public void testWithSuppressedHeadersMultiline() throws SQLException {
+		Properties props = new Properties();
+		props.put("suppressHeaders", "true");
+		props.put("fileExtension", ".txt");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM embassies");
+
+		// Test selecting from a file with a multi-line value as the first record.
+		assertTrue(results.next());
+		assertEquals("Incorrect COLUMN1 Value", "Germany", results.getString("COLUMN1"));
+		assertEquals("Incorrect COLUMN2 Value", "Wallstrasse 76-79,\n10179 Berlin", results.getString("COLUMN2"));
+		assertTrue(results.next());
+	}
+
 	public void testRelativePath() throws SQLException {
 		// break up file path to test relative paths
 		String parentPath = new File(filePath).getParent();
