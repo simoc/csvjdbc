@@ -2572,6 +2572,12 @@ public class TestCsvDriver extends TestCase {
 		ResultSet results2 = stmt.executeQuery("SELECT * FROM sample");
 		assertTrue("First result set is not closed", results1.isClosed());
 		assertFalse("Second result set is closed", results2.isClosed());
+		try {
+			results1.next();
+			fail("Closed result set should throw SQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+		}
 	}
 
 	public void testHeaderlineWithMultipleTables() throws SQLException {

@@ -554,4 +554,235 @@ public class TestScrollableDriver extends TestCase {
 		assertTrue("Reading row 4 failed", results.next());
 		assertFalse("Stopping after row 4 failed", results.next());
 	}
+
+	public void testResultSetFirstClosed() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+		results.next();
+		results.next();
+		results.close();
+		try {
+			results.first();
+			fail("Closed result set should throw SQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+		}
+
+		// clean up
+		stmt.close();
+		conn.close();
+	}
+	
+	public void testResultSetLastClosed() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+		results.next();
+		results.next();
+		results.close();
+		try {
+			results.last();
+			fail("Closed result set should throw SQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+		}
+
+		// clean up
+		stmt.close();
+		conn.close();
+	}
+
+	public void testResultSetPreviousClosed() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+		results.next();
+		results.next();
+		results.close();
+		try {
+			results.previous();
+			fail("Closed result set should throw SQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+		}
+
+		// clean up
+		stmt.close();
+		conn.close();
+	}
+
+	public void testResultSetAbsoluteClosed() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+		results.next();
+		results.next();
+		results.close();
+		try {
+			results.absolute(2);
+			fail("Closed result set should throw SQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+		}
+
+		// clean up
+		stmt.close();
+		conn.close();
+	}
+	
+	public void testResultSetRelativeClosed() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+		results.next();
+		results.next();
+		results.close();
+		try {
+			results.relative(-1);
+			fail("Closed result set should throw SQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+		}
+
+		// clean up
+		stmt.close();
+		conn.close();
+	}
+	
+	public void testResultSetAfterLastClosed() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+		results.next();
+		results.next();
+		results.close();
+		try {
+			results.afterLast();
+			fail("Closed result set should throw SQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+		}
+
+		// clean up
+		stmt.close();
+		conn.close();
+	}
+	
+	public void testResultSetBeforeFirstClosed() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+		results.next();
+		results.next();
+		results.close();
+		try {
+			results.beforeFirst();
+			fail("Closed result set should throw SQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+		}
+
+		// clean up
+		stmt.close();
+		conn.close();
+	}
+
+	public void testResultSetIsAfterLastClosed() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+		results.next();
+		results.next();
+		results.close();
+		try {
+			results.isAfterLast();
+			fail("Closed result set should throw SQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+		}
+
+		// clean up
+		stmt.close();
+		conn.close();
+	}
+	
+	public void testResultSetIsBeforeFirstClosed() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+		results.next();
+		results.next();
+		results.close();
+		try {
+			results.isBeforeFirst();
+			fail("Closed result set should throw SQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+		}
+
+		// clean up
+		stmt.close();
+		conn.close();
+	}
+	
+	public void testResultSetIsFirstClosed() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+		results.next();
+		results.next();
+		results.close();
+		try {
+			results.isFirst();
+			fail("Closed result set should throw SQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+		}
+
+		// clean up
+		stmt.close();
+		conn.close();
+	}
+	
+	public void testResultSetIsLastClosed() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+		results.next();
+		results.next();
+		results.close();
+		try {
+			results.isLast();
+			fail("Closed result set should throw SQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+		}
+
+		// clean up
+		stmt.close();
+		conn.close();
+	}
 }

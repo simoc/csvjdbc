@@ -218,6 +218,11 @@ public class CsvResultSet implements ResultSet {
     	}
     }
 
+    private void checkOpen() throws SQLException {
+    	if (isClosed)
+    		throw new SQLException("ResultSet is already closed");
+    }
+
     /**
      * Moves the cursor down one row from its current position.
      * A <code>ResultSet</code> cursor is initially positioned
@@ -235,6 +240,9 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public boolean next() throws SQLException {
+    	
+    	checkOpen();
+
     	if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE && currentRow < bufferedRecordEnvironments.size()) {
     		currentRow++;
     		recordEnvironment = (Map) bufferedRecordEnvironments.get(currentRow - 1);
@@ -1194,6 +1202,9 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public boolean isBeforeFirst() throws SQLException {
+
+    	checkOpen();
+
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
         	return currentRow == 0;
         } else {
@@ -1212,6 +1223,9 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public boolean isAfterLast() throws SQLException {
+
+    	checkOpen();
+
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
         	return currentRow == bufferedRecordEnvironments.size() + 1;
         } else {
@@ -1229,6 +1243,9 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public boolean isFirst() throws SQLException {
+
+    	checkOpen();
+
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
         	return currentRow == 1;
         } else {
@@ -1250,6 +1267,9 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public boolean isLast() throws SQLException {
+
+    	checkOpen();
+
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
         	if (!hitTail && currentRow != 0) {
         		next();
@@ -1271,6 +1291,9 @@ public class CsvResultSet implements ResultSet {
      * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
      */
     public void beforeFirst() throws SQLException {
+
+    	checkOpen();
+
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
         	first();
         	previous();
@@ -1288,6 +1311,9 @@ public class CsvResultSet implements ResultSet {
      * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
      */
     public void afterLast() throws SQLException {
+
+    	checkOpen();
+
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
         	while(next());
         } else {
@@ -1306,6 +1332,9 @@ public class CsvResultSet implements ResultSet {
      * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
      */
     public boolean first() throws SQLException {
+
+    	checkOpen();
+
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
         	currentRow = 0;
         	boolean thereWasAnAnswer = next();
@@ -1327,6 +1356,9 @@ public class CsvResultSet implements ResultSet {
      * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
      */
     public boolean last() throws SQLException {
+
+    	checkOpen();
+
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
         	afterLast();
         	previous();
@@ -1386,6 +1418,9 @@ public class CsvResultSet implements ResultSet {
      * occurs, or the result set type is <code>TYPE_FORWARD_ONLY</code>
      */
     public boolean absolute(int row) throws SQLException {
+    	
+    	checkOpen();
+
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
         	boolean found;
         	if(row < 0) {
@@ -1436,6 +1471,9 @@ public class CsvResultSet implements ResultSet {
      *            <code>TYPE_FORWARD_ONLY</code>
      */
     public boolean relative(int rows) throws SQLException {
+
+    	checkOpen();
+
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
         	if(currentRow + rows >= 0)
         		return absolute(currentRow + rows);
@@ -1458,6 +1496,9 @@ public class CsvResultSet implements ResultSet {
      * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
      */
     public boolean previous() throws SQLException {
+
+    	checkOpen();
+
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
         	if(currentRow > 1) {
         		currentRow--;
