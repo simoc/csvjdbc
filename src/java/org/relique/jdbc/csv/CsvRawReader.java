@@ -48,7 +48,7 @@ public class CsvRawReader {
 	protected String tableAlias;
 	protected String[] columnNames;
 	protected String[] fieldValues;
-	protected java.lang.String buf = null;
+	protected String firstLineBuffer = null;
 	protected char separator = ',';
 	protected String headerLine = "";
 	protected boolean suppressHeaders = false;
@@ -114,8 +114,8 @@ public class CsvRawReader {
 			} else {
 				// No column names available. Read first data line and determine
 				// number of columns.
-				buf = getNextDataLine();
-				String[] data = parseCsvLine(buf, false);
+				firstLineBuffer = getNextDataLine();
+				String[] data = parseCsvLine(firstLineBuffer, false);
 				this.columnNames = new String[data.length];
 				for (int i = 0; i < data.length; i++) {
 					this.columnNames[i] = "COLUMN" + String.valueOf(i + 1);
@@ -155,10 +155,10 @@ public class CsvRawReader {
 		fieldValues = new String[columnNames.length];
 		String dataLine = null;
 		try {
-			if (suppressHeaders && (buf != null)) {
+			if (suppressHeaders && (firstLineBuffer != null)) {
 				// The buffer is not empty yet, so use this first.
-				dataLine = buf;
-				buf = null;
+				dataLine = firstLineBuffer;
+				firstLineBuffer = null;
 			} else {
 				// read new line of data from input.
 				dataLine = getNextDataLine();
@@ -183,7 +183,7 @@ public class CsvRawReader {
 	public void close() {
 		try {
 			input.close();
-			buf = null;
+			firstLineBuffer = null;
 		} catch (Exception e) {
 		}
 	}
@@ -344,6 +344,13 @@ public class CsvRawReader {
 					if (additionalLine == null) 
 						throw new SQLException("EOF reached inside quoted mode");
 					line = "\n" + additionalLine;
+					if (orgLine == firstLineBuffer) {
+						// We are reading and remembering the first record to
+						// determine the number of columns in the file.
+						// Append any extra lines we read for first record to
+						// the buffer too.
+						firstLineBuffer += "\n" + additionalLine;
+					}
 				} catch (IOException e) {
 					throw new SQLException(e.toString());
 				}
