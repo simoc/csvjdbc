@@ -529,8 +529,17 @@ public class CsvConnection implements Connection {
             CsvStatement statement = (CsvStatement)i.nextElement();
             statement.close();
         }
+        statements.clear();
         // set this Connection as closed
         closed = true;
+    }
+
+    /**
+     * Remove closed statement from list of statements for this connection.
+     * @param statement statement to be removed.
+     */
+    public void removeStatement(Statement statement) {
+    	statements.remove(statement);
     }
 
     /**

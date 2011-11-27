@@ -442,6 +442,7 @@ public class CsvStatement implements Statement {
 		} finally {
 			lastResultSet = null;
 		}
+		connection.removeStatement(this);
 	}
 
 	/**
