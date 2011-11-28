@@ -20,6 +20,8 @@ import java.sql.*;
 import java.util.Properties;
 import java.io.File;
 
+import org.relique.io.TableReader;
+
 /**
  * This class implements the Driver interface for the CsvJdbc driver.
  *
@@ -75,15 +77,17 @@ public class CsvDriver implements Driver
   
   public static final String CHARSET = "charset";
   public static final String RAISE_UNSUPPORTED_OPERATION_EXCEPTION = "raiseUnsupportedOperationException";
-  private final static String URL_PREFIX = "jdbc:relique:csv:";
+  public final static String URL_PREFIX = "jdbc:relique:csv:";
   public static final String CRYPTO_FILTER_CLASS_NAME = "cryptoFilterClassName";
   
   public static final String TIME_ZONE_NAME = "timeZoneName";
   public static final String DEFAULT_TIME_ZONE_NAME = "UTC";
   // choosing Rome makes sure we change chronology from Julian to Gregorian on 1582-10-04/15, as SQL does.
-public static final String QUOTE_STYLE = "quoteStyle";
-public static final String DEFAULT_QUOTE_STYLE = "SQL";
-  
+  public static final String QUOTE_STYLE = "quoteStyle";
+  public static final String DEFAULT_QUOTE_STYLE = "SQL";
+
+  public static final String READER_CLASS_PREFIX = "class:";
+
   /**
    *Gets the propertyInfo attribute of the CsvDriver object
    *
@@ -143,26 +147,71 @@ public static final String DEFAULT_QUOTE_STYLE = "SQL";
     }
     // get filepath from url
     String filePath = url.substring(URL_PREFIX.length());
-    if (!filePath.endsWith(File.separator))
-    {
-      filePath += File.separator;
-    }
 
     DriverManager.println("CsvJdbc - CsvDriver:connect() - filePath=" + filePath);
 
-    // check if filepath is a correct path.
-    File checkPath = new File(filePath);
-    if (!checkPath.exists())
+    CsvConnection connection;
+    if (filePath.startsWith(READER_CLASS_PREFIX))
     {
-      throw new SQLException("Specified path '" + filePath + "' not found !");
-    }
-    if (!checkPath.isDirectory())
-    {
-      throw new SQLException(
-          "Specified path '" + filePath + "' is  not a directory !");
-    }
+    	String className = filePath.substring(READER_CLASS_PREFIX.length());
+    	try
+    	{
+    		Class clazz = Class.forName(className);
 
-    return new CsvConnection(filePath, info);
+    		/*
+    		 * Check that class implements our interface.
+    		 */
+    		Class []interfaces = clazz.getInterfaces();
+    		boolean isInterfaceImplemented = false;
+    		for (int i = 0; i < interfaces.length && (!isInterfaceImplemented); i++)
+    		{
+    			if (interfaces[i].equals(TableReader.class))
+    				isInterfaceImplemented = true;
+    		}
+
+    		if (!isInterfaceImplemented)
+    		{
+    			throw new SQLException("Class does not implement interface " +
+    				TableReader.class.getName() + ": " + className);
+    		}
+    		Object tableReaderInstance = clazz.newInstance();
+    		connection = new CsvConnection((TableReader)tableReaderInstance, info);
+    	}
+    	catch (ClassNotFoundException e)
+    	{
+    		throw new SQLException(e);
+    	}
+    	catch (IllegalAccessException e)
+    	{
+    		throw new SQLException(e);
+    	}
+    	catch (InstantiationException e)
+    	{
+    		throw new SQLException(e);
+    	}
+    }
+    else
+    {
+        if (!filePath.endsWith(File.separator))
+        {
+          filePath += File.separator;
+        }
+
+    	// check if filepath is a correct path.
+    	File checkPath = new File(filePath);
+    	if (!checkPath.exists())
+    	{
+    		throw new SQLException("Specified path '" + filePath + "' not found !");
+    	}
+    	if (!checkPath.isDirectory())
+    	{
+    		throw new SQLException(
+    				"Specified path '" + filePath + "' is  not a directory !");
+    	}
+
+    	connection = new CsvConnection(filePath, info);
+    }
+    return connection;
   }
 
 

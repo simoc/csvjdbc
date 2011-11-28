@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -33,6 +34,7 @@ import org.relique.io.CryptoFilter;
 import org.relique.io.DataReader;
 import org.relique.io.EncryptedFileInputStream;
 import org.relique.io.FileSetInputStream;
+import org.relique.io.TableReader;
 import org.relique.jdbc.dbf.DbfReader;
 
 /**
@@ -332,16 +334,20 @@ public class CsvStatement implements Statement {
 
 	protected ResultSet executeParsedQuery(SqlParser parser)
 			throws SQLException {
-		DriverManager.println("Connection Path: " + connection.getPath());
+		String path = connection.getPath();
+		TableReader tableReader = connection.getTableReader();
+		if (path != null)
+			DriverManager.println("Connection Path: " + path);
+		else
+			DriverManager.println("Connection TableReader: " + tableReader.getClass().getName());
 		DriverManager.println("Parser Table Name: " + parser.getTableName());
 		DriverManager.println("Connection Extension: "
 				+ connection.getExtension());
 
 		String fileName = null;
 		String tableName = parser.getTableName();
-		if (!connection.isIndexedFiles()) {
-			fileName = connection.getPath() + tableName
-					+ connection.getExtension();
+		if (path != null && (!connection.isIndexedFiles())) {
+			fileName = path + tableName	+ connection.getExtension();
 
 			DriverManager.println("CSV file name: " + fileName);
 
@@ -362,30 +368,38 @@ public class CsvStatement implements Statement {
 			if(connection.getExtension().equalsIgnoreCase(".dbf")) {
 				reader = new DbfReader(fileName, parser.getTableAlias());
 			} else {
-				InputStream in;
-				CryptoFilter filter = connection.getDecryptingCodec();
-				if (connection.isIndexedFiles()) {
-					String fileNamePattern = parser.getTableName()
-							+ connection.getFileNamePattern()
-							+ connection.getExtension();
-					String[] nameParts = connection.getNameParts();
-					String dirName = connection.getPath();
-					in = new FileSetInputStream(dirName, fileNamePattern,
-							nameParts, connection.getSeparator(), connection.isFileTailPrepend(),
-							connection.isSuppressHeaders(), filter, connection.getSkipLeadingDataLines() + connection.getTransposedLines());
-				} else if (filter==null) {
-					in = new FileInputStream(fileName);
-				} else {
-					filter.reset();
-					in = new EncryptedFileInputStream(fileName, filter);
-				}
 				BufferedReader input;
-				if (connection.getCharset() != null) {
-					input = new BufferedReader(new InputStreamReader(in, connection
-							.getCharset()));
+				if (tableReader == null) {
+					InputStream in;
+					CryptoFilter filter = connection.getDecryptingCodec();
+					if (connection.isIndexedFiles()) {
+						String fileNamePattern = parser.getTableName()
+								+ connection.getFileNamePattern()
+								+ connection.getExtension();
+						String[] nameParts = connection.getNameParts();
+						String dirName = connection.getPath();
+						in = new FileSetInputStream(dirName, fileNamePattern,
+								nameParts, connection.getSeparator(), connection.isFileTailPrepend(),
+								connection.isSuppressHeaders(), filter, connection.getSkipLeadingDataLines() + connection.getTransposedLines());
+					} else if (filter==null) {
+						in = new FileInputStream(fileName);
+					} else {
+						filter.reset();
+						in = new EncryptedFileInputStream(fileName, filter);
+					}
+					if (connection.getCharset() != null) {
+						input = new BufferedReader(new InputStreamReader(in, connection
+								.getCharset()));
+					} else {
+						input = new BufferedReader(new InputStreamReader(in));
+					}
 				} else {
-					input = new BufferedReader(new InputStreamReader(in));
+					/*
+					 * Reader for table comes from user-provided class.
+					 */
+					input = new BufferedReader(tableReader.getReader(this, tableName));
 				}
+
 				String headerline = connection.getHeaderline(tableName);
 				CsvRawReader rawReader = new CsvRawReader(input, parser.getTableAlias(), connection.getSeparator(),
 						connection.isSuppressHeaders(), connection.getQuotechar(),

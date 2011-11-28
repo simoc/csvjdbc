@@ -191,4 +191,15 @@ public class TestPrepareStatement extends TestCase {
 			fail("can't prepareStatement!");
 		}
 	}
+
+	public void testTableReader() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" +
+			TableReaderTester.class.getName());
+		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM airport where code=?");
+		stmt.setString(1, "CDG");
+		ResultSet results = stmt.executeQuery();
+		assertTrue(results.next());
+		assertEquals("NAME wrong", "Paris Charles De Gaulle", results.getString("NAME"));
+		assertFalse(results.next());
+	}
 }

@@ -529,8 +529,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 
 	public String getURL() throws SQLException
 	{
-		return "jdbc:relique:csv:"
-				+ ((CsvConnection) createdByConnection).getPath();
+		return ((CsvConnection)createdByConnection).getURL();
 	}
 
 	public String getUserName() throws SQLException

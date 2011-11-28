@@ -27,16 +27,16 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Properties;
 import java.util.TimeZone;
-import java.sql.Types;
-
-import org.relique.jdbc.csv.CsvResultSet;
 
 import junit.framework.TestCase;
+
+import org.relique.jdbc.csv.CsvResultSet;
 
 /**
  * This class is used to test the CsvJdbc driver.
@@ -2618,5 +2618,52 @@ public class TestCsvDriver extends TestCase {
 		assertNull("Warnings should be null", results.getWarnings());
 		results.clearWarnings();
 		assertNull("Warnings should still be null", results.getWarnings());
+	}
+
+	public void testTableReader() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" +
+			TableReaderTester.class.getName());
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM airline where code='BA'");
+		assertTrue(results.next());
+		assertEquals("NAME wrong", "British Airways", results.getString("NAME"));
+	}
+
+	public void testTableReaderWithBadTable() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" +
+			TableReaderTester.class.getName());
+		Statement stmt = conn.createStatement();
+		try {
+			stmt.executeQuery("SELECT * FROM X");
+			fail("Should raise a java.sqlSQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: Table does not exist: X", "" + e);
+		}
+	}
+
+	public void testTableReaderWithBadReader() throws SQLException {
+		try {
+			DriverManager.getConnection("jdbc:relique:csv:class:" + TestCsvDriver.class.getName());
+			fail("Should raise a java.sqlSQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: Class does not implement interface org.relique.io.TableReader: " + TestCsvDriver.class.getName(), "" + e);
+		}
+	}
+
+	public void testTableReaderTables() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" +
+			TableReaderTester.class.getName());
+		ResultSet results = conn.getMetaData().getTables(null, null, "*", null);
+		assertTrue(results.next());
+		assertEquals("TABLE_NAME wrong", "AIRLINE", results.getString("TABLE_NAME"));
+		assertTrue(results.next());
+		assertEquals("TABLE_NAME wrong", "AIRPORT", results.getString("TABLE_NAME"));
+		assertFalse(results.next());
+	}
+	
+	public void testTableReaderMetadata() throws SQLException {
+		String url = "jdbc:relique:csv:class:" + TableReaderTester.class.getName();
+		Connection conn = DriverManager.getConnection(url);
+		assertEquals("URL is wrong", url, conn.getMetaData().getURL());
 	}
 }

@@ -47,6 +47,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 import org.relique.io.CryptoFilter;
+import org.relique.io.TableReader;
 
 /**
  * This class implements the Connection interface for the CsvJdbc driver.
@@ -62,6 +63,9 @@ public class CsvConnection implements Connection {
 
     /** Directory where the CSV files to use are located */
     private String path;
+
+    /** User-provided class that returns contents of database tables */
+    private TableReader tableReader;
 
     /** File extension to use */
     private String extension = CsvDriver.DEFAULT_EXTENSION;
@@ -139,20 +143,27 @@ public class CsvConnection implements Connection {
 	private String quoteStyle;
 
 	/**
+	 * Set defaults for connection.
+	 */
+	private void init() {
+        headerlines.put(null, CsvDriver.DEFAULT_HEADERLINE);
+        columnTypes.put(null, CsvDriver.DEFAULT_COLUMN_TYPES);
+	}
+
+	/**
      * Creates a new CsvConnection that takes the supplied path
      * @param path directory where the CSV files are located
      */
     protected CsvConnection(String path) {
+    	init();
+
         // validate argument(s)
         if(path == null || path.length() == 0) {
             throw new IllegalArgumentException(
                     "'path' argument may not be empty or null");
         }
         this.path = path;
-
-        // set defaults
-        headerlines.put(null, CsvDriver.DEFAULT_HEADERLINE);
-        columnTypes.put(null, CsvDriver.DEFAULT_COLUMN_TYPES);
+        
     }
 
     /**
@@ -175,6 +186,120 @@ public class CsvConnection implements Connection {
         return retval;
     }
 
+    private void setProperties(Properties info) throws SQLException {
+    	// set the file extension to be used
+    	if(info.getProperty(CsvDriver.FILE_EXTENSION) != null) {
+    		extension = info.getProperty(CsvDriver.FILE_EXTENSION);
+    	}
+    	// set the separator character to be used
+    	if(info.getProperty(CsvDriver.SEPARATOR) != null) {
+    		separator = info.getProperty(CsvDriver.SEPARATOR).charAt(0);
+    	}
+    	// set the quotechar character to be used
+    	String prop = info.getProperty(CsvDriver.QUOTECHAR);
+    	if(prop != null) {
+    		if (prop.length() != 1)
+    			throw new SQLException("Invalid " + CsvDriver.QUOTECHAR + ": " + prop);
+    		quotechar = prop.charAt(0);
+    	}
+    	// set the global headerline and headerline.tablename values. 
+    	if(info.getProperty(CsvDriver.HEADERLINE) != null) {
+    		headerlines.put(null, info.getProperty(CsvDriver.HEADERLINE));
+    	}
+    	headerlines.putAll(getMatchingProperties(info, CsvDriver.HEADERLINE + "."));
+
+    	// set the header suppression flag
+    	if(info.getProperty(CsvDriver.SUPPRESS_HEADERS) != null) {
+    		suppressHeaders = Boolean.valueOf(info.getProperty(
+    				CsvDriver.SUPPRESS_HEADERS)).booleanValue();
+    	}
+    	// default charset
+    	if (info.getProperty(CsvDriver.CHARSET) != null) {
+    		charset = info.getProperty(CsvDriver.CHARSET);
+    	}
+    	// set global columnTypes and columnTypes.tablename values.
+    	if (info.getProperty(CsvDriver.COLUMN_TYPES) != null) {
+    		columnTypes.put(null, info.getProperty(CsvDriver.COLUMN_TYPES));
+    	}
+    	columnTypes.putAll(getMatchingProperties(info, CsvDriver.COLUMN_TYPES + "."));
+
+    	// are files indexed? ()
+    	if (info.getProperty(CsvDriver.INDEXED_FILES) != null) {
+    		indexedFiles = Boolean.valueOf(
+    				info.getProperty(CsvDriver.INDEXED_FILES))
+    				.booleanValue();
+    		fileNamePattern = info.getProperty("fileTailPattern");
+    		nameParts = info.getProperty("fileTailParts","").split(",");
+    		setFileTailPrepend(Boolean.parseBoolean(info.getProperty(
+    				CsvDriver.FILE_TAIL_PREPEND,
+    				CsvDriver.DEFAULT_FILE_TAIL_PREPEND)));
+    	}
+    	// is the stream to be decrypted? ()
+    	// per default: no, it's unencrypted and will not be decrypted
+    	decryptingFilter = null;
+    	if (info.getProperty(CsvDriver.CRYPTO_FILTER_CLASS_NAME) != null) {
+    		String className = info
+    				.getProperty(CsvDriver.CRYPTO_FILTER_CLASS_NAME);
+    		try{
+    			Class encrypterClass = Class.forName(className);
+    			String[] parameterTypes = info.getProperty(
+    					"cryptoFilterParameterTypes", "String")
+    					.split(",");
+    			String[] parameterStrings = info.getProperty(
+    					"cryptoFilterParameters", "").split(",");
+    			StringConverter converter = new StringConverter("", "", "");
+    			Class[] parameterClasses = new Class[parameterStrings.length];
+    			Object[] parameterValues = new Object[parameterStrings.length];
+    			for (int i = 0; i < parameterStrings.length; i++) {
+    				parameterClasses[i] = converter
+    						.forSQLName(parameterTypes[i]);
+    				parameterValues[i] = converter.convert(
+    						parameterTypes[i], parameterStrings[i]);
+    			}
+    			Constructor constructor = encrypterClass
+    					.getConstructor(parameterClasses);
+    			decryptingFilter = (CryptoFilter) constructor
+    					.newInstance(parameterValues);
+    			// ignore all possible exceptions: just leave the stream
+    			// undecrypted.
+    		} catch (IllegalArgumentException e) {
+    			e.printStackTrace();
+    		} catch (InstantiationException e) {
+    			e.printStackTrace();
+    		} catch (IllegalAccessException e) {
+    			e.printStackTrace();
+    		} catch (InvocationTargetException e) {
+    			e.printStackTrace();
+    		} catch (NoSuchMethodException e) {
+    			e.printStackTrace();
+    		} catch (ClassNotFoundException e) {
+    			throw new SQLException("could not find codec class " + className);
+    		}
+    		if(decryptingFilter==null){
+    			throw new SQLException("could not initialize CryptoFilter");
+    		}
+    	}
+    	setTransposedLines(Integer.parseInt(info.getProperty(CsvDriver.TRANSPOSED_LINES, "0")));
+    	setTransposedFieldsToSkip(Integer.parseInt(info.getProperty(CsvDriver.TRANSPOSED_FIELDS_TO_SKIP, "0")));
+
+    	setTimestampFormat(info.getProperty(CsvDriver.TIMESTAMP_FORMAT, CsvDriver.DEFAULT_TIMESTAMP_FORMAT));
+    	setDateFormat(info.getProperty(CsvDriver.DATE_FORMAT, CsvDriver.DEFAULT_DATE_FORMAT));
+    	setTimeFormat(info.getProperty(CsvDriver.TIME_FORMAT, CsvDriver.DEFAULT_TIME_FORMAT));
+    	setTimeZoneName(info.getProperty(CsvDriver.TIME_ZONE_NAME, CsvDriver.DEFAULT_TIME_ZONE_NAME));
+    	setCommentChar(info.getProperty(CsvDriver.COMMENT_CHAR, CsvDriver.DEFAULT_COMMENT_CHAR));
+    	setDefectiveHeaders(info.getProperty(CsvDriver.DEFECTIVE_HEADERS, CsvDriver.DEFAULT_DEFECTIVE_HEADERS));
+    	setSkipLeadingDataLines(info.getProperty(CsvDriver.SKIP_LEADING_DATA_LINES, CsvDriver.DEFAULT_SKIP_LEADING_DATA_LINES));
+    	setSkipLeadingLines(info.getProperty(CsvDriver.SKIP_LEADING_LINES, CsvDriver.DEFAULT_SKIP_LEADING_LINES));
+    	setQuoteStyle(info.getProperty(CsvDriver.QUOTE_STYLE, CsvDriver.DEFAULT_QUOTE_STYLE));
+    	setIgnoreUnparseableLines(Boolean.parseBoolean(info.getProperty(
+    			CsvDriver.IGNORE_UNPARSEABLE_LINES,
+    			CsvDriver.DEFAULT_IGNORE_UNPARSEABLE_LINES)));
+
+    	setRaiseUnsupportedOperationException(Boolean.parseBoolean(info.getProperty(
+    			CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION,
+    			CsvDriver.DEFAULT_RAISE_UNSUPPORTED_OPERATION_EXCEPTION)));
+    }
+
     /**
      * Creates a new CsvConnection that takes the supplied path and properties
      * @param path directory where the CSV files are located
@@ -182,121 +307,34 @@ public class CsvConnection implements Connection {
      * @throws SQLException 
      */
     protected CsvConnection(String path, Properties info) throws SQLException {
-        this(path);
+        init();
+
+        // validate argument(s)
+        if(path == null || path.length() == 0) {
+            throw new IllegalArgumentException(
+                    "'path' argument may not be empty or null");
+        }
+        this.path = path;
 
         // check for properties
         if(info != null) {
-            // set the file extension to be used
-            if(info.getProperty(CsvDriver.FILE_EXTENSION) != null) {
-                extension = info.getProperty(CsvDriver.FILE_EXTENSION);
-            }
-            // set the separator character to be used
-            if(info.getProperty(CsvDriver.SEPARATOR) != null) {
-                separator = info.getProperty(CsvDriver.SEPARATOR).charAt(0);
-            }
-            // set the quotechar character to be used
-            String prop = info.getProperty(CsvDriver.QUOTECHAR);
-            if(prop != null) {
-            	if (prop.length() != 1)
-            		throw new SQLException("Invalid " + CsvDriver.QUOTECHAR + ": " + prop);
-                quotechar = prop.charAt(0);
-            }
-            // set the global headerline and headerline.tablename values. 
-            if(info.getProperty(CsvDriver.HEADERLINE) != null) {
-                 headerlines.put(null, info.getProperty(CsvDriver.HEADERLINE));
-            }
-            headerlines.putAll(getMatchingProperties(info, CsvDriver.HEADERLINE + "."));
+        	setProperties(info);
+        }
+    }
 
-            // set the header suppression flag
-            if(info.getProperty(CsvDriver.SUPPRESS_HEADERS) != null) {
-                suppressHeaders = Boolean.valueOf(info.getProperty(
-                        CsvDriver.SUPPRESS_HEADERS)).booleanValue();
-            }
-            // default charset
-            if (info.getProperty(CsvDriver.CHARSET) != null) {
-                charset = info.getProperty(CsvDriver.CHARSET);
-            }
-            // set global columnTypes and columnTypes.tablename values.
-            if (info.getProperty(CsvDriver.COLUMN_TYPES) != null) {
-                columnTypes.put(null, info.getProperty(CsvDriver.COLUMN_TYPES));
-            }
-            columnTypes.putAll(getMatchingProperties(info, CsvDriver.COLUMN_TYPES + "."));
+    /**
+     * Creates a new database connection.
+     * @param tableReader user-provided class to return contents of each database table. 
+     * @param info set of properties containing custom options.
+     * @throws SQLException
+     */
+    protected CsvConnection(TableReader tableReader, Properties info) throws SQLException {
+        init();
+        this.tableReader = tableReader;
 
-            // are files indexed? ()
-            if (info.getProperty(CsvDriver.INDEXED_FILES) != null) {
-                indexedFiles = Boolean.valueOf(
-						info.getProperty(CsvDriver.INDEXED_FILES))
-						.booleanValue();
-                fileNamePattern = info.getProperty("fileTailPattern");
-                nameParts = info.getProperty("fileTailParts","").split(",");
-                setFileTailPrepend(Boolean.parseBoolean(info.getProperty(
-						CsvDriver.FILE_TAIL_PREPEND,
-						CsvDriver.DEFAULT_FILE_TAIL_PREPEND)));
-            }
-            // is the stream to be decrypted? ()
-            // per default: no, it's unencrypted and will not be decrypted
-            decryptingFilter = null;
-			if (info.getProperty(CsvDriver.CRYPTO_FILTER_CLASS_NAME) != null) {
-				String className = info
-						.getProperty(CsvDriver.CRYPTO_FILTER_CLASS_NAME);
-				try{
-					Class encrypterClass = Class.forName(className);
-					String[] parameterTypes = info.getProperty(
-							"cryptoFilterParameterTypes", "String")
-							.split(",");
-					String[] parameterStrings = info.getProperty(
-							"cryptoFilterParameters", "").split(",");
-					StringConverter converter = new StringConverter("", "", "");
-					Class[] parameterClasses = new Class[parameterStrings.length];
-					Object[] parameterValues = new Object[parameterStrings.length];
-					for (int i = 0; i < parameterStrings.length; i++) {
-						parameterClasses[i] = converter
-								.forSQLName(parameterTypes[i]);
-						parameterValues[i] = converter.convert(
-								parameterTypes[i], parameterStrings[i]);
-					}
-					Constructor constructor = encrypterClass
-							.getConstructor(parameterClasses);
-					decryptingFilter = (CryptoFilter) constructor
-							.newInstance(parameterValues);
-				// ignore all possible exceptions: just leave the stream
-				// undecrypted.
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					throw new SQLException("could not find codec class " + className);
-				}
-				if(decryptingFilter==null){
-					throw new SQLException("could not initialize CryptoFilter");
-				}
-			}
-            setTransposedLines(Integer.parseInt(info.getProperty(CsvDriver.TRANSPOSED_LINES, "0")));
-        	setTransposedFieldsToSkip(Integer.parseInt(info.getProperty(CsvDriver.TRANSPOSED_FIELDS_TO_SKIP, "0")));
-			
-            setTimestampFormat(info.getProperty(CsvDriver.TIMESTAMP_FORMAT, CsvDriver.DEFAULT_TIMESTAMP_FORMAT));
-            setDateFormat(info.getProperty(CsvDriver.DATE_FORMAT, CsvDriver.DEFAULT_DATE_FORMAT));
-            setTimeFormat(info.getProperty(CsvDriver.TIME_FORMAT, CsvDriver.DEFAULT_TIME_FORMAT));
-            setTimeZoneName(info.getProperty(CsvDriver.TIME_ZONE_NAME, CsvDriver.DEFAULT_TIME_ZONE_NAME));
-            setCommentChar(info.getProperty(CsvDriver.COMMENT_CHAR, CsvDriver.DEFAULT_COMMENT_CHAR));
-            setDefectiveHeaders(info.getProperty(CsvDriver.DEFECTIVE_HEADERS, CsvDriver.DEFAULT_DEFECTIVE_HEADERS));
-            setSkipLeadingDataLines(info.getProperty(CsvDriver.SKIP_LEADING_DATA_LINES, CsvDriver.DEFAULT_SKIP_LEADING_DATA_LINES));
-            setSkipLeadingLines(info.getProperty(CsvDriver.SKIP_LEADING_LINES, CsvDriver.DEFAULT_SKIP_LEADING_LINES));
-            setQuoteStyle(info.getProperty(CsvDriver.QUOTE_STYLE, CsvDriver.DEFAULT_QUOTE_STYLE));
-            setIgnoreUnparseableLines(Boolean.parseBoolean(info.getProperty(
-					CsvDriver.IGNORE_UNPARSEABLE_LINES,
-					CsvDriver.DEFAULT_IGNORE_UNPARSEABLE_LINES)));
-            
-            setRaiseUnsupportedOperationException(Boolean.parseBoolean(info.getProperty(
-            		CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION,
-					CsvDriver.DEFAULT_RAISE_UNSUPPORTED_OPERATION_EXCEPTION)));
+        // check for properties
+        if(info != null) {
+        	setProperties(info);
         }
     }
 
@@ -963,6 +1001,19 @@ public class CsvConnection implements Connection {
         return path;
     }
 
+    protected TableReader getTableReader() {
+    	return tableReader;
+    }
+
+    protected String getURL() {
+    	String url;
+    	if (path != null)
+    		url = CsvDriver.URL_PREFIX + path; 
+    	else
+    		url = CsvDriver.URL_PREFIX + CsvDriver.READER_CLASS_PREFIX + tableReader.getClass().getName();
+		return url;
+    }
+
     /**
      * Accessor method for the extension property
      * @return current value for the extension property
@@ -1287,21 +1338,30 @@ public class CsvConnection implements Connection {
 	 * Get list of table names (all files in the directory with the correct suffix).
 	 * @return list of table names.
 	 */
-	public List getTableNames() {
+	public List getTableNames() throws SQLException {
 
-		ArrayList tableNames = new ArrayList();
-		File []matchingFiles = new File(path).listFiles(new FilenameFilter() {
+		List tableNames = new ArrayList();
+		if (path != null) {
+			File []matchingFiles = new File(path).listFiles(new FilenameFilter() {
 
-			public boolean accept(File dir, String name) {
-				return name.endsWith(extension);
+				public boolean accept(File dir, String name) {
+					return name.endsWith(extension);
+				}
+			});
+			for (int i = 0; i < matchingFiles.length; i++) {
+				if (matchingFiles[i].isFile() && matchingFiles[i].canRead()) {
+					String filename = matchingFiles[i].getName();
+					String tableName = filename.substring(0, filename.length() - extension.length());
+					tableNames.add(tableName);
+				}
 			}
-		});
-		for (int i = 0; i < matchingFiles.length; i++) {
-			if (matchingFiles[i].isFile() && matchingFiles[i].canRead()) {
-				String filename = matchingFiles[i].getName();
-				String tableName = filename.substring(0, filename.length() - extension.length());
-				tableNames.add(tableName);
-			}
+		} else {
+			/*
+			 * Get list of table names from user-provided class.
+			 */
+			List list = tableReader.getTableNames(this);
+			if (list != null)
+				tableNames = list;
 		}
 		return tableNames;
 	}
