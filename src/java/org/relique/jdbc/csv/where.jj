@@ -517,15 +517,19 @@ TOKEN:{
   | "!=")>
 }
 TOKEN:{
-  <ASTERISK:"*"
-  | <NAME>".*">
+  <ASTERISK:"*">
+}
+TOKEN:{
+  <NAMEASTERISK:<NAME>".*">
 }
 TOKEN:{
   <MINUS:"-">
 }
 TOKEN:{
-  <BINOP:("+"
-  | "/")>
+  <PLUS:"+">
+}
+TOKEN:{
+  <DIVIDE:"/">
 }
 ParsedExpression logicalExpression():{
   LogicalExpression left;
@@ -558,7 +562,7 @@ ParsedExpression queryEnvEntry():{
     return new ParsedExpression(result);
   }
   )
-  | (t=<ASTERISK>){
+  | (t=<ASTERISK>|t=<NAMEASTERISK>){
       asterisk = new AsteriskExpression(t.image);
       return new ParsedExpression(new QueryEnvEntry(t.image, asterisk));
   }
@@ -628,11 +632,19 @@ String relOp():{
     return new String(t.image);
   }
 }
-char binOp():{
+char binAddOp():{
   Token t;
 }
 {
-  (t = <BINOP>|t=<ASTERISK>|t=<MINUS>){
+  (t = <PLUS>|t=<MINUS>){
+    return t.image.charAt(0);
+  }
+}
+char binMultiplyOp():{
+  Token t;
+}
+{
+  (t = <ASTERISK>|t=<DIVIDE>){
     return t.image.charAt(0);
   }
 }
@@ -641,7 +653,19 @@ Expression binaryOperation():{
   char op;
 }
 {
-  left = simpleExpression()(op = binOp()right = simpleExpression(){
+  left = multiplyOperation()(op = binAddOp()right = multiplyOperation(){
+    left = new BinaryOperation(op, left, right);
+  }
+  )*{
+    return left;
+  }
+}
+Expression multiplyOperation():{
+  Expression left, right;
+  char op;
+}
+{
+  left = simpleExpression()(op = binMultiplyOp()right = simpleExpression(){
     left = new BinaryOperation(op, left, right);
   }
   )*{

@@ -1558,6 +1558,25 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	/**
+	 * @throws SQLException
+	 */
+	public void testAddingAndMultiplyingFields() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT 1 + ID * 2 as N1, ID * -3 + 1 as N2, ID+1+2*3+4 as N3 FROM sample5");
+		assertTrue(results.next());
+		assertEquals("N1 is wrong", 83, results.getInt("N1"));
+		assertEquals("N2 is wrong", -122, results.getInt("N2"));
+		assertEquals("N3 is wrong", 52, results.getInt("N3"));
+	}
+
 	public void testWithComments() throws SQLException {
 		Properties props = new Properties();
 		props.put("columnTypes", "String,Int,Float,String");

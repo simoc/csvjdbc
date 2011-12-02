@@ -43,9 +43,13 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int ASTERISK = 19;
   /** RegularExpression Id. */
-  int MINUS = 20;
+  int NAMEASTERISK = 20;
   /** RegularExpression Id. */
-  int BINOP = 21;
+  int MINUS = 21;
+  /** RegularExpression Id. */
+  int PLUS = 22;
+  /** RegularExpression Id. */
+  int DIVIDE = 23;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -71,9 +75,11 @@ public interface ExpressionParserConstants {
     "<NAME>",
     "<STRING>",
     "<RELOP>",
-    "<ASTERISK>",
+    "\"*\"",
+    "<NAMEASTERISK>",
     "\"-\"",
-    "<BINOP>",
+    "\"+\"",
+    "\"/\"",
     "\"(\"",
     "\")\"",
   };
