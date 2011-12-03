@@ -665,11 +665,22 @@ Expression multiplyOperation():{
   char op;
 }
 {
-  left = simpleExpression()(op = binMultiplyOp()right = simpleExpression(){
+  left = parenthesesExpression()(op = binMultiplyOp()right = parenthesesExpression(){
     left = new BinaryOperation(op, left, right);
   }
   )*{
     return left;
+  }
+}
+Expression parenthesesExpression():{
+  Expression arg;
+}
+{
+  "(" arg = binaryOperation() ")" {
+    return arg;
+  }
+  | arg = simpleExpression(){
+    return arg;
   }
 }
 Expression simpleExpression():{

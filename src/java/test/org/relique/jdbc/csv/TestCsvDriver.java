@@ -1577,6 +1577,44 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("N3 is wrong", 52, results.getInt("N3"));
 	}
 
+	/**
+	 * @throws SQLException
+	 */
+	public void testParentheses() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT ( ID + 1 ) as N1, ((ID + 2) * 3) as N2, (3) as N3 FROM sample5 where ( Job = 'Piloto' )");
+		assertTrue(results.next());
+		assertEquals("N1 is wrong", 42, results.getInt("N1"));
+		assertEquals("N2 is wrong", 129, results.getInt("N2"));
+		assertEquals("N3 is wrong", 3, results.getInt("N3"));
+	}
+
+	/**
+	 * @throws SQLException
+	 */
+	public void testBadParenthesesFails() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		try {
+			stmt.executeQuery("SELECT ((ID + 1) as N1 FROM sample5");
+			fail("Should raise a java.sqlSQLException");
+		} catch (SQLException e) {
+			assertTrue(e.getMessage().startsWith("Syntax Error"));	
+		}
+	}
+
 	public void testWithComments() throws SQLException {
 		Properties props = new Properties();
 		props.put("columnTypes", "String,Int,Float,String");
