@@ -509,4 +509,17 @@ public class TestSqlParser extends TestCase {
 		parser.parse("SELECT Ab.Name FROM sample AS Ab WHERE Ab.ID='A123'");
 		assertEquals("AB", parser.getTableAlias());
 	}
+	
+	public void testParsingWithNewlines() throws Exception {
+		SqlParser parser = new SqlParser();
+
+		parser.parse("\r\nSELECT NAME\r\nas FLD_A\r\nFROM test\r\nWHERE ID=1\r\n");
+		assertTrue("Incorrect table name", parser.getTableName().equals("test"));
+
+		String[] cols = parser.getColumnNames();
+		assertTrue("Incorrect Column Count", cols.length == 1);
+
+		assertTrue("Column Name Col 0 '" + cols[0] + "' is not equal FLD_A",
+				cols[0].equalsIgnoreCase("fld_a"));
+	}
 }

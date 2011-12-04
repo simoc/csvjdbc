@@ -460,6 +460,7 @@ PARSER_END(ExpressionParser)
 SKIP:{
   " "
   | "\t"
+  | "\r"
   | "\n"
 }
 TOKEN:{

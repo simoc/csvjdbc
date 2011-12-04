@@ -450,7 +450,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     case NAME:
     case STRING:
     case MINUS:
-    case 24:
+    case 25:
     result = null;
       expression = binaryOperation();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -557,10 +557,10 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = logicalUnaryExpression();
     {if (true) return new NotExpression(arg);}
       break;
-    case 24:
-      jj_consume_token(24);
-      arg = logicalOrExpression();
+    case 25:
       jj_consume_token(25);
+      arg = logicalOrExpression();
+      jj_consume_token(26);
     {if (true) return arg;}
       break;
     case UNSIGNEDNUMBER:
@@ -708,10 +708,10 @@ public class ExpressionParser implements ExpressionParserConstants {
   final public Expression parenthesesExpression() throws ParseException {
   Expression arg;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 24:
-      jj_consume_token(24);
-      arg = binaryOperation();
+    case 25:
       jj_consume_token(25);
+      arg = binaryOperation();
+      jj_consume_token(26);
     {if (true) return arg;}
       break;
     case UNSIGNEDNUMBER:
@@ -837,7 +837,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x1000,0x11000,0x180000,0x13b8090,0x200,0x100,0x1238490,0x46800,0x600000,0x880000,0x600000,0x880000,0x1238090,0x238090,0x200000,0x20000,};
+      jj_la1_0 = new int[] {0x2000,0x22000,0x300000,0x2770120,0x400,0x200,0x2470920,0x8d000,0xc00000,0x1100000,0xc00000,0x1100000,0x2470120,0x470120,0x400000,0x40000,};
    }
 
   /** Constructor with InputStream. */
@@ -954,7 +954,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[26];
+    boolean[] la1tokens = new boolean[27];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -968,7 +968,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 26; i++) {
+    for (int i = 0; i < 27; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

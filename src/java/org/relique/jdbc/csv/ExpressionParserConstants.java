@@ -11,45 +11,45 @@ public interface ExpressionParserConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int UNSIGNEDNUMBER = 4;
+  int UNSIGNEDNUMBER = 5;
   /** RegularExpression Id. */
-  int DIGITS = 5;
+  int DIGITS = 6;
   /** RegularExpression Id. */
-  int EXPONENT = 6;
+  int EXPONENT = 7;
   /** RegularExpression Id. */
-  int NULL = 7;
+  int NULL = 8;
   /** RegularExpression Id. */
-  int AND = 8;
+  int AND = 9;
   /** RegularExpression Id. */
-  int OR = 9;
+  int OR = 10;
   /** RegularExpression Id. */
-  int NOT = 10;
+  int NOT = 11;
   /** RegularExpression Id. */
-  int IS = 11;
+  int IS = 12;
   /** RegularExpression Id. */
-  int AS = 12;
+  int AS = 13;
   /** RegularExpression Id. */
-  int LIKE = 13;
+  int LIKE = 14;
   /** RegularExpression Id. */
-  int BETWEEN = 14;
+  int BETWEEN = 15;
   /** RegularExpression Id. */
-  int PLACEHOLDER = 15;
+  int PLACEHOLDER = 16;
   /** RegularExpression Id. */
-  int NAME = 16;
+  int NAME = 17;
   /** RegularExpression Id. */
-  int STRING = 17;
+  int STRING = 18;
   /** RegularExpression Id. */
-  int RELOP = 18;
+  int RELOP = 19;
   /** RegularExpression Id. */
-  int ASTERISK = 19;
+  int ASTERISK = 20;
   /** RegularExpression Id. */
-  int NAMEASTERISK = 20;
+  int NAMEASTERISK = 21;
   /** RegularExpression Id. */
-  int MINUS = 21;
+  int MINUS = 22;
   /** RegularExpression Id. */
-  int PLUS = 22;
+  int PLUS = 23;
   /** RegularExpression Id. */
-  int DIVIDE = 23;
+  int DIVIDE = 24;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -59,6 +59,7 @@ public interface ExpressionParserConstants {
     "<EOF>",
     "\" \"",
     "\"\\t\"",
+    "\"\\r\"",
     "\"\\n\"",
     "<UNSIGNEDNUMBER>",
     "<DIGITS>",

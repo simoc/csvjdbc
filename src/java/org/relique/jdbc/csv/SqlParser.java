@@ -92,7 +92,36 @@ public class SqlParser
   {
     return environment;
   }
-  
+
+  /**
+   * Get last index of keyword in SQL string.
+   * @param sql SQL statement.
+   * @param keyword keyword being searched for.
+   * @return index, or -1 if keyword not found.
+   */
+  private int getLastIndexOfKeyword(String sql, String keyword) {
+	boolean found = false;
+	char before, after;
+	int index = sql.lastIndexOf(keyword);
+	while ((!found) && index >= 0) {
+		if (index == 0)
+			before = ' ';
+		else
+			before = sql.charAt(index - 1);
+		if (index + keyword.length() == sql.length())
+			after = ' ';
+		else
+			after = sql.charAt(index + keyword.length());
+		if (Character.isWhitespace(before) && Character.isWhitespace(after)) {
+			found = true;
+		} else {
+			sql = sql.substring(0, index);
+			index = sql.lastIndexOf(keyword);
+		}
+	}
+    return index;
+  }
+
   /**
    * Set the internal table name and column names.
    *
@@ -104,28 +133,29 @@ public class SqlParser
 	  tableName = null;
 	  tableAlias = null;
 
+	  sql = sql.trim();
 	  String upperSql = sql.toUpperCase();
 
-	  if (!upperSql.startsWith("SELECT ")) {
+	  if (!(upperSql.startsWith("SELECT") && upperSql.length() > 6 && Character.isWhitespace(upperSql.charAt(6)))) {
 		  throw new Exception("Malformed SQL. Missing SELECT statement.");
 	  }
 
-	  if (upperSql.lastIndexOf(" FROM ") == -1) {
+	  int fromPos = getLastIndexOfKeyword(upperSql, "FROM");
+	  if (fromPos < 0) {
 		  throw new Exception("Malformed SQL. Missing FROM statement.");
 	  }
 
-	  int fromPos = upperSql.lastIndexOf(" FROM ");
+	  int wherePos = getLastIndexOfKeyword(upperSql, "WHERE");
 
-	  int wherePos = upperSql.lastIndexOf(" WHERE ");
 	  /**
 	   * If we have a where clause then the table name is everything that sits
 	   * between FROM and WHERE. If we don't then it's everything from the
 	   * "FROM" up to the end of the sentence
 	   */
 	  if (wherePos == -1) {
-		  tableName = sql.substring(fromPos + 6).trim();
+		  tableName = sql.substring(fromPos + 4).trim();
 	  } else {
-		  tableName = sql.substring(fromPos + 6, wherePos).trim();
+		  tableName = sql.substring(fromPos + 4, wherePos).trim();
 	  }
 	  StringTokenizer tokenizer = new StringTokenizer(tableName);
 	  if (tokenizer.countTokens() > 1) {
@@ -145,12 +175,12 @@ public class SqlParser
 
 	  // if we have a "WHERE" parse the expression
 	  if (wherePos > -1) {
-		  whereClause = new ExpressionParser(new StringReader(sql.substring(wherePos + 6)));
+		  whereClause = new ExpressionParser(new StringReader(sql.substring(wherePos + 5)));
 		  whereClause.parseLogicalExpression();
 	  } else {
 		  whereClause = null;
 	  }
-	  if (fromPos < 7)
+	  if (fromPos < 8)
 		  throw new Exception("Malformed SQL. Missing columns");
 	  tokenizer = new StringTokenizer(sql.substring(7,
 			  fromPos), ",");
