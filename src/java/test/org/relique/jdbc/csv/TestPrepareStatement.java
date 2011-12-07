@@ -202,4 +202,25 @@ public class TestPrepareStatement extends TestCase {
 		assertEquals("NAME wrong", "Paris Charles De Gaulle", results.getString("NAME"));
 		assertFalse(results.next());
 	}
+	
+	public void testPreparedStatementWithOrderBy() throws SQLException {
+		Properties props = new Properties();
+		props.put("extension", ".csv");
+		props.put("columnTypes", "Int,String,String,Timestamp,String");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		String queryString = "SELECT * FROM sample5 where id > ? order by id";
+		PreparedStatement prepstmt = conn.prepareStatement(queryString);
+
+		prepstmt.setInt(1, 7);
+		ResultSet results = prepstmt.executeQuery();
+		assertTrue(results.next());
+		assertEquals("column ID is wrong", 8, results.getInt("ID"));
+		assertTrue(results.next());
+		assertEquals("column ID is wrong", 9, results.getInt("ID"));
+		assertTrue(results.next());
+		assertEquals("column ID is wrong", 41, results.getInt("ID"));
+		assertFalse(results.next());
+		results.close();
+	}
 }

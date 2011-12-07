@@ -41,7 +41,9 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -84,6 +86,8 @@ public class CsvResultSet implements ResultSet {
 
 	private ExpressionParser whereClause;
 
+	private List orderByColumns;
+
 	private List queryEnvironment;
 
 	private Map recordEnvironment;
@@ -100,7 +104,7 @@ public class CsvResultSet implements ResultSet {
 
 	private StringConverter converter;
 
-	private List bufferedRecordEnvironments = null;
+	private ArrayList bufferedRecordEnvironments = null;
 
 	private int currentRow;
 
@@ -110,6 +114,48 @@ public class CsvResultSet implements ResultSet {
 
 	private boolean isClosed = false;
 
+	/**
+	 * Compares SQL ORDER BY expressions for two records.
+	 */
+	public class OrderByComparator implements Comparator {
+
+		public int compare(Object o1, Object o2) {
+			Map recordEnvironment1 = (Map)o1;
+			Map recordEnvironment2 = (Map)o2;
+			int retval = 0;
+			int i = 0;
+			while (i < orderByColumns.size() && retval == 0) {
+				Object []o = (Object [])orderByColumns.get(i);
+				Integer direction = (Integer)o[0];
+				Expression expr = (Expression)o[1];
+				recordEnvironment = recordEnvironment1;
+				updateRecordEnvironment(true);
+	    		if (converter != null)
+	    			objectEnvironment.put("@STRINGCONVERTER", converter);
+				Comparable result1 = (Comparable)expr.eval(objectEnvironment);
+				recordEnvironment = recordEnvironment2;
+				updateRecordEnvironment(true);
+	    		if (converter != null)
+	    			objectEnvironment.put("@STRINGCONVERTER", converter);
+				Comparable result2 = (Comparable)expr.eval(objectEnvironment);
+				if (result1 == null) {
+					if (result2 == null)
+						retval = 0;
+					else
+						retval = -1;
+				} else if (result2 == null) {
+					retval = 1;
+				} else {
+					retval = result1.compareTo(result2);
+				}
+				if (direction.intValue() < 0)
+					retval = -retval;
+				i++;
+			}
+			return retval;
+		}
+	}
+
     /**
      * Constructor for the CsvResultSet object 
      *
@@ -117,7 +163,8 @@ public class CsvResultSet implements ResultSet {
      * @param reader Helper class that performs the actual file reads
      * @param tableName Table referenced by the Statement
      * @param typeNames Array of available columns for referenced table
-     * @param whereValue The string to be sought for
+     * @param whereClause expression for the SQL where clause.
+     * @param orderByColumns expressions for SQL ORDER BY clause.
      * @param columnTypes A comma-separated string specifying the type of the i-th column of the database table (not of the result).
      * @param whereColumnName the name of the column, needed late by a select *
      * @throws ClassNotFoundException in case the typed columns fail
@@ -125,7 +172,8 @@ public class CsvResultSet implements ResultSet {
      */
     protected CsvResultSet(CsvStatement statement, DataReader reader,
 			String tableName, List queryEnvironment, int isScrollable, 
-			ExpressionParser whereClause, String columnTypes, int skipLeadingLines) throws ClassNotFoundException, SQLException {
+			ExpressionParser whereClause, List orderByColumns,
+			String columnTypes, int skipLeadingLines) throws ClassNotFoundException, SQLException {
         this.statement = statement;
         maxRows = statement.getMaxRows();
         this.isScrollable = isScrollable;
@@ -133,6 +181,10 @@ public class CsvResultSet implements ResultSet {
         this.tableName = tableName;
         this.queryEnvironment = new ArrayList(queryEnvironment);
         this.whereClause = whereClause;
+        if (orderByColumns != null)
+        	this.orderByColumns = new ArrayList(orderByColumns);
+        else
+        	this.orderByColumns = null;
         if(reader instanceof CsvReader || reader instanceof ListDataReader) {
         	// timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
         	timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
@@ -146,9 +198,15 @@ public class CsvResultSet implements ResultSet {
         	}
         }
         if (whereClause!= null)
-        	this.usedColumns = whereClause.usedColumns();
+        	this.usedColumns = new LinkedList(whereClause.usedColumns());
         else
             this.usedColumns = new LinkedList();
+        if (this.orderByColumns != null) {
+			for (Object o : this.orderByColumns) {
+				Expression expr = (Expression)((Object [])o)[1];
+				this.usedColumns.addAll(expr.usedColumns());
+			}
+        }
 
         String[] columnNames = reader.getColumnNames();
 
@@ -182,6 +240,32 @@ public class CsvResultSet implements ResultSet {
 			}
 		}
 
+		/*
+		 * Replace any "order by 2" with the 2nd column in the query list.
+		 */
+		if (this.orderByColumns != null) {
+			for (Object o : this.orderByColumns) {
+				Expression expression = (Expression)((Object [])o)[1];
+				if (expression instanceof NumericConstant) {
+					NumericConstant n = (NumericConstant)expression;
+					if (!(n.value instanceof Integer))
+						throw new SQLException("Invalid ORDER BY column: " + n);
+					int index = n.value.intValue();
+					
+					/*
+					 * Column numbering in SQL starts at 1, not 0.
+					 */
+					index--;
+
+					if (index < 0 || index >= this.queryEnvironment.size()) {
+						throw new SQLException("Invalid ORDER BY column: " + (index + 1));
+					}
+					Object[] q = (Object[])this.queryEnvironment.get(index);
+					((Object [])o)[1] = q[1];
+				}
+			}
+		}
+
         if (!((CsvConnection)statement.getConnection()).isIndexedFiles()) {
         	//TODO no check when indexedFiles=true because unit test TestCsvDriver.testFromNonExistingIndexedTable then fails.
         	/*
@@ -190,8 +274,8 @@ public class CsvResultSet implements ResultSet {
     		for (int i = 0; i < this.queryEnvironment.size(); i++) {
 				Object[] o = (Object[]) this.queryEnvironment.get(i);
 				if (o[1] != null) {
-					List usedColumns = ((Expression)o[1]).usedColumns();
-					for (Object usedColumn : usedColumns) {
+					List exprUsedColumns = ((Expression)o[1]).usedColumns();
+					for (Object usedColumn : exprUsedColumns) {
 						if (!allReaderColumns.contains(usedColumn))
 							throw new SQLException("Invalid column name: " + usedColumn);
 					}
@@ -202,19 +286,60 @@ public class CsvResultSet implements ResultSet {
         }
         
 		/*
-		 * Check that all columns used in the WHERE clause do exist in the table.
+		 * Check that all columns used in the WHERE and ORDER BY clauses do exist in the table.
 		 */
 		if (!((CsvConnection)statement.getConnection()).isIndexedFiles()) {
 			for (Object usedColumn : this.usedColumns) {
 				if (!allReaderColumns.contains(usedColumn))
 					throw new SQLException("Invalid column name: " + usedColumn);
 			}
+			if (this.orderByColumns != null) {
+				for (Object o : this.orderByColumns) {
+					Expression expr = (Expression)((Object [])o)[1];
+					List exprUsedColumns = expr.usedColumns();
+					if (exprUsedColumns.isEmpty()) {
+						/*
+						 * Must order by something that contains at least one column, not 'foo' or 1+1.
+						 */
+						throw new SQLException("Invalid column name: " + expr.toString());
+					}
+				}
+			}
 		}
 
-    	if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+    	if (this.orderByColumns != null || this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
     		bufferedRecordEnvironments = new ArrayList();
     		hitTail = false;
     		currentRow = 0;
+    	}
+    	if (this.orderByColumns != null) {
+    		/*
+    		 * Read all rows into memory and sort them based on SQL ORDER BY expressions.
+    		 */
+    		int savedMaxRows = maxRows;
+    		maxRows = 0;
+    		try {
+    			while (next())
+    				;
+    		} finally {
+    			maxRows = savedMaxRows;
+    		}
+    		Object []allRows = bufferedRecordEnvironments.toArray();
+    		Arrays.sort(allRows, new OrderByComparator());
+    		int limit = allRows.length;
+    		if (maxRows != 0 && maxRows < limit)
+    			limit = maxRows;
+    		
+    		bufferedRecordEnvironments.clear();
+    		for (int i = 0; i < limit; i++)
+    			bufferedRecordEnvironments.add(allRows[i]);
+
+    		/*
+    		 * Rewind back to before first row so we can now read them in sorted order.
+    		 */
+    		currentRow = 0;
+    		recordEnvironment = null;
+    		updateRecordEnvironment(false);
     	}
     }
 
@@ -243,7 +368,8 @@ public class CsvResultSet implements ResultSet {
     	
     	checkOpen();
 
-    	if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE && currentRow < bufferedRecordEnvironments.size()) {
+    	if ((this.orderByColumns != null || this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) &&
+    		currentRow < bufferedRecordEnvironments.size()) {
     		currentRow++;
     		recordEnvironment = (Map) bufferedRecordEnvironments.get(currentRow - 1);
 			updateRecordEnvironment(true);
@@ -278,7 +404,7 @@ public class CsvResultSet implements ResultSet {
 					updateRecordEnvironment(thereWasAnAnswer);
 				}
 			}
-			if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+			if (this.orderByColumns != null || this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
 				if(thereWasAnAnswer) {
 					bufferedRecordEnvironments.add(reader.getEnvironment());
 					currentRow++;
@@ -294,7 +420,7 @@ public class CsvResultSet implements ResultSet {
 		}
     }
 
-    private void updateRecordEnvironment(boolean thereWasAnAnswer) throws SQLException {
+    private void updateRecordEnvironment(boolean thereWasAnAnswer) {
 		objectEnvironment = new HashMap();
     	if(!thereWasAnAnswer) {
     		recordEnvironment = null;

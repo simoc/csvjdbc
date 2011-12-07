@@ -35,21 +35,25 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int PLACEHOLDER = 16;
   /** RegularExpression Id. */
-  int NAME = 17;
+  int ASC = 17;
   /** RegularExpression Id. */
-  int STRING = 18;
+  int DESC = 18;
   /** RegularExpression Id. */
-  int RELOP = 19;
+  int NAME = 19;
   /** RegularExpression Id. */
-  int ASTERISK = 20;
+  int STRING = 20;
   /** RegularExpression Id. */
-  int NAMEASTERISK = 21;
+  int RELOP = 21;
   /** RegularExpression Id. */
-  int MINUS = 22;
+  int ASTERISK = 22;
   /** RegularExpression Id. */
-  int PLUS = 23;
+  int NAMEASTERISK = 23;
   /** RegularExpression Id. */
-  int DIVIDE = 24;
+  int MINUS = 24;
+  /** RegularExpression Id. */
+  int PLUS = 25;
+  /** RegularExpression Id. */
+  int DIVIDE = 26;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -73,6 +77,8 @@ public interface ExpressionParserConstants {
     "\"LIKE\"",
     "\"BETWEEN\"",
     "\"?\"",
+    "\"ASC\"",
+    "\"DESC\"",
     "<NAME>",
     "<STRING>",
     "<RELOP>",

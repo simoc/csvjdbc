@@ -128,6 +128,14 @@ class QueryEnvEntry extends Expression{
     return key+": "+expression.toString();
   }
 }
+class OrderByEntry extends Expression{
+  String order;
+  Expression expression;
+  public OrderByEntry(Expression expression, String order){
+    this.order = order;
+    this.expression = expression;
+  }
+}
 class BinaryOperation extends Expression{
   char op;
   Expression left, right;
@@ -420,6 +428,9 @@ public class ExpressionParser{
     placeholders = new HashMap();
     content = logicalExpression();
   }
+  public void parseOrderByEntry()throws ParseException{
+    content = orderByEntry();
+  }
   public void parseQueryEnvEntry()throws ParseException{
     content = queryEnvEntry();
   }
@@ -503,6 +514,12 @@ TOKEN:{
   <PLACEHOLDER:"?">
 }
 TOKEN:{
+  <ASC:"ASC">
+}
+TOKEN:{
+  <DESC:"DESC">
+}
+TOKEN:{
   <NAME:(["0"-"9", "A"-"Z", "a"-"z", "_", "."])+>
 }
 TOKEN:{
@@ -538,6 +555,17 @@ ParsedExpression logicalExpression():{
 {
   left = logicalOrExpression()<EOF>{
     return new ParsedExpression(left);
+  }
+}
+ParsedExpression orderByEntry():{
+  Expression left;
+  String order;
+  Token t;
+}
+{
+  {order = "ASC";}
+  left = binaryOperation()(t=<ASC>{order=t.image;}|t=<DESC>{order=t.image;})?<EOF>{
+    return new ParsedExpression(new OrderByEntry(left, order));
   }
 }
 ParsedExpression queryEnvEntry():{

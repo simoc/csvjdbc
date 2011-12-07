@@ -51,6 +51,7 @@ public class SqlParser
    */
   private ExpressionParser whereClause;
   private List environment;
+  private List orderByColumns;
   
   public void setPlaceholdersValues(Object[] values)
   {
@@ -147,15 +148,20 @@ public class SqlParser
 
 	  int wherePos = getLastIndexOfKeyword(upperSql, "WHERE");
 
+	  int orderByPos = getLastIndexOfKeyword(upperSql, "ORDER BY");
+
 	  /**
 	   * If we have a where clause then the table name is everything that sits
 	   * between FROM and WHERE. If we don't then it's everything from the
 	   * "FROM" up to the end of the sentence
 	   */
-	  if (wherePos == -1) {
+	  if (wherePos == -1 && orderByPos == -1) {
 		  tableName = sql.substring(fromPos + 4).trim();
 	  } else {
-		  tableName = sql.substring(fromPos + 4, wherePos).trim();
+		  if (wherePos >= 0)
+			  tableName = sql.substring(fromPos + 4, wherePos).trim();
+		  else
+			  tableName = sql.substring(fromPos + 4, orderByPos).trim();
 	  }
 	  StringTokenizer tokenizer = new StringTokenizer(tableName);
 	  if (tokenizer.countTokens() > 1) {
@@ -175,11 +181,34 @@ public class SqlParser
 
 	  // if we have a "WHERE" parse the expression
 	  if (wherePos > -1) {
-		  whereClause = new ExpressionParser(new StringReader(sql.substring(wherePos + 5)));
+		  if (orderByPos == -1)
+			  whereClause = new ExpressionParser(new StringReader(sql.substring(wherePos + 5)));
+		  else
+			  whereClause = new ExpressionParser(new StringReader(sql.substring(wherePos + 6, orderByPos).trim()));
 		  whereClause.parseLogicalExpression();
 	  } else {
 		  whereClause = null;
 	  }
+
+	  // if we have a "ORDER BY" parse the list of column names.
+	  if (orderByPos >= 0) {
+		  orderByColumns = new ArrayList();
+		  String orderBy = sql.substring(orderByPos + 8).trim();
+		  tokenizer = new StringTokenizer(orderBy, ",");
+		  while (tokenizer.hasMoreTokens()) {
+			  String token = tokenizer.nextToken().trim();
+			  ExpressionParser cs = new ExpressionParser(new StringReader(token));
+			  cs.parseOrderByEntry();
+			  if (cs.content != null) {
+				  OrderByEntry cc = (OrderByEntry)cs.content.content;
+				  int direction = cc.order.equalsIgnoreCase("ASC") ? 1 : -1;
+				  orderByColumns.add(new Object[]{Integer.valueOf(direction), cc.expression});
+			  }
+		  }
+		  if (orderByColumns.isEmpty())
+			  throw new Exception("Malformed SQL. Missing ORDER BY columns");
+	  }
+
 	  if (fromPos < 8)
 		  throw new Exception("Malformed SQL. Missing columns");
 	  tokenizer = new StringTokenizer(sql.substring(7,
@@ -217,6 +246,9 @@ public class SqlParser
 	  return whereClause;
   }
 
+  public List getOrderByColumns() {
+		return orderByColumns;
+  }
 
   public String getAlias(int i) {
 	  Object[] o = (Object[]) environment.get(i);

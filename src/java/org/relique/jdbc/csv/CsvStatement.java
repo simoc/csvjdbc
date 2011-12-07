@@ -425,7 +425,8 @@ public class CsvStatement implements Statement {
 		try {
 			resultSet = new CsvResultSet(this, reader, tableName,
 					parser.getColumns(), this.isScrollable, parser
-							.getWhereClause(), connection.getColumnTypes(tableName), 
+							.getWhereClause(), parser.getOrderByColumns(),
+							connection.getColumnTypes(tableName), 
 							connection.getSkipLeadingLines());
 			lastResultSet = resultSet;
 		} catch (ClassNotFoundException e) {
