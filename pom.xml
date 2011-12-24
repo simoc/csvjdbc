@@ -1,0 +1,79 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.relique.jdbc</groupId>
+  <artifactId>csvjdbc</artifactId>
+  <version>1.0.7</version>
+  <packaging>jar</packaging>
+  <name>CsvJdbc</name>
+  <description>a Java JDBC driver for reading comma-separated-value files</description>
+  <url>http://csvjdbc.sourceforge.net</url>
+
+  <licenses>
+    <license>
+      <name>LGPL2.1</name>
+      <url>http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git://csvjdbc.git.sourceforge.net/gitroot/csvjdbc/csvjdbc</connection>
+    <tag>HEAD</tag>
+    <url>http://csvjdbc.git.sourceforge.net/git/gitweb-index.cgi</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>mfrasca</id>
+      <name>Mario Frasca</name>
+      <email>mfrasca@users.sourceforge.net</email>
+      <url>http://sourceforge.net/users/mfrasca</url>
+      <organization>Sourceforge</organization>
+      <organizationUrl>http://www.sourceforge.net</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>simoc</id>
+      <name>Simon Chenery</name>
+      <email>simoc@users.sourceforge.net</email>
+      <url>http://sourceforge.net/users/simoc</url>
+      <organization>Sourceforge</organization>
+      <organizationUrl>http://www.sourceforge.net</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <properties>
+    <sample.files.location>${basedir}/src/testdata</sample.files.location>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <build>
+    <sourceDirectory>src/java/org</sourceDirectory>
+    <!-- //TODO Disable tests until we can resolve how to handle
+    dans-dbf-lib-1.0.0-beta-09.jar dependency correctly
+    and the unit test that fails is fixed.
+    <testSourceDirectory>src/java/test</testSourceDirectory>
+    -->
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- //TODO Dependency not yet available in Maven repository
+    <dependency>
+      <groupId>nl.knaw.dans.common</groupId>
+      <artifactId>dans-dbf-lib</artifactId>
+      <version>1.0.0-beta-09</version>
+      <scope>test</scope>
+    </dependency>
+    -->
+  </dependencies>
+
+</project>
