@@ -1148,32 +1148,6 @@ public class CsvConnection implements Connection {
 	}
 
 	/**
-	 * Parse list of column definitions for each database table into a map.
-	 * @param def column definition string such as T1:Int,String,T2:Int,Int,Float.
-	 * @return map with list of tokens for each database table.
-	 */
-	private HashMap<String, List<String>> parseTableDefinition(String def) {
-		HashMap<String, List<String>> retval = new HashMap<String, List<String>>();
-		String tableName = null;
-		String []tokens = def.split(",");
-		for (int i = 0; i < tokens.length; i++) {
-			String token = tokens[i];
-			int colonIndex = token.indexOf(':');
-			if (colonIndex >= 0) {
-				tableName = token.substring(0, colonIndex);
-				token = token.substring(colonIndex + 1);
-			}
-			List<String> columnTypes = retval.get(tableName);
-			if (columnTypes == null) {
-				columnTypes = new ArrayList<String>();
-				retval.put(tableName, columnTypes);
-			}
-			columnTypes.add(token);
-		}
-		return retval;
-	}
-
-	/**
 	 * Set column types for SQL queries.
 	 * @param columnTypes comma-separated list of data types.
 	 * @deprecated Pass columnTypes when creating driver.  To be removed in a future version.
