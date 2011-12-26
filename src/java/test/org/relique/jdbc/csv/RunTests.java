@@ -42,6 +42,7 @@ public class RunTests
     suite.addTestSuite(TestCryptoFilter.class);
     suite.addTestSuite(TestPrepareStatement.class);
     suite.addTestSuite(TestStringConverter.class);
+    suite.addTestSuite(TestZipFiles.class);
     return suite;
   }
 

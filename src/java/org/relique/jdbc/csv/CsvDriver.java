@@ -19,6 +19,7 @@ package org.relique.jdbc.csv;
 import java.sql.*;
 import java.util.Properties;
 import java.io.File;
+import java.io.IOException;
 
 import org.relique.io.TableReader;
 
@@ -87,6 +88,7 @@ public class CsvDriver implements Driver
   public static final String DEFAULT_QUOTE_STYLE = "SQL";
 
   public static final String READER_CLASS_PREFIX = "class:";
+  public static final String ZIP_FILE_PREFIX = "zip:";
 
   /**
    *Gets the propertyInfo attribute of the CsvDriver object
@@ -188,6 +190,17 @@ public class CsvDriver implements Driver
     	catch (InstantiationException e)
     	{
     		throw new SQLException(e);
+    	}
+    }
+    else if (filePath.startsWith(ZIP_FILE_PREFIX))
+    {
+    	String zipFilename = filePath.substring(ZIP_FILE_PREFIX.length());
+    	try {
+    		ZipFileTableReader zipFileTableReader = new ZipFileTableReader(zipFilename);
+    		connection = new CsvConnection(zipFileTableReader, info);
+    		zipFileTableReader.setExtension(connection.getExtension());
+    	} catch (IOException e) {
+    		throw new SQLException("Failed opening ZIP file: " + zipFilename, e);
     	}
     }
     else

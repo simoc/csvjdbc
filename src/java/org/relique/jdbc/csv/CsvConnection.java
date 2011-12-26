@@ -1008,7 +1008,9 @@ public class CsvConnection implements Connection {
     protected String getURL() {
     	String url;
     	if (path != null)
-    		url = CsvDriver.URL_PREFIX + path; 
+    		url = CsvDriver.URL_PREFIX + path;
+    	else if (tableReader instanceof ZipFileTableReader)
+       		url = CsvDriver.URL_PREFIX + CsvDriver.ZIP_FILE_PREFIX + ((ZipFileTableReader)tableReader).getZipFilename();
     	else
     		url = CsvDriver.URL_PREFIX + CsvDriver.READER_CLASS_PREFIX + tableReader.getClass().getName();
 		return url;
