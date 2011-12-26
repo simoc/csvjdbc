@@ -110,6 +110,46 @@ class ColumnName extends Expression{
     return result;
   }
 }
+class SQLLowerFunction extends Expression{
+  Expression expression;
+  public SQLLowerFunction(Expression expression){
+    this.expression = expression;
+  }
+  public Object eval(Map env){
+    Object retval = expression.eval(env);
+    if (retval != null)
+      retval = retval.toString().toLowerCase();
+    return retval;
+  }
+  public String toString(){
+    return "LOWER("+expression+")";
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.addAll(expression.usedColumns());
+    return result;
+  }
+}
+class SQLUpperFunction extends Expression{
+  Expression expression;
+  public SQLUpperFunction(Expression expression){
+    this.expression = expression;
+  }
+  public Object eval(Map env){
+    Object retval = expression.eval(env);
+    if (retval != null)
+      retval = retval.toString().toUpperCase();
+    return retval;
+  }
+  public String toString(){
+    return "UPPER("+expression+")";
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.addAll(expression.usedColumns());
+    return result;
+  }
+}
 class QueryEnvEntry extends Expression{
   String key;
   Expression expression;
@@ -520,6 +560,12 @@ TOKEN:{
   <DESC:"DESC">
 }
 TOKEN:{
+  <LOWER:"LOWER">
+}
+TOKEN:{
+  <UPPER:"UPPER">
+}
+TOKEN:{
   <NAME:(["0"-"9", "A"-"Z", "a"-"z", "_", "."])+>
 }
 TOKEN:{
@@ -716,7 +762,13 @@ Expression simpleExpression():{
   Expression arg;
 }
 {
-  arg = columnName(){
+  <UPPER> "(" arg = binaryOperation() ")" {
+    return new SQLUpperFunction(arg);
+  }
+  | <LOWER> "(" arg = binaryOperation() ")" {
+    return new SQLLowerFunction(arg);
+  }
+  | arg = columnName(){
     return arg;
   }
   | arg = numericConstant(){

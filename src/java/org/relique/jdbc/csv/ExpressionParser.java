@@ -86,6 +86,46 @@ class ColumnName extends Expression{
     return result;
   }
 }
+class SQLLowerFunction extends Expression{
+  Expression expression;
+  public SQLLowerFunction(Expression expression){
+    this.expression = expression;
+  }
+  public Object eval(Map env){
+    Object retval = expression.eval(env);
+    if (retval != null)
+      retval = retval.toString().toLowerCase();
+    return retval;
+  }
+  public String toString(){
+    return "LOWER("+expression+")";
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.addAll(expression.usedColumns());
+    return result;
+  }
+}
+class SQLUpperFunction extends Expression{
+  Expression expression;
+  public SQLUpperFunction(Expression expression){
+    this.expression = expression;
+  }
+  public Object eval(Map env){
+    Object retval = expression.eval(env);
+    if (retval != null)
+      retval = retval.toString().toUpperCase();
+    return retval;
+  }
+  public String toString(){
+    return "UPPER("+expression+")";
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.addAll(expression.usedColumns());
+    return result;
+  }
+}
 class QueryEnvEntry extends Expression{
   String key;
   Expression expression;
@@ -491,10 +531,12 @@ public class ExpressionParser implements ExpressionParserConstants {
     case UNSIGNEDNUMBER:
     case NULL:
     case PLACEHOLDER:
+    case LOWER:
+    case UPPER:
     case NAME:
     case STRING:
     case MINUS:
-    case 27:
+    case 29:
     result = null;
       expression = binaryOperation();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -601,15 +643,17 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = logicalUnaryExpression();
     {if (true) return new NotExpression(arg);}
       break;
-    case 27:
-      jj_consume_token(27);
+    case 29:
+      jj_consume_token(29);
       arg = logicalOrExpression();
-      jj_consume_token(28);
+      jj_consume_token(30);
     {if (true) return arg;}
       break;
     case UNSIGNEDNUMBER:
     case NULL:
     case PLACEHOLDER:
+    case LOWER:
+    case UPPER:
     case NAME:
     case STRING:
     case MINUS:
@@ -752,15 +796,17 @@ public class ExpressionParser implements ExpressionParserConstants {
   final public Expression parenthesesExpression() throws ParseException {
   Expression arg;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 27:
-      jj_consume_token(27);
+    case 29:
+      jj_consume_token(29);
       arg = binaryOperation();
-      jj_consume_token(28);
+      jj_consume_token(30);
     {if (true) return arg;}
       break;
     case UNSIGNEDNUMBER:
     case NULL:
     case PLACEHOLDER:
+    case LOWER:
+    case UPPER:
     case NAME:
     case STRING:
     case MINUS:
@@ -778,6 +824,20 @@ public class ExpressionParser implements ExpressionParserConstants {
   final public Expression simpleExpression() throws ParseException {
   Expression arg;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case UPPER:
+      jj_consume_token(UPPER);
+      jj_consume_token(29);
+      arg = binaryOperation();
+      jj_consume_token(30);
+    {if (true) return new SQLUpperFunction(arg);}
+      break;
+    case LOWER:
+      jj_consume_token(LOWER);
+      jj_consume_token(29);
+      arg = binaryOperation();
+      jj_consume_token(30);
+    {if (true) return new SQLLowerFunction(arg);}
+      break;
     case NAME:
       arg = columnName();
     {if (true) return arg;}
@@ -881,7 +941,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x60000,0x60000,0x2000,0x82000,0xc00000,0x9d90120,0x400,0x200,0x9190920,0x20d000,0x3000000,0x4400000,0x3000000,0x4400000,0x9190120,0x1190120,0x1000000,0x100000,};
+      jj_la1_0 = new int[] {0x60000,0x60000,0x2000,0x202000,0x3000000,0x27790120,0x400,0x200,0x24790920,0x80d000,0xc000000,0x11000000,0xc000000,0x11000000,0x24790120,0x4790120,0x4000000,0x400000,};
    }
 
   /** Constructor with InputStream. */
@@ -998,7 +1058,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[29];
+    boolean[] la1tokens = new boolean[31];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -1012,7 +1072,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 29; i++) {
+    for (int i = 0; i < 31; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

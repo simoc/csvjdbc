@@ -1615,6 +1615,50 @@ public class TestCsvDriver extends TestCase {
 		}
 	}
 
+	public void testLowerFunction() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select lower(job) as ljob, lower('AA') as CAT from sample5");
+		assertTrue(results.next());
+		assertEquals("The JOB is wrong", "piloto", results.getString(1));
+		assertEquals("The CAT is wrong", "aa", results.getString(2));
+		assertTrue(results.next());
+		assertEquals("The JOB is wrong", "project manager", results.getString(1));
+		assertEquals("The CAT is wrong", "aa", results.getString(2));
+
+		results = stmt.executeQuery("select ID from sample5 where lower(job) = lower('FINANCE MANAGER')");
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", 2, results.getInt(1));
+		assertFalse(results.next());		
+	}
+
+	public void testUpperFunction() throws SQLException {
+		Properties props = new Properties();
+		props.put("headerline", "BLZ,BANK_NAME");
+		props.put("suppressHeaders", "true");
+		props.put("fileExtension", ".txt");
+		props.put("commentChar", "#");
+		props.put("columnTypes", "Integer,String");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select UPPER(BANK_NAME) as UC, UPPER('Credit' + 'a') as N2, upper(7) as N3 from banks");
+		assertTrue(results.next());
+		assertEquals("The BANK_NAME is wrong", "BUNDESBANK (BERLIN)", results.getString(1));
+		assertEquals("N2 is wrong", "CREDITA", results.getString(2));
+		assertEquals("N3 is wrong", "7", results.getString(3));
+
+		results = stmt.executeQuery("select BLZ from banks where UPPER(BANK_NAME) = 'POSTBANK (BERLIN)'");
+		assertTrue(results.next());
+		assertEquals("The BLZ is wrong", 10010010, results.getInt(1));
+		assertFalse(results.next());		
+	}
+
 	public void testWithComments() throws SQLException {
 		Properties props = new Properties();
 		props.put("columnTypes", "String,Int,Float,String");
