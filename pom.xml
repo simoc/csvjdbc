@@ -1,6 +1,6 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.relique.jdbc</groupId>
+  <groupId>net.sourceforge.csvjdbc</groupId>
   <artifactId>csvjdbc</artifactId>
   <version>1.0.7</version>
   <packaging>jar</packaging>
