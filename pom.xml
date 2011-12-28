@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.sourceforge.csvjdbc</groupId>
   <artifactId>csvjdbc</artifactId>
-  <version>1.0.7</version>
+  <version>1.0.7-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>CsvJdbc</name>
   <description>a Java JDBC driver for reading comma-separated-value files</description>
@@ -58,6 +58,17 @@
     and the unit test that fails is fixed.
     <testSourceDirectory>src/java/test</testSourceDirectory>
     -->
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.7</version>
+        <configuration>
+          <sourcepath>src/java</sourcepath>
+          <excludePackageNames>test.org.relique.jdbc.csv</excludePackageNames>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
   <dependencies>
     <dependency>
