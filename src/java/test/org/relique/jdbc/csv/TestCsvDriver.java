@@ -1659,6 +1659,22 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());		
 	}
 
+	public void testRoundFunction() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Byte,Short,Integer,Long,Float,Double,BigDecimal");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select ROUND(11.77) as R1, ROUND('11.77') as R2, ROUND(C2) as R3, round(C3/7.0) as R4 from numeric where ROUND(C5) = 3");
+		assertTrue(results.next());
+		assertEquals("R1 is wrong", 12, results.getInt(1));
+		assertEquals("R2 is wrong", 12, results.getInt(2));
+		assertEquals("R3 is wrong", -1010, results.getInt(3));
+		assertEquals("R4 is wrong", 42871, results.getInt(4));
+		assertFalse(results.next());
+	}
+
 	public void testWithComments() throws SQLException {
 		Properties props = new Properties();
 		props.put("columnTypes", "String,Int,Float,String");

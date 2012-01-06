@@ -130,6 +130,42 @@ class SQLLowerFunction extends Expression{
     return result;
   }
 }
+class SQLRoundFunction extends Expression{
+  Expression expression;
+  public SQLRoundFunction(Expression expression){
+    this.expression = expression;
+  }
+  public Object eval(Map env){
+    Object retval = expression.eval(env);
+    if (retval != null) {
+      if (!(retval instanceof Number)) {
+        try {
+          retval = new Double(retval.toString());
+        } catch(NumberFormatException e) {
+          retval = null;
+        }
+      }
+      if (retval != null) {
+        if (!(retval instanceof Integer)) {
+          double d = ((Number)retval).doubleValue();
+          if (d < Integer.MIN_VALUE || d > Integer.MAX_VALUE)
+	    retval = new Double(Math.round(d));
+          else
+	    retval = new Integer((int)Math.round(d));
+        }
+      }
+    }
+    return retval;
+  }
+  public String toString(){
+    return "ROUND("+expression+")";
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.addAll(expression.usedColumns());
+    return result;
+  }
+}
 class SQLUpperFunction extends Expression{
   Expression expression;
   public SQLUpperFunction(Expression expression){
@@ -563,6 +599,9 @@ TOKEN:{
   <LOWER:"LOWER">
 }
 TOKEN:{
+  <ROUND:"ROUND">
+}
+TOKEN:{
   <UPPER:"UPPER">
 }
 TOKEN:{
@@ -767,6 +806,9 @@ Expression simpleExpression():{
   }
   | <LOWER> "(" arg = binaryOperation() ")" {
     return new SQLLowerFunction(arg);
+  }
+  | <ROUND> "(" arg = binaryOperation() ")" {
+    return new SQLRoundFunction(arg);
   }
   | arg = columnName(){
     return arg;

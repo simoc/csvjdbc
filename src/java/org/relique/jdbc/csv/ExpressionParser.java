@@ -106,6 +106,42 @@ class SQLLowerFunction extends Expression{
     return result;
   }
 }
+class SQLRoundFunction extends Expression{
+  Expression expression;
+  public SQLRoundFunction(Expression expression){
+    this.expression = expression;
+  }
+  public Object eval(Map env){
+    Object retval = expression.eval(env);
+    if (retval != null) {
+      if (!(retval instanceof Number)) {
+        try {
+          retval = new Double(retval.toString());
+        } catch(NumberFormatException e) {
+          retval = null;
+        }
+      }
+      if (retval != null) {
+        if (!(retval instanceof Integer)) {
+          double d = ((Number)retval).doubleValue();
+          if (d < Integer.MIN_VALUE || d > Integer.MAX_VALUE)
+            retval = new Double(Math.round(d));
+          else
+            retval = new Integer((int)Math.round(d));
+        }
+      }
+    }
+    return retval;
+  }
+  public String toString(){
+    return "ROUND("+expression+")";
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.addAll(expression.usedColumns());
+    return result;
+  }
+}
 class SQLUpperFunction extends Expression{
   Expression expression;
   public SQLUpperFunction(Expression expression){
@@ -532,11 +568,12 @@ public class ExpressionParser implements ExpressionParserConstants {
     case NULL:
     case PLACEHOLDER:
     case LOWER:
+    case ROUND:
     case UPPER:
     case NAME:
     case STRING:
     case MINUS:
-    case 29:
+    case 30:
     result = null;
       expression = binaryOperation();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -643,16 +680,17 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = logicalUnaryExpression();
     {if (true) return new NotExpression(arg);}
       break;
-    case 29:
-      jj_consume_token(29);
-      arg = logicalOrExpression();
+    case 30:
       jj_consume_token(30);
+      arg = logicalOrExpression();
+      jj_consume_token(31);
     {if (true) return arg;}
       break;
     case UNSIGNEDNUMBER:
     case NULL:
     case PLACEHOLDER:
     case LOWER:
+    case ROUND:
     case UPPER:
     case NAME:
     case STRING:
@@ -796,16 +834,17 @@ public class ExpressionParser implements ExpressionParserConstants {
   final public Expression parenthesesExpression() throws ParseException {
   Expression arg;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 29:
-      jj_consume_token(29);
-      arg = binaryOperation();
+    case 30:
       jj_consume_token(30);
+      arg = binaryOperation();
+      jj_consume_token(31);
     {if (true) return arg;}
       break;
     case UNSIGNEDNUMBER:
     case NULL:
     case PLACEHOLDER:
     case LOWER:
+    case ROUND:
     case UPPER:
     case NAME:
     case STRING:
@@ -826,17 +865,24 @@ public class ExpressionParser implements ExpressionParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case UPPER:
       jj_consume_token(UPPER);
-      jj_consume_token(29);
-      arg = binaryOperation();
       jj_consume_token(30);
+      arg = binaryOperation();
+      jj_consume_token(31);
     {if (true) return new SQLUpperFunction(arg);}
       break;
     case LOWER:
       jj_consume_token(LOWER);
-      jj_consume_token(29);
-      arg = binaryOperation();
       jj_consume_token(30);
+      arg = binaryOperation();
+      jj_consume_token(31);
     {if (true) return new SQLLowerFunction(arg);}
+      break;
+    case ROUND:
+      jj_consume_token(ROUND);
+      jj_consume_token(30);
+      arg = binaryOperation();
+      jj_consume_token(31);
+    {if (true) return new SQLRoundFunction(arg);}
       break;
     case NAME:
       arg = columnName();
@@ -941,7 +987,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x60000,0x60000,0x2000,0x202000,0x3000000,0x27790120,0x400,0x200,0x24790920,0x80d000,0xc000000,0x11000000,0xc000000,0x11000000,0x24790120,0x4790120,0x4000000,0x400000,};
+      jj_la1_0 = new int[] {0x60000,0x60000,0x2000,0x402000,0x6000000,0x4ef90120,0x400,0x200,0x48f90920,0x100d000,0x18000000,0x22000000,0x18000000,0x22000000,0x48f90120,0x8f90120,0x8000000,0x800000,};
    }
 
   /** Constructor with InputStream. */
@@ -1058,7 +1104,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[31];
+    boolean[] la1tokens = new boolean[32];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -1072,7 +1118,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 31; i++) {
+    for (int i = 0; i < 32; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
