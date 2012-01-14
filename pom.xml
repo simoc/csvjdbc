@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.sourceforge.csvjdbc</groupId>
   <artifactId>csvjdbc</artifactId>
-  <version>1.0.7-SNAPSHOT</version>
+  <version>1.0.8</version>
   <packaging>jar</packaging>
   <name>CsvJdbc</name>
   <description>a Java JDBC driver for reading comma-separated-value files</description>
@@ -69,6 +69,13 @@
         </configuration>
       </plugin>
     </plugins>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+         <artifactId>wagon-ssh</artifactId>
+         <version>1.0-beta-6</version>
+      </extension>
+    </extensions>
   </build>
   <dependencies>
     <dependency>
@@ -86,5 +93,20 @@
     </dependency>
     -->
   </dependencies>
+
+  <distributionManagement>
+    <site>
+      <id>csvjdbc.sourceforge.net</id>
+      <name>SourceForge</name>
+      <url>sftp://frs.sourceforge.net:/home/frs/project/c/cs/csvjdbc/maven2
+      </url>
+    </site>
+    <repository>
+      <id>csvjdbc.sourceforge.net</id>
+      <name>SourceForge</name>
+      <url>sftp://frs.sourceforge.net:/home/frs/project/c/cs/csvjdbc/maven2
+      </url>
+    </repository>
+  </distributionManagement>
 
 </project>
