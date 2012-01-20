@@ -98,13 +98,13 @@
     <site>
       <id>csvjdbc.sourceforge.net</id>
       <name>SourceForge</name>
-      <url>sftp://frs.sourceforge.net:/home/frs/project/c/cs/csvjdbc/maven2
+      <url>sftp://web.sourceforge.net:/home/project-web/csvjdbc/htdocs/maven2
       </url>
     </site>
     <repository>
       <id>csvjdbc.sourceforge.net</id>
       <name>SourceForge</name>
-      <url>sftp://frs.sourceforge.net:/home/frs/project/c/cs/csvjdbc/maven2
+      <url>sftp://web.sourceforge.net:/home/project-web/csvjdbc/htdocs/maven2
       </url>
     </repository>
   </distributionManagement>
