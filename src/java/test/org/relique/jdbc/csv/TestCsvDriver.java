@@ -3131,4 +3131,25 @@ public class TestCsvDriver extends TestCase {
 				.executeQuery("SELECT Name, Job FROM sample4 WHERE ID='05' order by Name");
 		assertFalse(results.next());
 	}
+	
+	public void testPropertiesInURL() throws SQLException {		
+		Properties props = new Properties();
+		
+		/*
+		 * Use same directory name logic as in CsvDriver.connect.
+		 */
+		String path = filePath;
+		if (!path.endsWith(File.separator))
+			path += File.separator;
+		String url = "jdbc:relique:csv:" + path + "?suppressHeaders=true&headerline=BLZ,NAME&commentChar=%23&fileExtension=.txt";
+		Connection conn = DriverManager.getConnection(url, props);
+		Statement stmt = conn.createStatement();
+
+		assertEquals("The URL is wrong", url, conn.getMetaData().getURL());
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM banks");
+		assertTrue(results.next());
+		assertEquals("The BLZ is wrong", "10000000", results.getString("BLZ"));
+		assertEquals("The NAME is wrong", "Bundesbank (Berlin)", results.getString("NAME"));
+	}
 }

@@ -16,10 +16,12 @@
  */
 package org.relique.jdbc.csv;
 
+import java.net.URLDecoder;
 import java.sql.*;
 import java.util.Properties;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import org.relique.io.TableReader;
 
@@ -147,6 +149,38 @@ public class CsvDriver implements Driver
     {
       return null;
     }
+
+    // strip any properties from end of URL and set them as additional properties
+    String urlProperties = "";
+    int questionIndex = url.indexOf('?');
+    if (questionIndex >= 0)
+    {
+    	info = new Properties(info);
+    	urlProperties = url.substring(questionIndex);
+    	String []split = urlProperties.substring(1).split("&");
+    	for (int i = 0; i < split.length; i++)
+    	{
+    		String []property = split[i].split("=");
+    		try
+    		{
+    			if (property.length == 2)
+    			{
+    				String key = URLDecoder.decode(property[0], "UTF-8");
+    				String value = URLDecoder.decode(property[1], "UTF-8");
+    				info.setProperty(key, value);
+    			}
+    			else
+    			{
+    				throw new SQLException("Invalid property: " + split[i]);
+    			}
+    		}
+    		catch (UnsupportedEncodingException e)
+    		{
+    			// we know UTF-8 is available
+    		}
+    	}
+    	url = url.substring(0, questionIndex);
+    }
     // get filepath from url
     String filePath = url.substring(URL_PREFIX.length());
 
@@ -177,7 +211,7 @@ public class CsvDriver implements Driver
     				TableReader.class.getName() + ": " + className);
     		}
     		Object tableReaderInstance = clazz.newInstance();
-    		connection = new CsvConnection((TableReader)tableReaderInstance, info);
+    		connection = new CsvConnection((TableReader)tableReaderInstance, info, urlProperties);
     	}
     	catch (ClassNotFoundException e)
     	{
@@ -197,7 +231,7 @@ public class CsvDriver implements Driver
     	String zipFilename = filePath.substring(ZIP_FILE_PREFIX.length());
     	try {
     		ZipFileTableReader zipFileTableReader = new ZipFileTableReader(zipFilename);
-    		connection = new CsvConnection(zipFileTableReader, info);
+    		connection = new CsvConnection(zipFileTableReader, info, urlProperties);
     		zipFileTableReader.setExtension(connection.getExtension());
     	} catch (IOException e) {
     		throw new SQLException("Failed opening ZIP file: " + zipFilename, e);
@@ -222,7 +256,7 @@ public class CsvDriver implements Driver
     				"Specified path '" + filePath + "' is  not a directory !");
     	}
 
-    	connection = new CsvConnection(filePath, info);
+    	connection = new CsvConnection(filePath, info, urlProperties);
     }
     return connection;
   }

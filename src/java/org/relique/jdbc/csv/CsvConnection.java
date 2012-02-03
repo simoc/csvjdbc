@@ -64,6 +64,9 @@ public class CsvConnection implements Connection {
     /** Directory where the CSV files to use are located */
     private String path;
 
+    /** Properties provided in connection URL */
+    private String urlProperties;
+
     /** User-provided class that returns contents of database tables */
     private TableReader tableReader;
 
@@ -163,7 +166,7 @@ public class CsvConnection implements Connection {
                     "'path' argument may not be empty or null");
         }
         this.path = path;
-        
+        this.urlProperties = "";
     }
 
     /**
@@ -304,9 +307,10 @@ public class CsvConnection implements Connection {
      * Creates a new CsvConnection that takes the supplied path and properties
      * @param path directory where the CSV files are located
      * @param info set of properties containing custom options
+     * @param urlProperties part of connection URL containing connection properties.
      * @throws SQLException 
      */
-    protected CsvConnection(String path, Properties info) throws SQLException {
+    protected CsvConnection(String path, Properties info, String urlProperties) throws SQLException {
         init();
 
         // validate argument(s)
@@ -315,6 +319,7 @@ public class CsvConnection implements Connection {
                     "'path' argument may not be empty or null");
         }
         this.path = path;
+        this.urlProperties = urlProperties;
 
         // check for properties
         if(info != null) {
@@ -326,11 +331,13 @@ public class CsvConnection implements Connection {
      * Creates a new database connection.
      * @param tableReader user-provided class to return contents of each database table. 
      * @param info set of properties containing custom options.
+     * @param urlProperties part of connection URL containing connection properties.
      * @throws SQLException
      */
-    protected CsvConnection(TableReader tableReader, Properties info) throws SQLException {
+    protected CsvConnection(TableReader tableReader, Properties info, String urlProperties) throws SQLException {
         init();
         this.tableReader = tableReader;
+        this.urlProperties = urlProperties;
 
         // check for properties
         if(info != null) {
@@ -1013,7 +1020,7 @@ public class CsvConnection implements Connection {
        		url = CsvDriver.URL_PREFIX + CsvDriver.ZIP_FILE_PREFIX + ((ZipFileTableReader)tableReader).getZipFilename();
     	else
     		url = CsvDriver.URL_PREFIX + CsvDriver.READER_CLASS_PREFIX + tableReader.getClass().getName();
-		return url;
+		return url + urlProperties;
     }
 
     /**
