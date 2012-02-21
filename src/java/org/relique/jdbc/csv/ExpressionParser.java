@@ -574,7 +574,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     case STRING:
     case MINUS:
     case 30:
-    result = null;
+    alias = null;
       expression = binaryOperation();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case AS:
@@ -588,21 +588,18 @@ public class ExpressionParser implements ExpressionParserConstants {
           ;
         }
         alias = columnName();
-    result = new QueryEnvEntry(((ColumnName)alias).columnName, expression);
         break;
       default:
         jj_la1[3] = jj_gen;
         ;
       }
       jj_consume_token(0);
-    if (result == null){
-      try {
-        result = new QueryEnvEntry(((ColumnName)expression).columnName, expression);
-      }
-      catch (ClassCastException e){
-        {if (true) throw new ParseException("can't accept expression '"+expression+"' without an alias");}
-      }
-    }
+    if (alias != null)
+      result = new QueryEnvEntry(((ColumnName)alias).columnName, expression);
+    else if (expression instanceof ColumnName)
+      result = new QueryEnvEntry(((ColumnName)expression).columnName, expression);
+    else
+      result = new QueryEnvEntry(expression.toString(), expression);
     {if (true) return new ParsedExpression(result);}
       break;
     case ASTERISK:

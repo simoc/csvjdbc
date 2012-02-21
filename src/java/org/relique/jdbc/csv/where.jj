@@ -659,20 +659,15 @@ ParsedExpression queryEnvEntry():{
 }
 {
   {
-    result = null;
+    alias = null;
   }
-  (expression = binaryOperation()((<AS>)?alias = columnName(){
-    result = new QueryEnvEntry(((ColumnName)alias).columnName, expression);
-  }
-  )?<EOF>{
-    if (result == null){
-      try {
-        result = new QueryEnvEntry(((ColumnName)expression).columnName, expression);
-      }
-      catch (ClassCastException e){
-        throw new ParseException("can't accept expression '"+expression+"' without an alias");
-      }
-    }
+  (expression = binaryOperation()((<AS>)?alias = columnName())?<EOF> {
+    if (alias != null)
+      result = new QueryEnvEntry(((ColumnName)alias).columnName, expression);
+    else if (expression instanceof ColumnName)
+      result = new QueryEnvEntry(((ColumnName)expression).columnName, expression);
+    else
+      result = new QueryEnvEntry(expression.toString(), expression);
     return new ParsedExpression(result);
   }
   )

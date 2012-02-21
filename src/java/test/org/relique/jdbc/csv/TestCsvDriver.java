@@ -948,6 +948,24 @@ public class TestCsvDriver extends TestCase {
 				.getString("J"));
 	}
 
+	public void testColumnWithoutAlias() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT 44, lower(job), ID*2, 'hello', 44 from sample4");
+		assertTrue("no results found", results.next());
+		assertEquals("Number 44 is wrong", 44, results.getInt(1));
+		assertEquals("lower(job) is wrong", "project manager", results.getString(2));
+		assertEquals("ID*2 is wrong", 2, results.getInt(3));
+		assertEquals("String 'hello' is wrong", "hello", results.getString(4));
+		assertEquals("Number 44 is wrong", 44, results.getInt(5));
+	}
+
 	/**
 	 * This returns no results with where and tests if this still works
 	 * 

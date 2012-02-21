@@ -81,24 +81,18 @@ public class TestSqlParser extends TestCase {
 			fail("incorrect query '" + query + "' parsed as correct");
 		} catch (TokenMgrError e) {
 		}
-		try {
-			String query = "SELECT location+parameter FROM total";
-			parser.parse(query);
-			fail("incorrect query '" + query + "' parsed as correct");
-		} catch (ParseException e) {
-		}
-		try {
-			String query = "SELECT location-parameter FROM total";
-			parser.parse(query);
-			fail("incorrect query '" + query + "' parsed as correct");
-		} catch (ParseException e) {
-		}
-		try {
-			String query = "SELECT location*parameter FROM total";
-			parser.parse(query);
-			fail("incorrect query '" + query + "' parsed as correct");
-		} catch (ParseException e) {
-		}
+
+		parser.parse("SELECT location+parameter FROM total");
+		colNames = parser.getColumnNames();
+		assertEquals("Incorrect Column Name Col 1", "+ [LOCATION] [PARAMETER]", colNames[0]);
+
+		parser.parse("SELECT location-parameter FROM total");
+		colNames = parser.getColumnNames();
+		assertEquals("Incorrect Column Name Col 1", "- [LOCATION] [PARAMETER]", colNames[0]);
+
+		parser.parse("SELECT location*parameter FROM total");
+		colNames = parser.getColumnNames();
+		assertEquals("Incorrect Column Name Col 1", "* [LOCATION] [PARAMETER]", colNames[0]);
 	}
 
 	public void testParser() throws Exception {
@@ -418,12 +412,21 @@ public class TestSqlParser extends TestCase {
 		cs = new ExpressionParser(new StringReader("B+C+'123' t1"));
 		cs.parseQueryEnvEntry();
 		assertEquals("T1: + + [B] [C] '123'", cs.toString());
-		try{
-			String expression = "loc * par";
-			cs = new ExpressionParser(new StringReader(expression));
-			cs.parseQueryEnvEntry();
-			fail("incorrect column specification '" + expression + "' parsed as correct");
-		} catch (ParseException e){}
+		cs = new ExpressionParser(new StringReader("loc * par"));
+		cs.parseQueryEnvEntry();
+		assertEquals("* [LOC] [PAR]: * [LOC] [PAR]", cs.toString());
+		cs = new ExpressionParser(new StringReader("123"));
+		cs.parseQueryEnvEntry();
+		assertEquals("123: 123", cs.toString());
+		cs = new ExpressionParser(new StringReader("123+2"));
+		cs.parseQueryEnvEntry();
+		assertEquals("+ 123 2: + 123 2", cs.toString());
+		cs = new ExpressionParser(new StringReader("'123'"));
+		cs.parseQueryEnvEntry();
+		assertEquals("'123': '123'", cs.toString());
+		cs = new ExpressionParser(new StringReader("UPPER(A)"));
+		cs.parseQueryEnvEntry();
+		assertEquals("UPPER([A]): UPPER([A])", cs.toString());
 	}
 
 	public void testParsingQueryEnvironmentWithoutExpressions()
