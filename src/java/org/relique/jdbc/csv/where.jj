@@ -186,6 +186,45 @@ class SQLUpperFunction extends Expression{
     return result;
   }
 }
+abstract class AggregateFunction extends Expression{
+  public abstract void processRow(Map env);
+}
+class SQLCountFunction extends AggregateFunction{
+  Expression expression;
+  int counter = 0;
+  public SQLCountFunction(Expression expression){
+    this.expression = expression;
+  }
+  public Object eval(Map env){
+    return Integer.valueOf(counter);
+  }
+  public String toString(){
+    return "COUNT("+expression+")";
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    if (!(expression instanceof AsteriskExpression))
+      result.addAll(expression.usedColumns());
+    return result;
+  }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.add(this);
+    return result;
+  }
+  public void processRow(Map env){
+    if (expression instanceof AsteriskExpression) {
+      counter++;
+    } else {
+      /*
+       * Only count non-null values.
+       */
+      Object o = expression.eval(env);
+      if (o != null)
+        counter++;
+    }
+  }
+}
 class QueryEnvEntry extends Expression{
   String key;
   Expression expression;
@@ -276,6 +315,12 @@ class BinaryOperation extends Expression{
     result.addAll(right.usedColumns());
     return result;
   }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.addAll(left.aggregateFunctions());
+    result.addAll(right.aggregateFunctions());
+    return result;
+  }
 }
 abstract class LogicalExpression extends Expression{
   public boolean isTrue(Map env){
@@ -299,6 +344,9 @@ class ParsedExpression extends LogicalExpression{
   public List usedColumns(){
     return content.usedColumns();
   }
+  public List aggregateFunctions(){
+    return content.aggregateFunctions();
+  }
 }
 class NotExpression extends LogicalExpression{
   LogicalExpression content;
@@ -313,6 +361,9 @@ class NotExpression extends LogicalExpression{
   }
   public List usedColumns(){
     return content.usedColumns();
+  }
+  public List aggregateFunctions(){
+    return content.aggregateFunctions();
   }
 }
 class OrExpression extends LogicalExpression{
@@ -333,6 +384,12 @@ class OrExpression extends LogicalExpression{
     result.addAll(right.usedColumns());
     return result;
   }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.addAll(left.aggregateFunctions());
+    result.addAll(right.aggregateFunctions());
+    return result;
+  }
 }
 class AndExpression extends LogicalExpression{
   LogicalExpression left, right;
@@ -350,6 +407,12 @@ class AndExpression extends LogicalExpression{
     List result = new LinkedList();
     result.addAll(left.usedColumns());
     result.addAll(right.usedColumns());
+    return result;
+  }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.addAll(left.aggregateFunctions());
+    result.addAll(right.aggregateFunctions());
     return result;
   }
 }
@@ -408,6 +471,12 @@ class RelopExpression extends LogicalExpression{
     result.addAll(right.usedColumns());
     return result;
   }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.addAll(left.aggregateFunctions());
+    result.addAll(right.aggregateFunctions());
+    return result;
+  }
 }
 class BetweenExpression extends LogicalExpression{
   Expression obj, left, right;
@@ -437,6 +506,13 @@ class BetweenExpression extends LogicalExpression{
     result.addAll(right.usedColumns());
     return result;
   }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.addAll(obj.aggregateFunctions());
+    result.addAll(left.aggregateFunctions());
+    result.addAll(right.aggregateFunctions());
+    return result;
+  }
 }
 class IsNullExpression extends LogicalExpression{
   Expression arg;
@@ -453,6 +529,11 @@ class IsNullExpression extends LogicalExpression{
   public List usedColumns(){
     List result = new LinkedList();
     result.addAll(arg.usedColumns());
+    return result;
+  }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.addAll(arg.aggregateFunctions());
     return result;
   }
 }
@@ -477,6 +558,12 @@ class LikeExpression extends LogicalExpression{
     List result = new LinkedList();
     result.addAll(arg1.usedColumns());
     result.addAll(arg2.usedColumns());
+    return result;
+  }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.addAll(arg1.aggregateFunctions());
+    result.addAll(arg2.aggregateFunctions());
     return result;
   }
 }
@@ -533,6 +620,9 @@ public class ExpressionParser{
   }
   public List usedColumns(){
     return content.usedColumns();
+  }
+  public List aggregateFunctions(){
+    return content.aggregateFunctions();
   }
   public int getPlaceholdersCount(){
     return Placeholder.nextIndex - 1;
@@ -603,6 +693,9 @@ TOKEN:{
 }
 TOKEN:{
   <UPPER:"UPPER">
+}
+TOKEN:{
+  <COUNT:"COUNT">
 }
 TOKEN:{
   <NAME:(["0"-"9", "A"-"Z", "a"-"z", "_", "."])+>
@@ -757,6 +850,18 @@ char binMultiplyOp():{
     return t.image.charAt(0);
   }
 }
+Expression countOperation():{
+  Expression arg;
+  Token t;
+}
+{
+  (t=<ASTERISK>) {
+    return new AsteriskExpression(t.image);
+  }
+  | arg = binaryOperation() {
+    return arg;
+  }
+}
 Expression binaryOperation():{
   Expression left, right;
   char op;
@@ -794,6 +899,7 @@ Expression parenthesesExpression():{
 }
 Expression simpleExpression():{
   Expression arg;
+  Token t;
 }
 {
   <UPPER> "(" arg = binaryOperation() ")" {
@@ -804,6 +910,9 @@ Expression simpleExpression():{
   }
   | <ROUND> "(" arg = binaryOperation() ")" {
     return new SQLRoundFunction(arg);
+  }
+  | <COUNT> "(" arg = countOperation() ")" {
+    return new SQLCountFunction(arg);
   }
   | arg = columnName(){
     return arg;

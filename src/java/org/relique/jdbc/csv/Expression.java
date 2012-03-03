@@ -16,6 +16,7 @@
  */
 package org.relique.jdbc.csv;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,5 +26,8 @@ public abstract class Expression {
 	}
 	public List usedColumns() {
 		return null;
+	}
+	public List aggregateFunctions() {
+		return new LinkedList();
 	}
 }

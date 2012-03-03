@@ -90,6 +90,8 @@ public class CsvResultSet implements ResultSet {
 
 	private List queryEnvironment;
 
+	private List aggregateFunctions;
+
 	private Map recordEnvironment;
 
 	private Map objectEnvironment;
@@ -180,6 +182,7 @@ public class CsvResultSet implements ResultSet {
         this.reader = reader;
         this.tableName = tableName;
         this.queryEnvironment = new ArrayList(queryEnvironment);
+        this.aggregateFunctions = new ArrayList();
         this.whereClause = whereClause;
         if (orderByColumns != null)
         	this.orderByColumns = new ArrayList(orderByColumns);
@@ -266,6 +269,38 @@ public class CsvResultSet implements ResultSet {
 			}
 		}
 
+		/*
+		 * Find any SQL aggregate functions so they can be evaluated separately.
+		 */
+		for (int i = 0; i < this.queryEnvironment.size(); i++) {
+			Object[] o = (Object[])this.queryEnvironment.get(i);
+			Expression expr = (Expression)o[1];
+			aggregateFunctions.addAll(expr.aggregateFunctions());
+		}
+
+		if (aggregateFunctions.size() > 0) {
+			/*
+			 * Check there is no mix of query columns and aggregate functions.
+			 */
+			List allUsedColumns = new LinkedList();
+			for (int i = 0; i < this.queryEnvironment.size(); i++) {
+				Object[] o = (Object[]) this.queryEnvironment.get(i);
+				if (o[1] != null) {
+					allUsedColumns.addAll(((Expression)o[1]).usedColumns());
+				}
+			}
+			for (Object o : this.aggregateFunctions) {
+				AggregateFunction func = (AggregateFunction)o;
+				for (Object o2 : func.usedColumns()) {
+					allUsedColumns.remove(o2);
+				}
+			}
+			if (!allUsedColumns.isEmpty())
+				throw new SQLException("Query columns cannot be combined with aggregate functions");
+		}
+		if (whereClause != null && whereClause.aggregateFunctions().size() > 0)
+			throw new SQLException("Aggregate functions not allowed in WHERE clause");
+
         if (!((CsvConnection)statement.getConnection()).isIndexedFiles()) {
         	//TODO no check when indexedFiles=true because unit test TestCsvDriver.testFromNonExistingIndexedTable then fails.
         	/*
@@ -307,12 +342,44 @@ public class CsvResultSet implements ResultSet {
 			}
 		}
 
-    	if (this.orderByColumns != null || this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
+    	if (this.orderByColumns != null || this.aggregateFunctions.size() > 0 ||
+    		this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
     		bufferedRecordEnvironments = new ArrayList();
     		hitTail = false;
     		currentRow = 0;
     	}
-    	if (this.orderByColumns != null) {
+    	if (this.aggregateFunctions.size() > 0) {
+    		/*
+    		 * Read all rows, evaluating the aggregate functions for each row to
+    		 * produce a single row result.
+    		 */
+    		int savedMaxRows = maxRows;
+    		maxRows = 0;
+    		try {
+    			while (next()) {
+    				for (Object o : this.aggregateFunctions) {
+    					AggregateFunction func = (AggregateFunction)o;
+    					func.processRow(recordEnvironment);
+    				}
+    			}
+
+    			/*
+    			 * Create a single row ResultSet from the aggregate functions.
+    			 */
+    			bufferedRecordEnvironments.add(new HashMap());
+    		} finally {
+    			maxRows = savedMaxRows;
+    		}
+
+    		/*
+    		 * Rewind back to before the row so we can read it.
+    		 */
+    		currentRow = 0;
+    		recordEnvironment = null;
+    		updateRecordEnvironment(false);
+    		hitTail = true;
+
+    	} else if (this.orderByColumns != null) {
     		/*
     		 * Read all rows into memory and sort them based on SQL ORDER BY expressions.
     		 */
@@ -368,7 +435,8 @@ public class CsvResultSet implements ResultSet {
     	
     	checkOpen();
 
-    	if ((this.orderByColumns != null || this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) &&
+    	if ((this.aggregateFunctions.size() > 0 ||
+    		this.orderByColumns != null || this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) &&
     		currentRow < bufferedRecordEnvironments.size()) {
     		currentRow++;
     		recordEnvironment = (Map) bufferedRecordEnvironments.get(currentRow - 1);

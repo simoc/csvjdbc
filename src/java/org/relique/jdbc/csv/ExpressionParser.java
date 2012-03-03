@@ -162,6 +162,45 @@ class SQLUpperFunction extends Expression{
     return result;
   }
 }
+abstract class AggregateFunction extends Expression{
+  public abstract void processRow(Map env);
+}
+class SQLCountFunction extends AggregateFunction{
+  Expression expression;
+  int counter = 0;
+  public SQLCountFunction(Expression expression){
+    this.expression = expression;
+  }
+  public Object eval(Map env){
+    return Integer.valueOf(counter);
+  }
+  public String toString(){
+    return "COUNT("+expression+")";
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    if (!(expression instanceof AsteriskExpression))
+      result.addAll(expression.usedColumns());
+    return result;
+  }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.add(this);
+    return result;
+  }
+  public void processRow(Map env){
+    if (expression instanceof AsteriskExpression) {
+      counter++;
+    } else {
+      /*
+       * Only count non-null values.
+       */
+      Object o = expression.eval(env);
+      if (o != null)
+        counter++;
+    }
+  }
+}
 class QueryEnvEntry extends Expression{
   String key;
   Expression expression;
@@ -252,6 +291,12 @@ class BinaryOperation extends Expression{
     result.addAll(right.usedColumns());
     return result;
   }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.addAll(left.aggregateFunctions());
+    result.addAll(right.aggregateFunctions());
+    return result;
+  }
 }
 abstract class LogicalExpression extends Expression{
   public boolean isTrue(Map env){
@@ -275,6 +320,9 @@ class ParsedExpression extends LogicalExpression{
   public List usedColumns(){
     return content.usedColumns();
   }
+  public List aggregateFunctions(){
+    return content.aggregateFunctions();
+  }
 }
 class NotExpression extends LogicalExpression{
   LogicalExpression content;
@@ -289,6 +337,9 @@ class NotExpression extends LogicalExpression{
   }
   public List usedColumns(){
     return content.usedColumns();
+  }
+  public List aggregateFunctions(){
+    return content.aggregateFunctions();
   }
 }
 class OrExpression extends LogicalExpression{
@@ -309,6 +360,12 @@ class OrExpression extends LogicalExpression{
     result.addAll(right.usedColumns());
     return result;
   }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.addAll(left.aggregateFunctions());
+    result.addAll(right.aggregateFunctions());
+    return result;
+  }
 }
 class AndExpression extends LogicalExpression{
   LogicalExpression left, right;
@@ -326,6 +383,12 @@ class AndExpression extends LogicalExpression{
     List result = new LinkedList();
     result.addAll(left.usedColumns());
     result.addAll(right.usedColumns());
+    return result;
+  }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.addAll(left.aggregateFunctions());
+    result.addAll(right.aggregateFunctions());
     return result;
   }
 }
@@ -384,6 +447,12 @@ class RelopExpression extends LogicalExpression{
     result.addAll(right.usedColumns());
     return result;
   }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.addAll(left.aggregateFunctions());
+    result.addAll(right.aggregateFunctions());
+    return result;
+  }
 }
 class BetweenExpression extends LogicalExpression{
   Expression obj, left, right;
@@ -413,6 +482,13 @@ class BetweenExpression extends LogicalExpression{
     result.addAll(right.usedColumns());
     return result;
   }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.addAll(obj.aggregateFunctions());
+    result.addAll(left.aggregateFunctions());
+    result.addAll(right.aggregateFunctions());
+    return result;
+  }
 }
 class IsNullExpression extends LogicalExpression{
   Expression arg;
@@ -429,6 +505,11 @@ class IsNullExpression extends LogicalExpression{
   public List usedColumns(){
     List result = new LinkedList();
     result.addAll(arg.usedColumns());
+    return result;
+  }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.addAll(arg.aggregateFunctions());
     return result;
   }
 }
@@ -453,6 +534,12 @@ class LikeExpression extends LogicalExpression{
     List result = new LinkedList();
     result.addAll(arg1.usedColumns());
     result.addAll(arg2.usedColumns());
+    return result;
+  }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.addAll(arg1.aggregateFunctions());
+    result.addAll(arg2.aggregateFunctions());
     return result;
   }
 }
@@ -509,6 +596,9 @@ public class ExpressionParser implements ExpressionParserConstants {
   }
   public List usedColumns(){
     return content.usedColumns();
+  }
+  public List aggregateFunctions(){
+    return content.aggregateFunctions();
   }
   public int getPlaceholdersCount(){
     return Placeholder.nextIndex - 1;
@@ -570,10 +660,11 @@ public class ExpressionParser implements ExpressionParserConstants {
     case LOWER:
     case ROUND:
     case UPPER:
+    case COUNT:
     case NAME:
     case STRING:
     case MINUS:
-    case 30:
+    case 31:
     alias = null;
       expression = binaryOperation();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -677,10 +768,10 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = logicalUnaryExpression();
     {if (true) return new NotExpression(arg);}
       break;
-    case 30:
-      jj_consume_token(30);
-      arg = logicalOrExpression();
+    case 31:
       jj_consume_token(31);
+      arg = logicalOrExpression();
+      jj_consume_token(32);
     {if (true) return arg;}
       break;
     case UNSIGNEDNUMBER:
@@ -689,6 +780,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     case LOWER:
     case ROUND:
     case UPPER:
+    case COUNT:
     case NAME:
     case STRING:
     case MINUS:
@@ -782,6 +874,36 @@ public class ExpressionParser implements ExpressionParserConstants {
     throw new Error("Missing return statement in function");
   }
 
+  final public Expression countOperation() throws ParseException {
+  Expression arg;
+  Token t;
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ASTERISK:
+      t = jj_consume_token(ASTERISK);
+    {if (true) return new AsteriskExpression(t.image);}
+      break;
+    case UNSIGNEDNUMBER:
+    case NULL:
+    case PLACEHOLDER:
+    case LOWER:
+    case ROUND:
+    case UPPER:
+    case COUNT:
+    case NAME:
+    case STRING:
+    case MINUS:
+    case 31:
+      arg = binaryOperation();
+    {if (true) return arg;}
+      break;
+    default:
+      jj_la1[12] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    throw new Error("Missing return statement in function");
+  }
+
   final public Expression binaryOperation() throws ParseException {
   Expression left, right;
   char op;
@@ -794,7 +916,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         ;
         break;
       default:
-        jj_la1[12] = jj_gen;
+        jj_la1[13] = jj_gen;
         break label_3;
       }
       op = binAddOp();
@@ -817,7 +939,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         ;
         break;
       default:
-        jj_la1[13] = jj_gen;
+        jj_la1[14] = jj_gen;
         break label_4;
       }
       op = binMultiplyOp();
@@ -831,10 +953,10 @@ public class ExpressionParser implements ExpressionParserConstants {
   final public Expression parenthesesExpression() throws ParseException {
   Expression arg;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 30:
-      jj_consume_token(30);
-      arg = binaryOperation();
+    case 31:
       jj_consume_token(31);
+      arg = binaryOperation();
+      jj_consume_token(32);
     {if (true) return arg;}
       break;
     case UNSIGNEDNUMBER:
@@ -843,6 +965,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     case LOWER:
     case ROUND:
     case UPPER:
+    case COUNT:
     case NAME:
     case STRING:
     case MINUS:
@@ -850,7 +973,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     {if (true) return arg;}
       break;
     default:
-      jj_la1[14] = jj_gen;
+      jj_la1[15] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -859,27 +982,35 @@ public class ExpressionParser implements ExpressionParserConstants {
 
   final public Expression simpleExpression() throws ParseException {
   Expression arg;
+  Token t;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case UPPER:
       jj_consume_token(UPPER);
-      jj_consume_token(30);
-      arg = binaryOperation();
       jj_consume_token(31);
+      arg = binaryOperation();
+      jj_consume_token(32);
     {if (true) return new SQLUpperFunction(arg);}
       break;
     case LOWER:
       jj_consume_token(LOWER);
-      jj_consume_token(30);
-      arg = binaryOperation();
       jj_consume_token(31);
+      arg = binaryOperation();
+      jj_consume_token(32);
     {if (true) return new SQLLowerFunction(arg);}
       break;
     case ROUND:
       jj_consume_token(ROUND);
-      jj_consume_token(30);
-      arg = binaryOperation();
       jj_consume_token(31);
+      arg = binaryOperation();
+      jj_consume_token(32);
     {if (true) return new SQLRoundFunction(arg);}
+      break;
+    case COUNT:
+      jj_consume_token(COUNT);
+      jj_consume_token(31);
+      arg = countOperation();
+      jj_consume_token(32);
+    {if (true) return new SQLCountFunction(arg);}
       break;
     case NAME:
       arg = columnName();
@@ -903,7 +1034,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     {if (true) return new Placeholder();}
       break;
     default:
-      jj_la1[15] = jj_gen;
+      jj_la1[16] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -927,7 +1058,7 @@ public class ExpressionParser implements ExpressionParserConstants {
              sign=t.image;
       break;
     default:
-      jj_la1[16] = jj_gen;
+      jj_la1[17] = jj_gen;
       ;
     }
     t = jj_consume_token(UNSIGNEDNUMBER);
@@ -952,7 +1083,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         ;
         break;
       default:
-        jj_la1[17] = jj_gen;
+        jj_la1[18] = jj_gen;
         break label_5;
       }
       right = stringConstantAtom();
@@ -978,13 +1109,18 @@ public class ExpressionParser implements ExpressionParserConstants {
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[18];
+  final private int[] jj_la1 = new int[19];
   static private int[] jj_la1_0;
+  static private int[] jj_la1_1;
   static {
       jj_la1_init_0();
+      jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x60000,0x60000,0x2000,0x402000,0x6000000,0x4ef90120,0x400,0x200,0x48f90920,0x100d000,0x18000000,0x22000000,0x18000000,0x22000000,0x48f90120,0x8f90120,0x8000000,0x800000,};
+      jj_la1_0 = new int[] {0x60000,0x60000,0x2000,0x802000,0xc000000,0x9df90120,0x400,0x200,0x91f90920,0x200d000,0x30000000,0x44000000,0x95f90120,0x30000000,0x44000000,0x91f90120,0x11f90120,0x10000000,0x1000000,};
+   }
+   private static void jj_la1_init_1() {
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
 
   /** Constructor with InputStream. */
@@ -998,7 +1134,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 19; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1012,7 +1148,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 19; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -1022,7 +1158,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 19; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1032,7 +1168,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 19; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -1041,7 +1177,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 19; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1050,7 +1186,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 19; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -1101,21 +1237,24 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[32];
+    boolean[] la1tokens = new boolean[33];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 18; i++) {
+    for (int i = 0; i < 19; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
             la1tokens[j] = true;
           }
+          if ((jj_la1_1[i] & (1<<j)) != 0) {
+            la1tokens[32+j] = true;
+          }
         }
       }
     }
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < 33; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

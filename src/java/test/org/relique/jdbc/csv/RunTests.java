@@ -43,6 +43,7 @@ public class RunTests
     suite.addTestSuite(TestPrepareStatement.class);
     suite.addTestSuite(TestStringConverter.class);
     suite.addTestSuite(TestZipFiles.class);
+    suite.addTestSuite(TestAggregateFunctions.class);
     return suite;
   }
 
