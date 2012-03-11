@@ -664,7 +664,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     case NAME:
     case STRING:
     case MINUS:
-    case 31:
+    case OPENPARENTHESIS:
     alias = null;
       expression = binaryOperation();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -768,10 +768,10 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = logicalUnaryExpression();
     {if (true) return new NotExpression(arg);}
       break;
-    case 31:
-      jj_consume_token(31);
+    case OPENPARENTHESIS:
+      jj_consume_token(OPENPARENTHESIS);
       arg = logicalOrExpression();
-      jj_consume_token(32);
+      jj_consume_token(CLOSEPARENTHESIS);
     {if (true) return arg;}
       break;
     case UNSIGNEDNUMBER:
@@ -892,7 +892,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     case NAME:
     case STRING:
     case MINUS:
-    case 31:
+    case OPENPARENTHESIS:
       arg = binaryOperation();
     {if (true) return arg;}
       break;
@@ -953,10 +953,10 @@ public class ExpressionParser implements ExpressionParserConstants {
   final public Expression parenthesesExpression() throws ParseException {
   Expression arg;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 31:
-      jj_consume_token(31);
+    case OPENPARENTHESIS:
+      jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
-      jj_consume_token(32);
+      jj_consume_token(CLOSEPARENTHESIS);
     {if (true) return arg;}
       break;
     case UNSIGNEDNUMBER:
@@ -986,30 +986,30 @@ public class ExpressionParser implements ExpressionParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case UPPER:
       jj_consume_token(UPPER);
-      jj_consume_token(31);
+      jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
-      jj_consume_token(32);
+      jj_consume_token(CLOSEPARENTHESIS);
     {if (true) return new SQLUpperFunction(arg);}
       break;
     case LOWER:
       jj_consume_token(LOWER);
-      jj_consume_token(31);
+      jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
-      jj_consume_token(32);
+      jj_consume_token(CLOSEPARENTHESIS);
     {if (true) return new SQLLowerFunction(arg);}
       break;
     case ROUND:
       jj_consume_token(ROUND);
-      jj_consume_token(31);
+      jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
-      jj_consume_token(32);
+      jj_consume_token(CLOSEPARENTHESIS);
     {if (true) return new SQLRoundFunction(arg);}
       break;
     case COUNT:
       jj_consume_token(COUNT);
-      jj_consume_token(31);
+      jj_consume_token(OPENPARENTHESIS);
       arg = countOperation();
-      jj_consume_token(32);
+      jj_consume_token(CLOSEPARENTHESIS);
     {if (true) return new SQLCountFunction(arg);}
       break;
     case NAME:
@@ -1237,7 +1237,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[33];
+    boolean[] la1tokens = new boolean[34];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -1254,7 +1254,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 33; i++) {
+    for (int i = 0; i < 34; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

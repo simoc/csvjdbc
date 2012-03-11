@@ -727,6 +727,19 @@ TOKEN:{
 TOKEN:{
   <DIVIDE:"/">
 }
+TOKEN:{
+  <OPENPARENTHESIS:"(">
+}
+TOKEN:{
+  <CLOSEPARENTHESIS:")">
+}
+/*
+ * See http://www.engr.mun.ca/~theo/JavaCC-FAQ/javacc-faq-moz.htm
+ * 3.19  How do I throw a ParseException instead of a TokenMgrError?
+ */
+<*> TOKEN:{
+  <UNEXPECTED_CHAR: ~[]>
+}
 ParsedExpression logicalExpression():{
   LogicalExpression left;
 }
@@ -799,7 +812,7 @@ LogicalExpression logicalUnaryExpression():{
   <NOT>arg = logicalUnaryExpression(){
     return new NotExpression(arg);
   }
-  | "("arg = logicalOrExpression()")"{
+  | <OPENPARENTHESIS>arg = logicalOrExpression()<CLOSEPARENTHESIS>{
     return arg;
   }
   | arg = relationalExpression(){

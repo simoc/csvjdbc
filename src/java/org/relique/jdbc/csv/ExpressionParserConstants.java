@@ -62,6 +62,12 @@ public interface ExpressionParserConstants {
   int PLUS = 29;
   /** RegularExpression Id. */
   int DIVIDE = 30;
+  /** RegularExpression Id. */
+  int OPENPARENTHESIS = 31;
+  /** RegularExpression Id. */
+  int CLOSEPARENTHESIS = 32;
+  /** RegularExpression Id. */
+  int UNEXPECTED_CHAR = 33;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -101,6 +107,7 @@ public interface ExpressionParserConstants {
     "\"/\"",
     "\"(\"",
     "\")\"",
+    "<UNEXPECTED_CHAR>",
   };
 
 }

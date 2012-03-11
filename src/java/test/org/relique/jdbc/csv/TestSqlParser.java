@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package test.org.relique.jdbc.csv;
 import java.io.StringReader;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class TestSqlParser extends TestCase {
 			String query = "SELECT location!parameter FROM total";
 			parser.parse(query);
 			fail("incorrect query '" + query + "' parsed as correct");
-		} catch (TokenMgrError e) {
+		} catch (Exception e) {
 		}
 
 		parser.parse("SELECT location+parameter FROM total");

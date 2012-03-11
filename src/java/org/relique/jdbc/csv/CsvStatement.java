@@ -325,7 +325,6 @@ public class CsvStatement implements Statement {
 		try {
 			parser.parse(sql);
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new SQLException("Syntax Error. " + e.getMessage());
 		}
 
