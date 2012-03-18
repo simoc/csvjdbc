@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Properties;
 import java.util.TimeZone;
 
 import junit.framework.TestCase;
@@ -155,5 +156,125 @@ public class TestAggregateFunctions extends TestCase {
 		} catch (SQLException e) {
 			assertEquals("java.sql.SQLException: Aggregate functions not allowed in WHERE clause", "" + e);
 		}
+	}
+
+	public void testMax() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select MAX(ID) from sample8");
+		assertTrue(results.next());
+		assertEquals("Incorrect max", 6, results.getInt(1));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+
+	public void testMaxWhere() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select max(name) from sample8 where id < 3");
+		assertTrue(results.next());
+		assertEquals("Incorrect max", "Mauricio Hernandez", results.getString(1));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+
+	public void testMaxNoResults() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select MAX(Name) from sample8 where ID = 999");
+		assertTrue(results.next());
+		assertEquals("Incorrect max", null, results.getObject(1));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+	
+	public void testMaxDate() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select max(d) from sample8");
+		assertTrue(results.next());
+		assertEquals("Incorrect max", "2010-03-28", results.getObject(1).toString());
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+	
+	public void testMin() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select MIN(ID) from sample8");
+		assertTrue(results.next());
+		assertEquals("Incorrect min", 1, results.getInt(1));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+	
+	public void testMinWhere() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Timestamp");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select min(upper(name)) from sample8 where id < 3");
+		assertTrue(results.next());
+		assertEquals("Incorrect min", "JUAN PABLO MORALES", results.getString(1));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+	
+	public void testMinMax() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select MIN(ID), MAX(ID) from sample8");
+		assertTrue(results.next());
+		assertEquals("Incorrect min", 1, results.getInt(1));
+		assertEquals("Incorrect max", 6, results.getInt(2));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
 	}
 }

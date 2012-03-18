@@ -225,6 +225,72 @@ class SQLCountFunction extends AggregateFunction{
     }
   }
 }
+class SQLMaxFunction extends AggregateFunction{
+  Expression expression;
+  Object max = null;
+  public SQLMaxFunction(Expression expression){
+    this.expression = expression;
+  }
+  public Object eval(Map env){
+    return max;
+  }
+  public String toString(){
+    return "MAX("+expression+")";
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.addAll(expression.usedColumns());
+    return result;
+  }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.add(this);
+    return result;
+  }
+  public void processRow(Map env){
+    /*
+     * Only consider non-null values.
+     */
+    Object o = expression.eval(env);
+    if (o != null){
+      if (max == null || ((Comparable)max).compareTo(o) < 0)
+        max = o;
+    }
+  }
+}
+class SQLMinFunction extends AggregateFunction{
+  Expression expression;
+  Object min = null;
+  public SQLMinFunction(Expression expression){
+    this.expression = expression;
+  }
+  public Object eval(Map env){
+    return min;
+  }
+  public String toString(){
+    return "MIN("+expression+")";
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.addAll(expression.usedColumns());
+    return result;
+  }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.add(this);
+    return result;
+  }
+  public void processRow(Map env){
+    /*
+     * Only consider non-null values.
+     */
+    Object o = expression.eval(env);
+    if (o != null){
+      if (min == null || ((Comparable)min).compareTo(o) > 0)
+        min = o;
+    }
+  }
+}
 class QueryEnvEntry extends Expression{
   String key;
   Expression expression;
@@ -698,6 +764,12 @@ TOKEN:{
   <COUNT:"COUNT">
 }
 TOKEN:{
+  <MAX:"MAX">
+}
+TOKEN:{
+  <MIN:"MIN">
+}
+TOKEN:{
   <NAME:(["0"-"9", "A"-"Z", "a"-"z", "_", "."])+>
 }
 TOKEN:{
@@ -926,6 +998,12 @@ Expression simpleExpression():{
   }
   | <COUNT> "(" arg = countOperation() ")" {
     return new SQLCountFunction(arg);
+  }
+  | <MAX> "(" arg = binaryOperation() ")" {
+    return new SQLMaxFunction(arg);
+  }
+  | <MIN> "(" arg = binaryOperation() ")" {
+    return new SQLMinFunction(arg);
   }
   | arg = columnName(){
     return arg;

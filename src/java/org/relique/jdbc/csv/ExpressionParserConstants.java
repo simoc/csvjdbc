@@ -47,27 +47,31 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int COUNT = 22;
   /** RegularExpression Id. */
-  int NAME = 23;
+  int MAX = 23;
   /** RegularExpression Id. */
-  int STRING = 24;
+  int MIN = 24;
   /** RegularExpression Id. */
-  int RELOP = 25;
+  int NAME = 25;
   /** RegularExpression Id. */
-  int ASTERISK = 26;
+  int STRING = 26;
   /** RegularExpression Id. */
-  int NAMEASTERISK = 27;
+  int RELOP = 27;
   /** RegularExpression Id. */
-  int MINUS = 28;
+  int ASTERISK = 28;
   /** RegularExpression Id. */
-  int PLUS = 29;
+  int NAMEASTERISK = 29;
   /** RegularExpression Id. */
-  int DIVIDE = 30;
+  int MINUS = 30;
   /** RegularExpression Id. */
-  int OPENPARENTHESIS = 31;
+  int PLUS = 31;
   /** RegularExpression Id. */
-  int CLOSEPARENTHESIS = 32;
+  int DIVIDE = 32;
   /** RegularExpression Id. */
-  int UNEXPECTED_CHAR = 33;
+  int OPENPARENTHESIS = 33;
+  /** RegularExpression Id. */
+  int CLOSEPARENTHESIS = 34;
+  /** RegularExpression Id. */
+  int UNEXPECTED_CHAR = 35;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -97,6 +101,8 @@ public interface ExpressionParserConstants {
     "\"ROUND\"",
     "\"UPPER\"",
     "\"COUNT\"",
+    "\"MAX\"",
+    "\"MIN\"",
     "<NAME>",
     "<STRING>",
     "<RELOP>",

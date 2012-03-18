@@ -201,6 +201,72 @@ class SQLCountFunction extends AggregateFunction{
     }
   }
 }
+class SQLMaxFunction extends AggregateFunction{
+  Expression expression;
+  Object max = null;
+  public SQLMaxFunction(Expression expression){
+    this.expression = expression;
+  }
+  public Object eval(Map env){
+    return max;
+  }
+  public String toString(){
+    return "MAX("+expression+")";
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.addAll(expression.usedColumns());
+    return result;
+  }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.add(this);
+    return result;
+  }
+  public void processRow(Map env){
+    /*
+     * Only consider non-null values.
+     */
+    Object o = expression.eval(env);
+    if (o != null){
+      if (max == null || ((Comparable)max).compareTo(o) < 0)
+        max = o;
+    }
+  }
+}
+class SQLMinFunction extends AggregateFunction{
+  Expression expression;
+  Object min = null;
+  public SQLMinFunction(Expression expression){
+    this.expression = expression;
+  }
+  public Object eval(Map env){
+    return min;
+  }
+  public String toString(){
+    return "MIN("+expression+")";
+  }
+  public List usedColumns(){
+    List result = new LinkedList();
+    result.addAll(expression.usedColumns());
+    return result;
+  }
+  public List aggregateFunctions(){
+    List result = new LinkedList();
+    result.add(this);
+    return result;
+  }
+  public void processRow(Map env){
+    /*
+     * Only consider non-null values.
+     */
+    Object o = expression.eval(env);
+    if (o != null){
+      if (min == null || ((Comparable)min).compareTo(o) > 0)
+        min = o;
+    }
+  }
+}
 class QueryEnvEntry extends Expression{
   String key;
   Expression expression;
@@ -661,6 +727,8 @@ public class ExpressionParser implements ExpressionParserConstants {
     case ROUND:
     case UPPER:
     case COUNT:
+    case MAX:
+    case MIN:
     case NAME:
     case STRING:
     case MINUS:
@@ -781,6 +849,8 @@ public class ExpressionParser implements ExpressionParserConstants {
     case ROUND:
     case UPPER:
     case COUNT:
+    case MAX:
+    case MIN:
     case NAME:
     case STRING:
     case MINUS:
@@ -889,6 +959,8 @@ public class ExpressionParser implements ExpressionParserConstants {
     case ROUND:
     case UPPER:
     case COUNT:
+    case MAX:
+    case MIN:
     case NAME:
     case STRING:
     case MINUS:
@@ -966,6 +1038,8 @@ public class ExpressionParser implements ExpressionParserConstants {
     case ROUND:
     case UPPER:
     case COUNT:
+    case MAX:
+    case MIN:
     case NAME:
     case STRING:
     case MINUS:
@@ -1011,6 +1085,20 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = countOperation();
       jj_consume_token(CLOSEPARENTHESIS);
     {if (true) return new SQLCountFunction(arg);}
+      break;
+    case MAX:
+      jj_consume_token(MAX);
+      jj_consume_token(OPENPARENTHESIS);
+      arg = binaryOperation();
+      jj_consume_token(CLOSEPARENTHESIS);
+    {if (true) return new SQLMaxFunction(arg);}
+      break;
+    case MIN:
+      jj_consume_token(MIN);
+      jj_consume_token(OPENPARENTHESIS);
+      arg = binaryOperation();
+      jj_consume_token(CLOSEPARENTHESIS);
+    {if (true) return new SQLMinFunction(arg);}
       break;
     case NAME:
       arg = columnName();
@@ -1117,10 +1205,10 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x60000,0x60000,0x2000,0x802000,0xc000000,0x9df90120,0x400,0x200,0x91f90920,0x200d000,0x30000000,0x44000000,0x95f90120,0x30000000,0x44000000,0x91f90120,0x11f90120,0x10000000,0x1000000,};
+      jj_la1_0 = new int[] {0x60000,0x60000,0x2000,0x2002000,0x30000000,0x77f90120,0x400,0x200,0x47f90920,0x800d000,0xc0000000,0x10000000,0x57f90120,0xc0000000,0x10000000,0x47f90120,0x47f90120,0x40000000,0x4000000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x0,0x2,0x0,0x0,0x1,0x2,0x0,0x1,0x2,0x0,0x0,0x0,};
    }
 
   /** Constructor with InputStream. */
@@ -1237,7 +1325,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[34];
+    boolean[] la1tokens = new boolean[36];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -1254,7 +1342,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 34; i++) {
+    for (int i = 0; i < 36; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
