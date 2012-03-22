@@ -3170,4 +3170,18 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The BLZ is wrong", "10000000", results.getString("BLZ"));
 		assertEquals("The NAME is wrong", "Bundesbank (Berlin)", results.getString("NAME"));
 	}
+	
+	public void testLiteralWithUnicode() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("select id from sample5 where name = '\u00C9rica Jeanine M\u00e9ndez M\u00e9ndez'");
+
+		assertTrue(results.next());
+		assertEquals("Incorrect ID Value", "08", results.getString(1));
+		assertFalse(results.next());
+	}
 }

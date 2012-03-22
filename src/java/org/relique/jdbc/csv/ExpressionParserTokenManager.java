@@ -381,6 +381,9 @@ private int jjStartNfaWithStates_0(int pos, int kind, int state)
    catch(java.io.IOException e) { return pos + 1; }
    return jjMoveNfa_0(state, pos + 1);
 }
+static final long[] jjbitVec0 = {
+   0x0L, 0x0L, 0xffffffffffffffffL, 0xffffffffffffffffL
+};
 private int jjMoveNfa_0(int startState, int curPos)
 {
    int startsAt = 0;
@@ -463,7 +466,7 @@ private int jjMoveNfa_0(int startState, int curPos)
                      jjCheckNAddTwoStates(6, 7);
                   break;
                case 6:
-                  if ((0xffffff7f00000000L & l) != 0L)
+                  if ((0xffffff7fffffffffL & l) != 0L)
                      jjCheckNAddTwoStates(6, 7);
                   break;
                case 7:
@@ -626,8 +629,7 @@ private int jjMoveNfa_0(int startState, int curPos)
                      jjAddStates(9, 10);
                   break;
                case 6:
-                  if ((0x7fffffffffffffffL & l) != 0L)
-                     jjAddStates(11, 12);
+                  jjAddStates(11, 12);
                   break;
                case 16:
                   if ((0x2000000020L & l) != 0L)
@@ -664,6 +666,10 @@ private int jjMoveNfa_0(int startState, int curPos)
          {
             switch(jjstateSet[--i])
             {
+               case 6:
+                  if ((jjbitVec0[i2] & l2) != 0L)
+                     jjAddStates(11, 12);
+                  break;
                default : break;
             }
          } while(i != startsAt);
