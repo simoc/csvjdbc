@@ -17,6 +17,7 @@ package org.relique.jdbc.csv;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -137,10 +138,6 @@ public class SqlParser
 	  sql = sql.trim();
 	  String upperSql = sql.toUpperCase();
 
-	  if (!(upperSql.startsWith("SELECT") && upperSql.length() > 6 && Character.isWhitespace(upperSql.charAt(6)))) {
-		  throw new Exception("Malformed SQL. Missing SELECT statement.");
-	  }
-
 	  int fromPos = getLastIndexOfKeyword(upperSql, "FROM");
 	  if (fromPos < 0) {
 		  throw new Exception("Malformed SQL. Missing FROM statement.");
@@ -211,24 +208,24 @@ public class SqlParser
 
 	  if (fromPos < 8)
 		  throw new Exception("Malformed SQL. Missing columns");
-	  tokenizer = new StringTokenizer(sql.substring(7,
-			  fromPos), ",");
 
 	  environment = new ArrayList();
 
 	  // parse the column specifications
-	  while (tokenizer.hasMoreTokens()) {
-		  String thisToken = tokenizer.nextToken().trim();
-		  ExpressionParser cs = new ExpressionParser(new StringReader(thisToken));
-		  cs.parseQueryEnvEntry();
-		  if (cs.content != null) {
-			  QueryEnvEntry cc = (QueryEnvEntry)cs.content.content;
-			  String key = cc.key;
-			  if (tableAlias != null && key.startsWith(tableAlias + "."))
-				  key = key.substring(tableAlias.length() + 1);
-			  environment.add(new Object[]{key, cc.expression});
+	  ExpressionParser cs2 = new ExpressionParser(new StringReader(sql.substring(0, fromPos)));
+	  cs2.parseSelectStatement();
+	  Iterator it = cs2.queryEntries.iterator();
+	  while (it.hasNext()) {
+		  ParsedExpression parsedExpression = (ParsedExpression)it.next();
+		  if (parsedExpression != null) {
+			QueryEnvEntry cc = (QueryEnvEntry)parsedExpression.content;
+			String key = cc.key;
+			if (tableAlias != null && key.startsWith(tableAlias + "."))
+			key = key.substring(tableAlias.length() + 1);
+			environment.add(new Object[]{key, cc.expression});
 		  }
 	  }
+
 	  if (environment.isEmpty())
 		  throw new Exception("Malformed SQL. No columns");
   }

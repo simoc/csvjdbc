@@ -651,6 +651,7 @@ class AsteriskExpression extends LogicalExpression{
 }
 public class ExpressionParser{
   ParsedExpression content;
+  List queryEntries;
   private Map placeholders;
   public void parseLogicalExpression()throws ParseException{
     Placeholder.nextIndex = 1;
@@ -662,6 +663,9 @@ public class ExpressionParser{
   }
   public void parseQueryEnvEntry()throws ParseException{
     content = queryEnvEntry();
+  }
+  public void parseSelectStatement()throws ParseException{
+    queryEntries = selectStatement();
   }
   public boolean isTrue(Map env){
     if(placeholders != null) {
@@ -705,6 +709,12 @@ SKIP:{
   | "\t"
   | "\r"
   | "\n"
+}
+TOKEN:{
+  <SELECT:"SELECT">
+}
+TOKEN:{
+  <COMMA:",">
 }
 TOKEN:{
   <UNSIGNEDNUMBER:<DIGITS> (<EXPONENT>)?
@@ -831,6 +841,16 @@ ParsedExpression orderByEntry():{
     return new ParsedExpression(new OrderByEntry(left, order));
   }
 }
+List selectStatement():{
+  List result;
+  Expression expr;
+}
+{
+  { result = new LinkedList(); }
+  <SELECT>expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*<EOF>{
+    return result;
+  }
+}
 ParsedExpression queryEnvEntry():{
   Expression expression, alias, result, asterisk;
   Token t;
@@ -839,7 +859,7 @@ ParsedExpression queryEnvEntry():{
   {
     alias = null;
   }
-  (expression = binaryOperation()((<AS>)?alias = columnName())?<EOF> {
+  (expression = binaryOperation()((<AS>)?alias = columnName())? {
     if (alias != null)
       result = new QueryEnvEntry(((ColumnName)alias).columnName, expression);
     else if (expression instanceof ColumnName)

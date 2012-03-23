@@ -526,4 +526,11 @@ public class TestSqlParser extends TestCase {
 		assertTrue("Column Name Col 0 '" + cols[0] + "' is not equal FLD_A",
 				cols[0].equalsIgnoreCase("fld_a"));
 	}
+
+	public void testParsingComma() throws Exception {
+		SqlParser parser = new SqlParser();
+
+		parser.parse("SELECT Id + ',' + Name FROM sample");
+		assertEquals("+ + [ID] ',' [NAME]", parser.getExpression(0).toString());
+	}
 }

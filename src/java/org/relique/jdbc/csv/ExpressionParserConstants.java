@@ -11,67 +11,71 @@ public interface ExpressionParserConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int UNSIGNEDNUMBER = 5;
+  int SELECT = 5;
   /** RegularExpression Id. */
-  int DIGITS = 6;
+  int COMMA = 6;
   /** RegularExpression Id. */
-  int EXPONENT = 7;
+  int UNSIGNEDNUMBER = 7;
   /** RegularExpression Id. */
-  int NULL = 8;
+  int DIGITS = 8;
   /** RegularExpression Id. */
-  int AND = 9;
+  int EXPONENT = 9;
   /** RegularExpression Id. */
-  int OR = 10;
+  int NULL = 10;
   /** RegularExpression Id. */
-  int NOT = 11;
+  int AND = 11;
   /** RegularExpression Id. */
-  int IS = 12;
+  int OR = 12;
   /** RegularExpression Id. */
-  int AS = 13;
+  int NOT = 13;
   /** RegularExpression Id. */
-  int LIKE = 14;
+  int IS = 14;
   /** RegularExpression Id. */
-  int BETWEEN = 15;
+  int AS = 15;
   /** RegularExpression Id. */
-  int PLACEHOLDER = 16;
+  int LIKE = 16;
   /** RegularExpression Id. */
-  int ASC = 17;
+  int BETWEEN = 17;
   /** RegularExpression Id. */
-  int DESC = 18;
+  int PLACEHOLDER = 18;
   /** RegularExpression Id. */
-  int LOWER = 19;
+  int ASC = 19;
   /** RegularExpression Id. */
-  int ROUND = 20;
+  int DESC = 20;
   /** RegularExpression Id. */
-  int UPPER = 21;
+  int LOWER = 21;
   /** RegularExpression Id. */
-  int COUNT = 22;
+  int ROUND = 22;
   /** RegularExpression Id. */
-  int MAX = 23;
+  int UPPER = 23;
   /** RegularExpression Id. */
-  int MIN = 24;
+  int COUNT = 24;
   /** RegularExpression Id. */
-  int NAME = 25;
+  int MAX = 25;
   /** RegularExpression Id. */
-  int STRING = 26;
+  int MIN = 26;
   /** RegularExpression Id. */
-  int RELOP = 27;
+  int NAME = 27;
   /** RegularExpression Id. */
-  int ASTERISK = 28;
+  int STRING = 28;
   /** RegularExpression Id. */
-  int NAMEASTERISK = 29;
+  int RELOP = 29;
   /** RegularExpression Id. */
-  int MINUS = 30;
+  int ASTERISK = 30;
   /** RegularExpression Id. */
-  int PLUS = 31;
+  int NAMEASTERISK = 31;
   /** RegularExpression Id. */
-  int DIVIDE = 32;
+  int MINUS = 32;
   /** RegularExpression Id. */
-  int OPENPARENTHESIS = 33;
+  int PLUS = 33;
   /** RegularExpression Id. */
-  int CLOSEPARENTHESIS = 34;
+  int DIVIDE = 34;
   /** RegularExpression Id. */
-  int UNEXPECTED_CHAR = 35;
+  int OPENPARENTHESIS = 35;
+  /** RegularExpression Id. */
+  int CLOSEPARENTHESIS = 36;
+  /** RegularExpression Id. */
+  int UNEXPECTED_CHAR = 37;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -83,6 +87,8 @@ public interface ExpressionParserConstants {
     "\"\\t\"",
     "\"\\r\"",
     "\"\\n\"",
+    "\"SELECT\"",
+    "\",\"",
     "<UNSIGNEDNUMBER>",
     "<DIGITS>",
     "<EXPONENT>",
