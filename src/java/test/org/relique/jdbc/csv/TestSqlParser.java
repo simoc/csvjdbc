@@ -533,4 +533,14 @@ public class TestSqlParser extends TestCase {
 		parser.parse("SELECT Id + ',' + Name FROM sample");
 		assertEquals("+ + [ID] ',' [NAME]", parser.getExpression(0).toString());
 	}
+
+	public void testParsingQuotedFrom() throws Exception {
+		SqlParser parser = new SqlParser();
+		ExpressionParser whereClause;
+
+		parser.parse("SELECT Id FROM sample where Signature = 'sent from my iPhone'");
+		whereClause = parser.getWhereClause();
+		assertNotNull("query has a WHERE clause", whereClause);
+		assertEquals("Incorrect WHERE", "= [SIGNATURE] 'sent from my iPhone'", whereClause.toString());
+	}
 }
