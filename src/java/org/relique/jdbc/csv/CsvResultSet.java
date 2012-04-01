@@ -49,6 +49,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.relique.io.DataReader;
 import org.relique.io.ListDataReader;
@@ -91,6 +92,8 @@ public class CsvResultSet implements ResultSet {
 	private List queryEnvironment;
 
 	private List aggregateFunctions;
+
+	private Set distinctValues;
 
 	private Map recordEnvironment;
 
@@ -173,7 +176,7 @@ public class CsvResultSet implements ResultSet {
      * @throws SQLException 
      */
     protected CsvResultSet(CsvStatement statement, DataReader reader,
-			String tableName, List queryEnvironment, int isScrollable, 
+			String tableName, List queryEnvironment, boolean isDistinct, int isScrollable, 
 			ExpressionParser whereClause, List orderByColumns,
 			String columnTypes, int skipLeadingLines) throws ClassNotFoundException, SQLException {
         this.statement = statement;
@@ -188,6 +191,8 @@ public class CsvResultSet implements ResultSet {
         	this.orderByColumns = new ArrayList(orderByColumns);
         else
         	this.orderByColumns = null;
+        if (isDistinct)
+        	this.distinctValues = new HashSet();
         if(reader instanceof CsvReader || reader instanceof ListDataReader) {
         	// timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
         	timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
@@ -459,11 +464,14 @@ public class CsvResultSet implements ResultSet {
 				recordEnvironment = null;
 			updateRecordEnvironment(thereWasAnAnswer);
 
-			// We have a where clause, honor it
-			if (whereClause != null) {
+			// We have a where clause or DISTINCT keyword, honor it
+			if (whereClause != null || distinctValues != null) {
 				while (thereWasAnAnswer) {
-					if (whereClause.isTrue(objectEnvironment))
-						break;
+					if (whereClause == null || whereClause.isTrue(objectEnvironment)) {
+						if (distinctValues == null || addDistinctEnvironment()) {
+							break;
+						}
+					}
 					thereWasAnAnswer = reader.next();
 	    			if(thereWasAnAnswer)
 	    				recordEnvironment = reader.getEnvironment();
@@ -508,7 +516,31 @@ public class CsvResultSet implements ResultSet {
 			}
 		}
 	}
-	
+
+    private boolean addDistinctEnvironment() {
+    	boolean isDistinct;
+
+    	/*
+    	 * Create list of query values for this row.
+    	 */
+    	ArrayList distinctEnvironment = new ArrayList(queryEnvironment.size());
+		for (int i = 0; i < queryEnvironment.size(); i++){
+			Object[] o = (Object[]) queryEnvironment.get(i);
+			Object value = ((Expression) o[1]).eval(recordEnvironment);
+			distinctEnvironment.add(value);
+		}
+
+		/*
+		 * Has this list of values been read before for this query?
+		 */
+    	if (distinctValues.contains(distinctEnvironment)) {
+    		isDistinct = false;
+    	} else {
+    		distinctValues.add(distinctEnvironment);
+    		isDistinct = true;
+    	}
+    	return isDistinct;
+    }
 
 	/**
      * Releases this <code>ResultSet</code> object's database and

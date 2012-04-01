@@ -53,7 +53,9 @@ public class SqlParser
   private ExpressionParser whereClause;
   private List environment;
   private List orderByColumns;
-  
+
+  private boolean isDistinct;
+
   public void setPlaceholdersValues(Object[] values)
   {
 	  if (whereClause != null)
@@ -225,6 +227,7 @@ public class SqlParser
 			environment.add(new Object[]{key, cc.expression});
 		  }
 	  }
+	  this.isDistinct = cs2.isDistinct;
 
 	  if (environment.isEmpty())
 		  throw new Exception("Malformed SQL. No columns");
@@ -257,5 +260,8 @@ public class SqlParser
 	  return (Expression) o[1];
   }
 
+  public boolean isDistinct() {
+	  return this.isDistinct;
+  }
 }
 

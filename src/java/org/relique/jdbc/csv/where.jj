@@ -649,9 +649,18 @@ class AsteriskExpression extends LogicalExpression{
     return result;
   }
 }
+class ParsedStatement{
+  List queryEntries;
+  boolean isDistinct;
+  public ParsedStatement(List queryEntries, boolean isDistinct){
+    this.queryEntries = queryEntries;
+    this.isDistinct = isDistinct;
+  }
+}
 public class ExpressionParser{
   ParsedExpression content;
   List queryEntries;
+  boolean isDistinct;
   private Map placeholders;
   public void parseLogicalExpression()throws ParseException{
     Placeholder.nextIndex = 1;
@@ -665,7 +674,9 @@ public class ExpressionParser{
     content = queryEnvEntry();
   }
   public void parseSelectStatement()throws ParseException{
-    queryEntries = selectStatement();
+    ParsedStatement parsedStatement = selectStatement();
+    queryEntries = parsedStatement.queryEntries;
+    isDistinct = parsedStatement.isDistinct;
   }
   public boolean isTrue(Map env){
     if(placeholders != null) {
@@ -712,6 +723,9 @@ SKIP:{
 }
 TOKEN:{
   <SELECT:"SELECT">
+}
+TOKEN:{
+  <DISTINCT:"DISTINCT">
 }
 TOKEN:{
   <COMMA:",">
@@ -841,14 +855,15 @@ ParsedExpression orderByEntry():{
     return new ParsedExpression(new OrderByEntry(left, order));
   }
 }
-List selectStatement():{
+ParsedStatement selectStatement():{
   List result;
   Expression expr;
+  boolean isDistinct;
 }
 {
-  { result = new LinkedList(); }
-  <SELECT>expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*<EOF>{
-    return result;
+  { result = new LinkedList(); isDistinct = false; }
+  <SELECT>(<DISTINCT>{isDistinct = true;})?expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*<EOF>{
+    return new ParsedStatement(result, isDistinct);
   }
 }
 ParsedExpression queryEnvEntry():{

@@ -423,10 +423,11 @@ public class CsvStatement implements Statement {
 		CsvResultSet resultSet = null;
 		try {
 			resultSet = new CsvResultSet(this, reader, tableName,
-					parser.getColumns(), this.isScrollable, parser
-							.getWhereClause(), parser.getOrderByColumns(),
-							connection.getColumnTypes(tableName), 
-							connection.getSkipLeadingLines());
+					parser.getColumns(), parser.isDistinct(),
+					this.isScrollable, parser.getWhereClause(),
+					parser.getOrderByColumns(),
+					connection.getColumnTypes(tableName), 
+					connection.getSkipLeadingLines());
 			lastResultSet = resultSet;
 		} catch (ClassNotFoundException e) {
 			DriverManager.println("" + e);

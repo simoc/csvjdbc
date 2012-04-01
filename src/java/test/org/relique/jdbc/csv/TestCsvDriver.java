@@ -3184,4 +3184,47 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("Incorrect ID Value", "08", results.getString(1));
 		assertFalse(results.next());
 	}
+	
+	public void testDistinct() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select distinct job from sample5");
+
+		assertTrue(results.next());
+		assertEquals("Incorrect distinct value 1", "Piloto", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("Incorrect distinct value 2", "Project Manager", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("Incorrect distinct value 3", "Finance Manager", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("Incorrect distinct value 4", "Office Manager", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("Incorrect distinct value 5", "Office Employee", results.getString(1));
+		assertFalse(results.next());
+	}
+	
+	public void testDistinctWithWhere() throws SQLException {
+		Properties props = new Properties();
+		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
+		props.put("suppressHeaders", "true");
+		props.put("fileExtension", ".txt");
+		props.put("commentChar", "#");
+		props.put("columnTypes", "Date,Integer,Integer,Integer,Integer,Double");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select distinct TO_ACCT, TO_BLZ from transactions where AMOUNT<50");
+
+		assertTrue(results.next());
+		assertEquals("Incorrect distinct TO_ACCT value 1", 27234813, results.getInt(1));
+		assertEquals("Incorrect distinct TO_BLZ value 1", 10020500, results.getInt(2));
+		assertTrue(results.next());
+		assertEquals("Incorrect distinct TO_ACCT value 2", 3670345, results.getInt(1));
+		assertEquals("Incorrect distinct TO_BLZ value 2", 10010010, results.getInt(2));
+		assertFalse(results.next());
+	}
 }
