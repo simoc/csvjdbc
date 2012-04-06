@@ -395,13 +395,27 @@ abstract class LogicalExpression extends Expression{
 }
 class ParsedExpression extends LogicalExpression{
   public Expression content;
+  private Map placeholders;
   public ParsedExpression(Expression left){
     content = left;
+    placeholders = new HashMap();
   }
   public boolean isTrue(Map env){
+    if(placeholders != null) {
+      Map useThisEnv = new HashMap();
+      useThisEnv.putAll(env);
+      useThisEnv.putAll(placeholders);
+      env = useThisEnv;
+    } 
     return ((LogicalExpression)content).isTrue(env);
   }
   public Object eval(Map env){
+    if(placeholders != null) {
+      Map useThisEnv = new HashMap();
+      useThisEnv.putAll(env);
+      useThisEnv.putAll(placeholders);
+      env = useThisEnv;
+    } 
     return content.eval(env);
   }
   public String toString(){
@@ -412,6 +426,14 @@ class ParsedExpression extends LogicalExpression{
   }
   public List aggregateFunctions(){
     return content.aggregateFunctions();
+  }
+  public int getPlaceholdersCount(){
+    return Placeholder.nextIndex - 1;
+  }
+  public void setPlaceholdersValues(Object[] values){
+    for(int i=1; i<values.length; i++){
+      placeholders.put(Integer.valueOf(i), values[i]);
+    }
   }
 }
 class NotExpression extends LogicalExpression{
@@ -654,12 +676,14 @@ class ParsedStatement{
   boolean isDistinct;
   String tableName;
   String tableAlias;
+  ParsedExpression whereClause;
   public ParsedStatement(List queryEntries, boolean isDistinct,
-    String tableName, String tableAlias){
+    String tableName, String tableAlias, ParsedExpression whereClause){
     this.queryEntries = queryEntries;
     this.isDistinct = isDistinct;
     this.tableName = tableName;
     this.tableAlias = tableAlias;
+    this.whereClause = whereClause;
   }
 }
 public class ExpressionParser{
@@ -668,10 +692,7 @@ public class ExpressionParser{
   boolean isDistinct;
   String tableName;
   String tableAlias;
-  private Map placeholders;
   public void parseLogicalExpression()throws ParseException{
-    Placeholder.nextIndex = 1;
-    placeholders = new HashMap();
     content = logicalExpression();
   }
   public void parseOrderByEntry()throws ParseException{
@@ -681,46 +702,20 @@ public class ExpressionParser{
     content = queryEnvEntry();
   }
   public void parseSelectStatement()throws ParseException{
+    /* Reset prepared statement place-holder counter */
+    Placeholder.nextIndex = 1;
     ParsedStatement parsedStatement = selectStatement();
     queryEntries = parsedStatement.queryEntries;
     isDistinct = parsedStatement.isDistinct;
     tableName = parsedStatement.tableName;
     tableAlias = parsedStatement.tableAlias;
-  }
-  public boolean isTrue(Map env){
-    if(placeholders != null) {
-      Map useThisEnv = new HashMap();
-      useThisEnv.putAll(env);
-      useThisEnv.putAll(placeholders);
-      env = useThisEnv;
-    } 
-    return content.isTrue(env);
+    content = parsedStatement.whereClause;
   }
   public Object eval(Map env){
-    if(placeholders != null) {
-      Map useThisEnv = new HashMap();
-      useThisEnv.putAll(env);
-      useThisEnv.putAll(placeholders);
-      env = useThisEnv;
-    } 
     return content.eval(env);
   }
   public String toString(){
     return ""+content;
-  }
-  public List usedColumns(){
-    return content.usedColumns();
-  }
-  public List aggregateFunctions(){
-    return content.aggregateFunctions();
-  }
-  public int getPlaceholdersCount(){
-    return Placeholder.nextIndex - 1;
-  }
-  public void setPlaceholdersValues(Object[] values){
-    for(int i=1; i<values.length; i++){
-      placeholders.put(Integer.valueOf(i), values[i]);
-    }
   }
 }
 PARSER_END(ExpressionParser)
@@ -809,6 +804,9 @@ TOKEN:{
   <FROM:"FROM"> : IN_TABLE
 }
 TOKEN:{
+  <WHERE:"WHERE">
+}
+TOKEN:{
   <NAME:(["0"-"9", "A"-"Z", "a"-"z", "_", "."])+>
 }
 TOKEN:{
@@ -889,6 +887,7 @@ ParsedStatement selectStatement():{
   boolean isDistinct;
   String tableName;
   String tableAlias;
+  ParsedExpression whereClause;
   Token t;
 }
 {
@@ -897,9 +896,10 @@ ParsedStatement selectStatement():{
     isDistinct = false;
     tableName = null;
     tableAlias = null;
+    whereClause = null;
   }
-  <SELECT>(<DISTINCT>{isDistinct = true;})?expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*<FROM>t=<TABLENAME>{tableName = t.image;}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?<EOF>{
-    return new ParsedStatement(result, isDistinct, tableName, tableAlias);
+  <SELECT>(<DISTINCT>{isDistinct = true;})?expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*<FROM>t=<TABLENAME>{tableName = t.image;}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?(<WHERE>whereClause = logicalExpression())?<EOF>{
+    return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause);
   }
 }
 ParsedExpression queryEnvEntry():{

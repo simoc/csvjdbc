@@ -85,7 +85,7 @@ public class CsvResultSet implements ResultSet {
     /** InputStream to keep track of */
     protected InputStream is;
 
-	private ExpressionParser whereClause;
+	private Expression whereClause;
 
 	private List orderByColumns;
 
@@ -177,7 +177,7 @@ public class CsvResultSet implements ResultSet {
      */
     protected CsvResultSet(CsvStatement statement, DataReader reader,
 			String tableName, List queryEnvironment, boolean isDistinct, int isScrollable, 
-			ExpressionParser whereClause, List orderByColumns,
+			Expression whereClause, List orderByColumns,
 			String columnTypes, int skipLeadingLines) throws ClassNotFoundException, SQLException {
         this.statement = statement;
         maxRows = statement.getMaxRows();

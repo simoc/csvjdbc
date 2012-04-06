@@ -50,7 +50,7 @@ public class SqlParser
    *
    * @since
    */
-  private ExpressionParser whereClause;
+  private ParsedExpression whereClause;
   private List environment;
   private List orderByColumns;
 
@@ -140,20 +140,7 @@ public class SqlParser
 	  sql = sql.trim();
 	  String upperSql = sql.toUpperCase();
 
-	  int wherePos = getLastIndexOfKeyword(upperSql, "WHERE");
-
 	  int orderByPos = getLastIndexOfKeyword(upperSql, "ORDER BY");
-
-	  // if we have a "WHERE" parse the expression
-	  if (wherePos > -1) {
-		  if (orderByPos == -1)
-			  whereClause = new ExpressionParser(new StringReader(sql.substring(wherePos + 5)));
-		  else
-			  whereClause = new ExpressionParser(new StringReader(sql.substring(wherePos + 6, orderByPos).trim()));
-		  whereClause.parseLogicalExpression();
-	  } else {
-		  whereClause = null;
-	  }
 
 	  // if we have a "ORDER BY" parse the list of column names.
 	  if (orderByPos >= 0) {
@@ -178,9 +165,7 @@ public class SqlParser
 
 	  // parse the column specifications
 	  String truncated = sql;
-	  if (wherePos >= 0)
-		  truncated = sql.substring(0, wherePos);
-	  else if (orderByPos >= 0)
+	  if (orderByPos >= 0)
 		  truncated = sql.substring(0, orderByPos);
 
 	  ExpressionParser cs2 = new ExpressionParser(new StringReader(truncated));
@@ -189,6 +174,7 @@ public class SqlParser
 	  this.isDistinct = cs2.isDistinct;
 	  this.tableName = cs2.tableName;
 	  this.tableAlias = cs2.tableAlias;
+	  this.whereClause = cs2.content;
 
 	  Iterator it = cs2.queryEntries.iterator();
 	  while (it.hasNext()) {
@@ -215,7 +201,7 @@ public class SqlParser
 	  return result;
   }
 
-  public ExpressionParser getWhereClause() {
+  public Expression getWhereClause() {
 	  return whereClause;
   }
 
@@ -237,4 +223,3 @@ public class SqlParser
 	  return this.isDistinct;
   }
 }
-

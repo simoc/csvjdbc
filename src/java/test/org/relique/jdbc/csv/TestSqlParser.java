@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import junit.framework.TestCase;
+
+import org.relique.jdbc.csv.Expression;
 import org.relique.jdbc.csv.ExpressionParser;
 import org.relique.jdbc.csv.ParseException;
 import org.relique.jdbc.csv.SqlParser;
@@ -186,7 +188,7 @@ public class TestSqlParser extends TestCase {
 	 */
 	public void testWhereParsing() throws Exception {
 		SqlParser parser = new SqlParser();
-		ExpressionParser whereClause;
+		Expression whereClause;
 
 		parser.parse("SELECT * FROM test WHERE A='20'");
 		whereClause = parser.getWhereClause();
@@ -240,7 +242,7 @@ public class TestSqlParser extends TestCase {
 		}
 
 		parser.parse("SELECT * FROM test WHERE B IS NULL");
-		ExpressionParser whereClause = parser.getWhereClause();
+		Expression whereClause = parser.getWhereClause();
 		assertEquals("Incorrect WHERE", "N [B]", whereClause.toString());
 		parser.parse("SELECT * FROM test WHERE B BETWEEN '20' AND 'AA'");
 		whereClause = parser.getWhereClause();
@@ -292,7 +294,7 @@ public class TestSqlParser extends TestCase {
 		assertEquals(true, parser.getWhereClause().isTrue(env));
 
 		parser.parse("SELECT * FROM test WHERE (A='20' OR B='AA') AND c=1");
-		ExpressionParser whereClause = parser.getWhereClause();
+		Expression whereClause = parser.getWhereClause();
 
 		env.clear();
 		env.put("A", new String("20"));
@@ -536,11 +538,21 @@ public class TestSqlParser extends TestCase {
 
 	public void testParsingQuotedFrom() throws Exception {
 		SqlParser parser = new SqlParser();
-		ExpressionParser whereClause;
+		Expression whereClause;
 
 		parser.parse("SELECT Id FROM sample where Signature = 'sent from my iPhone'");
 		whereClause = parser.getWhereClause();
 		assertNotNull("query has a WHERE clause", whereClause);
 		assertEquals("Incorrect WHERE", "= [SIGNATURE] 'sent from my iPhone'", whereClause.toString());
+	}
+	
+	public void testParsingQuotedWhere() throws Exception {
+		SqlParser parser = new SqlParser();
+		Expression whereClause;
+
+		parser.parse("SELECT Id FROM sample where Title like '%NOT WHERE I BELONG%'");
+		whereClause = parser.getWhereClause();
+		assertNotNull("query has a WHERE clause", whereClause);
+		assertEquals("Incorrect WHERE", "L [TITLE] '%NOT WHERE I BELONG%'", whereClause.toString());
 	}
 }

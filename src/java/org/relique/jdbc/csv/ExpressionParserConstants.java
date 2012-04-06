@@ -59,29 +59,31 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int FROM = 28;
   /** RegularExpression Id. */
-  int NAME = 29;
+  int WHERE = 29;
   /** RegularExpression Id. */
-  int STRING = 30;
+  int NAME = 30;
   /** RegularExpression Id. */
-  int RELOP = 31;
+  int STRING = 31;
   /** RegularExpression Id. */
-  int ASTERISK = 32;
+  int RELOP = 32;
   /** RegularExpression Id. */
-  int NAMEASTERISK = 33;
+  int ASTERISK = 33;
   /** RegularExpression Id. */
-  int MINUS = 34;
+  int NAMEASTERISK = 34;
   /** RegularExpression Id. */
-  int PLUS = 35;
+  int MINUS = 35;
   /** RegularExpression Id. */
-  int DIVIDE = 36;
+  int PLUS = 36;
   /** RegularExpression Id. */
-  int OPENPARENTHESIS = 37;
+  int DIVIDE = 37;
   /** RegularExpression Id. */
-  int CLOSEPARENTHESIS = 38;
+  int OPENPARENTHESIS = 38;
   /** RegularExpression Id. */
-  int TABLENAME = 43;
+  int CLOSEPARENTHESIS = 39;
   /** RegularExpression Id. */
-  int UNEXPECTED_CHAR = 44;
+  int TABLENAME = 44;
+  /** RegularExpression Id. */
+  int UNEXPECTED_CHAR = 45;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -119,6 +121,7 @@ public interface ExpressionParserConstants {
     "\"MAX\"",
     "\"MIN\"",
     "\"FROM\"",
+    "\"WHERE\"",
     "<NAME>",
     "<STRING>",
     "<RELOP>",

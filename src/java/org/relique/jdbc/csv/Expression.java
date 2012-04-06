@@ -30,4 +30,7 @@ public abstract class Expression {
 	public List aggregateFunctions() {
 		return new LinkedList();
 	}
+	public boolean isTrue(Map env){
+	    return false;
+	}
 }
