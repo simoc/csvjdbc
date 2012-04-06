@@ -36,7 +36,6 @@ public class CsvPreparedStatement extends CsvStatement implements
 		try {
 			parser.parse(sql);
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new SQLException("Syntax Error. " + e.getMessage());
 		}
 
