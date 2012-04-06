@@ -140,43 +140,9 @@ public class SqlParser
 	  sql = sql.trim();
 	  String upperSql = sql.toUpperCase();
 
-	  int fromPos = getLastIndexOfKeyword(upperSql, "FROM");
-	  if (fromPos < 0) {
-		  throw new Exception("Malformed SQL. Missing FROM statement.");
-	  }
-
 	  int wherePos = getLastIndexOfKeyword(upperSql, "WHERE");
 
 	  int orderByPos = getLastIndexOfKeyword(upperSql, "ORDER BY");
-
-	  /**
-	   * If we have a where clause then the table name is everything that sits
-	   * between FROM and WHERE. If we don't then it's everything from the
-	   * "FROM" up to the end of the sentence
-	   */
-	  if (wherePos == -1 && orderByPos == -1) {
-		  tableName = sql.substring(fromPos + 4).trim();
-	  } else {
-		  if (wherePos >= 0)
-			  tableName = sql.substring(fromPos + 4, wherePos).trim();
-		  else
-			  tableName = sql.substring(fromPos + 4, orderByPos).trim();
-	  }
-	  StringTokenizer tokenizer = new StringTokenizer(tableName);
-	  if (tokenizer.countTokens() > 1) {
-		  /*
-		   * Parse the table alias.
-		   */
-		  tableName = tokenizer.nextToken();
-		  tableAlias = tokenizer.nextToken().toUpperCase();
-		  if (tableAlias.equals("AS")) {
-			  if (!tokenizer.hasMoreTokens())
-				  throw new Exception("Invalid table alias");
-			  tableAlias = tokenizer.nextToken().toUpperCase();
-		  }
-		  if (tokenizer.hasMoreTokens())
-			  throw new Exception("Invalid table alias");
-	  }
 
 	  // if we have a "WHERE" parse the expression
 	  if (wherePos > -1) {
@@ -193,7 +159,7 @@ public class SqlParser
 	  if (orderByPos >= 0) {
 		  orderByColumns = new ArrayList();
 		  String orderBy = sql.substring(orderByPos + 8).trim();
-		  tokenizer = new StringTokenizer(orderBy, ",");
+		  StringTokenizer tokenizer = new StringTokenizer(orderBy, ",");
 		  while (tokenizer.hasMoreTokens()) {
 			  String token = tokenizer.nextToken().trim();
 			  ExpressionParser cs = new ExpressionParser(new StringReader(token));
@@ -208,14 +174,22 @@ public class SqlParser
 			  throw new Exception("Malformed SQL. Missing ORDER BY columns");
 	  }
 
-	  if (fromPos < 8)
-		  throw new Exception("Malformed SQL. Missing columns");
-
 	  environment = new ArrayList();
 
 	  // parse the column specifications
-	  ExpressionParser cs2 = new ExpressionParser(new StringReader(sql.substring(0, fromPos)));
+	  String truncated = sql;
+	  if (wherePos >= 0)
+		  truncated = sql.substring(0, wherePos);
+	  else if (orderByPos >= 0)
+		  truncated = sql.substring(0, orderByPos);
+
+	  ExpressionParser cs2 = new ExpressionParser(new StringReader(truncated));
 	  cs2.parseSelectStatement();
+	  
+	  this.isDistinct = cs2.isDistinct;
+	  this.tableName = cs2.tableName;
+	  this.tableAlias = cs2.tableAlias;
+
 	  Iterator it = cs2.queryEntries.iterator();
 	  while (it.hasNext()) {
 		  ParsedExpression parsedExpression = (ParsedExpression)it.next();
@@ -223,11 +197,10 @@ public class SqlParser
 			QueryEnvEntry cc = (QueryEnvEntry)parsedExpression.content;
 			String key = cc.key;
 			if (tableAlias != null && key.startsWith(tableAlias + "."))
-			key = key.substring(tableAlias.length() + 1);
+				key = key.substring(tableAlias.length() + 1);
 			environment.add(new Object[]{key, cc.expression});
 		  }
 	  }
-	  this.isDistinct = cs2.isDistinct;
 
 	  if (environment.isEmpty())
 		  throw new Exception("Malformed SQL. No columns");

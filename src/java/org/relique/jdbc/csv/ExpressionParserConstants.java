@@ -57,30 +57,36 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int MIN = 27;
   /** RegularExpression Id. */
-  int NAME = 28;
+  int FROM = 28;
   /** RegularExpression Id. */
-  int STRING = 29;
+  int NAME = 29;
   /** RegularExpression Id. */
-  int RELOP = 30;
+  int STRING = 30;
   /** RegularExpression Id. */
-  int ASTERISK = 31;
+  int RELOP = 31;
   /** RegularExpression Id. */
-  int NAMEASTERISK = 32;
+  int ASTERISK = 32;
   /** RegularExpression Id. */
-  int MINUS = 33;
+  int NAMEASTERISK = 33;
   /** RegularExpression Id. */
-  int PLUS = 34;
+  int MINUS = 34;
   /** RegularExpression Id. */
-  int DIVIDE = 35;
+  int PLUS = 35;
   /** RegularExpression Id. */
-  int OPENPARENTHESIS = 36;
+  int DIVIDE = 36;
   /** RegularExpression Id. */
-  int CLOSEPARENTHESIS = 37;
+  int OPENPARENTHESIS = 37;
   /** RegularExpression Id. */
-  int UNEXPECTED_CHAR = 38;
+  int CLOSEPARENTHESIS = 38;
+  /** RegularExpression Id. */
+  int TABLENAME = 43;
+  /** RegularExpression Id. */
+  int UNEXPECTED_CHAR = 44;
 
   /** Lexical state. */
   int DEFAULT = 0;
+  /** Lexical state. */
+  int IN_TABLE = 1;
 
   /** Literal token values. */
   String[] tokenImage = {
@@ -112,6 +118,7 @@ public interface ExpressionParserConstants {
     "\"COUNT\"",
     "\"MAX\"",
     "\"MIN\"",
+    "\"FROM\"",
     "<NAME>",
     "<STRING>",
     "<RELOP>",
@@ -122,6 +129,11 @@ public interface ExpressionParserConstants {
     "\"/\"",
     "\"(\"",
     "\")\"",
+    "\" \"",
+    "\"\\t\"",
+    "\"\\r\"",
+    "\"\\n\"",
+    "<TABLENAME>",
     "<UNEXPECTED_CHAR>",
   };
 

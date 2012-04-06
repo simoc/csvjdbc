@@ -652,15 +652,22 @@ class AsteriskExpression extends LogicalExpression{
 class ParsedStatement{
   List queryEntries;
   boolean isDistinct;
-  public ParsedStatement(List queryEntries, boolean isDistinct){
+  String tableName;
+  String tableAlias;
+  public ParsedStatement(List queryEntries, boolean isDistinct,
+    String tableName, String tableAlias){
     this.queryEntries = queryEntries;
     this.isDistinct = isDistinct;
+    this.tableName = tableName;
+    this.tableAlias = tableAlias;
   }
 }
 public class ExpressionParser{
   ParsedExpression content;
   List queryEntries;
   boolean isDistinct;
+  String tableName;
+  String tableAlias;
   private Map placeholders;
   public void parseLogicalExpression()throws ParseException{
     Placeholder.nextIndex = 1;
@@ -677,6 +684,8 @@ public class ExpressionParser{
     ParsedStatement parsedStatement = selectStatement();
     queryEntries = parsedStatement.queryEntries;
     isDistinct = parsedStatement.isDistinct;
+    tableName = parsedStatement.tableName;
+    tableAlias = parsedStatement.tableAlias;
   }
   public boolean isTrue(Map env){
     if(placeholders != null) {
@@ -794,6 +803,12 @@ TOKEN:{
   <MIN:"MIN">
 }
 TOKEN:{
+  /*
+   * Change to IN_TABLE state after parsing "FROM" keyword.
+   */
+  <FROM:"FROM"> : IN_TABLE
+}
+TOKEN:{
   <NAME:(["0"-"9", "A"-"Z", "a"-"z", "_", "."])+>
 }
 TOKEN:{
@@ -829,6 +844,19 @@ TOKEN:{
 TOKEN:{
   <CLOSEPARENTHESIS:")">
 }
+<IN_TABLE> SKIP:{
+  " "
+  | "\t"
+  | "\r"
+  | "\n"
+}
+/*
+ * Tablename is a sequence of non-whitespace when in IN_TABLE state.
+ * Switch back to DEFAULT state after parsing table name.
+ */
+<IN_TABLE> TOKEN:{
+  <TABLENAME:(~[" ", "\t", "\r", "\n"])+> : DEFAULT
+}
 /*
  * See http://www.engr.mun.ca/~theo/JavaCC-FAQ/javacc-faq-moz.htm
  * 3.19  How do I throw a ParseException instead of a TokenMgrError?
@@ -859,11 +887,19 @@ ParsedStatement selectStatement():{
   List result;
   Expression expr;
   boolean isDistinct;
+  String tableName;
+  String tableAlias;
+  Token t;
 }
 {
-  { result = new LinkedList(); isDistinct = false; }
-  <SELECT>(<DISTINCT>{isDistinct = true;})?expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*<EOF>{
-    return new ParsedStatement(result, isDistinct);
+  {
+    result = new LinkedList();
+    isDistinct = false;
+    tableName = null;
+    tableAlias = null;
+  }
+  <SELECT>(<DISTINCT>{isDistinct = true;})?expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*<FROM>t=<TABLENAME>{tableName = t.image;}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?<EOF>{
+    return new ParsedStatement(result, isDistinct, tableName, tableAlias);
   }
 }
 ParsedExpression queryEnvEntry():{
