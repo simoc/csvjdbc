@@ -677,13 +677,16 @@ class ParsedStatement{
   String tableName;
   String tableAlias;
   ParsedExpression whereClause;
+  List orderByEntries;
   public ParsedStatement(List queryEntries, boolean isDistinct,
-    String tableName, String tableAlias, ParsedExpression whereClause){
+    String tableName, String tableAlias,
+    ParsedExpression whereClause, List orderByEntries){
     this.queryEntries = queryEntries;
     this.isDistinct = isDistinct;
     this.tableName = tableName;
     this.tableAlias = tableAlias;
     this.whereClause = whereClause;
+    this.orderByEntries = orderByEntries;
   }
 }
 public class ExpressionParser{
@@ -692,6 +695,7 @@ public class ExpressionParser{
   boolean isDistinct;
   String tableName;
   String tableAlias;
+  List orderByEntries;
   public void parseLogicalExpression()throws ParseException{
     content = logicalExpression();
   }
@@ -710,6 +714,7 @@ public class ExpressionParser{
     tableName = parsedStatement.tableName;
     tableAlias = parsedStatement.tableAlias;
     content = parsedStatement.whereClause;
+    orderByEntries = parsedStatement.orderByEntries;
   }
   public Object eval(Map env){
     return content.eval(env);
@@ -807,6 +812,12 @@ TOKEN:{
   <WHERE:"WHERE">
 }
 TOKEN:{
+  <ORDER:"ORDER">
+}
+TOKEN:{
+  <BY:"BY">
+}
+TOKEN:{
   <NAME:(["0"-"9", "A"-"Z", "a"-"z", "_", "."])+>
 }
 TOKEN:{
@@ -866,7 +877,7 @@ ParsedExpression logicalExpression():{
   LogicalExpression left;
 }
 {
-  left = logicalOrExpression()<EOF>{
+  left = logicalOrExpression(){
     return new ParsedExpression(left);
   }
 }
@@ -877,7 +888,7 @@ ParsedExpression orderByEntry():{
 }
 {
   {order = "ASC";}
-  left = binaryOperation()(t=<ASC>{order=t.image;}|t=<DESC>{order=t.image;})?<EOF>{
+  left = binaryOperation()(t=<ASC>{order=t.image;}|t=<DESC>{order=t.image;})?{
     return new ParsedExpression(new OrderByEntry(left, order));
   }
 }
@@ -887,7 +898,8 @@ ParsedStatement selectStatement():{
   boolean isDistinct;
   String tableName;
   String tableAlias;
-  ParsedExpression whereClause;
+  ParsedExpression whereClause, entry;
+  List orderByEntries;
   Token t;
 }
 {
@@ -897,9 +909,10 @@ ParsedStatement selectStatement():{
     tableName = null;
     tableAlias = null;
     whereClause = null;
+    orderByEntries = new LinkedList();
   }
-  <SELECT>(<DISTINCT>{isDistinct = true;})?expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*<FROM>t=<TABLENAME>{tableName = t.image;}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?(<WHERE>whereClause = logicalExpression())?<EOF>{
-    return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause);
+  <SELECT>(<DISTINCT>{isDistinct = true;})?expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*<FROM>t=<TABLENAME>{tableName = t.image;}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?(<WHERE>whereClause = logicalExpression())?(<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?<EOF>{
+    return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, orderByEntries);
   }
 }
 ParsedExpression queryEnvEntry():{

@@ -19,7 +19,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * This is a very crude and simple SQL parser used by the Csv JDBC driver. It
@@ -98,35 +97,6 @@ public class SqlParser
   }
 
   /**
-   * Get last index of keyword in SQL string.
-   * @param sql SQL statement.
-   * @param keyword keyword being searched for.
-   * @return index, or -1 if keyword not found.
-   */
-  private int getLastIndexOfKeyword(String sql, String keyword) {
-	boolean found = false;
-	char before, after;
-	int index = sql.lastIndexOf(keyword);
-	while ((!found) && index >= 0) {
-		if (index == 0)
-			before = ' ';
-		else
-			before = sql.charAt(index - 1);
-		if (index + keyword.length() == sql.length())
-			after = ' ';
-		else
-			after = sql.charAt(index + keyword.length());
-		if (Character.isWhitespace(before) && Character.isWhitespace(after)) {
-			found = true;
-		} else {
-			sql = sql.substring(0, index);
-			index = sql.lastIndexOf(keyword);
-		}
-	}
-    return index;
-  }
-
-  /**
    * Set the internal table name and column names.
    *
    * @param  sql            Description of Parameter
@@ -138,37 +108,11 @@ public class SqlParser
 	  tableAlias = null;
 
 	  sql = sql.trim();
-	  String upperSql = sql.toUpperCase();
-
-	  int orderByPos = getLastIndexOfKeyword(upperSql, "ORDER BY");
-
-	  // if we have a "ORDER BY" parse the list of column names.
-	  if (orderByPos >= 0) {
-		  orderByColumns = new ArrayList();
-		  String orderBy = sql.substring(orderByPos + 8).trim();
-		  StringTokenizer tokenizer = new StringTokenizer(orderBy, ",");
-		  while (tokenizer.hasMoreTokens()) {
-			  String token = tokenizer.nextToken().trim();
-			  ExpressionParser cs = new ExpressionParser(new StringReader(token));
-			  cs.parseOrderByEntry();
-			  if (cs.content != null) {
-				  OrderByEntry cc = (OrderByEntry)cs.content.content;
-				  int direction = cc.order.equalsIgnoreCase("ASC") ? 1 : -1;
-				  orderByColumns.add(new Object[]{Integer.valueOf(direction), cc.expression});
-			  }
-		  }
-		  if (orderByColumns.isEmpty())
-			  throw new Exception("Malformed SQL. Missing ORDER BY columns");
-	  }
 
 	  environment = new ArrayList();
 
-	  // parse the column specifications
-	  String truncated = sql;
-	  if (orderByPos >= 0)
-		  truncated = sql.substring(0, orderByPos);
-
-	  ExpressionParser cs2 = new ExpressionParser(new StringReader(truncated));
+	  // parse the SQL statement
+	  ExpressionParser cs2 = new ExpressionParser(new StringReader(sql));
 	  cs2.parseSelectStatement();
 	  
 	  this.isDistinct = cs2.isDistinct;
@@ -190,6 +134,16 @@ public class SqlParser
 
 	  if (environment.isEmpty())
 		  throw new Exception("Malformed SQL. No columns");
+
+	  Iterator it2 = cs2.orderByEntries.iterator();
+	  if (it2.hasNext())
+		  orderByColumns = new ArrayList();
+	  while (it2.hasNext()) {
+		  ParsedExpression cc = (ParsedExpression)it2.next();
+		  OrderByEntry entry = (OrderByEntry)cc.content;
+		  int direction = entry.order.equalsIgnoreCase("ASC") ? 1 : -1;
+		  orderByColumns.add(new Object[]{Integer.valueOf(direction), entry.expression});
+	  }
   }
 
   public String[] getColumnNames() {
