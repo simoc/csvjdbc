@@ -1384,6 +1384,27 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	public void testNoPatternGroupFromIndexedTable() throws SQLException {
+
+		Properties props = new Properties();
+        props.put("fileExtension", ".txt");
+        props.put("commentChar", "#");
+        props.put("indexedFiles", "true");
+
+        // No groups in ()'s used in regular expression
+        props.put("fileTailPattern", ".*");
+        props.put("suppressHeaders", "true");
+        props.put("headerline", "BLZ,BANK_NAME");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM banks");
+
+		assertTrue(results.next());
+		assertEquals("The BLZ is wrong", "10000000", results.getString("BLZ"));
+	}
+
 	/**
 	 * @throws SQLException
 	 */
