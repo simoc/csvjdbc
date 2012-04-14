@@ -87,19 +87,25 @@ public class FileSetInputStream extends InputStream {
 		this.prepend = prepend;
 		this.separator = separator;
 		tail = "";
-		if (prepend)
+		if (prepend) {
 			tail += '\n';
-		else
-			tail += separator;
-		for (int i = 0; i < fieldsInName.length; i++) {
-			tail += fieldsInName[i];
-			if (i + 1 < fieldsInName.length)
+		} else {
+			if (fieldsInName != null)
 				tail += separator;
 		}
-		if (prepend)
-			tail += separator;
-		else
+		if (fieldsInName != null) {
+			for (int i = 0; i < fieldsInName.length; i++) {
+				tail += fieldsInName[i];
+				if (i + 1 < fieldsInName.length)
+					tail += separator;
+			}
+		}
+		if (prepend) {
+			if (fieldsInName != null)
+				tail += separator;
+		} else {
 			tail += '\n';
+		}
 
 		fileNames = new LinkedList<String>();
 		File root = new File(dirName);
@@ -222,19 +228,24 @@ public class FileSetInputStream extends InputStream {
 		Matcher m = fileNameRE.matcher(currentName);
 		m.matches();
 		String tail = "";
-		if (prepend)
+		int groupCount = m.groupCount();
+		if (prepend) {
 			tail += '\n';
-		else
-			tail += separator;
-		for (int i = 1; i <= m.groupCount(); i++) {
-			tail += m.group(i);
-			if (i < m.groupCount())
+		} else {
+			if (groupCount > 0)
 				tail += separator;
 		}
-		if (prepend)
-			tail += separator;
-		else
+		for (int i = 1; i <= groupCount; i++) {
+			tail += m.group(i);
+			if (i < groupCount)
+				tail += separator;
+		}
+		if (prepend) {
+			if (groupCount > 0)
+				tail += separator;
+		} else {
 			tail += '\n';
+		}
 		return tail;
 	}
 
