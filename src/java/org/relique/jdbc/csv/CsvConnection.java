@@ -232,7 +232,9 @@ public class CsvConnection implements Connection {
     				info.getProperty(CsvDriver.INDEXED_FILES))
     				.booleanValue();
     		fileNamePattern = info.getProperty("fileTailPattern");
-    		nameParts = info.getProperty("fileTailParts","").split(",");
+    		String fileTailParts = info.getProperty("fileTailParts","");
+    		if (!fileTailParts.isEmpty())
+    			nameParts = fileTailParts.split(",");
     		setFileTailPrepend(Boolean.parseBoolean(info.getProperty(
     				CsvDriver.FILE_TAIL_PREPEND,
     				CsvDriver.DEFAULT_FILE_TAIL_PREPEND)));
