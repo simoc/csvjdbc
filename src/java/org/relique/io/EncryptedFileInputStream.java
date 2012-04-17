@@ -1,5 +1,6 @@
 package org.relique.io;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,7 +14,7 @@ public class EncryptedFileInputStream extends InputStream {
 	public EncryptedFileInputStream(String fileName, CryptoFilter filter)
 			throws FileNotFoundException {
 		this.filter = filter;
-		in = new FileInputStream(fileName);
+		in = new BufferedInputStream(new FileInputStream(fileName));
 	}
 
 	public int read() throws IOException {
