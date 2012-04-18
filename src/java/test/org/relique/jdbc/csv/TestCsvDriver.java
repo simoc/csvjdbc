@@ -2261,7 +2261,32 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("2 is wrong", "21", results.getObject(2));
 		assertEquals("3 is wrong", "20", results.getObject(3));
 	}
-	
+
+	public void testWithHeaderMissingColumns() throws SQLException, ParseException {
+		Properties props = new Properties();
+		props.put("defectiveHeaders", "True");
+		
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM defectiveheader");
+
+		ResultSetMetaData metadata = results.getMetaData();
+
+		assertEquals("Incorrect Column Name 1", "IDX", metadata.getColumnName(1));
+		assertEquals("Incorrect Column Name 2", "COLUMN2", metadata.getColumnName(2));
+		assertEquals("Incorrect Column Name 3", "COLUMN3", metadata.getColumnName(3));
+		assertEquals("Incorrect Column Name 4", "COMMENT", metadata.getColumnName(4));
+		assertEquals("Incorrect Column Name 5", "COLUMN5", metadata.getColumnName(5));
+
+		assertTrue(results.next());
+		assertEquals("1 is wrong", "178", results.getString(1));
+		assertEquals("2 is wrong", "AAX", results.getString("COLUMN2"));
+		assertEquals("3 is wrong", "ED+", results.getString(3));
+		assertEquals("4 is wrong", "NONE", results.getString(4));
+		assertEquals("5 is wrong", "T", results.getString("COLUMN5"));
+	}
+
 	public void testSkipLeadingDataLines() throws SQLException, ParseException {
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
