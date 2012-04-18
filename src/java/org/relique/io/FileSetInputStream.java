@@ -199,9 +199,9 @@ public class FileSetInputStream extends InputStream {
 			// open next file and possibly skip header
 			pos = 0;
 			String currentName;
-			try {
+			if (fileNames.size() > 0) {
 				currentName = (String) fileNames.remove(0);
-			} catch (IndexOutOfBoundsException e) {
+			} else {
 				currentFile = null;
 				return -1;
 			}
