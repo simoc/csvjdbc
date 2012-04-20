@@ -2929,6 +2929,22 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	public void testOrderByColumnNumberExpression() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Timestamp");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT ID+10 FROM sample5 ORDER BY 1");
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", 11, results.getInt("ID"));
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", 12, results.getInt("ID"));
+		assertTrue(results.next());
+	}
+
 	public void testOrderByDesc() throws SQLException {
 		Properties props = new Properties();
 		props.put("headerline", "BLZ,BANK_NAME");
