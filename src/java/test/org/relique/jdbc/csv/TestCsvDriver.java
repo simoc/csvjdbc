@@ -2937,11 +2937,11 @@ public class TestCsvDriver extends TestCase {
 		Statement stmt = conn.createStatement();
 
 		ResultSet results = stmt
-				.executeQuery("SELECT ID+10 FROM sample5 ORDER BY 1");
+				.executeQuery("SELECT ID+10 AS ID10 FROM sample5 ORDER BY 1");
 		assertTrue(results.next());
-		assertEquals("The ID is wrong", 11, results.getInt("ID"));
+		assertEquals("The ID is wrong", 11, results.getInt("ID10"));
 		assertTrue(results.next());
-		assertEquals("The ID is wrong", 12, results.getInt("ID"));
+		assertEquals("The ID is wrong", 12, results.getInt("ID10"));
 		assertTrue(results.next());
 	}
 

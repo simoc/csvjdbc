@@ -209,12 +209,6 @@ public class CsvResultSet implements ResultSet {
         	this.usedColumns = new LinkedList(whereClause.usedColumns());
         else
             this.usedColumns = new LinkedList();
-        if (this.orderByColumns != null) {
-			for (Object o : this.orderByColumns) {
-				Expression expr = (Expression)((Object [])o)[1];
-				this.usedColumns.addAll(expr.usedColumns());
-			}
-        }
 
         String[] columnNames = reader.getColumnNames();
 
@@ -273,6 +267,13 @@ public class CsvResultSet implements ResultSet {
 				}
 			}
 		}
+
+        if (this.orderByColumns != null) {
+			for (Object o : this.orderByColumns) {
+				Expression expr = (Expression)((Object [])o)[1];
+				this.usedColumns.addAll(expr.usedColumns());
+			}
+        }
 
 		/*
 		 * Find any SQL aggregate functions so they can be evaluated separately.
