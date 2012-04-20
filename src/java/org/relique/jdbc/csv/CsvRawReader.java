@@ -126,20 +126,25 @@ public class CsvRawReader {
 		} else {
 			String tmpHeaderLine = getNextDataLine();
 			this.columnNames = parseCsvLine(tmpHeaderLine, trimHeaders);
+			// some column names may be missing and should be corrected
+			if (defectiveHeaders)
+				fixDefectiveHeaders();
 			Set uniqueNames = new HashSet();
 			for (int i = 0; i < this.columnNames.length; i++)
 				uniqueNames.add(this.columnNames[i]);
 			if (uniqueNames.size() != this.columnNames.length)
 				throw new SQLException("Table contains duplicate column names");
 		}
-		// some column names may be missing and should be corrected
-		if (defectiveHeaders)
-			for (int i = 0; i < this.columnNames.length; i++)
-				if (this.columnNames[i].length() == 0)
-					this.columnNames[i] = "COLUMN" + String.valueOf(i + 1);
 
 		for (int i=0; i<skipLeadingDataLines; i++){
 			in.readLine();
+		}
+	}
+
+	private void fixDefectiveHeaders() {
+		for (int i = 0; i < this.columnNames.length; i++) {
+			if (this.columnNames[i].length() == 0)
+				this.columnNames[i] = "COLUMN" + String.valueOf(i + 1);
 		}
 	}
 
