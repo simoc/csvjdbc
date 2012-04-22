@@ -97,8 +97,6 @@ public class CsvResultSet implements ResultSet {
 
 	private Map recordEnvironment;
 
-	private Map objectEnvironment;
-
 	private List usedColumns;
 
 	private String timeFormat;
@@ -134,15 +132,15 @@ public class CsvResultSet implements ResultSet {
 				Integer direction = (Integer)o[0];
 				Expression expr = (Expression)o[1];
 				recordEnvironment = recordEnvironment1;
-				updateRecordEnvironment(true);
+				Map objectEnvironment1 = updateRecordEnvironment(true);
 	    		if (converter != null)
-	    			objectEnvironment.put("@STRINGCONVERTER", converter);
-				Comparable result1 = (Comparable)expr.eval(objectEnvironment);
+	    			objectEnvironment1.put("@STRINGCONVERTER", converter);
+				Comparable result1 = (Comparable)expr.eval(objectEnvironment1);
 				recordEnvironment = recordEnvironment2;
-				updateRecordEnvironment(true);
+				Map objectEnvironment2 = updateRecordEnvironment(true);
 	    		if (converter != null)
-	    			objectEnvironment.put("@STRINGCONVERTER", converter);
-				Comparable result2 = (Comparable)expr.eval(objectEnvironment);
+	    			objectEnvironment2.put("@STRINGCONVERTER", converter);
+				Comparable result2 = (Comparable)expr.eval(objectEnvironment2);
 				if (result1 == null) {
 					if (result2 == null)
 						retval = 0;
@@ -463,10 +461,10 @@ public class CsvResultSet implements ResultSet {
 				recordEnvironment = reader.getEnvironment();
 			else
 				recordEnvironment = null;
-			updateRecordEnvironment(thereWasAnAnswer);
 
 			// We have a where clause or DISTINCT keyword, honor it
 			if (whereClause != null || distinctValues != null) {
+				Map objectEnvironment = updateRecordEnvironment(thereWasAnAnswer);
 				while (thereWasAnAnswer) {
 					if (whereClause == null || whereClause.isTrue(objectEnvironment)) {
 						if (distinctValues == null || addDistinctEnvironment()) {
@@ -478,7 +476,7 @@ public class CsvResultSet implements ResultSet {
 	    				recordEnvironment = reader.getEnvironment();
 	    			else
 	    				recordEnvironment = null;
-					updateRecordEnvironment(thereWasAnAnswer);
+	    			objectEnvironment = updateRecordEnvironment(thereWasAnAnswer);
 				}
 			}
 			if (this.orderByColumns != null || this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
@@ -497,11 +495,11 @@ public class CsvResultSet implements ResultSet {
 		}
     }
 
-    private void updateRecordEnvironment(boolean thereWasAnAnswer) {
-		objectEnvironment = new HashMap();
+    private Map updateRecordEnvironment(boolean thereWasAnAnswer) {
+		HashMap objectEnvironment = new HashMap();
     	if(!thereWasAnAnswer) {
     		recordEnvironment = null;
-    		return;
+    		return objectEnvironment;
     	}
 		for (int i = 0; i < queryEnvironment.size(); i++){
 			Object[] o = (Object[]) queryEnvironment.get(i);
@@ -516,6 +514,7 @@ public class CsvResultSet implements ResultSet {
 				objectEnvironment.put(key, recordEnvironment.get(key));
 			}
 		}
+		return objectEnvironment;
 	}
 
     private boolean addDistinctEnvironment() {
