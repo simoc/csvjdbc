@@ -911,7 +911,13 @@ ParsedStatement selectStatement():{
     whereClause = null;
     orderByEntries = new LinkedList();
   }
-  <SELECT>(<DISTINCT>{isDistinct = true;})?expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*<FROM>t=<TABLENAME>{tableName = t.image;}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?(<WHERE>whereClause = logicalExpression())?(<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?<EOF>{
+  <SELECT>
+  (<DISTINCT>{isDistinct = true;})?
+  expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*
+  (<FROM>t=<TABLENAME>{tableName = t.image;}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?
+  (<WHERE>whereClause = logicalExpression())?
+  (<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?)?
+  <EOF>{
     return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, orderByEntries);
   }
 }

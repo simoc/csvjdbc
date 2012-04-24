@@ -29,11 +29,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.relique.io.CryptoFilter;
 import org.relique.io.DataReader;
 import org.relique.io.EncryptedFileInputStream;
 import org.relique.io.FileSetInputStream;
+import org.relique.io.ListDataReader;
 import org.relique.io.TableReader;
 import org.relique.jdbc.dbf.DbfReader;
 
@@ -343,81 +346,93 @@ public class CsvStatement implements Statement {
 		DriverManager.println("Connection Extension: "
 				+ connection.getExtension());
 
+		DataReader reader = null;
 		String fileName = null;
 		String tableName = parser.getTableName();
-		if (path != null && (!connection.isIndexedFiles())) {
-			fileName = path + tableName	+ connection.getExtension();
-
-			DriverManager.println("CSV file name: " + fileName);
-
-			File checkFile = new File(fileName);
-
-			if (!checkFile.exists()) {
-				throw new SQLException("Cannot open data file '" + fileName
-						+ "'  !");
-			}
-
-			if (!checkFile.canRead()) {
-				throw new SQLException("Data file '" + fileName
-						+ "'  not readable !");
-			}
-		}
-		DataReader reader = null;
-		try {
-			if(connection.getExtension().equalsIgnoreCase(".dbf")) {
-				reader = new DbfReader(fileName, parser.getTableAlias());
-			} else {
-				BufferedReader input;
-				if (tableReader == null) {
-					InputStream in;
-					CryptoFilter filter = connection.getDecryptingCodec();
-					if (connection.isIndexedFiles()) {
-						String fileNamePattern = parser.getTableName()
-								+ connection.getFileNamePattern()
-								+ connection.getExtension();
-						String[] nameParts = connection.getNameParts();
-						String dirName = connection.getPath();
-						in = new FileSetInputStream(dirName, fileNamePattern,
-								nameParts, connection.getSeparator(), connection.isFileTailPrepend(),
-								connection.isSuppressHeaders(), filter, connection.getSkipLeadingDataLines() + connection.getTransposedLines());
-					} else if (filter==null) {
-						in = new FileInputStream(fileName);
-					} else {
-						filter.reset();
-						in = new EncryptedFileInputStream(fileName, filter);
-					}
-					if (connection.getCharset() != null) {
-						input = new BufferedReader(new InputStreamReader(in, connection
-								.getCharset()));
-					} else {
-						input = new BufferedReader(new InputStreamReader(in));
-					}
-				} else {
-					/*
-					 * Reader for table comes from user-provided class.
-					 */
-					input = new BufferedReader(tableReader.getReader(this, tableName));
+		if (tableName == null) {
+			/*
+			 * Create an empty dataset with one row.
+			 */
+			String []columnNames = new String[0];
+			String []columnTypes = new String[0];
+			ArrayList rows = new ArrayList();
+			rows.add(new Object[0]);
+			reader = new ListDataReader(columnNames, columnTypes, rows);
+		} else {
+			if (path != null && (!connection.isIndexedFiles())) {
+				fileName = path + tableName	+ connection.getExtension();
+	
+				DriverManager.println("CSV file name: " + fileName);
+	
+				File checkFile = new File(fileName);
+	
+				if (!checkFile.exists()) {
+					throw new SQLException("Cannot open data file '" + fileName
+							+ "'  !");
 				}
-
-				String headerline = connection.getHeaderline(tableName);
-				CsvRawReader rawReader = new CsvRawReader(input, parser.getTableAlias(), connection.getSeparator(),
-						connection.isSuppressHeaders(), connection.getQuotechar(),
-						connection.getCommentChar(), headerline,
-						connection.getExtension(), connection.getTrimHeaders(),
-						connection.getSkipLeadingLines(), connection
-						.isIgnoreUnparseableLines(), connection
-						.getDecryptingCodec(), connection
-						.isDefectiveHeaders(), connection
-						.getSkipLeadingDataLines(), connection.getQuoteStyle());
-				reader = new CsvReader(rawReader, connection.getTransposedLines(), connection.getTransposedFieldsToSkip(), headerline);
+	
+				if (!checkFile.canRead()) {
+					throw new SQLException("Data file '" + fileName
+							+ "'  not readable !");
+				}
 			}
-		} catch (IOException e) {
-			throw new SQLException("Error reading data file. Message was: " + e);
-		} catch (SQLException e) {
-			throw e;
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new SQLException("Error initializing DataReader: " + e);
+			
+			try {
+				if(connection.getExtension().equalsIgnoreCase(".dbf")) {
+					reader = new DbfReader(fileName, parser.getTableAlias());
+				} else {
+					BufferedReader input;
+					if (tableReader == null) {
+						InputStream in;
+						CryptoFilter filter = connection.getDecryptingCodec();
+						if (connection.isIndexedFiles()) {
+							String fileNamePattern = parser.getTableName()
+									+ connection.getFileNamePattern()
+									+ connection.getExtension();
+							String[] nameParts = connection.getNameParts();
+							String dirName = connection.getPath();
+							in = new FileSetInputStream(dirName, fileNamePattern,
+									nameParts, connection.getSeparator(), connection.isFileTailPrepend(),
+									connection.isSuppressHeaders(), filter, connection.getSkipLeadingDataLines() + connection.getTransposedLines());
+						} else if (filter==null) {
+							in = new FileInputStream(fileName);
+						} else {
+							filter.reset();
+							in = new EncryptedFileInputStream(fileName, filter);
+						}
+						if (connection.getCharset() != null) {
+							input = new BufferedReader(new InputStreamReader(in, connection
+									.getCharset()));
+						} else {
+							input = new BufferedReader(new InputStreamReader(in));
+						}
+					} else {
+						/*
+						 * Reader for table comes from user-provided class.
+						 */
+						input = new BufferedReader(tableReader.getReader(this, tableName));
+					}
+	
+					String headerline = connection.getHeaderline(tableName);
+					CsvRawReader rawReader = new CsvRawReader(input, parser.getTableAlias(), connection.getSeparator(),
+							connection.isSuppressHeaders(), connection.getQuotechar(),
+							connection.getCommentChar(), headerline,
+							connection.getExtension(), connection.getTrimHeaders(),
+							connection.getSkipLeadingLines(), connection
+							.isIgnoreUnparseableLines(), connection
+							.getDecryptingCodec(), connection
+							.isDefectiveHeaders(), connection
+							.getSkipLeadingDataLines(), connection.getQuoteStyle());
+					reader = new CsvReader(rawReader, connection.getTransposedLines(), connection.getTransposedFieldsToSkip(), headerline);
+				}
+			} catch (IOException e) {
+				throw new SQLException("Error reading data file. Message was: " + e);
+			} catch (SQLException e) {
+				throw e;
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new SQLException("Error initializing DataReader: " + e);
+			}
 		}
 
 		CsvResultSet resultSet = null;

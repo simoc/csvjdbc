@@ -3289,4 +3289,24 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("Incorrect distinct TO_BLZ value 2", 10010010, results.getInt(2));
 		assertFalse(results.next());
 	}
+	
+	public void testNoTable() throws SQLException, ParseException {
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT 'Hello', 'World' as W, 5+7");
+
+		assertTrue(results.next());
+		ResultSetMetaData metadata = results.getMetaData();
+		assertEquals("column 1 type is incorrect", Types.VARCHAR, metadata.getColumnType(1));
+		assertEquals("column 2 type is incorrect", Types.VARCHAR, metadata.getColumnType(2));
+		assertEquals("column 3 type is incorrect", Types.INTEGER, metadata.getColumnType(3));
+
+		assertEquals("column 2 name is incorrect", "W", metadata.getColumnName(2));
+
+		assertEquals("column 1 value is incorrect", "Hello", results.getString(1));
+		assertEquals("column 2 value is incorrect", "World", results.getString(2));
+		assertEquals("column 3 value is incorrect", 12, results.getInt(3));
+		assertFalse(results.next());
+	}
 }
