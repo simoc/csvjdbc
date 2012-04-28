@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package test.org.relique.jdbc.csv;
 import java.io.StringReader;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -495,6 +496,19 @@ public class TestSqlParser extends TestCase {
 		assertEquals((Object)(new Integer("2")), cs.eval(env));
 		env.put("B", new Double(2));
 		assertEquals((Object)(new Double("2.5")), cs.eval(env));
+	}
+
+	public void testEvaluateDateOperations() throws Exception {
+		ExpressionParser cs;
+		cs = new ExpressionParser(new StringReader("CURRENT_DATE AS now"));
+		cs.parseQueryEnvEntry();
+		Map env = new HashMap();
+
+		// Protect against unlikely situation of test running over date change at midnight.
+		Date date1 = new Date(System.currentTimeMillis());
+		Object o = cs.eval(env);
+		Date date2 = new Date(System.currentTimeMillis());
+		assertTrue(date1.equals(o) || date2.equals(o));
 	}
 
 	public void testParsingIgnoresCase() throws Exception {

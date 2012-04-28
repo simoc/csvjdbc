@@ -52,6 +52,21 @@ class NullConstant extends Expression{
     return new LinkedList();
   }
 }
+class CurrentDateConstant extends Expression{
+  ExpressionParser parent;
+  public CurrentDateConstant(ExpressionParser parent){
+    this.parent = parent;
+  }
+  public Object eval(Map env){
+    return parent.getCurrentDate();
+  }
+  public String toString(){
+    return "CURRENT_DATE";
+  }
+  public List usedColumns(){
+    return new LinkedList();
+  }
+}
 class Placeholder extends Expression{
   static int nextIndex = 1;
   Integer index;
@@ -672,6 +687,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   String tableName;
   String tableAlias;
   List orderByEntries;
+  Date currentDate;
   public void parseLogicalExpression()throws ParseException{
     content = logicalExpression();
   }
@@ -697,6 +713,11 @@ public class ExpressionParser implements ExpressionParserConstants {
   }
   public String toString(){
     return ""+content;
+  }
+  public Date getCurrentDate(){
+    if (currentDate == null)
+      currentDate = new Date(System.currentTimeMillis());
+    return currentDate;
   }
 
   final public ParsedExpression logicalExpression() throws ParseException {
@@ -852,6 +873,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case UNSIGNEDNUMBER:
     case NULL:
+    case CURRENT_DATE:
     case PLACEHOLDER:
     case LOWER:
     case ROUND:
@@ -973,6 +995,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       break;
     case UNSIGNEDNUMBER:
     case NULL:
+    case CURRENT_DATE:
     case PLACEHOLDER:
     case LOWER:
     case ROUND:
@@ -1083,6 +1106,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       break;
     case UNSIGNEDNUMBER:
     case NULL:
+    case CURRENT_DATE:
     case PLACEHOLDER:
     case LOWER:
     case ROUND:
@@ -1162,6 +1186,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       break;
     case UNSIGNEDNUMBER:
     case NULL:
+    case CURRENT_DATE:
     case PLACEHOLDER:
     case LOWER:
     case ROUND:
@@ -1245,6 +1270,10 @@ public class ExpressionParser implements ExpressionParserConstants {
     case NULL:
       jj_consume_token(NULL);
     {if (true) return new NullConstant();}
+      break;
+    case CURRENT_DATE:
+      jj_consume_token(CURRENT_DATE);
+    {if (true) return new CurrentDateConstant(this);}
       break;
     case PLACEHOLDER:
       jj_consume_token(PLACEHOLDER);
@@ -1334,10 +1363,10 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x300000,0x300000,0x40,0x80,0x10000,0x10000,0x20000000,0x80,0x40000000,0x10000000,0x10000,0x10000,0x0,0xfc80900,0x2000,0x1000,0xfc84900,0x68000,0x0,0x0,0xfc80900,0x0,0x0,0xfc80900,0xfc80900,0x0,0x0,};
+      jj_la1_0 = new int[] {0x600000,0x600000,0x40,0x80,0x20000,0x20000,0x40000000,0x80,0x80000000,0x20000000,0x20000,0x20000,0x0,0x1f901900,0x4000,0x2000,0x1f909900,0xd0000,0x0,0x0,0x1f901900,0x0,0x0,0x1f901900,0x1f901900,0x0,0x0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x1,0x18,0x13b,0x0,0x0,0x123,0x4,0x60,0x88,0x12b,0x60,0x88,0x123,0x23,0x20,0x2,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x0,0x0,0x0,0x0,0x2,0x30,0x276,0x0,0x0,0x246,0x8,0xc0,0x110,0x256,0xc0,0x110,0x246,0x46,0x40,0x4,};
    }
 
   /** Constructor with InputStream. */
@@ -1454,7 +1483,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[48];
+    boolean[] la1tokens = new boolean[49];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -1471,7 +1500,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 48; i++) {
+    for (int i = 0; i < 49; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
