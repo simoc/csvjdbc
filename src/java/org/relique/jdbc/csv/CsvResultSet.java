@@ -514,6 +514,15 @@ public class CsvResultSet implements ResultSet {
 				objectEnvironment.put(key, recordEnvironment.get(key));
 			}
 		}
+		
+		/*
+		 * Always include the data type converter object so we can correctly
+		 * convert data types when evaluating expressions such as MYDATE > '2012-06-31'.
+		 */
+		String key = "@STRINGCONVERTER";
+		Object stringConverter = recordEnvironment.get(key);
+		if (stringConverter != null)
+			objectEnvironment.put(key, stringConverter);
 		return objectEnvironment;
 	}
 

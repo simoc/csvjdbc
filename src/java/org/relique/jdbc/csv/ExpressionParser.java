@@ -512,9 +512,21 @@ class RelopExpression extends LogicalExpression{
       leftComparedToRightObj = new Integer(leftValue.compareTo(rightValue));
     }
     catch (ClassCastException e){}try {
-      Double leftDouble = new Double(((Number)leftValue).toString());
-      Double rightDouble = new Double(((Number)rightValue).toString());
-      leftComparedToRightObj = new Integer(leftDouble.compareTo(rightDouble));
+      if (leftComparedToRightObj == null && leftValue instanceof Date){
+        Expression stringConverter = new ColumnName("@StringConverter");
+        StringConverter sc = (StringConverter) stringConverter.eval(env);
+        Date date = sc.parseDate(rightValue.toString());
+        leftComparedToRightObj = new Integer(leftValue.compareTo(date));
+      }else if (leftComparedToRightObj == null && rightValue instanceof Date){
+        Expression stringConverter = new ColumnName("@StringConverter");
+        StringConverter sc = (StringConverter) stringConverter.eval(env);
+        Date date = sc.parseDate(leftValue.toString());
+        leftComparedToRightObj = new Integer(date.compareTo((Date)rightValue));
+      }else{
+        Double leftDouble = new Double(((Number)leftValue).toString());
+        Double rightDouble = new Double(((Number)rightValue).toString());
+        leftComparedToRightObj = new Integer(leftDouble.compareTo(rightDouble));
+      }
     }
     catch (ClassCastException e){}catch (NumberFormatException e){}if (leftComparedToRightObj != null){
       int leftComparedToRight = leftComparedToRightObj.intValue();

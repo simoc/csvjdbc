@@ -1153,6 +1153,28 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	public void testWhereWithDates() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,Date,Time");
+		props.put("dateFormat", "yyyy-MM-dd");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT ID from sample8 where d = '2010-02-02'");
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", 2, results.getInt(1));
+		assertFalse(results.next());
+
+		results = stmt.executeQuery("SELECT ID from sample8 where '2010-03-24' < d");
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", 3, results.getInt(1));
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", 6, results.getInt(1));
+		assertFalse(results.next());
+	}
+
 	/**
 	 * @throws SQLException
 	 */
