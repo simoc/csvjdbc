@@ -305,7 +305,7 @@ public class TestCryptoFilter extends TestCase {
 		long timeEncrypt = encryptEndMillis - encryptStartMillis;
 		assertTrue("timeNoEncrypt = " + timeNoEncrypt
 				+ "ms; timeEncrypt = " + timeEncrypt + "ms",
-				timeEncrypt <= 6 * timeNoEncrypt);
+				timeEncrypt <= 10 * timeNoEncrypt);
 	}
 
 	public void testOpenManyCryptoFiles() throws SQLException, IOException {
