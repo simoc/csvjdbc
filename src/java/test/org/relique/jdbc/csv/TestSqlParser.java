@@ -29,6 +29,7 @@ import org.relique.jdbc.csv.Expression;
 import org.relique.jdbc.csv.ExpressionParser;
 import org.relique.jdbc.csv.ParseException;
 import org.relique.jdbc.csv.SqlParser;
+import org.relique.jdbc.csv.StringConverter;
 import org.relique.jdbc.csv.TokenMgrError;
 
 /**
@@ -503,12 +504,44 @@ public class TestSqlParser extends TestCase {
 		cs = new ExpressionParser(new StringReader("CURRENT_DATE AS now"));
 		cs.parseQueryEnvEntry();
 		Map env = new HashMap();
+		env.put("@STRINGCONVERTER", new StringConverter("yyyy-mm-dd", "HH:mm:ss", "UTC"));
 
 		// Protect against unlikely situation of test running over date change at midnight.
 		String date1 = new Date(System.currentTimeMillis()).toString();
 		Object o = cs.eval(env);
 		String date2 = new Date(System.currentTimeMillis()).toString();
 		assertTrue(date1.equals(o.toString()) || date2.equals(o.toString()));
+
+		cs = new ExpressionParser(new StringReader("EXPIRYDATE + 10 as result"));
+		cs.parseQueryEnvEntry();
+		env.put("EXPIRYDATE", Date.valueOf("2011-11-24"));
+		o = cs.eval(env);
+		assertEquals(o.toString(), "2011-12-04");
+
+		cs = new ExpressionParser(new StringReader("10 + EXPIRYDATE as result"));
+		cs.parseQueryEnvEntry();
+		env.put("EXPIRYDATE", Date.valueOf("2011-11-24"));
+		o = cs.eval(env);
+		assertEquals(o.toString(), "2011-12-04");
+
+		cs = new ExpressionParser(new StringReader("EXPIRYDATE - 10 as result"));
+		cs.parseQueryEnvEntry();
+		env.put("EXPIRYDATE", Date.valueOf("2011-11-24"));
+		o = cs.eval(env);
+		assertEquals(o.toString(), "2011-11-14");
+
+		cs = new ExpressionParser(new StringReader("EXPIRYDATE - '2011-11-01' as result"));
+		cs.parseQueryEnvEntry();
+		env.put("EXPIRYDATE", Date.valueOf("2011-11-24"));
+		o = cs.eval(env);
+		assertEquals(o, new Integer(23));
+
+		cs = new ExpressionParser(new StringReader("ENDDATE - STARTDATE + 1 as result"));
+		cs.parseQueryEnvEntry();
+		env.put("STARTDATE", Date.valueOf("2011-11-22"));
+		env.put("ENDDATE", Date.valueOf("2011-11-24"));
+		o = cs.eval(env);
+		assertEquals(o, new Integer(3));
 	}
 
 	public void testParsingIgnoresCase() throws Exception {
