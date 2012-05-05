@@ -505,10 +505,10 @@ public class TestSqlParser extends TestCase {
 		Map env = new HashMap();
 
 		// Protect against unlikely situation of test running over date change at midnight.
-		Date date1 = new Date(System.currentTimeMillis());
+		String date1 = new Date(System.currentTimeMillis()).toString();
 		Object o = cs.eval(env);
-		Date date2 = new Date(System.currentTimeMillis());
-		assertTrue(date1.equals(o) || date2.equals(o));
+		String date2 = new Date(System.currentTimeMillis()).toString();
+		assertTrue(date1.equals(o.toString()) || date2.equals(o.toString()));
 	}
 
 	public void testParsingIgnoresCase() throws Exception {

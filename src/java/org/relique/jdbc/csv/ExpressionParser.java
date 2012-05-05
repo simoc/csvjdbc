@@ -727,8 +727,11 @@ public class ExpressionParser implements ExpressionParserConstants {
     return ""+content;
   }
   public Date getCurrentDate(){
-    if (currentDate == null)
+    if (currentDate == null){
       currentDate = new Date(System.currentTimeMillis());
+      /* Remove any time component from the date */
+      currentDate = Date.valueOf(currentDate.toString());
+    }
     return currentDate;
   }
 
