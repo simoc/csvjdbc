@@ -115,6 +115,8 @@ public class CsvResultSet implements ResultSet {
 
 	private int maxRows;
 
+	private int limit;
+
 	private boolean isClosed = false;
 
 	/**
@@ -168,6 +170,7 @@ public class CsvResultSet implements ResultSet {
      * @param typeNames Array of available columns for referenced table
      * @param whereClause expression for the SQL where clause.
      * @param orderByColumns expressions for SQL ORDER BY clause.
+     * @param sqlLimit maximum number of rows set with SQL LIMIT clause.
      * @param columnTypes A comma-separated string specifying the type of the i-th column of the database table (not of the result).
      * @param whereColumnName the name of the column, needed late by a select *
      * @throws ClassNotFoundException in case the typed columns fail
@@ -175,10 +178,11 @@ public class CsvResultSet implements ResultSet {
      */
     protected CsvResultSet(CsvStatement statement, DataReader reader,
 			String tableName, List queryEnvironment, boolean isDistinct, int isScrollable, 
-			Expression whereClause, List orderByColumns,
+			Expression whereClause, List orderByColumns, int sqlLimit,
 			String columnTypes, int skipLeadingLines) throws ClassNotFoundException, SQLException {
         this.statement = statement;
         maxRows = statement.getMaxRows();
+        this.limit = sqlLimit;
         this.isScrollable = isScrollable;
         this.reader = reader;
         this.tableName = tableName;
@@ -358,7 +362,9 @@ public class CsvResultSet implements ResultSet {
     		 * produce a single row result.
     		 */
     		int savedMaxRows = maxRows;
+    		int savedLimit = limit;
     		maxRows = 0;
+    		limit = -1;
     		try {
     			while (next()) {
     				for (Object o : this.aggregateFunctions) {
@@ -370,9 +376,12 @@ public class CsvResultSet implements ResultSet {
     			/*
     			 * Create a single row ResultSet from the aggregate functions.
     			 */
-    			bufferedRecordEnvironments.add(new HashMap());
+    			bufferedRecordEnvironments.clear();
+    			if (savedLimit < 0 || savedLimit > 0)
+    				bufferedRecordEnvironments.add(new HashMap());
     		} finally {
     			maxRows = savedMaxRows;
+    			limit = savedLimit;
     		}
 
     		/*
@@ -388,21 +397,26 @@ public class CsvResultSet implements ResultSet {
     		 * Read all rows into memory and sort them based on SQL ORDER BY expressions.
     		 */
     		int savedMaxRows = maxRows;
+    		int savedLimit = limit;
     		maxRows = 0;
+    		limit = -1;
     		try {
     			while (next())
     				;
     		} finally {
     			maxRows = savedMaxRows;
+    			limit = savedLimit;
     		}
     		Object []allRows = bufferedRecordEnvironments.toArray();
     		Arrays.sort(allRows, new OrderByComparator());
-    		int limit = allRows.length;
-    		if (maxRows != 0 && maxRows < limit)
-    			limit = maxRows;
-    		
+    		int rowLimit = allRows.length;
+    		if (maxRows != 0 && maxRows < rowLimit)
+    			rowLimit = maxRows;
+    		if (limit >= 0 && limit < rowLimit)
+    			rowLimit = limit;
+
     		bufferedRecordEnvironments.clear();
-    		for (int i = 0; i < limit; i++)
+    		for (int i = 0; i < rowLimit; i++)
     			bufferedRecordEnvironments.add(allRows[i]);
 
     		/*
@@ -450,6 +464,8 @@ public class CsvResultSet implements ResultSet {
     		boolean thereWasAnAnswer;
     		if(maxRows != 0 && currentRow >= maxRows) {
     			// Do not fetch any more rows, we have reached the row limit set by caller.
+    			thereWasAnAnswer = false;
+    		} else if(limit >= 0 && currentRow >= limit) {
     			thereWasAnAnswer = false;
     		} else if(hitTail) {
     			thereWasAnAnswer = false;

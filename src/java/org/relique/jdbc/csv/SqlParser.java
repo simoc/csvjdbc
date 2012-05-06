@@ -53,6 +53,8 @@ public class SqlParser
   private List environment;
   private List orderByColumns;
 
+  private int limit;
+
   private boolean isDistinct;
 
   public void setPlaceholdersValues(Object[] values)
@@ -119,6 +121,7 @@ public class SqlParser
 	  this.tableName = cs2.tableName;
 	  this.tableAlias = cs2.tableAlias;
 	  this.whereClause = cs2.content;
+	  this.limit = cs2.limit;
 
 	  Iterator it = cs2.queryEntries.iterator();
 	  while (it.hasNext()) {
@@ -161,6 +164,10 @@ public class SqlParser
 
   public List getOrderByColumns() {
 		return orderByColumns;
+  }
+
+  public int getLimit() {
+		return limit;
   }
 
   public String getAlias(int i) {

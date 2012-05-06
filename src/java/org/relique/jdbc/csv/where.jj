@@ -749,15 +749,17 @@ class ParsedStatement{
   String tableAlias;
   ParsedExpression whereClause;
   List orderByEntries;
+  int limit;
   public ParsedStatement(List queryEntries, boolean isDistinct,
     String tableName, String tableAlias,
-    ParsedExpression whereClause, List orderByEntries){
+    ParsedExpression whereClause, List orderByEntries, int limit){
     this.queryEntries = queryEntries;
     this.isDistinct = isDistinct;
     this.tableName = tableName;
     this.tableAlias = tableAlias;
     this.whereClause = whereClause;
     this.orderByEntries = orderByEntries;
+    this.limit = limit;
   }
 }
 public class ExpressionParser{
@@ -767,6 +769,7 @@ public class ExpressionParser{
   String tableName;
   String tableAlias;
   List orderByEntries;
+  int limit;
   Date currentDate;
   public void parseLogicalExpression()throws ParseException{
     content = logicalExpression();
@@ -787,6 +790,7 @@ public class ExpressionParser{
     tableAlias = parsedStatement.tableAlias;
     content = parsedStatement.whereClause;
     orderByEntries = parsedStatement.orderByEntries;
+    limit = parsedStatement.limit;
   }
   public Object eval(Map env){
     return content.eval(env);
@@ -818,6 +822,9 @@ TOKEN:{
 }
 TOKEN:{
   <COMMA:",">
+}
+TOKEN:{
+  <UNSIGNEDINT:<DIGITS>>
 }
 TOKEN:{
   <UNSIGNEDNUMBER:<DIGITS> (<EXPONENT>)?
@@ -899,6 +906,9 @@ TOKEN:{
 }
 TOKEN:{
   <BY:"BY">
+}
+TOKEN:{
+  <LIMIT:"LIMIT">
 }
 TOKEN:{
   <NAME:(["0"-"9", "A"-"Z", "a"-"z", "_", "."])+>
@@ -983,6 +993,7 @@ ParsedStatement selectStatement():{
   String tableAlias;
   ParsedExpression whereClause, entry;
   List orderByEntries;
+  int limit;
   Token t;
 }
 {
@@ -993,15 +1004,19 @@ ParsedStatement selectStatement():{
     tableAlias = null;
     whereClause = null;
     orderByEntries = new LinkedList();
+    limit = -1;
   }
   <SELECT>
   (<DISTINCT>{isDistinct = true;})?
   expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*
-  (<FROM>t=<TABLENAME>{tableName = t.image;}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?
-  (<WHERE>whereClause = logicalExpression())?
-  (<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?)?
+  (
+    <FROM>t=<TABLENAME>{tableName = t.image;}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?
+    (<WHERE>whereClause = logicalExpression())?
+    (<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?
+    (<LIMIT>t=<UNSIGNEDINT>{limit = Integer.parseInt(t.image);})?
+  )?
   <EOF>{
-    return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, orderByEntries);
+    return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, orderByEntries, limit);
   }
 }
 ParsedExpression queryEnvEntry():{
@@ -1212,7 +1227,7 @@ Expression numericConstant():{
 {
   {sign="";}
   (t=<MINUS>{sign=t.image;})?
-  t = <UNSIGNEDNUMBER>{
+  (t = <UNSIGNEDNUMBER>|t = <UNSIGNEDINT>){
     Number value = null;
     try {
       value = new Integer(sign+t.image);
