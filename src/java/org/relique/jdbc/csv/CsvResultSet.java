@@ -66,24 +66,24 @@ import org.relique.io.ListDataReader;
 public class CsvResultSet implements ResultSet {
 
     /** Metadata for this ResultSet */
-    protected ResultSetMetaData resultSetMetaData;
+    private ResultSetMetaData resultSetMetaData;
 
     /** Statement that produced this ResultSet */
-    protected CsvStatement statement;
+    private CsvStatement statement;
 
-    protected int isScrollable = ResultSet.TYPE_SCROLL_SENSITIVE;
+    private int isScrollable = ResultSet.TYPE_SCROLL_SENSITIVE;
     
     /** Helper class that performs the actual file reads */
-    protected DataReader reader;
+    private DataReader reader;
 
     /** Table referenced by the Statement */
-    protected String tableName;
+    private String tableName;
 
     /** Last column name index read */
-    protected int lastIndexRead = -1;
+    private int lastIndexRead = -1;
     
     /** InputStream to keep track of */
-    protected InputStream is;
+    private InputStream is;
 
 	private Expression whereClause;
 
