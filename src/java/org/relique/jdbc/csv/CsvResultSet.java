@@ -18,7 +18,6 @@
  */
 package org.relique.jdbc.csv;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
@@ -81,9 +80,6 @@ public class CsvResultSet implements ResultSet {
 
     /** Last column name index read */
     private int lastIndexRead = -1;
-    
-    /** InputStream to keep track of */
-    private InputStream is;
 
 	private Expression whereClause;
 
@@ -3005,15 +3001,6 @@ public class CsvResultSet implements ResultSet {
     private void preAccessor(int columnIndex) throws SQLException {
         // set last read column index for wasNull()
         lastIndexRead = columnIndex;
-        // implicitly close InputStream for get*Stream() between accessors
-        if(is != null) {
-            try {
-                is.close();
-            } catch (IOException e) {
-                throw new SQLException("Could not close InputStream: " + e);
-            }
-            is = null;
-        }
     }
 
     public URL getURL(int columnIndex) throws SQLException {
