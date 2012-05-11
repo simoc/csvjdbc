@@ -353,7 +353,6 @@ public class CsvResultSet implements ResultSet {
     	if (this.orderByColumns != null || this.aggregateFunctions.size() > 0 ||
     		this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
     		bufferedRecordEnvironments = new ArrayList();
-    		hitTail = false;
     		currentRow = 0;
     	}
     	if (this.aggregateFunctions.size() > 0) {
@@ -506,6 +505,8 @@ public class CsvResultSet implements ResultSet {
 			} else {
 				if (thereWasAnAnswer)
 					currentRow++;
+				else
+					hitTail = true;
 			}
 			return thereWasAnAnswer;
 		}
