@@ -749,10 +749,10 @@ class ParsedStatement{
   String tableAlias;
   ParsedExpression whereClause;
   List orderByEntries;
-  int limit;
+  int limit, offset;
   public ParsedStatement(List queryEntries, boolean isDistinct,
     String tableName, String tableAlias,
-    ParsedExpression whereClause, List orderByEntries, int limit){
+    ParsedExpression whereClause, List orderByEntries, int limit, int offset){
     this.queryEntries = queryEntries;
     this.isDistinct = isDistinct;
     this.tableName = tableName;
@@ -760,6 +760,7 @@ class ParsedStatement{
     this.whereClause = whereClause;
     this.orderByEntries = orderByEntries;
     this.limit = limit;
+    this.offset = offset;
   }
 }
 public class ExpressionParser{
@@ -770,6 +771,7 @@ public class ExpressionParser{
   String tableAlias;
   List orderByEntries;
   int limit;
+  int offset;
   Date currentDate;
   public void parseLogicalExpression()throws ParseException{
     content = logicalExpression();
@@ -791,6 +793,7 @@ public class ExpressionParser{
     content = parsedStatement.whereClause;
     orderByEntries = parsedStatement.orderByEntries;
     limit = parsedStatement.limit;
+    offset = parsedStatement.offset;
   }
   public Object eval(Map env){
     return content.eval(env);
@@ -911,6 +914,9 @@ TOKEN:{
   <LIMIT:"LIMIT">
 }
 TOKEN:{
+  <OFFSET:"OFFSET">
+}
+TOKEN:{
   <NAME:(["0"-"9", "A"-"Z", "a"-"z", "_", "."])+>
 }
 TOKEN:{
@@ -993,7 +999,7 @@ ParsedStatement selectStatement():{
   String tableAlias;
   ParsedExpression whereClause, entry;
   List orderByEntries;
-  int limit;
+  int limit, offset;
   Token t;
 }
 {
@@ -1005,6 +1011,7 @@ ParsedStatement selectStatement():{
     whereClause = null;
     orderByEntries = new LinkedList();
     limit = -1;
+    offset = 0;
   }
   <SELECT>
   (<DISTINCT>{isDistinct = true;})?
@@ -1013,10 +1020,10 @@ ParsedStatement selectStatement():{
     <FROM>t=<TABLENAME>{tableName = t.image;}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?
     (<WHERE>whereClause = logicalExpression())?
     (<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?
-    (<LIMIT>t=<UNSIGNEDINT>{limit = Integer.parseInt(t.image);})?
+    (<LIMIT>t=<UNSIGNEDINT>{limit = Integer.parseInt(t.image);}(<OFFSET>t=<UNSIGNEDINT>{offset = Integer.parseInt(t.image);})?)?
   )?
   <EOF>{
-    return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, orderByEntries, limit);
+    return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, orderByEntries, limit, offset);
   }
 }
 ParsedExpression queryEnvEntry():{

@@ -3234,60 +3234,6 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testLimitRows() throws SQLException {
-		Properties props = new Properties();
-		props.put("columnTypes", "Integer,String,String,Date,Time");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
-
-		Statement stmt = conn.createStatement();
-
-		ResultSet results = stmt
-				.executeQuery("select id from sample5 limit 4");
-		assertTrue(results.next());
-		assertEquals("The ID is wrong", 41, results.getInt("ID"));
-		assertTrue(results.next());
-		assertEquals("The ID is wrong", 1, results.getInt("ID"));
-		assertTrue(results.next());
-		assertEquals("The ID is wrong", 2, results.getInt("ID"));
-		assertTrue(results.next());
-		assertEquals("The ID is wrong", 3, results.getInt("ID"));
-		assertFalse(results.next());
-	}
-
-	public void testLimitWhere() throws SQLException {
-		Properties props = new Properties();
-		props.put("columnTypes", "Integer,String,String,Date,Time");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
-
-		Statement stmt = conn.createStatement();
-
-		ResultSet results = stmt
-				.executeQuery("select id from sample5 where id > 6 limit 3");
-		assertTrue(results.next());
-		assertEquals("The ID is wrong", 41, results.getInt("ID"));
-		assertTrue(results.next());
-		assertEquals("The ID is wrong", 7, results.getInt("ID"));
-		assertTrue(results.next());
-		assertEquals("The ID is wrong", 8, results.getInt("ID"));
-		assertFalse(results.next());
-	}
-
-	public void testLimitOrderBy() throws SQLException {
-		Properties props = new Properties();
-		props.put("columnTypes", "Integer,String,String,Date,Time");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
-
-		Statement stmt = conn.createStatement();
-
-		ResultSet results = stmt
-				.executeQuery("select id, name from sample5 order by id desc limit 2");
-		assertTrue(results.next());
-		assertEquals("The ID is wrong", 41, results.getInt("ID"));
-		assertTrue(results.next());
-		assertEquals("The ID is wrong", 9, results.getInt("ID"));
-		assertFalse(results.next());
-	}
-
 	public void testPropertiesInURL() throws SQLException {		
 		Properties props = new Properties();
 		

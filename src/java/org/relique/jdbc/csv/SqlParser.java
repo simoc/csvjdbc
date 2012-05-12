@@ -54,6 +54,7 @@ public class SqlParser
   private List orderByColumns;
 
   private int limit;
+  private int offset;
 
   private boolean isDistinct;
 
@@ -122,6 +123,7 @@ public class SqlParser
 	  this.tableAlias = cs2.tableAlias;
 	  this.whereClause = cs2.content;
 	  this.limit = cs2.limit;
+	  this.offset = cs2.offset;
 
 	  Iterator it = cs2.queryEntries.iterator();
 	  while (it.hasNext()) {
@@ -168,6 +170,10 @@ public class SqlParser
 
   public int getLimit() {
 		return limit;
+  }
+
+  public int getOffset() {
+		return offset;
   }
 
   public String getAlias(int i) {

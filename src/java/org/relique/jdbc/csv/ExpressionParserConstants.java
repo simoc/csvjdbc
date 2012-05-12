@@ -71,29 +71,31 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int LIMIT = 34;
   /** RegularExpression Id. */
-  int NAME = 35;
+  int OFFSET = 35;
   /** RegularExpression Id. */
-  int STRING = 36;
+  int NAME = 36;
   /** RegularExpression Id. */
-  int RELOP = 37;
+  int STRING = 37;
   /** RegularExpression Id. */
-  int ASTERISK = 38;
+  int RELOP = 38;
   /** RegularExpression Id. */
-  int NAMEASTERISK = 39;
+  int ASTERISK = 39;
   /** RegularExpression Id. */
-  int MINUS = 40;
+  int NAMEASTERISK = 40;
   /** RegularExpression Id. */
-  int PLUS = 41;
+  int MINUS = 41;
   /** RegularExpression Id. */
-  int DIVIDE = 42;
+  int PLUS = 42;
   /** RegularExpression Id. */
-  int OPENPARENTHESIS = 43;
+  int DIVIDE = 43;
   /** RegularExpression Id. */
-  int CLOSEPARENTHESIS = 44;
+  int OPENPARENTHESIS = 44;
   /** RegularExpression Id. */
-  int TABLENAME = 49;
+  int CLOSEPARENTHESIS = 45;
   /** RegularExpression Id. */
-  int UNEXPECTED_CHAR = 50;
+  int TABLENAME = 50;
+  /** RegularExpression Id. */
+  int UNEXPECTED_CHAR = 51;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -137,6 +139,7 @@ public interface ExpressionParserConstants {
     "\"ORDER\"",
     "\"BY\"",
     "\"LIMIT\"",
+    "\"OFFSET\"",
     "<NAME>",
     "<STRING>",
     "<RELOP>",
