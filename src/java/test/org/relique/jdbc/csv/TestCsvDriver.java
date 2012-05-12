@@ -3331,4 +3331,21 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("column 3 value is incorrect", 12, results.getInt(3));
 		assertFalse(results.next());
 	}
+
+	public void testExtraResultSetNext() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,String,Timestamp,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT ID FROM sample5 WHERE ID < 3");
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertFalse(results.next());
+		assertFalse(results.next());
+		assertFalse(results.next());
+	}
 }

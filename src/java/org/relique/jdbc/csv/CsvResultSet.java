@@ -18,7 +18,6 @@
  */
 package org.relique.jdbc.csv;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
@@ -66,24 +65,21 @@ import org.relique.io.ListDataReader;
 public class CsvResultSet implements ResultSet {
 
     /** Metadata for this ResultSet */
-    protected ResultSetMetaData resultSetMetaData;
+    private ResultSetMetaData resultSetMetaData;
 
     /** Statement that produced this ResultSet */
-    protected CsvStatement statement;
+    private CsvStatement statement;
 
-    protected int isScrollable = ResultSet.TYPE_SCROLL_SENSITIVE;
+    private int isScrollable = ResultSet.TYPE_SCROLL_SENSITIVE;
     
     /** Helper class that performs the actual file reads */
-    protected DataReader reader;
+    private DataReader reader;
 
     /** Table referenced by the Statement */
-    protected String tableName;
+    private String tableName;
 
     /** Last column name index read */
-    protected int lastIndexRead = -1;
-    
-    /** InputStream to keep track of */
-    protected InputStream is;
+    private int lastIndexRead = -1;
 
 	private Expression whereClause;
 
@@ -355,7 +351,6 @@ public class CsvResultSet implements ResultSet {
     	if (this.orderByColumns != null || this.aggregateFunctions.size() > 0 ||
     		this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
     		bufferedRecordEnvironments = new ArrayList();
-    		hitTail = false;
     		currentRow = 0;
     	}
     	if (this.aggregateFunctions.size() > 0) {
@@ -3031,15 +3026,6 @@ public class CsvResultSet implements ResultSet {
     private void preAccessor(int columnIndex) throws SQLException {
         // set last read column index for wasNull()
         lastIndexRead = columnIndex;
-        // implicitly close InputStream for get*Stream() between accessors
-        if(is != null) {
-            try {
-                is.close();
-            } catch (IOException e) {
-                throw new SQLException("Could not close InputStream: " + e);
-            }
-            is = null;
-        }
     }
 
     public URL getURL(int columnIndex) throws SQLException {
