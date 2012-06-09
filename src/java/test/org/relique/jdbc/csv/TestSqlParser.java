@@ -269,6 +269,17 @@ public class TestSqlParser extends TestCase {
 		} catch (ParseException e) {
 		}
 
+		parser.parse("SELECT * FROM test WHERE B = (20)");
+		whereClause = parser.getWhereClause();
+		assertEquals("Incorrect WHERE", "= [B] 20", whereClause.toString());
+		
+		parser.parse("SELECT * FROM test WHERE B = 20 + 30");
+		whereClause = parser.getWhereClause();
+		assertEquals("Incorrect WHERE", "= [B] + 20 30", whereClause.toString());
+		
+		parser.parse("SELECT * FROM test WHERE B + 20 = 30");
+		whereClause = parser.getWhereClause();
+		assertEquals("Incorrect WHERE", "= + [B] 20 30", whereClause.toString());
 	}
 
 	/**
