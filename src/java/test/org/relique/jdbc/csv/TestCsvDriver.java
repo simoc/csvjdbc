@@ -2746,6 +2746,20 @@ public class TestCsvDriver extends TestCase {
 		assertFalse("Stopping after row 4 failed", results.next());
 	}
 
+	public void testFetchSize() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+		stmt.setFetchSize(50);
+		assertEquals("getFetchSize() incorrect", 50, stmt.getFetchSize());
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample5");
+		assertEquals("getFetchSize() incorrect", 50, results.getFetchSize());
+		results.setFetchSize(20);
+		assertEquals("getFetchSize() incorrect", 20, results.getFetchSize());
+	}
+
 	public void testResultSet() throws SQLException {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);

@@ -110,6 +110,8 @@ public class CsvResultSet implements ResultSet {
 	private boolean hitTail = false;
 
 	private int maxRows;
+	
+	private int fetchSize;
 
 	private int limit;
 
@@ -180,6 +182,7 @@ public class CsvResultSet implements ResultSet {
 			String columnTypes, int skipLeadingLines) throws ClassNotFoundException, SQLException {
         this.statement = statement;
         maxRows = statement.getMaxRows();
+        fetchSize = statement.getFetchSize();
         this.limit = sqlLimit;
         this.isScrollable = isScrollable;
         this.reader = reader;
@@ -1842,8 +1845,7 @@ public class CsvResultSet implements ResultSet {
      * condition <code>0 <= rows <= this.getMaxRows()</code> is not satisfied
      */
     public void setFetchSize(int rows) throws SQLException {
-        throw new UnsupportedOperationException(
-                "ResultSet.setFetchSize(int) unsupported");
+        fetchSize = rows;
     }
 
     /**
@@ -1855,8 +1857,7 @@ public class CsvResultSet implements ResultSet {
      * @see #setFetchSize
      */
     public int getFetchSize() throws SQLException {
-        throw new UnsupportedOperationException(
-                "ResultSet.getFetchSize() unsupported");
+        return fetchSize;
     }
 
     /**

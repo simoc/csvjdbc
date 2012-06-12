@@ -22,7 +22,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -30,7 +29,6 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.relique.io.CryptoFilter;
 import org.relique.io.DataReader;
@@ -57,6 +55,7 @@ public class CsvStatement implements Statement {
 	private CsvConnection connection;
 	protected ResultSet lastResultSet = null;
 	private int maxRows = 0;
+	private int fetchSize = 1;
 
 	protected int isScrollable = ResultSet.TYPE_SCROLL_INSENSITIVE;
 	/**
@@ -164,8 +163,8 @@ public class CsvStatement implements Statement {
 	 *                Description of Exception
 	 * @since
 	 */
-	public void setFetchSize(int p0) throws SQLException {
-		throw new SQLException("setFetchSize(int " + p0 + ") not Supported !");
+	public void setFetchSize(int rows) throws SQLException {
+		this.fetchSize = rows;
 	}
 
 	/**
@@ -261,7 +260,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public int getFetchSize() throws SQLException {
-		throw new SQLException("getFetchSize() not Supported !");
+		return fetchSize;
 	}
 
 	/**
