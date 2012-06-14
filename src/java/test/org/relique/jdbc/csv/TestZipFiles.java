@@ -38,7 +38,8 @@ public class TestZipFiles extends TestCase {
 	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
 	private String filePath;
 	private DateFormat toUTC;
-	private String TEST_ZIP_FILENAME = "olympic-medals.zip";
+	private static String TEST_ZIP_FILENAME_1 = "olympic-medals.zip";
+	private static String TEST_ZIP_FILENAME_2 = "encodings.zip";
 
 	public TestZipFiles(String name) {
 		super(name);
@@ -62,10 +63,10 @@ public class TestZipFiles extends TestCase {
 
 	public void testConnectionName() throws SQLException {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
-			+ filePath + File.separator + TEST_ZIP_FILENAME);
+			+ filePath + File.separator + TEST_ZIP_FILENAME_1);
 		String url = conn.getMetaData().getURL();
 		assertTrue(url.startsWith("jdbc:relique:csv:zip:"));
-		assertTrue(url.endsWith(TEST_ZIP_FILENAME));
+		assertTrue(url.endsWith(TEST_ZIP_FILENAME_1));
 	}
 
 	/**
@@ -76,7 +77,7 @@ public class TestZipFiles extends TestCase {
 		props.put("columnTypes", "Short,String,String,Short,Short,Short");
 
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
-			+ filePath + File.separator + TEST_ZIP_FILENAME, props);
+			+ filePath + File.separator + TEST_ZIP_FILENAME_1, props);
 
 		Statement stmt = conn.createStatement();
 
@@ -98,7 +99,7 @@ public class TestZipFiles extends TestCase {
 	 */
 	public void testListTables() throws SQLException {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
-			+ filePath + File.separator + TEST_ZIP_FILENAME);
+			+ filePath + File.separator + TEST_ZIP_FILENAME_1);
 
 		ResultSet results = conn.getMetaData().getTables(null, null, "*", null);
 		assertTrue(results.next());
@@ -113,7 +114,7 @@ public class TestZipFiles extends TestCase {
 	 */
 	public void testBadTableNameFails() throws SQLException {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
-			+ filePath + File.separator + TEST_ZIP_FILENAME);
+			+ filePath + File.separator + TEST_ZIP_FILENAME_1);
 
 		Statement stmt = conn.createStatement();
 
@@ -132,11 +133,71 @@ public class TestZipFiles extends TestCase {
 	public void testBadZipFileFails() throws SQLException {
 		try {
 			Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
-				+ filePath + File.separator + "abc" + TEST_ZIP_FILENAME);
+				+ filePath + File.separator + "abc" + TEST_ZIP_FILENAME_1);
 			fail("Connection should fail");
 		} catch (SQLException e) {
 			String message = "" + e;
 			assertTrue(message.startsWith("java.sql.SQLException: Failed opening ZIP file:"));
 		}
+	}
+	
+	public void testCharsetISO8859_1() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "String");
+		props.put("charset", "ISO-8859-1");
+		props.put("fileExtension", ".txt");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
+			+ filePath + File.separator + TEST_ZIP_FILENAME_2, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM iso8859-1");
+		assertTrue(results.next());
+		assertEquals("ISO8859-1 encoding is wrong", "K\u00D8BENHAVN", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("ISO8859-1 encoding is wrong", "100\u00B0", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("ISO8859-1 encoding is wrong", "\u00A9 Copyright", results.getString(1));
+	}
+	
+	public void testCharsetUTF_8() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "String");
+		props.put("charset", "UTF-8");
+		props.put("fileExtension", ".txt");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
+			+ filePath + File.separator + TEST_ZIP_FILENAME_2, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM utf-8");
+		assertTrue(results.next());
+		assertEquals("UTF-8 encoding is wrong", "K\u00D8BENHAVN", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("UTF-8 encoding is wrong", "100\u00B0", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("UTF-8 encoding is wrong", "\u00A9 Copyright", results.getString(1));
+	}
+
+	public void testCharsetUTF_16() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "String");
+		props.put("charset", "UTF-16");
+		props.put("fileExtension", ".txt");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
+			+ filePath + File.separator + TEST_ZIP_FILENAME_2, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM utf-16");
+		assertTrue(results.next());
+		assertEquals("UTF-16 encoding is wrong", "K\u00D8BENHAVN", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("UTF-16 encoding is wrong", "100\u00B0", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("UTF-16 encoding is wrong", "\u00A9 Copyright", results.getString(1));
 	}
 }
