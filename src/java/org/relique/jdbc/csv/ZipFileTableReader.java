@@ -37,10 +37,12 @@ public class ZipFileTableReader implements TableReader
 	private String zipFilename;
 	private ZipFile zipFile;
 	private String fileExtension;
+	private String charset;
 
-	public ZipFileTableReader(String zipFilename) throws IOException {
+	public ZipFileTableReader(String zipFilename, String charset) throws IOException {
 		this.zipFilename = zipFilename;
 		this.zipFile = new ZipFile(zipFilename);
+		this.charset = charset;
 	}
 
 	public void setExtension(String fileExtension) {
@@ -56,7 +58,13 @@ public class ZipFileTableReader implements TableReader
 			ZipEntry zipEntry = zipFile.getEntry(tableName + fileExtension);
 			if (zipEntry == null)
 				throw new SQLException("Table not found: " + tableName);
-			return new InputStreamReader(zipFile.getInputStream(zipEntry));
+			
+			Reader reader;
+			if (charset != null)    
+				reader = new InputStreamReader(zipFile.getInputStream(zipEntry), charset);
+			else
+				reader = new InputStreamReader(zipFile.getInputStream(zipEntry));
+			return reader;
 		} catch (IOException e) {
 			throw new SQLException(e);
 		}

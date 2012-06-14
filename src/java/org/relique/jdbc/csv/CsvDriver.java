@@ -230,7 +230,7 @@ public class CsvDriver implements Driver
     {
     	String zipFilename = filePath.substring(ZIP_FILE_PREFIX.length());
     	try {
-    		ZipFileTableReader zipFileTableReader = new ZipFileTableReader(zipFilename);
+    		ZipFileTableReader zipFileTableReader = new ZipFileTableReader(zipFilename, info.getProperty(CHARSET));
     		connection = new CsvConnection(zipFileTableReader, info, urlProperties);
     		zipFileTableReader.setExtension(connection.getExtension());
     	} catch (IOException e) {
