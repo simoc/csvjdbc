@@ -45,6 +45,7 @@ public class RunTests
     suite.addTestSuite(TestZipFiles.class);
     suite.addTestSuite(TestAggregateFunctions.class);
     suite.addTestSuite(TestLimitOffset.class);
+    suite.addTestSuite(TestFixedWidthFiles.class);
     return suite;
   }
 
