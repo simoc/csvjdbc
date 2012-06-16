@@ -145,6 +145,8 @@ public class CsvConnection implements Connection {
 
 	private String quoteStyle;
 
+	private ArrayList fixedWidthColumns = null;
+
 	/**
 	 * Set defaults for connection.
 	 */
@@ -284,6 +286,33 @@ public class CsvConnection implements Connection {
     			throw new SQLException("could not initialize CryptoFilter");
     		}
     	}
+
+    	/*
+    	 * for fixed width file handling
+    	 * fixedWidths uses format: beginIndex-endIndex,beginIndex-endIndex,...
+    	 * where beginIndex is the column index of the start of each column
+    	 * and endIndex is the optional column end position.
+    	 */
+    	String fixedWidths = info.getProperty(CsvDriver.FIXED_WIDTHS);
+    	if (fixedWidths != null) {
+    		fixedWidthColumns = new ArrayList();
+    		String []columnRanges = fixedWidths.split(",");
+    		for (int i = 0; i < columnRanges.length; i++) {
+    			int beginColumn, endColumn;
+    			int dashIndex = columnRanges[i].indexOf('-');
+    			if (dashIndex < 0) {
+    				beginColumn = endColumn = Integer.parseInt(columnRanges[i].trim());
+    			} else {
+    				beginColumn = Integer.parseInt(columnRanges[i].substring(0, dashIndex).trim());
+    				endColumn = Integer.parseInt(columnRanges[i].substring(dashIndex + 1).trim());
+    			}
+    			/*
+    			 * Store string indexes zero-based as we will be extracting them with String.substring().
+    			 */
+    			fixedWidthColumns.add(new int[]{beginColumn - 1, endColumn - 1});
+    		}
+    	}
+
     	setTransposedLines(Integer.parseInt(info.getProperty(CsvDriver.TRANSPOSED_LINES, "0")));
     	setTransposedFieldsToSkip(Integer.parseInt(info.getProperty(CsvDriver.TRANSPOSED_FIELDS_TO_SKIP, "0")));
 
@@ -1069,6 +1098,10 @@ public class CsvConnection implements Connection {
      */
     protected boolean isSuppressHeaders() {
         return suppressHeaders;
+    }
+
+    public ArrayList getFixedWidthColumns() {
+    	return fixedWidthColumns;
     }
 
     /**

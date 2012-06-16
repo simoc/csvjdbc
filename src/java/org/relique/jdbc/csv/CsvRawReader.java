@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
@@ -59,6 +60,7 @@ public class CsvRawReader {
 	private boolean ignoreUnparseableLines;
 	protected CryptoFilter filter;
 	private String quoteStyle;
+	private ArrayList fixedWidthColumns;
 
 	/**
 	 * Insert the method's description here.
@@ -88,7 +90,8 @@ public class CsvRawReader {
 			boolean suppressHeaders, char quoteChar, char commentChar,
 			String headerLine, String extension, boolean trimHeaders, 
 			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter, 
-			boolean defectiveHeaders, int skipLeadingDataLines, String quoteStyle)
+			boolean defectiveHeaders, int skipLeadingDataLines, String quoteStyle,
+			ArrayList fixedWidthColumns)
 			throws IOException, SQLException {
 		this.tableAlias = tableAlias;
 		this.separator = separator;
@@ -102,6 +105,7 @@ public class CsvRawReader {
 		this.ignoreUnparseableLines = ignoreUnparseableLines;
 		this.filter = filter;
 		this.quoteStyle = quoteStyle;
+		this.fixedWidthColumns = fixedWidthColumns;
 
 		for (int i=0; i<skipLeadingLines; i++){
 			in.readLine();
@@ -110,12 +114,12 @@ public class CsvRawReader {
 		if (this.suppressHeaders) {
 			// column names specified by property are available. Read and use.
 			if (this.headerLine != null) {
-				this.columnNames = parseCsvLine(this.headerLine, trimHeaders);
+				this.columnNames = parseLine(this.headerLine, trimHeaders);
 			} else {
 				// No column names available. Read first data line and determine
 				// number of columns.
 				firstLineBuffer = getNextDataLine();
-				String[] data = parseCsvLine(firstLineBuffer, false);
+				String[] data = parseLine(firstLineBuffer, false);
 				this.columnNames = new String[data.length];
 				for (int i = 0; i < data.length; i++) {
 					this.columnNames[i] = "COLUMN" + String.valueOf(i + 1);
@@ -125,7 +129,7 @@ public class CsvRawReader {
 			}
 		} else {
 			String tmpHeaderLine = getNextDataLine();
-			this.columnNames = parseCsvLine(tmpHeaderLine, trimHeaders);
+			this.columnNames = parseLine(tmpHeaderLine, trimHeaders);
 			// some column names may be missing and should be corrected
 			if (defectiveHeaders)
 				fixDefectiveHeaders();
@@ -176,7 +180,7 @@ public class CsvRawReader {
 			e.printStackTrace();
 			throw new SQLException(e.toString());
 		}
-		fieldValues = parseCsvLine(dataLine, false);
+		fieldValues = parseLine(dataLine, false);
 		return true;
 	}
 
@@ -212,7 +216,7 @@ public class CsvRawReader {
 		if(ignoreUnparseableLines && tmp != null) {
 			try {
 				do {
-					int fieldsCount = this.parseCsvLine(tmp, true).length;
+					int fieldsCount = this.parseLine(tmp, true).length;
 					if (columnNames != null && columnNames.length == fieldsCount)
 						break; // we are satisfied
 					if (columnNames == null && fieldsCount != 1)
@@ -259,6 +263,35 @@ public class CsvRawReader {
 		return result;
 	}
 
+	protected String [] parseLine(String line, boolean trimValues)
+		throws SQLException {
+		String []values;
+		if (fixedWidthColumns != null)
+			values = parseFixedLine(line, trimValues);
+		else
+			values = parseCsvLine(line, trimValues);
+		return values;
+	}
+
+	private String [] parseFixedLine(String line, boolean trimValues)
+		throws SQLException {
+		String []values = new String[fixedWidthColumns.size()];
+		if (line == null)
+			line = "";
+		for (int i = 0; i < values.length; i++) {
+			int []columnIndexes = (int [])fixedWidthColumns.get(i);
+			if (columnIndexes[0] >= line.length())
+				values[i] = "";
+			else if (columnIndexes[1] >= line.length())
+				values[i] = line.substring(columnIndexes[0], line.length());
+			else
+				values[i] = line.substring(columnIndexes[0], columnIndexes[1] + 1);
+
+			values[i] = values[i].trim();
+		}
+		return values;
+	}
+
 	/**
 	 * splits <b>line</b> into the String[] it contains.
 	 * Stuart Mottram added the code for handling line breaks in fields.
@@ -268,7 +301,7 @@ public class CsvRawReader {
 	 * @return
 	 * @throws SQLException
 	 */
-	protected String[] parseCsvLine(String line, boolean trimValues)
+	private String[] parseCsvLine(String line, boolean trimValues)
 			throws SQLException {
 		// TODO: quoteChar should be recognized ONLY when close to separator. 
 		Vector values = new Vector();

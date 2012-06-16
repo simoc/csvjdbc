@@ -91,6 +91,8 @@ public class CsvDriver implements Driver
 
   public static final String READER_CLASS_PREFIX = "class:";
   public static final String ZIP_FILE_PREFIX = "zip:";
+  
+  public static final String FIXED_WIDTHS = "fixedWidths";
 
   /**
    *Gets the propertyInfo attribute of the CsvDriver object

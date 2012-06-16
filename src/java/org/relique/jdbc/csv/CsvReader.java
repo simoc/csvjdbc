@@ -31,7 +31,7 @@ public class CsvReader extends DataReader {
 		this.transposedLines = transposedLines;
 		this.transposedFieldsToSkip = transposedFieldsToSkip;
 		this.headerline = headerline;
-		this.columnNames = rawReader.parseCsvLine(headerline, true);
+		this.columnNames = rawReader.parseLine(headerline, true);
 		this.firstTable = null;
 		columnTypes = null;
 		
@@ -44,7 +44,7 @@ public class CsvReader extends DataReader {
 				for (int i = 0; i < transposedLines; i++) {
 					String line;
 					line = rawReader.getNextDataLine();
-					values = rawReader.parseCsvLine(line, false);
+					values = rawReader.parseLine(line, false);
 					firstTable.add(values);
 				}
 				valuesToJoin = values.length;
@@ -91,7 +91,7 @@ public class CsvReader extends DataReader {
 				}
 				if(line == null)
 					return false;
-				joiningValues = rawReader.parseCsvLine(line, false);
+				joiningValues = rawReader.parseLine(line, false);
 				joiningValueNo = 0;
 			}
 			for(int i=0; i<transposedLines; i++) {

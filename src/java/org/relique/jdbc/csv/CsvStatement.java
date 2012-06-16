@@ -421,7 +421,8 @@ public class CsvStatement implements Statement {
 							.isIgnoreUnparseableLines(), connection
 							.getDecryptingCodec(), connection
 							.isDefectiveHeaders(), connection
-							.getSkipLeadingDataLines(), connection.getQuoteStyle());
+							.getSkipLeadingDataLines(), connection.getQuoteStyle(),
+							connection.getFixedWidthColumns());
 					reader = new CsvReader(rawReader, connection.getTransposedLines(), connection.getTransposedFieldsToSkip(), headerline);
 				}
 			} catch (IOException e) {
