@@ -552,9 +552,6 @@ public class CsvConnection implements Connection {
      * @see #setAutoCommit
      */
     public void commit() throws SQLException {
-        if (raiseUnsupportedOperationException) throw new UnsupportedOperationException(
-                "Connection.commit() unsupported. Set driver property " +
-                CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION + " to avoid this exception.");
     }
 
     /**
@@ -568,9 +565,6 @@ public class CsvConnection implements Connection {
      * @see #setAutoCommit
      */
     public void rollback() throws SQLException {
-        if (raiseUnsupportedOperationException) throw new UnsupportedOperationException(
-                "Connection.rollback() unsupported. Set driver property " +
-                CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION + " to avoid this exception.");
     }
 
     /**
