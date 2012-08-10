@@ -524,13 +524,7 @@ public class CsvConnection implements Connection {
      * @see #getAutoCommit
      */
     public void setAutoCommit(boolean autoCommit) throws SQLException {
-        if (raiseUnsupportedOperationException) {
-          throw new UnsupportedOperationException(
-                "Connection.setAutoCommit(boolean) unsupported. Set driver property " +
-                CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION + " to avoid this exception.");
-        } else {
-          this.autoCommit = autoCommit;
-        }
+    	this.autoCommit = autoCommit;
     }
 
     /**
@@ -543,13 +537,7 @@ public class CsvConnection implements Connection {
      * @see #setAutoCommit
      */
     public boolean getAutoCommit() throws SQLException {
-        if (raiseUnsupportedOperationException) {
-          throw new UnsupportedOperationException(
-                "Connection.getAutoCommit() unsupported. Set driver property " +
-                CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION + " to avoid this exception.");
-        } else {
-          return this.autoCommit;
-        }
+    	return this.autoCommit;
     }
 
     /**

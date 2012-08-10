@@ -212,7 +212,7 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public SQLWarning getWarnings() throws SQLException {
-		throw new SQLException("getWarnings() not Supported !");
+		return null;
 	}
 
 	public ResultSet getResultSet() throws SQLException {
@@ -495,7 +495,6 @@ public class CsvStatement implements Statement {
 	 * @since
 	 */
 	public void clearWarnings() throws SQLException {
-		throw new SQLException("clearWarnings() not Supported !");
 	}
 
 	/**
