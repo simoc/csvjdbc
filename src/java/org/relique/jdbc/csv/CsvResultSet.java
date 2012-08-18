@@ -1295,10 +1295,9 @@ public class CsvResultSet implements ResultSet {
     			env.put("@STRINGCONVERTER", converter);
 
     		for(int i=0; i<columnCount; i++) {
-    			int columnIndex = -1;
 				Object[] o = (Object[]) queryEnvironment.get(i);
 				columnNames[i] = (String)o[0];
-				columnLabels[i] = o[1].toString();
+				columnLabels[i] = columnNames[i];
 
 				/*
 				 * Evaluate each expression to determine what data type it returns.

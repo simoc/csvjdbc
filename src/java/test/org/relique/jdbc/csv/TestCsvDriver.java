@@ -413,6 +413,31 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("Incorrect Column Name 2", "NAME", metadata.getColumnName(2));
 	}
 
+	public void testMetadataColumnLabels() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Timestamp");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT id * 10 as XID, name, 1000 as dept FROM sample5");
+
+		ResultSetMetaData metadata = results.getMetaData();
+
+		assertEquals("name of column 1 is incorrect", "XID", metadata.getColumnName(1));
+		assertEquals("label of column 1 is incorrect", "XID", metadata.getColumnLabel(1));
+		assertEquals("name of column 2 is incorrect", "NAME", metadata.getColumnName(2));
+		assertEquals("label of column 2 is incorrect", "NAME", metadata.getColumnLabel(2));
+		assertEquals("name of column 3 is incorrect", "DEPT", metadata.getColumnName(3));
+		assertEquals("label of column 3 is incorrect", "DEPT", metadata.getColumnLabel(3));
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+
 	public void testDatabaseMetadataTableTypes() throws SQLException {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
@@ -897,7 +922,7 @@ public class TestCsvDriver extends TestCase {
 		CsvResultSet results = (CsvResultSet) stmt
 				.executeQuery("SELECT * FROM sample4");
 		assertEquals("ID", results.getMetaData().getColumnName(1).toString());
-		assertEquals("[ID]", results.getMetaData().getColumnLabel(1).toString());
+		assertEquals("ID", results.getMetaData().getColumnLabel(1).toString());
 
 		assertTrue(results.next());
 		assertEquals("The ID is wrong", "01", results.getString("id"));
