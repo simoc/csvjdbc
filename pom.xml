@@ -53,11 +53,7 @@
 
   <build>
     <sourceDirectory>src/java/org</sourceDirectory>
-    <!-- //TODO Disable tests until we can resolve how to handle
-    dans-dbf-lib-1.0.0-beta-09.jar dependency correctly
-    and the unit test that fails is fixed.
     <testSourceDirectory>src/java/test</testSourceDirectory>
-    -->
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
