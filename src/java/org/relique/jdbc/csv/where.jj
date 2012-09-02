@@ -1092,10 +1092,10 @@ LogicalExpression relationalExpression():{
   Token t;
 }
 {
-  arg1 = simpleExpression()(op = relOp()arg2 = simpleExpression(){
+  arg1 = binaryOperation()(op = relOp()arg2 = binaryOperation(){
     return new RelopExpression(op, arg1, arg2);
   }
-  | <BETWEEN>arg2 = simpleExpression()<AND>arg3 = simpleExpression(){
+  | <BETWEEN>arg2 = binaryOperation()<AND>arg3 = binaryOperation(){
     return new BetweenExpression(arg1, arg2, arg3);
   }
   | <IS><NULL>{
@@ -1159,22 +1159,11 @@ Expression multiplyOperation():{
   char op;
 }
 {
-  left = parenthesesExpression()(op = binMultiplyOp()right = parenthesesExpression(){
+  left = simpleExpression()(op = binMultiplyOp()right = simpleExpression(){
     left = new BinaryOperation(op, left, right);
   }
   )*{
     return left;
-  }
-}
-Expression parenthesesExpression():{
-  Expression arg;
-}
-{
-  "(" arg = binaryOperation() ")" {
-    return arg;
-  }
-  | arg = simpleExpression(){
-    return arg;
   }
 }
 Expression simpleExpression():{
@@ -1182,22 +1171,25 @@ Expression simpleExpression():{
   Token t;
 }
 {
-  <UPPER> "(" arg = binaryOperation() ")" {
+  <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
+    return arg;
+  }
+  | <UPPER> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
     return new SQLUpperFunction(arg);
   }
-  | <LOWER> "(" arg = binaryOperation() ")" {
+  | <LOWER> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
     return new SQLLowerFunction(arg);
   }
-  | <ROUND> "(" arg = binaryOperation() ")" {
+  | <ROUND> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
     return new SQLRoundFunction(arg);
   }
-  | <COUNT> "(" arg = countOperation() ")" {
+  | <COUNT> <OPENPARENTHESIS> arg = countOperation() <CLOSEPARENTHESIS> {
     return new SQLCountFunction(arg);
   }
-  | <MAX> "(" arg = binaryOperation() ")" {
+  | <MAX> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
     return new SQLMaxFunction(arg);
   }
-  | <MIN> "(" arg = binaryOperation() ")" {
+  | <MIN> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
     return new SQLMinFunction(arg);
   }
   | arg = columnName(){
