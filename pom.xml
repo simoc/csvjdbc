@@ -46,6 +46,13 @@
     </developer>
   </developers>
 
+  <repositories>
+    <repository>
+      <id>SourceForge</id>
+      <url>http://csvjdbc.sourceforge.net/maven2</url>
+    </repository>
+  </repositories>
+
   <properties>
     <sample.files.location>${basedir}/src/testdata</sample.files.location>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -96,14 +103,15 @@
       <version>4.8.1</version>
       <scope>test</scope>
     </dependency>
-    <!-- //TODO Dependency not yet available in Maven repository
+    <!-- //please note: the jar was put by hand in our maven repository.
+    -->
     <dependency>
       <groupId>nl.knaw.dans.common</groupId>
       <artifactId>dans-dbf-lib</artifactId>
-      <version>1.0.0-beta-09</version>
+      <version>1.0.0-beta-10</version>
+      <type>${project.packaging}</type>
       <scope>test</scope>
     </dependency>
-    -->
   </dependencies>
 
   <distributionManagement>
