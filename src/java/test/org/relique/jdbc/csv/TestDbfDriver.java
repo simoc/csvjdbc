@@ -28,7 +28,9 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TimeZone;
 
 import junit.framework.TestCase;
@@ -196,11 +198,18 @@ public class TestDbfDriver extends TestCase {
 				+ filePath, props);
 		DatabaseMetaData metadata = conn.getMetaData();
 		ResultSet results = metadata.getTables(null, null, "*", null);
+    Set target = new HashSet();
+    target.add("sample");
+    target.add("fox_samp");
+
+    Set current = new HashSet();
 		assertTrue(results.next());
-		assertEquals("Incorrect table name", "fox_samp", results.getString("TABLE_NAME"));
+    current.add(results.getString("TABLE_NAME"));
 		assertTrue(results.next());
-		assertEquals("Incorrect table name", "sample", results.getString("TABLE_NAME"));
+    current.add(results.getString("TABLE_NAME"));
 		assertFalse(results.next());
+
+		assertEquals("Incorrect table names", target, current);
 	}
 
 	public void testDatabaseMetadataColumns() throws SQLException {
