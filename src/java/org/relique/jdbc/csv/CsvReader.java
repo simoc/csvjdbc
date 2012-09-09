@@ -208,6 +208,10 @@ public class CsvReader extends DataReader {
 	    }
 	}
 
+	public int[] getColumnSizes() {
+		return rawReader.getColumnSizes();
+	}
+
 	public String getTableAlias() {
 		return rawReader.getTableAlias();
 	}

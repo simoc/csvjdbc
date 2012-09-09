@@ -1274,10 +1274,12 @@ public class CsvResultSet implements ResultSet {
         if (resultSetMetaData == null) {
     		String[] readerTypeNames = reader.getColumnTypes(); 
 			String[] readerColumnNames = reader.getColumnNames();
+			int[] readerColumnSizes = reader.getColumnSizes();
 			String tableAlias = reader.getTableAlias();
     		int columnCount = queryEnvironment.size();
            	String []columnNames = new String[columnCount];
         	String []columnLabels = new String[columnCount];
+        	int []columnSizes = new int[columnCount];
     		String []typeNames = new String[columnCount];
 
     		/*
@@ -1304,7 +1306,20 @@ public class CsvResultSet implements ResultSet {
 				 */
 				Object result = null;
 				try {
-					result = ((Expression)o[1]).eval(env);
+					Expression expr = ((Expression)o[1]);
+					
+					int columnSize = DataReader.DEFAULT_COLUMN_SIZE;
+					if (expr instanceof ColumnName) {
+						String usedColumn = (String)expr.usedColumns().get(0);
+						for (int k = 0; k < readerColumnNames.length; k++) {
+							if (usedColumn.equalsIgnoreCase(readerColumnNames[k])) {
+								columnSize = readerColumnSizes[k];
+								break;
+							}
+						}
+					}
+					columnSizes[i] = columnSize;
+					result = expr.eval(env);
 				} catch (NullPointerException e) {
 					/* Expression is invalid */
 					// TODO: should we throw an SQLException here?
@@ -1314,7 +1329,8 @@ public class CsvResultSet implements ResultSet {
 				else
 					typeNames[i] = "expression";
     		}
-            resultSetMetaData = new CsvResultSetMetaData(tableName, columnNames, columnLabels, typeNames);
+            resultSetMetaData = new CsvResultSetMetaData(tableName, columnNames, columnLabels, typeNames,
+            	columnSizes);
         }
         return resultSetMetaData;
     }

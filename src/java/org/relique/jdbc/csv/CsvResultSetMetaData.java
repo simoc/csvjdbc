@@ -30,12 +30,12 @@ import java.util.Map;
  * @version $Id: CsvResultSetMetaData.java,v 1.10 2011/10/17 13:47:40 simoc Exp $
  */
 public class CsvResultSetMetaData implements ResultSetMetaData {
-	/** Default value for getColumnDisplaySize */
-	private final static int DISPLAY_SIZE = 20;
+
 	/** Names of columns */
 	private String []columnNames;
 	private String []columnLabels;
 	private String[] columnTypes;
+	private int[] columnDisplaySizes;
 	/** Name of table */
 	private String tableName;
 
@@ -48,11 +48,12 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 	 *            Names of columns in table
 	 */
 	CsvResultSetMetaData(String tableName, String []columnNames, String []columnLabels,
-			String[] columnTypes) {
+			String[] columnTypes, int []columnDisplaySizes) {
 		this.tableName = tableName;
 		this.columnNames = columnNames;
 		this.columnLabels = columnLabels;
 		this.columnTypes = columnTypes;
+		this.columnDisplaySizes = columnDisplaySizes;
 	}
 
 	/**
@@ -104,7 +105,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 	 *                Thrown if there is a problem.
 	 */
 	public int getColumnDisplaySize(int column) throws SQLException {
-		return DISPLAY_SIZE;
+		return columnDisplaySizes[column - 1];
 	}
 
 	/**

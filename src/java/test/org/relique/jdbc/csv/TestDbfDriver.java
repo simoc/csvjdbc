@@ -190,6 +190,25 @@ public class TestDbfDriver extends TestCase {
 		assertEquals("Incorrect Column Type", Types.DOUBLE, metadata.getColumnType(3));
 	}
 
+	public void testColumnDisplaySizes() throws SQLException {
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM fox_samp");
+		assertTrue(results.next());
+		ResultSetMetaData metadata = results.getMetaData();
+
+		assertEquals("Incorrect Column Size", 11, metadata.getColumnDisplaySize(1));
+		assertEquals("Incorrect Column Size", 1, metadata.getColumnDisplaySize(2));
+		assertEquals("Incorrect Column Size", 4, metadata.getColumnDisplaySize(3));
+	}
+
 	public void testDatabaseMetadataTables() throws SQLException {
 		Properties props = new Properties();
 		props.put("fileExtension", ".dbf");

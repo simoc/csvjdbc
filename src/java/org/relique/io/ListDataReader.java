@@ -16,6 +16,7 @@
 package org.relique.io;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +81,14 @@ public class ListDataReader extends DataReader
 	public String[] getColumnTypes() throws SQLException
 	{
 		return columnTypes;
+	}
+
+	@Override
+	public int[] getColumnSizes() throws SQLException
+	{
+		int []columnSizes = new int[columnTypes.length];
+		Arrays.fill(columnSizes, DEFAULT_COLUMN_SIZE);
+		return columnSizes;
 	}
 
 	@Override

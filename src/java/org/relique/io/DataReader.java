@@ -5,6 +5,8 @@ import java.util.Map;
 
 public abstract class DataReader {
 
+	public static final int DEFAULT_COLUMN_SIZE = 20;
+
 	public DataReader() {
 		super();
 	}
@@ -20,6 +22,8 @@ public abstract class DataReader {
 	abstract public Map getEnvironment() throws SQLException;
 	
 	abstract public String[] getColumnTypes() throws SQLException;
+
+	abstract public int[] getColumnSizes() throws SQLException;
 
 	abstract public String getTableAlias();
 }

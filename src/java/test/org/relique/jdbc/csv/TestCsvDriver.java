@@ -333,6 +333,33 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
+	public void testMetadataWithColumnSize() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Timestamp");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT id+1 AS ID1, name, job, start FROM sample5");
+
+		ResultSetMetaData metadata = results.getMetaData();
+
+		assertEquals("size of column 1 is incorrect", 20, metadata
+				.getColumnDisplaySize(1));
+		assertEquals("size of column 2 is incorrect", 20, metadata
+				.getColumnDisplaySize(2));
+		assertEquals("size of column 3 is incorrect", 20, metadata
+				.getColumnDisplaySize(3));
+		assertEquals("size of column 4 is incorrect", 20, metadata
+				.getColumnDisplaySize(4));
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+
 	public void testMetadataWithColumnTypeShuffled() throws SQLException {
 		// TODO: this test fails!
 		Properties props = new Properties();

@@ -21,6 +21,7 @@ package test.org.relique.jdbc.csv;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
@@ -156,6 +157,25 @@ public class TestFixedWidthFiles extends TestCase {
 		assertEquals("TODAY_ is wrong", Math.round(0.915347 * multiplier), Math.round(rs1.getDouble("YESTERDY") * multiplier));
 		assertEquals("YESTERDY is wrong", Math.round(0.917832 * multiplier), Math.round(rs1.getDouble("TODAY_") * multiplier));
 		assertEquals("% Change is wrong", Math.round(0.002715 * multiplier), Math.round(rs1.getDouble("% Change") * multiplier));
+	}
+
+	public void testColumnSizes() throws SQLException {
+		
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("columnTypes", "String,String,String,Double,Double,Double");
+		props.put("fixedWidths", "1-16,17-24,25-27,35-42,43-50,51-58");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet rs1 = stmt.executeQuery("SELECT Country,YESTERDY,ISO FROM currency-exchange-rates-fixed");
+
+		ResultSetMetaData meta = rs1.getMetaData();
+		assertEquals("Incorrect Column Size", 16, meta.getColumnDisplaySize(1));
+		assertEquals("Incorrect Column Size", 8, meta.getColumnDisplaySize(2));
+		assertEquals("Incorrect Column Size", 3, meta.getColumnDisplaySize(3));
 	}
 
 	public void testWidthOrder() throws SQLException {

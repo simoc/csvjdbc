@@ -22,11 +22,13 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
 import org.relique.io.CryptoFilter;
+import org.relique.io.DataReader;
 
 /**
  * This class is a helper class that handles the reading and parsing of data
@@ -239,6 +241,21 @@ public class CsvRawReader {
 	 */
 	public String[] getColumnNames() {
 		return columnNames;
+	}
+
+	public int[] getColumnSizes() {
+		int []retval;
+		if (fixedWidthColumns != null) {
+			retval = new int[fixedWidthColumns.size()];
+			for (int i = 0; i < retval.length; i++) {
+				int []columnIndexes = (int [])fixedWidthColumns.get(i);
+				retval[i] = columnIndexes[1] - columnIndexes[0] + 1;
+			}
+		} else {
+			retval = new int[columnNames.length];
+			Arrays.fill(retval, DataReader.DEFAULT_COLUMN_SIZE);
+		}
+		return retval;
 	}
 
 	public String getTableAlias() {

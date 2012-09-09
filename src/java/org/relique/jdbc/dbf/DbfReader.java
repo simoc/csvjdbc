@@ -25,6 +25,7 @@ public class DbfReader extends DataReader {
 	private Method tableGetRecordAtMethod;
 	private Method recordGetTypedValueMethod;
 	private Method fieldGetTypeMethod;
+	private Method fieldGetLengthMethod;
 	private Map dbfTypeToSQLType;
 	private String tableAlias;
 
@@ -46,6 +47,7 @@ public class DbfReader extends DataReader {
 			tableGetRecordAtMethod = tableClass.getMethod("getRecordAt", new Class[] {Integer.TYPE}); 
 			recordGetTypedValueMethod = recordClass.getMethod("getTypedValue", new Class[] {String.class});
 			fieldGetTypeMethod = fieldClass.getMethod("getType", new Class[] {});
+			fieldGetLengthMethod = fieldClass.getMethod("getLength", new Class[] {});
 		} catch (Exception e) {
 			throw new SQLException("Error while being smart:" + e);
 		}
@@ -121,6 +123,19 @@ public class DbfReader extends DataReader {
 			try {
 				String dbfType = fieldGetTypeMethod.invoke(fields.get(i), new Object[] {}).toString();
 				result[i] = (String) dbfTypeToSQLType.get(dbfType);
+			} catch (Exception e) {
+				throw new SQLException("Error while being smart:" + e);
+			}
+		}
+		return result;
+	}
+
+	public int[] getColumnSizes() throws SQLException {
+		int[] result = new int[fields.size()];
+		for(int i=0; i<fields.size(); i++) {
+			try {
+				Object fieldLength = fieldGetLengthMethod.invoke(fields.get(i), new Object[] {});
+				result[i] = ((Number)fieldLength).intValue();
 			} catch (Exception e) {
 				throw new SQLException("Error while being smart:" + e);
 			}
