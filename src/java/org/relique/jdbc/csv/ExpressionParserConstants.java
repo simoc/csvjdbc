@@ -95,7 +95,9 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int TABLENAME = 50;
   /** RegularExpression Id. */
-  int UNEXPECTED_CHAR = 51;
+  int QUOTEDTABLENAME = 51;
+  /** RegularExpression Id. */
+  int UNEXPECTED_CHAR = 52;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -155,6 +157,7 @@ public interface ExpressionParserConstants {
     "\"\\r\"",
     "\"\\n\"",
     "<TABLENAME>",
+    "<QUOTEDTABLENAME>",
     "<UNEXPECTED_CHAR>",
   };
 

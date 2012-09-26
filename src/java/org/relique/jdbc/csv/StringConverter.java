@@ -470,4 +470,11 @@ public class StringConverter {
 
 		return retval;
 	}
+
+	public static String removeQuotes(String string) {
+		if (string.startsWith("\"") && string.length() > 1 && string.endsWith("\""))
+			return string.substring(1, string.length() - 1);
+		else
+			return string;
+	}
 }

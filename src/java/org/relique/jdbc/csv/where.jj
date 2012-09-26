@@ -959,11 +959,15 @@ TOKEN:{
   | "\n"
 }
 /*
- * Tablename is a sequence of non-whitespace when in IN_TABLE state.
+ * Tablename is a sequence of non-whitespace or double-quoted
+ * string when in IN_TABLE state.
  * Switch back to DEFAULT state after parsing table name.
  */
 <IN_TABLE> TOKEN:{
   <TABLENAME:(~[" ", "\t", "\r", "\n"])+> : DEFAULT
+}
+<IN_TABLE> TOKEN:{
+  <QUOTEDTABLENAME:"\""(~["\""])+"\""> : DEFAULT
 }
 /*
  * See http://www.engr.mun.ca/~theo/JavaCC-FAQ/javacc-faq-moz.htm
@@ -1017,7 +1021,7 @@ ParsedStatement selectStatement():{
   (<DISTINCT>{isDistinct = true;})?
   expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*
   (
-    <FROM>t=<TABLENAME>{tableName = t.image;}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?
+    <FROM>(t=<QUOTEDTABLENAME>|t=<TABLENAME>){tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?
     (<WHERE>whereClause = logicalExpression())?
     (<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?
     (<LIMIT>t=<UNSIGNEDINT>{limit = Integer.parseInt(t.image);}(<OFFSET>t=<UNSIGNEDINT>{offset = Integer.parseInt(t.image);})?)?

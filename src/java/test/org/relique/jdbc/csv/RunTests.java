@@ -46,6 +46,7 @@ public class RunTests
     suite.addTestSuite(TestAggregateFunctions.class);
     suite.addTestSuite(TestLimitOffset.class);
     suite.addTestSuite(TestFixedWidthFiles.class);
+    suite.addTestSuite(TestDoubleQuoting.class);
     return suite;
   }
 

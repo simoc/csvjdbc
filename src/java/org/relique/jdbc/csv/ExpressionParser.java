@@ -872,8 +872,19 @@ public class ExpressionParser implements ExpressionParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case FROM:
       jj_consume_token(FROM);
-      t = jj_consume_token(TABLENAME);
-                        tableName = t.image;
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case QUOTEDTABLENAME:
+        t = jj_consume_token(QUOTEDTABLENAME);
+        break;
+      case TABLENAME:
+        t = jj_consume_token(TABLENAME);
+        break;
+      default:
+        jj_la1[4] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+                                              tableName = StringConverter.removeQuotes(t.image);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case AS:
       case NAME:
@@ -882,14 +893,14 @@ public class ExpressionParser implements ExpressionParserConstants {
           jj_consume_token(AS);
           break;
         default:
-          jj_la1[4] = jj_gen;
+          jj_la1[5] = jj_gen;
           ;
         }
         t = jj_consume_token(NAME);
-                                                              tableAlias = t.image.toUpperCase();
+                                                                                                                  tableAlias = t.image.toUpperCase();
         break;
       default:
-        jj_la1[5] = jj_gen;
+        jj_la1[6] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -898,7 +909,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         whereClause = logicalExpression();
         break;
       default:
-        jj_la1[6] = jj_gen;
+        jj_la1[7] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -914,7 +925,7 @@ public class ExpressionParser implements ExpressionParserConstants {
             ;
             break;
           default:
-            jj_la1[7] = jj_gen;
+            jj_la1[8] = jj_gen;
             break label_2;
           }
           jj_consume_token(COMMA);
@@ -923,7 +934,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
         break;
       default:
-        jj_la1[8] = jj_gen;
+        jj_la1[9] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -938,17 +949,17 @@ public class ExpressionParser implements ExpressionParserConstants {
                                                                                         offset = Integer.parseInt(t.image);
           break;
         default:
-          jj_la1[9] = jj_gen;
+          jj_la1[10] = jj_gen;
           ;
         }
         break;
       default:
-        jj_la1[10] = jj_gen;
+        jj_la1[11] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[11] = jj_gen;
+      jj_la1[12] = jj_gen;
       ;
     }
     jj_consume_token(0);
@@ -985,13 +996,13 @@ public class ExpressionParser implements ExpressionParserConstants {
           jj_consume_token(AS);
           break;
         default:
-          jj_la1[12] = jj_gen;
+          jj_la1[13] = jj_gen;
           ;
         }
         alias = columnName();
         break;
       default:
-        jj_la1[13] = jj_gen;
+        jj_la1[14] = jj_gen;
         ;
       }
     if (alias != null)
@@ -1012,7 +1023,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         t = jj_consume_token(NAMEASTERISK);
         break;
       default:
-        jj_la1[14] = jj_gen;
+        jj_la1[15] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1020,7 +1031,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       {if (true) return new ParsedExpression(new QueryEnvEntry(t.image, asterisk));}
       break;
     default:
-      jj_la1[15] = jj_gen;
+      jj_la1[16] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1037,7 +1048,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         ;
         break;
       default:
-        jj_la1[16] = jj_gen;
+        jj_la1[17] = jj_gen;
         break label_3;
       }
       jj_consume_token(OR);
@@ -1058,7 +1069,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         ;
         break;
       default:
-        jj_la1[17] = jj_gen;
+        jj_la1[18] = jj_gen;
         break label_4;
       }
       jj_consume_token(AND);
@@ -1101,7 +1112,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     {if (true) return arg;}
       break;
     default:
-      jj_la1[18] = jj_gen;
+      jj_la1[19] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1137,7 +1148,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     {if (true) return new LikeExpression(arg1, new StringConstant(t.image.substring(1, t.image.length()-1)));}
       break;
     default:
-      jj_la1[19] = jj_gen;
+      jj_la1[20] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1161,7 +1172,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       t = jj_consume_token(MINUS);
       break;
     default:
-      jj_la1[20] = jj_gen;
+      jj_la1[21] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1179,7 +1190,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       t = jj_consume_token(DIVIDE);
       break;
     default:
-      jj_la1[21] = jj_gen;
+      jj_la1[22] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1214,7 +1225,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     {if (true) return arg;}
       break;
     default:
-      jj_la1[22] = jj_gen;
+      jj_la1[23] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1233,7 +1244,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         ;
         break;
       default:
-        jj_la1[23] = jj_gen;
+        jj_la1[24] = jj_gen;
         break label_5;
       }
       op = binAddOp();
@@ -1256,7 +1267,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         ;
         break;
       default:
-        jj_la1[24] = jj_gen;
+        jj_la1[25] = jj_gen;
         break label_6;
       }
       op = binMultiplyOp();
@@ -1346,7 +1357,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     {if (true) return new Placeholder();}
       break;
     default:
-      jj_la1[25] = jj_gen;
+      jj_la1[26] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1370,7 +1381,7 @@ public class ExpressionParser implements ExpressionParserConstants {
              sign=t.image;
       break;
     default:
-      jj_la1[26] = jj_gen;
+      jj_la1[27] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1381,7 +1392,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       t = jj_consume_token(UNSIGNEDINT);
       break;
     default:
-      jj_la1[27] = jj_gen;
+      jj_la1[28] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1406,7 +1417,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         ;
         break;
       default:
-        jj_la1[28] = jj_gen;
+        jj_la1[29] = jj_gen;
         break label_7;
       }
       right = stringConstantAtom();
@@ -1432,7 +1443,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[29];
+  final private int[] jj_la1 = new int[30];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -1440,10 +1451,10 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0xc00000,0xc00000,0x40,0x80,0x40000,0x40000,0x80000000,0x80,0x0,0x0,0x0,0x40000000,0x40000,0x40000,0x0,0x3f203300,0x8000,0x4000,0x3f213300,0x1a0000,0x0,0x0,0x3f203300,0x0,0x0,0x3f203300,0x0,0x300,0x0,};
+      jj_la1_0 = new int[] {0xc00000,0xc00000,0x40,0x80,0x0,0x40000,0x40000,0x80000000,0x80,0x0,0x0,0x0,0x40000000,0x40000,0x40000,0x0,0x3f203300,0x8000,0x4000,0x3f213300,0x1a0000,0x0,0x0,0x3f203300,0x0,0x0,0x3f203300,0x0,0x300,0x0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x10,0x0,0x0,0x1,0x8,0x4,0x0,0x0,0x10,0x180,0x13b0,0x0,0x0,0x1230,0x40,0x600,0x880,0x12b0,0x600,0x880,0x1230,0x200,0x0,0x20,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0xc0000,0x0,0x10,0x0,0x0,0x1,0x8,0x4,0x0,0x0,0x10,0x180,0x13b0,0x0,0x0,0x1230,0x40,0x600,0x880,0x12b0,0x600,0x880,0x1230,0x200,0x0,0x20,};
    }
 
   /** Constructor with InputStream. */
@@ -1457,7 +1468,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 29; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1471,7 +1482,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 29; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -1481,7 +1492,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 29; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1491,7 +1502,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 29; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -1500,7 +1511,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 29; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1509,7 +1520,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 29; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -1560,12 +1571,12 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[52];
+    boolean[] la1tokens = new boolean[53];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 29; i++) {
+    for (int i = 0; i < 30; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -1577,7 +1588,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 52; i++) {
+    for (int i = 0; i < 53; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
