@@ -44,6 +44,7 @@ public class RunTests
     suite.addTestSuite(TestStringConverter.class);
     suite.addTestSuite(TestZipFiles.class);
     suite.addTestSuite(TestAggregateFunctions.class);
+    suite.addTestSuite(TestOrderBy.class);
     suite.addTestSuite(TestLimitOffset.class);
     suite.addTestSuite(TestFixedWidthFiles.class);
     suite.addTestSuite(TestDoubleQuoting.class);
