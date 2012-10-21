@@ -284,7 +284,12 @@ public class CsvResultSet implements ResultSet {
 		for (int i = 0; i < this.queryEnvironment.size(); i++) {
 			Object[] o = (Object[])this.queryEnvironment.get(i);
 			Expression expr = (Expression)o[1];
-			aggregateFunctions.addAll(expr.aggregateFunctions());
+			List exprAggregateFunctions = expr.aggregateFunctions();
+			this.aggregateFunctions.addAll(exprAggregateFunctions);
+			for (Object o2 : exprAggregateFunctions) {
+				AggregateFunction aggregateFunction = (AggregateFunction)o2;
+				this.usedColumns.addAll(aggregateFunction.aggregateColumns());
+			}
 		}
 
 		if (aggregateFunctions.size() > 0) {
@@ -298,13 +303,7 @@ public class CsvResultSet implements ResultSet {
 					allUsedColumns.addAll(((Expression)o[1]).usedColumns());
 				}
 			}
-			for (Object o : this.aggregateFunctions) {
-				AggregateFunction func = (AggregateFunction)o;
-				for (Object o2 : func.usedColumns()) {
-					allUsedColumns.remove(o2);
-				}
-			}
-			if (!allUsedColumns.isEmpty())
+			if (allUsedColumns.size() > 0 && aggregateFunctions.size() > 0)
 				throw new SQLException("Query columns cannot be combined with aggregate functions");
 		}
 		if (whereClause != null && whereClause.aggregateFunctions().size() > 0)
@@ -318,7 +317,8 @@ public class CsvResultSet implements ResultSet {
     		for (int i = 0; i < this.queryEnvironment.size(); i++) {
 				Object[] o = (Object[]) this.queryEnvironment.get(i);
 				if (o[1] != null) {
-					List exprUsedColumns = ((Expression)o[1]).usedColumns();
+					Expression expr = (Expression)o[1];
+					List exprUsedColumns = expr.usedColumns();
 					for (Object usedColumn : exprUsedColumns) {
 						if (!allReaderColumns.contains(usedColumn))
 							throw new SQLException("Invalid column name: " + usedColumn);
@@ -345,7 +345,7 @@ public class CsvResultSet implements ResultSet {
 						/*
 						 * Must order by something that contains at least one column, not 'foo' or 1+1.
 						 */
-						throw new SQLException("Invalid column name: " + expr.toString());
+						throw new SQLException("Invalid ORDER BY column: " + expr.toString());
 					}
 				}
 			}

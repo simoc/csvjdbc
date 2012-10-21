@@ -3288,7 +3288,7 @@ public class TestCsvDriver extends TestCase {
 			stmt.executeQuery("SELECT * FROM sample ORDER BY 'X'");
 			fail("Should raise a java.sqlSQLException");
 		} catch (SQLException e) {
-			assertEquals("java.sql.SQLException: Invalid column name: 'X'", "" + e);
+			assertEquals("java.sql.SQLException: Invalid ORDER BY column: 'X'", "" + e);
 		}
 	}
 

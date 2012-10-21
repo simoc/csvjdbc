@@ -178,6 +178,7 @@ class SQLUpperFunction extends Expression{
   }
 }
 abstract class AggregateFunction extends Expression{
+  public abstract List aggregateColumns();
   public abstract void processRow(Map env);
 }
 class SQLCountFunction extends AggregateFunction{
@@ -193,6 +194,9 @@ class SQLCountFunction extends AggregateFunction{
     return "COUNT("+expression+")";
   }
   public List usedColumns(){
+    return new LinkedList();
+  }
+  public List aggregateColumns(){
     List result = new LinkedList();
     if (!(expression instanceof AsteriskExpression))
       result.addAll(expression.usedColumns());
@@ -229,6 +233,9 @@ class SQLMaxFunction extends AggregateFunction{
     return "MAX("+expression+")";
   }
   public List usedColumns(){
+    return new LinkedList();
+  }
+  public List aggregateColumns(){
     List result = new LinkedList();
     result.addAll(expression.usedColumns());
     return result;
@@ -262,6 +269,9 @@ class SQLMinFunction extends AggregateFunction{
     return "MIN("+expression+")";
   }
   public List usedColumns(){
+    return new LinkedList();
+  }
+  public List aggregateColumns(){
     List result = new LinkedList();
     result.addAll(expression.usedColumns());
     return result;
