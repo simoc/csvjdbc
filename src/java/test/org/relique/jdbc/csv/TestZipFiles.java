@@ -132,7 +132,7 @@ public class TestZipFiles extends TestCase {
 	 */
 	public void testBadZipFileFails() throws SQLException {
 		try {
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
+			DriverManager.getConnection("jdbc:relique:csv:zip:"
 				+ filePath + File.separator + "abc" + TEST_ZIP_FILENAME_1);
 			fail("Connection should fail");
 		} catch (SQLException e) {
