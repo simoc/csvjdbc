@@ -40,7 +40,6 @@ import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -89,7 +88,7 @@ public class CsvConnection implements Connection {
 	}
 
 	/** Lookup table with headerline to use for each table */
-    private HashMap headerlines = new HashMap();
+    private HashMap<String, String> headerlines = new HashMap<String, String>();
 
     /** Should headers be suppressed */
     private boolean suppressHeaders = CsvDriver.DEFAULT_SUPPRESS;
@@ -101,7 +100,7 @@ public class CsvConnection implements Connection {
     private boolean indexedFiles = CsvDriver.DEFAULT_INDEXED_FILES;
 
     /** Lookup table with column data types for each table */
-    private HashMap columnTypes = new HashMap();
+    private HashMap<String, String> columnTypes = new HashMap<String, String>();
 
     /** whether ot not to raise a UnsupportedOperationException when calling a method
         irrelevant in this context (ex: autocommit whereas there is only readonly accesses)
@@ -109,7 +108,7 @@ public class CsvConnection implements Connection {
     private boolean raiseUnsupportedOperationException;
 
     /** Collection of all created Statements */
-    private Vector statements = new Vector();
+    private Vector<Statement> statements = new Vector<Statement>();
 
     /** CharSet that should be used to read the files */
     private String charset = null;
@@ -145,7 +144,7 @@ public class CsvConnection implements Connection {
 
 	private String quoteStyle;
 
-	private ArrayList fixedWidthColumns = null;
+	private ArrayList<int []> fixedWidthColumns = null;
 
 	/**
 	 * Set defaults for connection.
@@ -177,11 +176,13 @@ public class CsvConnection implements Connection {
      * @param prefix property key prefix to match.
      * @return matching properties, with key values having prefix removed.
      */
-    private Map getMatchingProperties(Properties info, String prefix) {
-    	HashMap retval = new HashMap();
-        Iterator it = info.keySet().iterator();
-        while (it.hasNext()) {
-        	String key = (String)it.next();
+    private Map<String, String> getMatchingProperties(Properties info, String prefix) {
+    	HashMap<String, String> retval = new HashMap<String, String>();
+    	for (Object o : info.keySet()) {
+        //Iterator<String> it = info.keySet().iterator();
+        //while (it.hasNext()) {
+        //	String key = (String)it.next();
+    		String key = o.toString();
         	if (key.startsWith(prefix)) {
         		String value = info.getProperty(key);
         		key = key.substring(prefix.length());
@@ -248,14 +249,14 @@ public class CsvConnection implements Connection {
     		String className = info
     				.getProperty(CsvDriver.CRYPTO_FILTER_CLASS_NAME);
     		try{
-    			Class encrypterClass = Class.forName(className);
+    			Class<?> encrypterClass = Class.forName(className);
     			String[] parameterTypes = info.getProperty(
     					"cryptoFilterParameterTypes", "String")
     					.split(",");
     			String[] parameterStrings = info.getProperty(
     					"cryptoFilterParameters", "").split(",");
     			StringConverter converter = new StringConverter("", "", "");
-    			Class[] parameterClasses = new Class[parameterStrings.length];
+    			Class<?>[] parameterClasses = new Class[parameterStrings.length];
     			Object[] parameterValues = new Object[parameterStrings.length];
     			for (int i = 0; i < parameterStrings.length; i++) {
     				parameterClasses[i] = converter
@@ -263,7 +264,7 @@ public class CsvConnection implements Connection {
     				parameterValues[i] = converter.convert(
     						parameterTypes[i], parameterStrings[i]);
     			}
-    			Constructor constructor = encrypterClass
+    			Constructor<?> constructor = encrypterClass
     					.getConstructor(parameterClasses);
     			decryptingFilter = (CryptoFilter) constructor
     					.newInstance(parameterValues);
@@ -295,7 +296,7 @@ public class CsvConnection implements Connection {
     	 */
     	String fixedWidths = info.getProperty(CsvDriver.FIXED_WIDTHS);
     	if (fixedWidths != null) {
-    		fixedWidthColumns = new ArrayList();
+    		fixedWidthColumns = new ArrayList<int []>();
     		String []columnRanges = fixedWidths.split(",");
     		for (int i = 0; i < columnRanges.length; i++) {
     			int beginColumn, endColumn;
@@ -583,7 +584,7 @@ public class CsvConnection implements Connection {
      */
     public void close() throws SQLException {
         // close all created statements
-        for(Enumeration i = statements.elements(); i.hasMoreElements(); ) {
+        for(Enumeration<Statement> i = statements.elements(); i.hasMoreElements(); ) {
             CsvStatement statement = (CsvStatement)i.nextElement();
             statement.close();
         }
@@ -885,7 +886,7 @@ public class CsvConnection implements Connection {
      * @exception SQLException if a database access error occurs
      * @see #setTypeMap
      */
-    public Map getTypeMap() throws SQLException {
+    public Map<String,Class<?>> getTypeMap() throws SQLException {
         throw new UnsupportedOperationException(
                 "Connection.getTypeMap() unsupported");
     }
@@ -903,7 +904,7 @@ public class CsvConnection implements Connection {
      *        object
      * @see #getTypeMap
      */
-    public void setTypeMap(Map map) throws SQLException {
+    public void setTypeMap(Map<String,Class<?>> map) throws SQLException {
         throw new UnsupportedOperationException(
                 "Connection.setTypeMap(Map) unsupported");
     }
@@ -1058,10 +1059,10 @@ public class CsvConnection implements Connection {
      * @return current value for the headerline property
      */
     public String getHeaderline(String tableName) {
-		String retval = (String)headerlines.get(tableName);
+		String retval = headerlines.get(tableName);
 		if (retval == null) {
 			// Use default if no headerline defined for this table.
-			retval = (String)headerlines.get(null);
+			retval = headerlines.get(null);
 		}
 		return retval;
     }
@@ -1082,7 +1083,7 @@ public class CsvConnection implements Connection {
         return suppressHeaders;
     }
 
-    public ArrayList getFixedWidthColumns() {
+    public ArrayList<int []> getFixedWidthColumns() {
     	return fixedWidthColumns;
     }
 
@@ -1155,12 +1156,12 @@ public class CsvConnection implements Connection {
 		return false;
 	}
 
-	public boolean isWrapperFor(Class arg0) throws SQLException {
+	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public Object unwrap(Class arg0) throws SQLException {
+	public <T> T unwrap(Class<T> arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -1183,10 +1184,10 @@ public class CsvConnection implements Connection {
 	}
 
 	public String getColumnTypes(String tableName) {
-		String retval = (String)columnTypes.get(tableName);
+		String retval = columnTypes.get(tableName);
 		if (retval == null) {
 			// Use default if no columnTypes defined for this table.
-			retval = (String)columnTypes.get(null);
+			retval = columnTypes.get(null);
 		}
 		return retval;
 	}
@@ -1338,9 +1339,9 @@ public class CsvConnection implements Connection {
 	 * Get list of table names (all files in the directory with the correct suffix).
 	 * @return list of table names.
 	 */
-	public List getTableNames() throws SQLException {
+	public List<String> getTableNames() throws SQLException {
 
-		List tableNames = new ArrayList();
+		List<String> tableNames = new ArrayList<String>();
 		if (path != null) {
 			File []matchingFiles = new File(path).listFiles(new FilenameFilter() {
 
