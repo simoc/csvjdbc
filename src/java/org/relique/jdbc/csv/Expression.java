@@ -21,16 +21,16 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class Expression {
-	public Object eval(Map env) {
+	public Object eval(Map<String, Object> env) {
 		return null;
 	}
-	public List usedColumns() {
+	public List<String> usedColumns() {
 		return null;
 	}
-	public List aggregateFunctions() {
-		return new LinkedList();
+	public List<AggregateFunction> aggregateFunctions() {
+		return new LinkedList<AggregateFunction>();
 	}
-	public boolean isTrue(Map env){
+	public boolean isTrue(Map<String, Object> env){
 	    return false;
 	}
 }
