@@ -41,8 +41,8 @@ public class TestFileSetInputStream extends TestCase {
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
 								"location", "file_date" }, ',', false, false, null, 0)));
 
-		Set refSet = new HashSet();
-		Set testSet = new HashSet();
+		Set<String> refSet = new HashSet<String>();
+		Set<String> testSet = new HashSet<String>();
 		inputRef.readLine();
 		inputTest.readLine();
 		String lineRef, lineTest;
@@ -65,8 +65,8 @@ public class TestFileSetInputStream extends TestCase {
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
 								"location", "file_date" }, ',', true, false, null, 0)));
 
-		Set refSet = new HashSet();
-		Set testSet = new HashSet();
+		Set<String> refSet = new HashSet<String>();
+		Set<String> testSet = new HashSet<String>();
 		inputRef.readLine();
 		inputTest.readLine();
 		String lineRef, lineTest;
@@ -89,8 +89,8 @@ public class TestFileSetInputStream extends TestCase {
 						"headerless-([0-9]{3})-([0-9]{8}).txt", new String[] {
 								"location", "file_date" }, ',', true, true, null, 0)));
 
-		Set refSet = new HashSet();
-		Set testSet = new HashSet();
+		Set<String> refSet = new HashSet<String>();
+		Set<String> testSet = new HashSet<String>();
 		String lineRef, lineTest;
 		do {
 			lineRef = inputRef.readLine();
@@ -111,8 +111,8 @@ public class TestFileSetInputStream extends TestCase {
 						"empty-([0-9]+).txt", new String[] {
 							"EMPTY_ID"}, ',', false, false, null, 0)));
 
-		Set refSet = new HashSet();
-		Set testSet = new HashSet();
+		Set<String> refSet = new HashSet<String>();
+		Set<String> testSet = new HashSet<String>();
 		String lineRef, lineTest;
 		do {
 			lineRef = inputRef.readLine();
