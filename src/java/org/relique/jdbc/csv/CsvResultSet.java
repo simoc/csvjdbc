@@ -83,19 +83,19 @@ public class CsvResultSet implements ResultSet {
 
 	private Expression whereClause;
 
-	private List groupByColumns;
+	private List<Expression> groupByColumns;
 
-	private List orderByColumns;
+	private List<Object []> orderByColumns;
 
-	private List queryEnvironment;
+	private List<Object []> queryEnvironment;
 
-	private List aggregateFunctions;
+	private List<AggregateFunction> aggregateFunctions;
 
-	private Set distinctValues;
+	private Set<ArrayList<Object>> distinctValues;
 
-	private Map recordEnvironment;
+	private Map<String, Object> recordEnvironment;
 
-	private List usedColumns;
+	private List<String> usedColumns;
 
 	private String timeFormat;
 
@@ -105,7 +105,7 @@ public class CsvResultSet implements ResultSet {
 
 	private StringConverter converter;
 
-	private ArrayList bufferedRecordEnvironments = null;
+	private ArrayList<Map<String, Object>> bufferedRecordEnvironments = null;
 
 	private int currentRow;
 
@@ -122,27 +122,25 @@ public class CsvResultSet implements ResultSet {
 	/**
 	 * Compares SQL ORDER BY expressions for two records.
 	 */
-	public class OrderByComparator implements Comparator {
+	public class OrderByComparator implements Comparator<Map<String, Object>> {
 
-		public int compare(Object o1, Object o2) {
-			Map recordEnvironment1 = (Map)o1;
-			Map recordEnvironment2 = (Map)o2;
+		public int compare(Map<String, Object> recordEnvironment1, Map<String, Object> recordEnvironment2) {
 			int retval = 0;
 			int i = 0;
 			while (i < orderByColumns.size() && retval == 0) {
-				Object []o = (Object [])orderByColumns.get(i);
+				Object []o = orderByColumns.get(i);
 				Integer direction = (Integer)o[0];
 				Expression expr = (Expression)o[1];
 				recordEnvironment = recordEnvironment1;
-				Map objectEnvironment1 = updateRecordEnvironment(true);
+				Map<String, Object> objectEnvironment1 = updateRecordEnvironment(true);
 	    		if (converter != null)
 	    			objectEnvironment1.put("@STRINGCONVERTER", converter);
-				Comparable result1 = (Comparable)expr.eval(objectEnvironment1);
+				Comparable<Object> result1 = (Comparable<Object>)expr.eval(objectEnvironment1);
 				recordEnvironment = recordEnvironment2;
-				Map objectEnvironment2 = updateRecordEnvironment(true);
+				Map<String, Object> objectEnvironment2 = updateRecordEnvironment(true);
 	    		if (converter != null)
 	    			objectEnvironment2.put("@STRINGCONVERTER", converter);
-				Comparable result2 = (Comparable)expr.eval(objectEnvironment2);
+				Comparable<Object> result2 = (Comparable<Object>)expr.eval(objectEnvironment2);
 				if (result1 == null) {
 					if (result2 == null)
 						retval = 0;
@@ -179,10 +177,10 @@ public class CsvResultSet implements ResultSet {
      * @throws SQLException 
      */
     protected CsvResultSet(CsvStatement statement, DataReader reader,
-			String tableName, List queryEnvironment, boolean isDistinct, int isScrollable, 
+			String tableName, List<Object []> queryEnvironment, boolean isDistinct, int isScrollable, 
 			Expression whereClause,
-			List groupByColumns,
-			List orderByColumns,
+			List<Expression> groupByColumns,
+			List<Object []> orderByColumns,
 			int sqlLimit, int sqlOffset,
 			String columnTypes, int skipLeadingLines) throws ClassNotFoundException, SQLException {
         this.statement = statement;
@@ -192,19 +190,19 @@ public class CsvResultSet implements ResultSet {
         this.isScrollable = isScrollable;
         this.reader = reader;
         this.tableName = tableName;
-        this.queryEnvironment = new ArrayList(queryEnvironment);
-        this.aggregateFunctions = new ArrayList();
+        this.queryEnvironment = new ArrayList<Object []>(queryEnvironment);
+        this.aggregateFunctions = new ArrayList<AggregateFunction>();
         this.whereClause = whereClause;
         if (groupByColumns != null)
-        	this.groupByColumns = new ArrayList(groupByColumns);
+        	this.groupByColumns = new ArrayList<Expression>(groupByColumns);
         else
         	this.groupByColumns = null;
         if (orderByColumns != null)
-        	this.orderByColumns = new ArrayList(orderByColumns);
+        	this.orderByColumns = new ArrayList<Object []>(orderByColumns);
         else
         	this.orderByColumns = null;
         if (isDistinct)
-        	this.distinctValues = new HashSet();
+        	this.distinctValues = new HashSet<ArrayList<Object>>();
         if(reader instanceof CsvReader || reader instanceof ListDataReader) {
         	// timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
         	timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
@@ -218,14 +216,14 @@ public class CsvResultSet implements ResultSet {
         	}
         }
         if (whereClause!= null)
-        	this.usedColumns = new LinkedList(whereClause.usedColumns());
+        	this.usedColumns = new LinkedList<String>(whereClause.usedColumns());
         else
-            this.usedColumns = new LinkedList();
+            this.usedColumns = new LinkedList<String>();
 
         String[] columnNames = reader.getColumnNames();
 
     	String tableAlias = reader.getTableAlias();
-		HashSet allReaderColumns = new HashSet();
+		HashSet<String> allReaderColumns = new HashSet<String>();
 		for (int i = 0; i < columnNames.length; i++) {
 			String columnName = columnNames[i].toUpperCase();
 			allReaderColumns.add(columnName);
@@ -259,7 +257,7 @@ public class CsvResultSet implements ResultSet {
 		 */
 		if (this.groupByColumns != null) {
 			for (int i = 0; i < this.groupByColumns.size(); i++) {
-				Expression expression = (Expression)this.groupByColumns.get(i);
+				Expression expression = this.groupByColumns.get(i);
 				if (expression instanceof NumericConstant) {
 					NumericConstant n = (NumericConstant)expression;
 					if (!(n.value instanceof Integer))
@@ -275,14 +273,13 @@ public class CsvResultSet implements ResultSet {
 						throw new SQLException("Invalid GROUP BY column: " + (index + 1));
 					}
 					Object[] q = (Object[])this.queryEnvironment.get(index);
-					this.groupByColumns.set(i, q[1]);
+					this.groupByColumns.set(i, (Expression)q[1]);
 				}
 			}
 		}
 
 		if (this.groupByColumns != null) {
-			for (Object o : this.groupByColumns) {
-				Expression expr = (Expression)o;
+			for (Expression expr : this.groupByColumns) {
 				this.usedColumns.addAll(expr.usedColumns());
 			}
 		}
@@ -291,8 +288,8 @@ public class CsvResultSet implements ResultSet {
 		 * Replace any "order by 2" with the 2nd column in the query list.
 		 */
 		if (this.orderByColumns != null) {
-			for (Object o : this.orderByColumns) {
-				Expression expression = (Expression)((Object [])o)[1];
+			for (Object []o : this.orderByColumns) {
+				Expression expression = (Expression)o[1];
 				if (expression instanceof NumericConstant) {
 					NumericConstant n = (NumericConstant)expression;
 					if (!(n.value instanceof Integer))
@@ -308,14 +305,14 @@ public class CsvResultSet implements ResultSet {
 						throw new SQLException("Invalid ORDER BY column: " + (index + 1));
 					}
 					Object[] q = (Object[])this.queryEnvironment.get(index);
-					((Object [])o)[1] = q[1];
+					o[1] = q[1];
 				}
 			}
 		}
 
         if (this.orderByColumns != null) {
-			for (Object o : this.orderByColumns) {
-				Expression expr = (Expression)((Object [])o)[1];
+			for (Object []o : this.orderByColumns) {
+				Expression expr = (Expression)o[1];
 				this.usedColumns.addAll(expr.usedColumns());
 			}
         }
@@ -324,12 +321,11 @@ public class CsvResultSet implements ResultSet {
 		 * Find any SQL aggregate functions so they can be evaluated separately.
 		 */
 		for (int i = 0; i < this.queryEnvironment.size(); i++) {
-			Object[] o = (Object[])this.queryEnvironment.get(i);
+			Object[] o = this.queryEnvironment.get(i);
 			Expression expr = (Expression)o[1];
-			List exprAggregateFunctions = expr.aggregateFunctions();
+			List<AggregateFunction> exprAggregateFunctions = expr.aggregateFunctions();
 			this.aggregateFunctions.addAll(exprAggregateFunctions);
-			for (Object o2 : exprAggregateFunctions) {
-				AggregateFunction aggregateFunction = (AggregateFunction)o2;
+			for (AggregateFunction aggregateFunction : exprAggregateFunctions) {
 				this.usedColumns.addAll(aggregateFunction.aggregateColumns());
 			}
 		}
@@ -338,7 +334,7 @@ public class CsvResultSet implements ResultSet {
 			/*
 			 * Check there is no mix of query columns and aggregate functions.
 			 */
-			List allUsedColumns = new LinkedList();
+			List<String> allUsedColumns = new LinkedList<String>();
 			for (int i = 0; i < this.queryEnvironment.size(); i++) {
 				Object[] o = (Object[]) this.queryEnvironment.get(i);
 				if (o[1] != null) {
@@ -360,14 +356,14 @@ public class CsvResultSet implements ResultSet {
 				Object[] o = (Object[]) this.queryEnvironment.get(i);
 				if (o[1] != null) {
 					Expression expr = (Expression)o[1];
-					List exprUsedColumns = expr.usedColumns();
+					List<String> exprUsedColumns = expr.usedColumns();
 					for (Object usedColumn : exprUsedColumns) {
 						if (!allReaderColumns.contains(usedColumn))
 							throw new SQLException("Invalid column name: " + usedColumn);
 					}
 				}
 				//TODO selected column aliases are allowed in WHERE clause (although this is invalid SQL) and unit tested in TestCsvDriver.testFieldAsAlias so add all aliases to list too.
-				allReaderColumns.add(o[0]);
+				allReaderColumns.add(o[0].toString());
     		}
         }
         
@@ -383,9 +379,9 @@ public class CsvResultSet implements ResultSet {
 			checkGroupBy();
 
 			if (this.orderByColumns != null) {
-				for (Object o : this.orderByColumns) {
-					Expression expr = (Expression)((Object [])o)[1];
-					List exprUsedColumns = expr.usedColumns();
+				for (Object []o : this.orderByColumns) {
+					Expression expr = (Expression)o[1];
+					List<String> exprUsedColumns = expr.usedColumns();
 					if (exprUsedColumns.isEmpty()) {
 						/*
 						 * Must order by something that contains at least one column, not 'foo' or 1+1.
@@ -399,7 +395,7 @@ public class CsvResultSet implements ResultSet {
     	if (this.groupByColumns != null ||
 		this.orderByColumns != null || this.aggregateFunctions.size() > 0 ||
     		this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
-    		bufferedRecordEnvironments = new ArrayList();
+    		bufferedRecordEnvironments = new ArrayList<Map<String, Object>>();
     		currentRow = 0;
     	}
 
@@ -412,21 +408,20 @@ public class CsvResultSet implements ResultSet {
     		maxRows = 0;
     		limit = -1;
     		ArrayList<ArrayList<Object>> groupOrder = new ArrayList<ArrayList<Object>>();
-    		HashMap<ArrayList<Object>, ArrayList<Map>> groups = new HashMap<ArrayList<Object>, ArrayList<Map>>();
+    		HashMap<ArrayList<Object>, ArrayList<Map<String, Object>>> groups = new HashMap<ArrayList<Object>, ArrayList<Map<String, Object>>>();
     		try {
     			while (next()) {
-    				Map objectEnvironment = updateRecordEnvironment(true);
+    				Map<String, Object> objectEnvironment = updateRecordEnvironment(true);
     				if (converter != null)
     					objectEnvironment.put("@STRINGCONVERTER", converter);
     				ArrayList<Object> groupByKeys = new ArrayList<Object>(this.groupByColumns.size());
-    				for (Object o : this.groupByColumns) {
-    					Expression expr = (Expression)o;
+    				for (Expression expr : this.groupByColumns) {
     					groupByKeys.add(expr.eval(objectEnvironment));
     				}
-    				ArrayList<Map> groupByValues = groups.get(groupByKeys);
+    				ArrayList<Map<String, Object>> groupByValues = groups.get(groupByKeys);
     				if (groupByValues == null)
     				{
-    					groupByValues = new ArrayList<Map>();
+    					groupByValues = new ArrayList<Map<String, Object>>();
     					groups.put(groupByKeys, groupByValues);
     					groupOrder.add(groupByKeys);
     				}
@@ -435,14 +430,14 @@ public class CsvResultSet implements ResultSet {
     			bufferedRecordEnvironments.clear();
     			for (ArrayList<Object> groupByKey : groupOrder)
     			{
-    				ArrayList<Map> values = groups.get(groupByKey);
+    				ArrayList<Map<String, Object>> values = groups.get(groupByKey);
 
     				/*
     				 * Create a row in the ResultSet for each group with a
     				 * reference to all the rows in that group so we can
     				 * later calculate any aggregate functions for each group.
     				 */
-    				Map firstRow = new HashMap(values.get(0));
+    				Map<String, Object> firstRow = new HashMap<String, Object>(values.get(0));
     				firstRow.put("@GROUPROWS", values);
     				bufferedRecordEnvironments.add(firstRow);
     			}
@@ -486,7 +481,7 @@ public class CsvResultSet implements ResultSet {
     			 */
     			bufferedRecordEnvironments.clear();
     			if ((savedLimit < 0 || savedLimit > 0) && sqlOffset == 0)
-    				bufferedRecordEnvironments.add(new HashMap());
+    				bufferedRecordEnvironments.add(new HashMap<String, Object>());
     		} finally {
     			maxRows = savedMaxRows;
     			limit = savedLimit;
@@ -555,9 +550,8 @@ public class CsvResultSet implements ResultSet {
      */
     private void checkGroupBy() throws SQLException {
 		if (this.groupByColumns != null) {
-			for (Object o : this.groupByColumns) {
-				Expression expr = (Expression)o;
-				List exprUsedColumns = expr.usedColumns();
+			for (Expression expr : this.groupByColumns) {
+				List<String> exprUsedColumns = expr.usedColumns();
 				if (exprUsedColumns.isEmpty()) {
 					/*
 					 * Must group by something that contains at least one column, not 'foo' or 1+1.
@@ -565,12 +559,11 @@ public class CsvResultSet implements ResultSet {
 					throw new SQLException("Invalid GROUP BY column: " + expr.toString());
 				}
 			}
-			ArrayList groupingColumns = new ArrayList();
-			for (Object o : this.groupByColumns) {
-				Expression expr = (Expression)o;
+			ArrayList<String> groupingColumns = new ArrayList<String>();
+			for (Expression expr : this.groupByColumns) {
 				groupingColumns.addAll(expr.usedColumns());
 			}
-			ArrayList queryEnvironmentColumns = new ArrayList();
+			ArrayList<String> queryEnvironmentColumns = new ArrayList<String>();
 			for (int i = 0; i < this.queryEnvironment.size(); i++) {
 				Object[] o = (Object[]) this.queryEnvironment.get(i);
 				queryEnvironmentColumns.add(o[0].toString());
@@ -599,8 +592,8 @@ public class CsvResultSet implements ResultSet {
 				}
 			}
 			if (this.orderByColumns != null) {
-				for (Object o : this.orderByColumns) {
-					Expression expr = (Expression)((Object [])o)[1];
+				for (Object []o : this.orderByColumns) {
+					Expression expr = (Expression)o[1];
 					for (Object o2 : expr.usedColumns()) {
 						if (!queryEnvironmentColumns.contains(o2.toString()))
 							throw new SQLException("ORDER BY column not included in GROUP BY: " + o2);
@@ -611,17 +604,19 @@ public class CsvResultSet implements ResultSet {
     }
 
     private void sortRows(int sqlOffset) {
-               Object []allRows = bufferedRecordEnvironments.toArray();
-               bufferedRecordEnvironments.clear();
-               Arrays.sort(allRows, new OrderByComparator());
-               int rowLimit = allRows.length;
-               if (maxRows != 0 && maxRows < rowLimit)
-                       rowLimit = maxRows;
-               if (limit >= 0 && sqlOffset + limit < rowLimit)
-                       rowLimit = sqlOffset + limit;
+    	Map<String, Object> []allRows = new Map[bufferedRecordEnvironments.size()];
+    	for (int i = 0; i < allRows.length; i++)
+    		allRows[i] = bufferedRecordEnvironments.get(i);
+    	bufferedRecordEnvironments.clear();
+    	Arrays.sort(allRows, new OrderByComparator());
+    	int rowLimit = allRows.length;
+    	if (maxRows != 0 && maxRows < rowLimit)
+    		rowLimit = maxRows;
+    	if (limit >= 0 && sqlOffset + limit < rowLimit)
+    		rowLimit = sqlOffset + limit;
 
-               for (int i = sqlOffset; i < rowLimit; i++)
-                       bufferedRecordEnvironments.add(allRows[i]);
+    	for (int i = sqlOffset; i < rowLimit; i++)
+    		bufferedRecordEnvironments.add(allRows[i]);
     }
 
     private void checkOpen() throws SQLException {
@@ -654,7 +649,7 @@ public class CsvResultSet implements ResultSet {
     		this.orderByColumns != null || this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) &&
     		currentRow < bufferedRecordEnvironments.size()) {
     		currentRow++;
-    		recordEnvironment = (Map) bufferedRecordEnvironments.get(currentRow - 1);
+    		recordEnvironment = bufferedRecordEnvironments.get(currentRow - 1);
 			updateRecordEnvironment(true);
 			return true;
     	} else {
@@ -677,7 +672,7 @@ public class CsvResultSet implements ResultSet {
 
 			// We have a where clause or DISTINCT keyword, honor it
 			if (whereClause != null || distinctValues != null) {
-				Map objectEnvironment = updateRecordEnvironment(thereWasAnAnswer);
+				Map<String, Object> objectEnvironment = updateRecordEnvironment(thereWasAnAnswer);
 				while (thereWasAnAnswer) {
 					if (whereClause == null || whereClause.isTrue(objectEnvironment)) {
 						if (distinctValues == null || addDistinctEnvironment()) {
@@ -710,8 +705,8 @@ public class CsvResultSet implements ResultSet {
 		}
     }
 
-    private Map updateRecordEnvironment(boolean thereWasAnAnswer) {
-		HashMap objectEnvironment = new HashMap();
+    private Map<String, Object> updateRecordEnvironment(boolean thereWasAnAnswer) {
+		HashMap<String, Object> objectEnvironment = new HashMap<String, Object>();
     	if(!thereWasAnAnswer) {
     		recordEnvironment = null;
     		return objectEnvironment;
@@ -723,7 +718,7 @@ public class CsvResultSet implements ResultSet {
 			objectEnvironment.put(key.toUpperCase(), value);
 		}
 		for (int i=0; i<usedColumns.size(); i++){
-			String key = (String) usedColumns.get(i);
+			String key = usedColumns.get(i);
 			key = key.toUpperCase();
 			if (!objectEnvironment.containsKey(key)){
 				objectEnvironment.put(key, recordEnvironment.get(key));
@@ -756,7 +751,7 @@ public class CsvResultSet implements ResultSet {
     	/*
     	 * Create list of query values for this row.
     	 */
-    	ArrayList distinctEnvironment = new ArrayList(queryEnvironment.size());
+    	ArrayList<Object> distinctEnvironment = new ArrayList<Object>(queryEnvironment.size());
 		for (int i = 0; i < queryEnvironment.size(); i++){
 			Object[] o = (Object[]) queryEnvironment.get(i);
 			Object value = ((Expression) o[1]).eval(recordEnvironment);
@@ -1468,7 +1463,7 @@ public class CsvResultSet implements ResultSet {
     		/*
     		 * Create a record containing dummy values.
     		 */
-    		HashMap env = new HashMap();
+    		HashMap<String, Object> env = new HashMap<String, Object>();
     		for(int i=0; i<readerTypeNames.length; i++) {
     			Object literal = StringConverter.getLiteralForTypeName(readerTypeNames[i]);
     			String columnName = readerColumnNames[i].toUpperCase();
@@ -1493,7 +1488,7 @@ public class CsvResultSet implements ResultSet {
 					
 					int columnSize = DataReader.DEFAULT_COLUMN_SIZE;
 					if (expr instanceof ColumnName) {
-						String usedColumn = (String)expr.usedColumns().get(0);
+						String usedColumn = expr.usedColumns().get(0);
 						for (int k = 0; k < readerColumnNames.length; k++) {
 							if (usedColumn.equalsIgnoreCase(readerColumnNames[k])) {
 								columnSize = readerColumnSizes[k];
@@ -1913,7 +1908,7 @@ public class CsvResultSet implements ResultSet {
         	} else {
         		found = true;
         		currentRow = row;
-        		recordEnvironment = (Map) bufferedRecordEnvironments.get(currentRow - 1);
+        		recordEnvironment = bufferedRecordEnvironments.get(currentRow - 1);
         	}
    			updateRecordEnvironment(found);
    			return found;
@@ -1976,7 +1971,7 @@ public class CsvResultSet implements ResultSet {
         if (this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
         	if(currentRow > 1) {
         		currentRow--;
-        		recordEnvironment = (Map) bufferedRecordEnvironments.get(currentRow - 1);
+        		recordEnvironment = bufferedRecordEnvironments.get(currentRow - 1);
         		updateRecordEnvironment(true);
         		return true;
         	} else {
@@ -2938,7 +2933,7 @@ public class CsvResultSet implements ResultSet {
      * representing the SQL value
      * @exception SQLException if a database access error occurs
      */
-    public Object getObject(int i, Map map) throws SQLException {
+    public Object getObject(int i, Map<String,Class<?>> map) throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getObject(int, Map) unsupported");
     }
@@ -3019,7 +3014,7 @@ public class CsvResultSet implements ResultSet {
      *         specified column
      * @exception SQLException if a database access error occurs
      */
-    public Object getObject(String colName, Map map) throws SQLException {
+    public Object getObject(String colName, Map<String,Class<?>> map) throws SQLException {
         throw new UnsupportedOperationException(
                 "ResultSet.getObject(String, Map) unsupported");
     }
@@ -3437,11 +3432,11 @@ public class CsvResultSet implements ResultSet {
 		// TODO Auto-generated method stub
 		
 	}
-	public boolean isWrapperFor(Class arg0) throws SQLException {
+	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	public Object unwrap(Class arg0) throws SQLException {
+	public <T> T unwrap(Class<T> arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
