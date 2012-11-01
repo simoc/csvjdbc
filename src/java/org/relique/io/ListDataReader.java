@@ -66,9 +66,9 @@ public class ListDataReader extends DataReader
 	}
 
 	@Override
-	public Map getEnvironment() throws SQLException
+	public Map<String, Object> getEnvironment() throws SQLException
 	{
-		HashMap retval = new HashMap();
+		HashMap<String, Object> retval = new HashMap<String, Object>();
 		Object []o = columnValues.get(rowIndex);
 		for (int i = 0; i < columnNames.length; i++)
 		{

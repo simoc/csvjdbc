@@ -233,7 +233,7 @@ public class StringConverter {
 		return (str == null) ? null : new ByteArrayInputStream(str.getBytes());
 	}
 	
-	static protected Map forSQLNameMap = new HashMap(){
+	static protected Map<String, Class<?>> forSQLNameMap = new HashMap<String, Class<?>>(){
 		private static final long serialVersionUID = -3037117163532338893L;
 		{
 			try{
@@ -257,10 +257,10 @@ public class StringConverter {
 		}
 	};
 	
-	static protected Map converterMethodForClass = new HashMap(){
+	static protected Map<String, Method> converterMethodForClass = new HashMap<String, Method>(){
 		private static final long serialVersionUID = -3037117163532338893L;
-		Class[] argTypes = new Class[1];
-		Class containerClass = null;
+		Class<?>[] argTypes = new Class[1];
+		Class<?> containerClass = null;
 		{
 			try {
 				argTypes[0] = Class.forName("java.lang.String");
@@ -317,8 +317,8 @@ public class StringConverter {
 		return value;
 	}
 
-	public Class forSQLName(String string) {
-		return (Class)forSQLNameMap.get(string);
+	public Class<?> forSQLName(String string) {
+		return forSQLNameMap.get(string);
 	}
 
 	/**
@@ -393,7 +393,7 @@ public class StringConverter {
 		return retval;
 	}
 
-	public static List getTypeInfo()
+	public static List<Object []> getTypeInfo()
 	{
 		Integer intZero = Integer.valueOf(0);
 		Short shortZero = Short.valueOf((short)0);
@@ -401,7 +401,7 @@ public class StringConverter {
 		Short searchable = Short.valueOf((short)DatabaseMetaData.typeSearchable);
 		Short nullable = Short.valueOf((short)DatabaseMetaData.typeNullable);
 
-		ArrayList retval = new ArrayList();
+		ArrayList<Object []> retval = new ArrayList<Object []>();
 
 		retval.add(new Object[]{"String", Integer.valueOf(Types.VARCHAR), shortMax,
 			"'", "'", null, nullable, Boolean.TRUE,

@@ -26,7 +26,7 @@ public class DbfReader extends DataReader {
 	private Method recordGetTypedValueMethod;
 	private Method fieldGetTypeMethod;
 	private Method fieldGetLengthMethod;
-	private Map dbfTypeToSQLType;
+	private Map<String, String> dbfTypeToSQLType;
 	private String tableAlias;
 
 	public DbfReader(String path, String tableAlias) throws SQLException {
@@ -63,7 +63,7 @@ public class DbfReader extends DataReader {
 		} catch (Exception e) {
 			throw new SQLException("Error while being smart:" + e);
 		}
-		dbfTypeToSQLType = new HashMap();
+		dbfTypeToSQLType = new HashMap<String, String>();
 		dbfTypeToSQLType.put("CHARACTER", "String");
 		dbfTypeToSQLType.put("NUMBER", "Double");
 		dbfTypeToSQLType.put("LOGICAL", "Boolean");
@@ -122,7 +122,7 @@ public class DbfReader extends DataReader {
 		for(int i=0; i<fields.size(); i++) {
 			try {
 				String dbfType = fieldGetTypeMethod.invoke(fields.get(i), new Object[] {}).toString();
-				result[i] = (String) dbfTypeToSQLType.get(dbfType);
+				result[i] = dbfTypeToSQLType.get(dbfType);
 			} catch (Exception e) {
 				throw new SQLException("Error while being smart:" + e);
 			}
@@ -143,8 +143,8 @@ public class DbfReader extends DataReader {
 		return result;
 	}
 
-	public Map getEnvironment() throws SQLException {
-		Map result = new HashMap();
+	public Map<String, Object> getEnvironment() throws SQLException {
+		Map<String, Object> result = new HashMap<String, Object>();
 		for(int i=0; i < fields.size(); i++) {
 			Object field = fields.get(i);
 			try {

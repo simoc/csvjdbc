@@ -19,10 +19,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package test.org.relique.jdbc.csv;
 import java.io.StringReader;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import junit.framework.TestCase;
 
 import org.relique.jdbc.csv.Expression;
@@ -30,7 +30,6 @@ import org.relique.jdbc.csv.ExpressionParser;
 import org.relique.jdbc.csv.ParseException;
 import org.relique.jdbc.csv.SqlParser;
 import org.relique.jdbc.csv.StringConverter;
-import org.relique.jdbc.csv.TokenMgrError;
 
 /**
  * This class is used to test the SqlParser class.
@@ -289,7 +288,7 @@ public class TestSqlParser extends TestCase {
 	 */
 	public void testWhereEvaluating() throws Exception {
 		SqlParser parser = new SqlParser();
-		Map env = new HashMap();
+		Map<String, Object> env = new HashMap<String, Object>();
 
 		parser.parse("SELECT * FROM test WHERE c=1");
 		env.clear();
@@ -331,7 +330,7 @@ public class TestSqlParser extends TestCase {
 	 */
 	public void testWhereComparisons() throws Exception {
 		SqlParser parser = new SqlParser();
-		Map env = new HashMap();
+		Map<String, Object> env = new HashMap<String, Object>();
 		env.put("C", new Integer("12"));
 
 		parser.parse("SELECT * FROM test WHERE c=1");
@@ -352,7 +351,7 @@ public class TestSqlParser extends TestCase {
 
 	public void testParsingWhereEmptyString() throws Exception {
 		SqlParser parser = new SqlParser();
-		Map env = new HashMap();
+		Map<String, Object> env = new HashMap<String, Object>();
 		env.put("C", new String(""));
 
 		parser.parse("SELECT * FROM test WHERE c=''");
@@ -361,7 +360,7 @@ public class TestSqlParser extends TestCase {
 	
 	public void testParsingWhereSingleQuoteString() throws Exception {
 		SqlParser parser = new SqlParser();
-		Map env = new HashMap();
+		Map<String, Object> env = new HashMap<String, Object>();
 		env.put("C", new String("it's"));
 
 		parser.parse("SELECT * FROM test WHERE c='it''s'");
@@ -370,7 +369,7 @@ public class TestSqlParser extends TestCase {
 	
 	public void testWhereEvaluatingIndistinguishedNumbers() throws Exception {
 		SqlParser parser = new SqlParser();
-		Map env = new HashMap();
+		Map<String, Object> env = new HashMap<String, Object>();
 
 		parser.parse("SELECT * FROM test WHERE c=1.0");
 		env.clear();
@@ -384,7 +383,7 @@ public class TestSqlParser extends TestCase {
 
 	public void testWhereEvaluatingIndistinguishedNegativeNumbers() throws Exception {
 		SqlParser parser = new SqlParser();
-		Map env = new HashMap();
+		Map<String, Object> env = new HashMap<String, Object>();
 
 		parser.parse("SELECT * FROM test WHERE c=-1.0");
 		env.clear();
@@ -471,7 +470,7 @@ public class TestSqlParser extends TestCase {
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("A+b AS result"));
 		cs.parseQueryEnvEntry();
-		Map env = new HashMap();
+		Map<String, Object> env = new HashMap<String, Object>();
 		env.put("A", new Integer(1));
 
 		env.put("B", new Integer(1));
@@ -486,7 +485,7 @@ public class TestSqlParser extends TestCase {
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("a-b AS result"));
 		cs.parseQueryEnvEntry();
-		Map env = new HashMap();
+		Map<String, Object> env = new HashMap<String, Object>();
 		env.put("A", new Integer(5));
 
 		env.put("B", new Integer(1));
@@ -514,7 +513,7 @@ public class TestSqlParser extends TestCase {
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("CURRENT_DATE AS now"));
 		cs.parseQueryEnvEntry();
-		Map env = new HashMap();
+		Map<String, Object> env = new HashMap<String, Object>();
 		env.put("@STRINGCONVERTER", new StringConverter("yyyy-mm-dd", "HH:mm:ss", "UTC"));
 
 		// Protect against unlikely situation of test running over date change at midnight.
