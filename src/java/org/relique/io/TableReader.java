@@ -26,5 +26,5 @@ public interface TableReader {
 	 * @return list of String values containing table names.
 	 * @throws SQLException if there is a problem creating table name list.
 	 */
-	public List getTableNames(Connection connection) throws SQLException;
+	public List<String> getTableNames(Connection connection) throws SQLException;
 }

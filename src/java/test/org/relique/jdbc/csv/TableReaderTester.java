@@ -24,8 +24,8 @@ public class TableReaderTester implements TableReader {
 		throw new SQLException("Table does not exist: " + tableName);
 	}
 
-	public List getTableNames(Connection connection) throws SQLException {
-		Vector v = new Vector();
+	public List<String> getTableNames(Connection connection) throws SQLException {
+		Vector<String> v = new Vector<String>();
 		v.add("AIRLINE");
 		v.add("AIRPORT");
 		return v;

@@ -70,11 +70,11 @@ public class ZipFileTableReader implements TableReader
 		}
 	}
 
-	public List getTableNames(Connection connection) throws SQLException {
-		Vector v = new Vector();
-		Enumeration en = zipFile.entries();
+	public List<String> getTableNames(Connection connection) throws SQLException {
+		Vector<String> v = new Vector<String>();
+		Enumeration<? extends ZipEntry> en = zipFile.entries();
 		while (en.hasMoreElements()) {
-			
+
 			/*
 			 * Strip file extensions.
 			 */
