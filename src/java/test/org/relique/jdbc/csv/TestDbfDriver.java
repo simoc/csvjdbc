@@ -217,11 +217,11 @@ public class TestDbfDriver extends TestCase {
 				+ filePath, props);
 		DatabaseMetaData metadata = conn.getMetaData();
 		ResultSet results = metadata.getTables(null, null, "*", null);
-    Set target = new HashSet();
+    Set<String> target = new HashSet<String>();
     target.add("sample");
     target.add("fox_samp");
 
-    Set current = new HashSet();
+    Set<String> current = new HashSet<String>();
 		assertTrue(results.next());
     current.add(results.getString("TABLE_NAME"));
 		assertTrue(results.next());
