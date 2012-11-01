@@ -51,6 +51,7 @@ public class SqlParser
    */
   private ParsedExpression whereClause;
   private List environment;
+  private List groupByColumns;
   private List orderByColumns;
 
   private int limit;
@@ -140,11 +141,19 @@ public class SqlParser
 	  if (environment.isEmpty())
 		  throw new Exception("Malformed SQL. No columns");
 
-	  Iterator it2 = cs2.orderByEntries.iterator();
+	  Iterator it2 = cs2.groupByEntries.iterator();
 	  if (it2.hasNext())
-		  orderByColumns = new ArrayList();
+		  groupByColumns = new ArrayList();
 	  while (it2.hasNext()) {
 		  ParsedExpression cc = (ParsedExpression)it2.next();
+		  groupByColumns.add(cc.content);
+	  }
+
+	  Iterator it3 = cs2.orderByEntries.iterator();
+	  if (it3.hasNext())
+		  orderByColumns = new ArrayList();
+	  while (it3.hasNext()) {
+		  ParsedExpression cc = (ParsedExpression)it3.next();
 		  OrderByEntry entry = (OrderByEntry)cc.content;
 		  int direction = entry.order.equalsIgnoreCase("ASC") ? 1 : -1;
 		  orderByColumns.add(new Object[]{Integer.valueOf(direction), entry.expression});
@@ -162,6 +171,10 @@ public class SqlParser
 
   public Expression getWhereClause() {
 	  return whereClause;
+  }
+
+  public List getGroupByColumns() {
+		return groupByColumns;
   }
 
   public List getOrderByColumns() {

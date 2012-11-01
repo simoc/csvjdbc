@@ -212,6 +212,15 @@ class SQLCountFunction extends AggregateFunction{
     this.expression = expression;
   }
   public Object eval(Map env){
+    Object o = env.get("@GROUPROWS");
+    if (o != null) {
+      /*
+       * The count is the number of rows grouped together
+       * by the GROUP BY clause.
+       */
+      List groupRows = (List)o;
+      return Integer.valueOf(groupRows.size());
+    }
     return Integer.valueOf(counter);
   }
   public String toString(){
@@ -251,6 +260,23 @@ class SQLMaxFunction extends AggregateFunction{
     this.expression = expression;
   }
   public Object eval(Map env){
+    Object o = env.get("@GROUPROWS");
+    if (o != null) {
+      /*
+       * Find the maximum from the rows grouped together
+       * by the GROUP BY clause.
+       */
+      List groupRows = (List)o;
+      Object maxInGroup = null;
+      for (int i = 0; i < groupRows.size(); i++) {
+        o = expression.eval((Map)groupRows.get(i));
+        if (o != null){
+          if (maxInGroup == null || ((Comparable)maxInGroup).compareTo(o) < 0)
+            maxInGroup = o;
+        }
+      }
+      return maxInGroup;
+    }
     return max;
   }
   public String toString(){
@@ -287,6 +313,23 @@ class SQLMinFunction extends AggregateFunction{
     this.expression = expression;
   }
   public Object eval(Map env){
+    Object o = env.get("@GROUPROWS");
+    if (o != null) {
+      /*
+       * Find the minimum from the rows grouped together
+       * by the GROUP BY clause.
+       */
+      List groupRows = (List)o;
+      Object minInGroup = null;
+      for (int i = 0; i < groupRows.size(); i++) {
+        o = expression.eval((Map)groupRows.get(i));
+        if (o != null){
+          if (minInGroup == null || ((Comparable)minInGroup).compareTo(o) > 0)
+            minInGroup = o;
+        }
+      }
+      return minInGroup;
+    }
     return min;
   }
   public String toString(){
@@ -758,16 +801,21 @@ class ParsedStatement{
   String tableName;
   String tableAlias;
   ParsedExpression whereClause;
+  List groupByEntries;
   List orderByEntries;
   int limit, offset;
   public ParsedStatement(List queryEntries, boolean isDistinct,
     String tableName, String tableAlias,
-    ParsedExpression whereClause, List orderByEntries, int limit, int offset){
+    ParsedExpression whereClause,
+    List groupByEntries,
+    List orderByEntries,
+    int limit, int offset){
     this.queryEntries = queryEntries;
     this.isDistinct = isDistinct;
     this.tableName = tableName;
     this.tableAlias = tableAlias;
     this.whereClause = whereClause;
+    this.groupByEntries = groupByEntries;
     this.orderByEntries = orderByEntries;
     this.limit = limit;
     this.offset = offset;
@@ -779,12 +827,16 @@ public class ExpressionParser{
   boolean isDistinct;
   String tableName;
   String tableAlias;
+  List groupByEntries;
   List orderByEntries;
   int limit;
   int offset;
   Date currentDate;
   public void parseLogicalExpression()throws ParseException{
     content = logicalExpression();
+  }
+  public void parseGroupByEntry()throws ParseException{
+    content = groupByEntry();
   }
   public void parseOrderByEntry()throws ParseException{
     content = orderByEntry();
@@ -801,6 +853,7 @@ public class ExpressionParser{
     tableName = parsedStatement.tableName;
     tableAlias = parsedStatement.tableAlias;
     content = parsedStatement.whereClause;
+    groupByEntries = parsedStatement.groupByEntries;
     orderByEntries = parsedStatement.orderByEntries;
     limit = parsedStatement.limit;
     offset = parsedStatement.offset;
@@ -915,6 +968,9 @@ TOKEN:{
   <WHERE:"WHERE">
 }
 TOKEN:{
+  <GROUP:"GROUP">
+}
+TOKEN:{
   <ORDER:"ORDER">
 }
 TOKEN:{
@@ -994,6 +1050,14 @@ ParsedExpression logicalExpression():{
     return new ParsedExpression(left);
   }
 }
+ParsedExpression groupByEntry():{
+  Expression left;
+}
+{
+  left = binaryOperation(){
+    return new ParsedExpression(left);
+  }
+}
 ParsedExpression orderByEntry():{
   Expression left;
   String order;
@@ -1012,6 +1076,7 @@ ParsedStatement selectStatement():{
   String tableName;
   String tableAlias;
   ParsedExpression whereClause, entry;
+  List groupByEntries;
   List orderByEntries;
   int limit, offset;
   Token t;
@@ -1023,6 +1088,7 @@ ParsedStatement selectStatement():{
     tableName = null;
     tableAlias = null;
     whereClause = null;
+    groupByEntries = new LinkedList();
     orderByEntries = new LinkedList();
     limit = -1;
     offset = 0;
@@ -1033,11 +1099,12 @@ ParsedStatement selectStatement():{
   (
     <FROM>(t=<QUOTEDTABLENAME>|t=<TABLENAME>){tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?
     (<WHERE>whereClause = logicalExpression())?
+    (<GROUP><BY>entry = groupByEntry(){groupByEntries.add(entry);}(<COMMA>entry = groupByEntry(){groupByEntries.add(entry);})*)?
     (<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?
     (<LIMIT>t=<UNSIGNEDINT>{limit = Integer.parseInt(t.image);}(<OFFSET>t=<UNSIGNEDINT>{offset = Integer.parseInt(t.image);})?)?
   )?
   <EOF>{
-    return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, orderByEntries, limit, offset);
+    return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, groupByEntries, orderByEntries, limit, offset);
   }
 }
 ParsedExpression queryEnvEntry():{

@@ -83,6 +83,8 @@ public class CsvResultSet implements ResultSet {
 
 	private Expression whereClause;
 
+	private List groupByColumns;
+
 	private List orderByColumns;
 
 	private List queryEnvironment;
@@ -167,6 +169,7 @@ public class CsvResultSet implements ResultSet {
      * @param tableName Table referenced by the Statement
      * @param typeNames Array of available columns for referenced table
      * @param whereClause expression for the SQL where clause.
+     * @param groupByColumns expressions for SQL GROUP BY clause.
      * @param orderByColumns expressions for SQL ORDER BY clause.
      * @param sqlLimit maximum number of rows set with SQL LIMIT clause.
      * @param sqlOffset number of rows to skip with SQL OFFSET clause.
@@ -177,7 +180,9 @@ public class CsvResultSet implements ResultSet {
      */
     protected CsvResultSet(CsvStatement statement, DataReader reader,
 			String tableName, List queryEnvironment, boolean isDistinct, int isScrollable, 
-			Expression whereClause, List orderByColumns,
+			Expression whereClause,
+			List groupByColumns,
+			List orderByColumns,
 			int sqlLimit, int sqlOffset,
 			String columnTypes, int skipLeadingLines) throws ClassNotFoundException, SQLException {
         this.statement = statement;
@@ -190,6 +195,10 @@ public class CsvResultSet implements ResultSet {
         this.queryEnvironment = new ArrayList(queryEnvironment);
         this.aggregateFunctions = new ArrayList();
         this.whereClause = whereClause;
+        if (groupByColumns != null)
+        	this.groupByColumns = new ArrayList(groupByColumns);
+        else
+        	this.groupByColumns = null;
         if (orderByColumns != null)
         	this.orderByColumns = new ArrayList(orderByColumns);
         else
@@ -246,6 +255,39 @@ public class CsvResultSet implements ResultSet {
 		}
 
 		/*
+		 * Replace any "group by 2" with the 2nd column in the query list.
+		 */
+		if (this.groupByColumns != null) {
+			for (int i = 0; i < this.groupByColumns.size(); i++) {
+				Expression expression = (Expression)this.groupByColumns.get(i);
+				if (expression instanceof NumericConstant) {
+					NumericConstant n = (NumericConstant)expression;
+					if (!(n.value instanceof Integer))
+						throw new SQLException("Invalid GROUP BY column: " + n);
+					int index = n.value.intValue();
+
+					/*
+					 * Column numbering in SQL starts at 1, not 0.
+					 */
+					index--;
+
+					if (index < 0 || index >= this.queryEnvironment.size()) {
+						throw new SQLException("Invalid GROUP BY column: " + (index + 1));
+					}
+					Object[] q = (Object[])this.queryEnvironment.get(index);
+					this.groupByColumns.set(i, q[1]);
+				}
+			}
+		}
+
+		if (this.groupByColumns != null) {
+			for (Object o : this.groupByColumns) {
+				Expression expr = (Expression)o;
+				this.usedColumns.addAll(expr.usedColumns());
+			}
+		}
+
+		/*
 		 * Replace any "order by 2" with the 2nd column in the query list.
 		 */
 		if (this.orderByColumns != null) {
@@ -292,7 +334,7 @@ public class CsvResultSet implements ResultSet {
 			}
 		}
 
-		if (aggregateFunctions.size() > 0) {
+		if (aggregateFunctions.size() > 0 && this.groupByColumns == null) {
 			/*
 			 * Check there is no mix of query columns and aggregate functions.
 			 */
@@ -330,13 +372,16 @@ public class CsvResultSet implements ResultSet {
         }
         
 		/*
-		 * Check that all columns used in the WHERE and ORDER BY clauses do exist in the table.
+		 * Check that all columns used in the WHERE, GROUP BY and ORDER BY clauses do exist in the table.
 		 */
 		if (!((CsvConnection)statement.getConnection()).isIndexedFiles()) {
 			for (Object usedColumn : this.usedColumns) {
 				if (!allReaderColumns.contains(usedColumn))
 					throw new SQLException("Invalid column name: " + usedColumn);
 			}
+
+			checkGroupBy();
+
 			if (this.orderByColumns != null) {
 				for (Object o : this.orderByColumns) {
 					Expression expr = (Expression)((Object [])o)[1];
@@ -351,12 +396,75 @@ public class CsvResultSet implements ResultSet {
 			}
 		}
 
-    	if (this.orderByColumns != null || this.aggregateFunctions.size() > 0 ||
+    	if (this.groupByColumns != null ||
+		this.orderByColumns != null || this.aggregateFunctions.size() > 0 ||
     		this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) {
     		bufferedRecordEnvironments = new ArrayList();
     		currentRow = 0;
     	}
-    	if (this.aggregateFunctions.size() > 0) {
+
+    	if (this.groupByColumns != null) {
+    		/*
+    		 * Read all rows and group them together based on GROUP BY expressions.
+    		 */
+    		int savedMaxRows = maxRows;
+    		int savedLimit = limit;
+    		maxRows = 0;
+    		limit = -1;
+    		ArrayList<ArrayList<Object>> groupOrder = new ArrayList<ArrayList<Object>>();
+    		HashMap<ArrayList<Object>, ArrayList<Map>> groups = new HashMap<ArrayList<Object>, ArrayList<Map>>();
+    		try {
+    			while (next()) {
+    				Map objectEnvironment = updateRecordEnvironment(true);
+    				if (converter != null)
+    					objectEnvironment.put("@STRINGCONVERTER", converter);
+    				ArrayList<Object> groupByKeys = new ArrayList<Object>(this.groupByColumns.size());
+    				for (Object o : this.groupByColumns) {
+    					Expression expr = (Expression)o;
+    					groupByKeys.add(expr.eval(objectEnvironment));
+    				}
+    				ArrayList<Map> groupByValues = groups.get(groupByKeys);
+    				if (groupByValues == null)
+    				{
+    					groupByValues = new ArrayList<Map>();
+    					groups.put(groupByKeys, groupByValues);
+    					groupOrder.add(groupByKeys);
+    				}
+    				groupByValues.add(recordEnvironment);
+    			}
+    			bufferedRecordEnvironments.clear();
+    			for (ArrayList<Object> groupByKey : groupOrder)
+    			{
+    				ArrayList<Map> values = groups.get(groupByKey);
+
+    				/*
+    				 * Create a row in the ResultSet for each group with a
+    				 * reference to all the rows in that group so we can
+    				 * later calculate any aggregate functions for each group.
+    				 */
+    				Map firstRow = new HashMap(values.get(0));
+    				firstRow.put("@GROUPROWS", values);
+    				bufferedRecordEnvironments.add(firstRow);
+    			}
+
+    			if (this.orderByColumns != null)
+    			{
+    				sortRows(sqlOffset);
+    			}
+    		} finally {
+    			maxRows = savedMaxRows;
+    			limit = savedLimit;
+    		}
+
+    		/*
+    		 * Rewind back to before the row so we can read it.
+    		 */
+    		currentRow = 0;
+    		recordEnvironment = null;
+    		updateRecordEnvironment(false);
+    		hitTail = true;
+
+    	} else if (this.aggregateFunctions.size() > 0) {
     		/*
     		 * Read all rows, evaluating the aggregate functions for each row to
     		 * produce a single row result.
@@ -407,17 +515,7 @@ public class CsvResultSet implements ResultSet {
     			maxRows = savedMaxRows;
     			limit = savedLimit;
     		}
-    		Object []allRows = bufferedRecordEnvironments.toArray();
-    		Arrays.sort(allRows, new OrderByComparator());
-    		int rowLimit = allRows.length;
-    		if (maxRows != 0 && maxRows < rowLimit)
-    			rowLimit = maxRows;
-    		if (limit >= 0 && sqlOffset + limit < rowLimit)
-    			rowLimit = sqlOffset + limit;
-
-    		bufferedRecordEnvironments.clear();
-    		for (int i = sqlOffset; i < rowLimit; i++)
-    			bufferedRecordEnvironments.add(allRows[i]);
+    		sortRows(sqlOffset);
 
     		/*
     		 * Rewind back to before first row so we can now read them in sorted order.
@@ -451,6 +549,81 @@ public class CsvResultSet implements ResultSet {
     	}
     }
 
+    /**
+     * Check that all selected and ORDER BY columns also appear in any GROUP BY clause. 
+     * @throws SQLException
+     */
+    private void checkGroupBy() throws SQLException {
+		if (this.groupByColumns != null) {
+			for (Object o : this.groupByColumns) {
+				Expression expr = (Expression)o;
+				List exprUsedColumns = expr.usedColumns();
+				if (exprUsedColumns.isEmpty()) {
+					/*
+					 * Must group by something that contains at least one column, not 'foo' or 1+1.
+					 */
+					throw new SQLException("Invalid GROUP BY column: " + expr.toString());
+				}
+			}
+			ArrayList groupingColumns = new ArrayList();
+			for (Object o : this.groupByColumns) {
+				Expression expr = (Expression)o;
+				groupingColumns.addAll(expr.usedColumns());
+			}
+			ArrayList queryEnvironmentColumns = new ArrayList();
+			for (int i = 0; i < this.queryEnvironment.size(); i++) {
+				Object[] o = (Object[]) this.queryEnvironment.get(i);
+				queryEnvironmentColumns.add(o[0].toString());
+				if (o[1] != null) {
+					Expression expr = (Expression)((Object[])o)[1];
+					for (Object o2 : expr.usedColumns()) {
+						queryEnvironmentColumns.add(o2.toString());
+					}
+				}
+			}
+			for (int i = 0; i < this.queryEnvironment.size(); i++) {
+				Object[] o = (Object[]) this.queryEnvironment.get(i);
+				queryEnvironmentColumns.add(o[0].toString());
+				if (!groupingColumns.contains(o[0])) {
+					if (o[1] != null) {
+						Expression expr = (Expression)((Object[])o)[1];
+						for (Object o2 : expr.usedColumns()) {
+							if (!groupingColumns.contains(o2.toString())) {
+								/*
+								 * GROUP BY must include all queried columns.
+								 */
+								throw new SQLException("Column not included in GROUP BY: " + o2);
+							}
+						}
+					}
+				}
+			}
+			if (this.orderByColumns != null) {
+				for (Object o : this.orderByColumns) {
+					Expression expr = (Expression)((Object [])o)[1];
+					for (Object o2 : expr.usedColumns()) {
+						if (!queryEnvironmentColumns.contains(o2.toString()))
+							throw new SQLException("ORDER BY column not included in GROUP BY: " + o2);
+					}
+				}
+			}
+		}
+    }
+
+    private void sortRows(int sqlOffset) {
+               Object []allRows = bufferedRecordEnvironments.toArray();
+               bufferedRecordEnvironments.clear();
+               Arrays.sort(allRows, new OrderByComparator());
+               int rowLimit = allRows.length;
+               if (maxRows != 0 && maxRows < rowLimit)
+                       rowLimit = maxRows;
+               if (limit >= 0 && sqlOffset + limit < rowLimit)
+                       rowLimit = sqlOffset + limit;
+
+               for (int i = sqlOffset; i < rowLimit; i++)
+                       bufferedRecordEnvironments.add(allRows[i]);
+    }
+
     private void checkOpen() throws SQLException {
     	if (isClosed)
     		throw new SQLException("ResultSet is already closed");
@@ -476,7 +649,8 @@ public class CsvResultSet implements ResultSet {
     	
     	checkOpen();
 
-    	if ((this.aggregateFunctions.size() > 0 ||
+    	if ((this.groupByColumns != null ||
+		this.aggregateFunctions.size() > 0 ||
     		this.orderByColumns != null || this.isScrollable == ResultSet.TYPE_SCROLL_SENSITIVE) &&
     		currentRow < bufferedRecordEnvironments.size()) {
     		currentRow++;
@@ -555,12 +729,21 @@ public class CsvResultSet implements ResultSet {
 				objectEnvironment.put(key, recordEnvironment.get(key));
 			}
 		}
-		
+
+		/*
+		 * Always include any group of rows so we have assembled so we can evaluate
+		 * any aggregate functions.
+		 */
+		String key = "@GROUPROWS";
+		Object groupRows = recordEnvironment.get(key);
+		if (groupRows != null)
+			objectEnvironment.put(key, groupRows);
+
 		/*
 		 * Always include the data type converter object so we can correctly
 		 * convert data types when evaluating expressions such as MYDATE > '2012-06-31'.
 		 */
-		String key = "@STRINGCONVERTER";
+		key = "@STRINGCONVERTER";
 		Object stringConverter = recordEnvironment.get(key);
 		if (stringConverter != null)
 			objectEnvironment.put(key, stringConverter);

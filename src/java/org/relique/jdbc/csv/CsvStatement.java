@@ -440,6 +440,7 @@ public class CsvStatement implements Statement {
 			resultSet = new CsvResultSet(this, reader, tableName,
 					parser.getColumns(), parser.isDistinct(),
 					this.isScrollable, parser.getWhereClause(),
+					parser.getGroupByColumns(),
 					parser.getOrderByColumns(),
 					parser.getLimit(), parser.getOffset(),
 					connection.getColumnTypes(tableName), 

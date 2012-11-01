@@ -188,6 +188,15 @@ class SQLCountFunction extends AggregateFunction{
     this.expression = expression;
   }
   public Object eval(Map env){
+    Object o = env.get("@GROUPROWS");
+    if (o != null) {
+      /*
+       * The count is the number of rows grouped together
+       * by the GROUP BY clause.
+       */
+      List groupRows = (List)o;
+      return Integer.valueOf(groupRows.size());
+    }
     return Integer.valueOf(counter);
   }
   public String toString(){
@@ -227,6 +236,23 @@ class SQLMaxFunction extends AggregateFunction{
     this.expression = expression;
   }
   public Object eval(Map env){
+    Object o = env.get("@GROUPROWS");
+    if (o != null) {
+      /*
+       * Find the maximum from the rows grouped together
+       * by the GROUP BY clause.
+       */
+      List groupRows = (List)o;
+      Object maxInGroup = null;
+      for (int i = 0; i < groupRows.size(); i++) {
+        o = expression.eval((Map)groupRows.get(i));
+        if (o != null){
+          if (maxInGroup == null || ((Comparable)maxInGroup).compareTo(o) < 0)
+            maxInGroup = o;
+        }
+      }
+      return maxInGroup;
+    }
     return max;
   }
   public String toString(){
@@ -263,6 +289,23 @@ class SQLMinFunction extends AggregateFunction{
     this.expression = expression;
   }
   public Object eval(Map env){
+    Object o = env.get("@GROUPROWS");
+    if (o != null) {
+      /*
+       * Find the minimum from the rows grouped together
+       * by the GROUP BY clause.
+       */
+      List groupRows = (List)o;
+      Object minInGroup = null;
+      for (int i = 0; i < groupRows.size(); i++) {
+        o = expression.eval((Map)groupRows.get(i));
+        if (o != null){
+          if (minInGroup == null || ((Comparable)minInGroup).compareTo(o) > 0)
+            minInGroup = o;
+        }
+      }
+      return minInGroup;
+    }
     return min;
   }
   public String toString(){
@@ -734,16 +777,21 @@ class ParsedStatement{
   String tableName;
   String tableAlias;
   ParsedExpression whereClause;
+  List groupByEntries;
   List orderByEntries;
   int limit, offset;
   public ParsedStatement(List queryEntries, boolean isDistinct,
     String tableName, String tableAlias,
-    ParsedExpression whereClause, List orderByEntries, int limit, int offset){
+    ParsedExpression whereClause,
+    List groupByEntries,
+    List orderByEntries,
+    int limit, int offset){
     this.queryEntries = queryEntries;
     this.isDistinct = isDistinct;
     this.tableName = tableName;
     this.tableAlias = tableAlias;
     this.whereClause = whereClause;
+    this.groupByEntries = groupByEntries;
     this.orderByEntries = orderByEntries;
     this.limit = limit;
     this.offset = offset;
@@ -755,12 +803,16 @@ public class ExpressionParser implements ExpressionParserConstants {
   boolean isDistinct;
   String tableName;
   String tableAlias;
+  List groupByEntries;
   List orderByEntries;
   int limit;
   int offset;
   Date currentDate;
   public void parseLogicalExpression()throws ParseException{
     content = logicalExpression();
+  }
+  public void parseGroupByEntry()throws ParseException{
+    content = groupByEntry();
   }
   public void parseOrderByEntry()throws ParseException{
     content = orderByEntry();
@@ -777,6 +829,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     tableName = parsedStatement.tableName;
     tableAlias = parsedStatement.tableAlias;
     content = parsedStatement.whereClause;
+    groupByEntries = parsedStatement.groupByEntries;
     orderByEntries = parsedStatement.orderByEntries;
     limit = parsedStatement.limit;
     offset = parsedStatement.offset;
@@ -799,6 +852,13 @@ public class ExpressionParser implements ExpressionParserConstants {
   final public ParsedExpression logicalExpression() throws ParseException {
   LogicalExpression left;
     left = logicalOrExpression();
+    {if (true) return new ParsedExpression(left);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public ParsedExpression groupByEntry() throws ParseException {
+  Expression left;
+    left = binaryOperation();
     {if (true) return new ParsedExpression(left);}
     throw new Error("Missing return statement in function");
   }
@@ -842,6 +902,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   String tableName;
   String tableAlias;
   ParsedExpression whereClause, entry;
+  List groupByEntries;
   List orderByEntries;
   int limit, offset;
   Token t;
@@ -850,6 +911,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     tableName = null;
     tableAlias = null;
     whereClause = null;
+    groupByEntries = new LinkedList();
     orderByEntries = new LinkedList();
     limit = -1;
     offset = 0;
@@ -923,11 +985,11 @@ public class ExpressionParser implements ExpressionParserConstants {
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case ORDER:
-        jj_consume_token(ORDER);
+      case GROUP:
+        jj_consume_token(GROUP);
         jj_consume_token(BY);
-        entry = orderByEntry();
-                                       orderByEntries.add(entry);
+        entry = groupByEntry();
+                                       groupByEntries.add(entry);
         label_2:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -939,12 +1001,37 @@ public class ExpressionParser implements ExpressionParserConstants {
             break label_2;
           }
           jj_consume_token(COMMA);
+          entry = groupByEntry();
+                                                                                                 groupByEntries.add(entry);
+        }
+        break;
+      default:
+        jj_la1[9] = jj_gen;
+        ;
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ORDER:
+        jj_consume_token(ORDER);
+        jj_consume_token(BY);
+        entry = orderByEntry();
+                                       orderByEntries.add(entry);
+        label_3:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case COMMA:
+            ;
+            break;
+          default:
+            jj_la1[10] = jj_gen;
+            break label_3;
+          }
+          jj_consume_token(COMMA);
           entry = orderByEntry();
                                                                                                  orderByEntries.add(entry);
         }
         break;
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[11] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -959,21 +1046,21 @@ public class ExpressionParser implements ExpressionParserConstants {
                                                                                         offset = Integer.parseInt(t.image);
           break;
         default:
-          jj_la1[10] = jj_gen;
+          jj_la1[12] = jj_gen;
           ;
         }
         break;
       default:
-        jj_la1[11] = jj_gen;
+        jj_la1[13] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[12] = jj_gen;
+      jj_la1[14] = jj_gen;
       ;
     }
     jj_consume_token(0);
-    {if (true) return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, orderByEntries, limit, offset);}
+    {if (true) return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, groupByEntries, orderByEntries, limit, offset);}
     throw new Error("Missing return statement in function");
   }
 
@@ -1006,13 +1093,13 @@ public class ExpressionParser implements ExpressionParserConstants {
           jj_consume_token(AS);
           break;
         default:
-          jj_la1[13] = jj_gen;
+          jj_la1[15] = jj_gen;
           ;
         }
         alias = columnName();
         break;
       default:
-        jj_la1[14] = jj_gen;
+        jj_la1[16] = jj_gen;
         ;
       }
     if (alias != null)
@@ -1033,7 +1120,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         t = jj_consume_token(NAMEASTERISK);
         break;
       default:
-        jj_la1[15] = jj_gen;
+        jj_la1[17] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1041,7 +1128,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       {if (true) return new ParsedExpression(new QueryEnvEntry(t.image, asterisk));}
       break;
     default:
-      jj_la1[16] = jj_gen;
+      jj_la1[18] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1051,15 +1138,15 @@ public class ExpressionParser implements ExpressionParserConstants {
   final public LogicalExpression logicalOrExpression() throws ParseException {
   LogicalExpression left, right;
     left = logicalAndExpression();
-    label_3:
+    label_4:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case OR:
         ;
         break;
       default:
-        jj_la1[17] = jj_gen;
-        break label_3;
+        jj_la1[19] = jj_gen;
+        break label_4;
       }
       jj_consume_token(OR);
       right = logicalAndExpression();
@@ -1072,15 +1159,15 @@ public class ExpressionParser implements ExpressionParserConstants {
   final public LogicalExpression logicalAndExpression() throws ParseException {
   LogicalExpression left, right;
     left = logicalUnaryExpression();
-    label_4:
+    label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case AND:
         ;
         break;
       default:
-        jj_la1[18] = jj_gen;
-        break label_4;
+        jj_la1[20] = jj_gen;
+        break label_5;
       }
       jj_consume_token(AND);
       right = logicalUnaryExpression();
@@ -1122,7 +1209,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     {if (true) return arg;}
       break;
     default:
-      jj_la1[19] = jj_gen;
+      jj_la1[21] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1158,7 +1245,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     {if (true) return new LikeExpression(arg1, new StringConstant(t.image.substring(1, t.image.length()-1)));}
       break;
     default:
-      jj_la1[20] = jj_gen;
+      jj_la1[22] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1182,7 +1269,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       t = jj_consume_token(MINUS);
       break;
     default:
-      jj_la1[21] = jj_gen;
+      jj_la1[23] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1200,7 +1287,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       t = jj_consume_token(DIVIDE);
       break;
     default:
-      jj_la1[22] = jj_gen;
+      jj_la1[24] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1235,7 +1322,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     {if (true) return arg;}
       break;
     default:
-      jj_la1[23] = jj_gen;
+      jj_la1[25] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1246,7 +1333,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   Expression left, right;
   char op;
     left = multiplyOperation();
-    label_5:
+    label_6:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case MINUS:
@@ -1254,8 +1341,8 @@ public class ExpressionParser implements ExpressionParserConstants {
         ;
         break;
       default:
-        jj_la1[24] = jj_gen;
-        break label_5;
+        jj_la1[26] = jj_gen;
+        break label_6;
       }
       op = binAddOp();
       right = multiplyOperation();
@@ -1269,7 +1356,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   Expression left, right;
   char op;
     left = simpleExpression();
-    label_6:
+    label_7:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case ASTERISK:
@@ -1277,8 +1364,8 @@ public class ExpressionParser implements ExpressionParserConstants {
         ;
         break;
       default:
-        jj_la1[25] = jj_gen;
-        break label_6;
+        jj_la1[27] = jj_gen;
+        break label_7;
       }
       op = binMultiplyOp();
       right = simpleExpression();
@@ -1367,7 +1454,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     {if (true) return new Placeholder();}
       break;
     default:
-      jj_la1[26] = jj_gen;
+      jj_la1[28] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1391,7 +1478,7 @@ public class ExpressionParser implements ExpressionParserConstants {
              sign=t.image;
       break;
     default:
-      jj_la1[27] = jj_gen;
+      jj_la1[29] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1402,7 +1489,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       t = jj_consume_token(UNSIGNEDINT);
       break;
     default:
-      jj_la1[28] = jj_gen;
+      jj_la1[30] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1420,15 +1507,15 @@ public class ExpressionParser implements ExpressionParserConstants {
   final public Expression stringConstant() throws ParseException {
   String left, right;
     left = stringConstantAtom();
-    label_7:
+    label_8:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case STRING:
         ;
         break;
       default:
-        jj_la1[29] = jj_gen;
-        break label_7;
+        jj_la1[31] = jj_gen;
+        break label_8;
       }
       right = stringConstantAtom();
     left = left+"'"+right;
@@ -1453,7 +1540,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[30];
+  final private int[] jj_la1 = new int[32];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -1461,10 +1548,10 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0xc00000,0xc00000,0x40,0x80,0x0,0x40000,0x40000,0x80000000,0x80,0x0,0x0,0x0,0x40000000,0x40000,0x40000,0x0,0x3f203300,0x8000,0x4000,0x3f213300,0x1a0000,0x0,0x0,0x3f203300,0x0,0x0,0x3f203300,0x0,0x300,0x0,};
+      jj_la1_0 = new int[] {0xc00000,0xc00000,0x40,0x80,0x0,0x40000,0x40000,0x80000000,0x80,0x0,0x80,0x0,0x0,0x0,0x40000000,0x40000,0x40000,0x0,0x3f203300,0x8000,0x4000,0x3f213300,0x1a0000,0x0,0x0,0x3f203300,0x0,0x0,0x3f203300,0x0,0x300,0x0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0xc0000,0x0,0x10,0x0,0x0,0x1,0x8,0x4,0x0,0x0,0x10,0x180,0x13b0,0x0,0x0,0x1230,0x40,0x600,0x880,0x12b0,0x600,0x880,0x1230,0x200,0x0,0x20,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x180000,0x0,0x20,0x0,0x0,0x1,0x0,0x2,0x10,0x8,0x0,0x0,0x20,0x300,0x2760,0x0,0x0,0x2460,0x80,0xc00,0x1100,0x2560,0xc00,0x1100,0x2460,0x400,0x0,0x40,};
    }
 
   /** Constructor with InputStream. */
@@ -1478,7 +1565,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 32; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1492,7 +1579,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 32; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -1502,7 +1589,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 32; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1512,7 +1599,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 32; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -1521,7 +1608,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 32; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1530,7 +1617,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 32; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -1581,12 +1668,12 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[53];
+    boolean[] la1tokens = new boolean[54];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 30; i++) {
+    for (int i = 0; i < 32; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -1598,7 +1685,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 53; i++) {
+    for (int i = 0; i < 54; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
