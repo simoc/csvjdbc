@@ -95,7 +95,7 @@ public class TestAggregateFunctions extends TestCase {
 		Statement stmt = conn.createStatement();
 
 		try {
-			ResultSet results = stmt.executeQuery("SELECT count(XXXX) FROM sample");
+			stmt.executeQuery("SELECT count(XXXX) FROM sample");
 			fail("Should raise a java.sqlSQLException");
 		} catch (SQLException e) {
 			assertEquals("java.sql.SQLException: Invalid column name: XXXX", "" + e);
@@ -108,7 +108,7 @@ public class TestAggregateFunctions extends TestCase {
 		Statement stmt = conn.createStatement();
 
 		try {
-			ResultSet results = stmt.executeQuery("SELECT ID, count(ID) FROM sample");
+			stmt.executeQuery("SELECT ID, count(ID) FROM sample");
 			fail("Should raise a java.sqlSQLException");
 		} catch (SQLException e) {
 			assertEquals("java.sql.SQLException: Query columns cannot be combined with aggregate functions", "" + e);
@@ -151,7 +151,7 @@ public class TestAggregateFunctions extends TestCase {
 		Statement stmt = conn.createStatement();
 
 		try {
-			ResultSet results = stmt.executeQuery("SELECT * FROM sample where count(*)=1");
+			stmt.executeQuery("SELECT * FROM sample where count(*)=1");
 			fail("Should raise a java.sqlSQLException");
 		} catch (SQLException e) {
 			assertEquals("java.sql.SQLException: Aggregate functions not allowed in WHERE clause", "" + e);
