@@ -354,7 +354,7 @@ public class CsvStatement implements Statement {
 			 */
 			String []columnNames = new String[0];
 			String []columnTypes = new String[0];
-			ArrayList rows = new ArrayList();
+			ArrayList<Object []> rows = new ArrayList<Object []>();
 			rows.add(new Object[0]);
 			reader = new ListDataReader(columnNames, columnTypes, rows);
 		} else {
@@ -622,12 +622,12 @@ public class CsvStatement implements Statement {
 
 	}
 
-	public boolean isWrapperFor(Class arg0) throws SQLException {
+	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public Object unwrap(Class arg0) throws SQLException {
+	public <T> T unwrap(Class<T> arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}

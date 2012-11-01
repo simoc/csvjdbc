@@ -80,7 +80,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	{
 		String columnNames = "SCOPE,COLUMN_NAME,DATA_TYPE,TYPE_NAME,COLUMN_SIZE,BUFFER_LENGTH,DECIMAL_DIGITS,PSEUDO_COLUMN";
 		String columnTypes = "Short,String,Integer,String,Integer,Integer,Short,Short";
-		ArrayList columnValues = new ArrayList();
+		ArrayList<Object []> columnValues = new ArrayList<Object []>();
 		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
 		return retval;
 	}
@@ -89,7 +89,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	{
 		String columnNames = "TABLE_CAT";
 		String columnTypes = "String";
-		ArrayList columnValues = new ArrayList();
+		ArrayList<Object []> columnValues = new ArrayList<Object []>();
 		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
 		return retval;
 	}
@@ -116,7 +116,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 			"ORDINAL_POSITION,IS_NULLABLE,SCOPE_CATLOG,SCOPE_SCHEMA,SCOPE_TABLE,SOURCE_DATA_TYPE,IS_AUTOINCREMENT";
 		String columnTypes = "String,String,String,String,Integer,String,Integer,Integer,Integer,Integer,Integer," +
 			"String,String,Integer,Integer,Integer,Integer,String,String,String,String,Short,String";
-		ArrayList columnValues = new ArrayList();
+		ArrayList<Object []> columnValues = new ArrayList<Object []>();
 		ResultSet resultSet = null;
 		try
 		{
@@ -214,7 +214,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		String columnNames = "PKTABLE_CAT,PKTABLE_SCHEM,PKTABLE_NAME,PKCOLUMN_NAME,FKTABLE_CAT,FKTABLE_SCHEM," +
 			"FKTABLE_NAME,FKCOLUMN_NAME,KEY_SEQ,UPDATE_RULE,DELETE_RULE,FK_NAME,PK_NAME,DEFERRABILITY";
 		String columnTypes = "String,String,String,String,String,String,String,String,Short,Short,Short,String,String,Short";
-		ArrayList columnValues = new ArrayList();
+		ArrayList<Object []> columnValues = new ArrayList<Object []>();
 		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
 		return retval;
 	}
@@ -239,7 +239,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		String columnNames = "TABLE_CAT,TABLE_SCHEM,TABLE_NAME,NON_UNIQUE,INDEX_QUALIFIER,INDEX_NAME,TYPE," +
 			"ORDINAL_POSITION,COLUMN_NAME,ASC_OR_DESC,CARDINALITY,PAGES,FILTER_CONDITION";
 		String columnTypes = "String,String,String,Boolean,String,String,Short,Short,String,String,Integer,Integer,String";
-		ArrayList columnValues = new ArrayList();
+		ArrayList<Object []> columnValues = new ArrayList<Object []>();
 		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
 		return retval;
 	}
@@ -363,7 +363,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	{
 		String columnNames = "TABLE_CAT,TABLE_SCHEM,TABLE_NAME,COLUMN_NAME,KEY_SEQ,PK_NAME";
 		String columnTypes = "String,String,String,String,Short,String";
-		ArrayList columnValues = new ArrayList();
+		ArrayList<Object []> columnValues = new ArrayList<Object []>();
 		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
 		return retval;
 	}
@@ -377,7 +377,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	{
 		String columnNames = "PROCEDURE_CAT,PROCEDURE_SCHEM,PROCEDURE_NAME,reserved4,reserved5,reserved6,REMARKS,PROCEDURE_TYPE,SPECIFIC_NAME";
 		String columnTypes = "String,String,String,String,String,String,String,Short,String";
-		ArrayList columnValues = new ArrayList();
+		ArrayList<Object []> columnValues = new ArrayList<Object []>();
 		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
 		return retval;
 	}
@@ -397,7 +397,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		String columnNames = "TABLE_SCHEM,TABLE_CATALOG";
 		String columnTypes = "String,String";
 		Object []data = new Object[]{SCHEMA_NAME, null};
-		ArrayList columnValues = new ArrayList();
+		ArrayList<Object []> columnValues = new ArrayList<Object []>();
 		columnValues.add(data);
 		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
 		return retval;
@@ -447,7 +447,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	{
 		String columnNames = "TABLE_CAT,TABLE_SCHEM,TABLE_NAME,GRANTOR,GRANTEE,PRIVILEGE,IS_GRANTABLE";
 		String columnTypes = "String,String,String,String,String,String,String";
-		ArrayList columnValues = new ArrayList();
+		ArrayList<Object []> columnValues = new ArrayList<Object []>();
 		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
 		return retval;
 	}
@@ -457,8 +457,8 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		String columnNames = "TABLE_CAT,TABLE_SCHEM,TABLE_NAME,TABLE_TYPE," +
 				"REMARKS,TYPE_CAT,TYPE_SCHEM,TYPE_NAME,SELF_REFERENCING_COL_NAME,REF_GENERATION";
 		String columnTypes = "String,String,String,String,String,String,String,String,String,String";
-		List tableNames = ((CsvConnection)createdByConnection).getTableNames();
-		ArrayList columnValues = new ArrayList(tableNames.size());
+		List<String> tableNames = ((CsvConnection)createdByConnection).getTableNames();
+		ArrayList<Object []> columnValues = new ArrayList<Object []>(tableNames.size());
 		for (int i = 0; i < tableNames.size(); i++)
 		{
 			Object []data = new Object[]{null, SCHEMA_NAME, tableNames.get(i), "TABLE", "", null, null, null, null, null};
@@ -468,11 +468,11 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		return retval;
 	}
 
-	private ResultSet createResultSet(String columnNames, String columnTypes, List columnValues)
+	private ResultSet createResultSet(String columnNames, String columnTypes, List<Object []> columnValues)
 			throws SQLException
 	{
 		ListDataReader reader = new ListDataReader(columnNames.split(","), columnTypes.split(","), columnValues);
-		ArrayList queryEnvironment = new ArrayList();
+		ArrayList<Object []> queryEnvironment = new ArrayList<Object []>();
 		queryEnvironment.add(new Object[]{"*", new AsteriskExpression("*")});
 		ResultSet retval = null;
 
@@ -495,7 +495,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		String columnNames = "TABLE_TYPE";
 		String columnTypes = "String";
 		Object []data = new Object[]{"TABLE"};
-		ArrayList columnValues = new ArrayList();
+		ArrayList<Object []> columnValues = new ArrayList<Object []>();
 		columnValues.add(data);
 		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
 		return retval;
@@ -513,7 +513,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 			"LOCAL_TYPE_NAME,MINIMUM_SCALE,MAXIMUM_SCALE,SQL_DATA_TYPE,SQL_DATETIME_SUB,NUM_PREC_RADIX";
 		String columnTypes = "String,Integer,Integer,String,String,String,Short,Boolean,Short," +
 			"Boolean,Boolean,Boolean,String,Short,Short,Integer,Integer,Integer";
-		List columnValues = StringConverter.getTypeInfo();
+		List<Object []> columnValues = StringConverter.getTypeInfo();
 		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
 		return retval;
 	}
@@ -522,7 +522,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	{
 		String columnNames = "TYPE_CAT,TYPE_SCHEM,TYPE_NAME,CLASS_NAME,DATA_TYPE,REMARKS,BASE_TYPE";
 		String columnTypes = "String,String,String,String,Integer,String,Short";
-		ArrayList columnValues = new ArrayList();
+		ArrayList<Object []> columnValues = new ArrayList<Object []>();
 		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
 		return retval;
 	}
@@ -1036,12 +1036,12 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		return false;
 	}
 
-	public boolean isWrapperFor(Class arg0) throws SQLException {
+	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public Object unwrap(Class arg0) throws SQLException {
+	public <T> T unwrap(Class<T> arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
