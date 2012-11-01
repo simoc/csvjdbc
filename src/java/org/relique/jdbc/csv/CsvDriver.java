@@ -194,12 +194,12 @@ public class CsvDriver implements Driver
     	String className = filePath.substring(READER_CLASS_PREFIX.length());
     	try
     	{
-    		Class clazz = Class.forName(className);
+    		Class<?> clazz = Class.forName(className);
 
     		/*
     		 * Check that class implements our interface.
     		 */
-    		Class []interfaces = clazz.getInterfaces();
+    		Class<?> []interfaces = clazz.getInterfaces();
     		boolean isInterfaceImplemented = false;
     		for (int i = 0; i < interfaces.length && (!isInterfaceImplemented); i++)
     		{

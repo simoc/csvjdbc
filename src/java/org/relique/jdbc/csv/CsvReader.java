@@ -16,7 +16,7 @@ public class CsvReader extends DataReader {
 	private int transposedFieldsToSkip;
 	String[] columnNames;
 	private String[] columnTypes;
-	Vector firstTable;
+	Vector<String []> firstTable;
 	int joiningValueNo;
 	int valuesToJoin;
 	String[] joiningValues;
@@ -36,7 +36,7 @@ public class CsvReader extends DataReader {
 		columnTypes = null;
 		
 		if(!this.isPlainReader()) {
-			firstTable = new Vector();
+			firstTable = new Vector<String []>();
 			joiningValueNo = 0;
 			joiningValues = null;
 			try {
@@ -95,7 +95,7 @@ public class CsvReader extends DataReader {
 				joiningValueNo = 0;
 			}
 			for(int i=0; i<transposedLines; i++) {
-				fieldValues[i] = ((String[])firstTable.get(i))[joiningValueNo + getTransposedFieldsToSkip()];
+				fieldValues[i] = firstTable.get(i)[joiningValueNo + getTransposedFieldsToSkip()];
 			}
 			for(int i=transposedLines; i<columnNames.length-1; i++) {
 				fieldValues[i] = joiningValues[i-transposedLines]; 
@@ -126,8 +126,8 @@ public class CsvReader extends DataReader {
 		rawReader.close();
 	}
 
-	public Map getEnvironment() throws SQLException {
-		Map result = new HashMap();
+	public Map<String, Object> getEnvironment() throws SQLException {
+		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("@STRINGCONVERTER", converter);
 		if(fieldValues.length != getColumnNames().length)
 			throw new SQLException("data contains " + fieldValues.length + " columns, expected " + getColumnNames().length);
