@@ -62,7 +62,7 @@ public class CsvRawReader {
 	private boolean ignoreUnparseableLines;
 	protected CryptoFilter filter;
 	private String quoteStyle;
-	private ArrayList fixedWidthColumns;
+	private ArrayList<int []> fixedWidthColumns;
 
 	/**
 	 * Insert the method's description here.
@@ -93,7 +93,7 @@ public class CsvRawReader {
 			String headerLine, String extension, boolean trimHeaders, 
 			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter, 
 			boolean defectiveHeaders, int skipLeadingDataLines, String quoteStyle,
-			ArrayList fixedWidthColumns)
+			ArrayList<int []> fixedWidthColumns)
 			throws IOException, SQLException {
 		this.tableAlias = tableAlias;
 		this.separator = separator;
@@ -135,7 +135,7 @@ public class CsvRawReader {
 			// some column names may be missing and should be corrected
 			if (defectiveHeaders)
 				fixDefectiveHeaders();
-			Set uniqueNames = new HashSet();
+			Set<String> uniqueNames = new HashSet<String>();
 			for (int i = 0; i < this.columnNames.length; i++)
 				uniqueNames.add(this.columnNames[i]);
 			if (uniqueNames.size() != this.columnNames.length)
@@ -321,7 +321,7 @@ public class CsvRawReader {
 	private String[] parseCsvLine(String line, boolean trimValues)
 			throws SQLException {
 		// TODO: quoteChar should be recognized ONLY when close to separator. 
-		Vector values = new Vector();
+		Vector<String> values = new Vector<String>();
 		boolean inQuotedString = false;
 		StringBuffer value = new StringBuffer(32);
 		String orgLine = line;

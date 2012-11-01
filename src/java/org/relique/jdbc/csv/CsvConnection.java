@@ -1360,7 +1360,7 @@ public class CsvConnection implements Connection {
 			/*
 			 * Get list of table names from user-provided class.
 			 */
-			List list = tableReader.getTableNames(this);
+			List<String> list = tableReader.getTableNames(this);
 			if (list != null)
 				tableNames = list;
 		}
