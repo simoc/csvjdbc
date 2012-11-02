@@ -50,9 +50,9 @@ public class SqlParser
    * @since
    */
   private ParsedExpression whereClause;
-  private List environment;
-  private List groupByColumns;
-  private List orderByColumns;
+  private List<Object []> environment;
+  private List<Expression> groupByColumns;
+  private List<Object []> orderByColumns;
 
   private int limit;
   private int offset;
@@ -95,7 +95,7 @@ public class SqlParser
    * @return    The columnNames value
    * @since
    */
-  public List getColumns()
+  public List<Object []> getColumns()
   {
     return environment;
   }
@@ -113,12 +113,12 @@ public class SqlParser
 
 	  sql = sql.trim();
 
-	  environment = new ArrayList();
+	  environment = new ArrayList<Object []>();
 
 	  // parse the SQL statement
 	  ExpressionParser cs2 = new ExpressionParser(new StringReader(sql));
 	  cs2.parseSelectStatement();
-	  
+
 	  this.isDistinct = cs2.isDistinct;
 	  this.tableName = cs2.tableName;
 	  this.tableAlias = cs2.tableAlias;
@@ -126,7 +126,7 @@ public class SqlParser
 	  this.limit = cs2.limit;
 	  this.offset = cs2.offset;
 
-	  Iterator it = cs2.queryEntries.iterator();
+	  Iterator<ParsedExpression> it = cs2.queryEntries.iterator();
 	  while (it.hasNext()) {
 		  ParsedExpression parsedExpression = (ParsedExpression)it.next();
 		  if (parsedExpression != null) {
@@ -141,19 +141,19 @@ public class SqlParser
 	  if (environment.isEmpty())
 		  throw new Exception("Malformed SQL. No columns");
 
-	  Iterator it2 = cs2.groupByEntries.iterator();
+	  Iterator<ParsedExpression> it2 = cs2.groupByEntries.iterator();
 	  if (it2.hasNext())
-		  groupByColumns = new ArrayList();
+		  groupByColumns = new ArrayList<Expression>();
 	  while (it2.hasNext()) {
-		  ParsedExpression cc = (ParsedExpression)it2.next();
+		  ParsedExpression cc = it2.next();
 		  groupByColumns.add(cc.content);
 	  }
 
-	  Iterator it3 = cs2.orderByEntries.iterator();
+	  Iterator<ParsedExpression> it3 = cs2.orderByEntries.iterator();
 	  if (it3.hasNext())
-		  orderByColumns = new ArrayList();
+		  orderByColumns = new ArrayList<Object []>();
 	  while (it3.hasNext()) {
-		  ParsedExpression cc = (ParsedExpression)it3.next();
+		  ParsedExpression cc = it3.next();
 		  OrderByEntry entry = (OrderByEntry)cc.content;
 		  int direction = entry.order.equalsIgnoreCase("ASC") ? 1 : -1;
 		  orderByColumns.add(new Object[]{Integer.valueOf(direction), entry.expression});
@@ -173,11 +173,11 @@ public class SqlParser
 	  return whereClause;
   }
 
-  public List getGroupByColumns() {
+  public List<Expression> getGroupByColumns() {
 		return groupByColumns;
   }
 
-  public List getOrderByColumns() {
+  public List<Object []> getOrderByColumns() {
 		return orderByColumns;
   }
 

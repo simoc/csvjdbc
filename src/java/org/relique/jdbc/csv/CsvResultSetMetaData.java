@@ -246,7 +246,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 		return tableName;
 	}
 
-	private Map typeNameToTypeCode = new HashMap() {
+	private Map<String, Integer> typeNameToTypeCode = new HashMap<String, Integer>() {
 		private static final long serialVersionUID = -8819579540085202365L;
 
 		{
@@ -307,12 +307,12 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 		return false;
 	}
 
-	public boolean isWrapperFor(Class arg0) throws SQLException {
+	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public Object unwrap(Class arg0) throws SQLException {
+	public <T> T unwrap(Class<T> arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
