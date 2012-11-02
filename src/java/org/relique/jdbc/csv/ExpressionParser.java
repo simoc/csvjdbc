@@ -22,8 +22,8 @@ class NumericConstant extends Expression{
   public String toString(){
     return value.toString();
   }
-  public List usedColumns(){
-    return new LinkedList();
+  public List<String> usedColumns(){
+    return new LinkedList<String>();
   }
 }
 class StringConstant extends Expression{
@@ -37,8 +37,8 @@ class StringConstant extends Expression{
   public String toString(){
     return "'"+value+"'";
   }
-  public List usedColumns(){
-    return new LinkedList();
+  public List<String> usedColumns(){
+    return new LinkedList<String>();
   }
 }
 class NullConstant extends Expression{
@@ -48,8 +48,8 @@ class NullConstant extends Expression{
   public String toString(){
     return "null";
   }
-  public List usedColumns(){
-    return new LinkedList();
+  public List<String> usedColumns(){
+    return new LinkedList<String>();
   }
 }
 class CurrentDateConstant extends Expression{
@@ -63,8 +63,8 @@ class CurrentDateConstant extends Expression{
   public String toString(){
     return "CURRENT_DATE";
   }
-  public List usedColumns(){
-    return new LinkedList();
+  public List<String> usedColumns(){
+    return new LinkedList<String>();
   }
 }
 class Placeholder extends Expression{
@@ -80,8 +80,8 @@ class Placeholder extends Expression{
   public String toString(){
     return "?";
   }
-  public List usedColumns(){
-    return new LinkedList();
+  public List<String> usedColumns(){
+    return new LinkedList<String>();
   }
 }
 class ColumnName extends Expression{
@@ -95,8 +95,8 @@ class ColumnName extends Expression{
   public String toString(){
     return "["+columnName+"]";
   }
-  public List usedColumns(){
-    List result = new LinkedList();
+  public List<String> usedColumns(){
+    List<String> result = new LinkedList<String>();
     result.add(columnName);
     return result;
   }
@@ -115,8 +115,8 @@ class SQLLowerFunction extends Expression{
   public String toString(){
     return "LOWER("+expression+")";
   }
-  public List usedColumns(){
-    List result = new LinkedList();
+  public List<String> usedColumns(){
+    List<String> result = new LinkedList<String>();
     result.addAll(expression.usedColumns());
     return result;
   }
@@ -151,8 +151,8 @@ class SQLRoundFunction extends Expression{
   public String toString(){
     return "ROUND("+expression+")";
   }
-  public List usedColumns(){
-    List result = new LinkedList();
+  public List<String> usedColumns(){
+    List<String> result = new LinkedList<String>();
     result.addAll(expression.usedColumns());
     return result;
   }
@@ -171,8 +171,8 @@ class SQLUpperFunction extends Expression{
   public String toString(){
     return "UPPER("+expression+")";
   }
-  public List usedColumns(){
-    List result = new LinkedList();
+  public List<String> usedColumns(){
+    List<String> result = new LinkedList<String>();
     result.addAll(expression.usedColumns());
     return result;
   }
@@ -202,8 +202,8 @@ class SQLCountFunction extends AggregateFunction{
   public String toString(){
     return "COUNT("+expression+")";
   }
-  public List usedColumns(){
-    return new LinkedList();
+  public List<String> usedColumns(){
+    return new LinkedList<String>();
   }
   public List aggregateColumns(){
     List result = new LinkedList();
@@ -258,8 +258,8 @@ class SQLMaxFunction extends AggregateFunction{
   public String toString(){
     return "MAX("+expression+")";
   }
-  public List usedColumns(){
-    return new LinkedList();
+  public List<String> usedColumns(){
+    return new LinkedList<String>();
   }
   public List aggregateColumns(){
     List result = new LinkedList();
@@ -311,8 +311,8 @@ class SQLMinFunction extends AggregateFunction{
   public String toString(){
     return "MIN("+expression+")";
   }
-  public List usedColumns(){
-    return new LinkedList();
+  public List<String> usedColumns(){
+    return new LinkedList<String>();
   }
   public List aggregateColumns(){
     List result = new LinkedList();
@@ -463,8 +463,8 @@ class BinaryOperation extends Expression{
   public String toString(){
     return ""+op+" "+left+" "+right;
   }
-  public List usedColumns(){
-    List result = new LinkedList();
+  public List<String> usedColumns(){
+    List<String> result = new LinkedList<String>();
     result.addAll(left.usedColumns());
     result.addAll(right.usedColumns());
     return result;
@@ -509,7 +509,7 @@ class ParsedExpression extends LogicalExpression{
   public String toString(){
     return content.toString();
   }
-  public List usedColumns(){
+  public List<String> usedColumns(){
     return content.usedColumns();
   }
   public List aggregateFunctions(){
@@ -535,7 +535,7 @@ class NotExpression extends LogicalExpression{
   public String toString(){
     return "NOT "+content;
   }
-  public List usedColumns(){
+  public List<String> usedColumns(){
     return content.usedColumns();
   }
   public List aggregateFunctions(){
@@ -554,8 +554,8 @@ class OrExpression extends LogicalExpression{
   public String toString(){
     return "OR "+left+" "+right;
   }
-  public List usedColumns(){
-    List result = new LinkedList();
+  public List<String> usedColumns(){
+    List<String> result = new LinkedList<String>();
     result.addAll(left.usedColumns());
     result.addAll(right.usedColumns());
     return result;
@@ -579,8 +579,8 @@ class AndExpression extends LogicalExpression{
   public String toString(){
     return "AND "+left+" "+right;
   }
-  public List usedColumns(){
-    List result = new LinkedList();
+  public List<String> usedColumns(){
+    List<String> result = new LinkedList<String>();
     result.addAll(left.usedColumns());
     result.addAll(right.usedColumns());
     return result;
@@ -653,8 +653,8 @@ class RelopExpression extends LogicalExpression{
   public String toString(){
     return op+" "+left+" "+right;
   }
-  public List usedColumns(){
-    List result = new LinkedList();
+  public List<String> usedColumns(){
+    List<String> result = new LinkedList<String>();
     result.addAll(left.usedColumns());
     result.addAll(right.usedColumns());
     return result;
@@ -687,8 +687,8 @@ class BetweenExpression extends LogicalExpression{
   public String toString(){
     return "B "+obj+" "+left+" "+right;
   }
-  public List usedColumns(){
-    List result = new LinkedList();
+  public List<String> usedColumns(){
+    List<String> result = new LinkedList<String>();
     result.addAll(obj.usedColumns());
     result.addAll(left.usedColumns());
     result.addAll(right.usedColumns());
@@ -714,8 +714,8 @@ class IsNullExpression extends LogicalExpression{
   public String toString(){
     return "N "+arg;
   }
-  public List usedColumns(){
-    List result = new LinkedList();
+  public List<String> usedColumns(){
+    List<String> result = new LinkedList<String>();
     result.addAll(arg.usedColumns());
     return result;
   }
@@ -742,8 +742,8 @@ class LikeExpression extends LogicalExpression{
   public String toString(){
     return "L "+arg1+" "+arg2;
   }
-  public List usedColumns(){
-    List result = new LinkedList();
+  public List<String> usedColumns(){
+    List<String> result = new LinkedList<String>();
     result.addAll(arg1.usedColumns());
     result.addAll(arg2.usedColumns());
     return result;
@@ -766,8 +766,8 @@ class AsteriskExpression extends LogicalExpression{
   public String toString(){
     return expression;
   }
-  public List usedColumns(){
-    List result = new LinkedList();
+  public List<String> usedColumns(){
+    List<String> result = new LinkedList<String>();
     return result;
   }
 }
