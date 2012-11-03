@@ -70,7 +70,7 @@ public class TestSqlParser extends TestCase {
 
 		assertEquals("Incorrect Column Count", 4, parser.getColumns().size());
 
-		List cols = parser.getColumns();
+		List<Object []> cols = parser.getColumns();
 		assertEquals("Incorrect Column Count", 4, cols.size());
 
 		Object[] colSpec = (Object[]) cols.get(3);

@@ -178,7 +178,7 @@ class SQLUpperFunction extends Expression{
   }
 }
 abstract class AggregateFunction extends Expression{
-  public abstract List aggregateColumns();
+  public abstract List<String> aggregateColumns();
   public abstract void processRow(Map env);
 }
 class SQLCountFunction extends AggregateFunction{
@@ -205,14 +205,14 @@ class SQLCountFunction extends AggregateFunction{
   public List<String> usedColumns(){
     return new LinkedList<String>();
   }
-  public List aggregateColumns(){
-    List result = new LinkedList();
+  public List<String> aggregateColumns(){
+    List<String> result = new LinkedList<String>();
     if (!(expression instanceof AsteriskExpression))
       result.addAll(expression.usedColumns());
     return result;
   }
-  public List aggregateFunctions(){
-    List result = new LinkedList();
+  public List<AggregateFunction> aggregateFunctions(){
+    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
     result.add(this);
     return result;
   }
@@ -261,13 +261,13 @@ class SQLMaxFunction extends AggregateFunction{
   public List<String> usedColumns(){
     return new LinkedList<String>();
   }
-  public List aggregateColumns(){
-    List result = new LinkedList();
+  public List<String> aggregateColumns(){
+    List<String> result = new LinkedList<String>();
     result.addAll(expression.usedColumns());
     return result;
   }
-  public List aggregateFunctions(){
-    List result = new LinkedList();
+  public List<AggregateFunction> aggregateFunctions(){
+    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
     result.add(this);
     return result;
   }
@@ -314,13 +314,13 @@ class SQLMinFunction extends AggregateFunction{
   public List<String> usedColumns(){
     return new LinkedList<String>();
   }
-  public List aggregateColumns(){
-    List result = new LinkedList();
+  public List<String> aggregateColumns(){
+    List<String> result = new LinkedList<String>();
     result.addAll(expression.usedColumns());
     return result;
   }
-  public List aggregateFunctions(){
-    List result = new LinkedList();
+  public List<AggregateFunction> aggregateFunctions(){
+    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
     result.add(this);
     return result;
   }
@@ -469,8 +469,8 @@ class BinaryOperation extends Expression{
     result.addAll(right.usedColumns());
     return result;
   }
-  public List aggregateFunctions(){
-    List result = new LinkedList();
+  public List<AggregateFunction> aggregateFunctions(){
+    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
     result.addAll(left.aggregateFunctions());
     result.addAll(right.aggregateFunctions());
     return result;
@@ -512,7 +512,7 @@ class ParsedExpression extends LogicalExpression{
   public List<String> usedColumns(){
     return content.usedColumns();
   }
-  public List aggregateFunctions(){
+  public List<AggregateFunction> aggregateFunctions(){
     return content.aggregateFunctions();
   }
   public int getPlaceholdersCount(){
@@ -538,7 +538,7 @@ class NotExpression extends LogicalExpression{
   public List<String> usedColumns(){
     return content.usedColumns();
   }
-  public List aggregateFunctions(){
+  public List<AggregateFunction> aggregateFunctions(){
     return content.aggregateFunctions();
   }
 }
@@ -560,8 +560,8 @@ class OrExpression extends LogicalExpression{
     result.addAll(right.usedColumns());
     return result;
   }
-  public List aggregateFunctions(){
-    List result = new LinkedList();
+  public List<AggregateFunction> aggregateFunctions(){
+    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
     result.addAll(left.aggregateFunctions());
     result.addAll(right.aggregateFunctions());
     return result;
@@ -585,8 +585,8 @@ class AndExpression extends LogicalExpression{
     result.addAll(right.usedColumns());
     return result;
   }
-  public List aggregateFunctions(){
-    List result = new LinkedList();
+  public List<AggregateFunction> aggregateFunctions(){
+    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
     result.addAll(left.aggregateFunctions());
     result.addAll(right.aggregateFunctions());
     return result;
@@ -659,8 +659,8 @@ class RelopExpression extends LogicalExpression{
     result.addAll(right.usedColumns());
     return result;
   }
-  public List aggregateFunctions(){
-    List result = new LinkedList();
+  public List<AggregateFunction> aggregateFunctions(){
+    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
     result.addAll(left.aggregateFunctions());
     result.addAll(right.aggregateFunctions());
     return result;
@@ -694,8 +694,8 @@ class BetweenExpression extends LogicalExpression{
     result.addAll(right.usedColumns());
     return result;
   }
-  public List aggregateFunctions(){
-    List result = new LinkedList();
+  public List<AggregateFunction> aggregateFunctions(){
+    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
     result.addAll(obj.aggregateFunctions());
     result.addAll(left.aggregateFunctions());
     result.addAll(right.aggregateFunctions());
@@ -719,8 +719,8 @@ class IsNullExpression extends LogicalExpression{
     result.addAll(arg.usedColumns());
     return result;
   }
-  public List aggregateFunctions(){
-    List result = new LinkedList();
+  public List<AggregateFunction> aggregateFunctions(){
+    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
     result.addAll(arg.aggregateFunctions());
     return result;
   }
@@ -748,8 +748,8 @@ class LikeExpression extends LogicalExpression{
     result.addAll(arg2.usedColumns());
     return result;
   }
-  public List aggregateFunctions(){
-    List result = new LinkedList();
+  public List<AggregateFunction> aggregateFunctions(){
+    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
     result.addAll(arg1.aggregateFunctions());
     result.addAll(arg2.aggregateFunctions());
     return result;
@@ -772,19 +772,19 @@ class AsteriskExpression extends LogicalExpression{
   }
 }
 class ParsedStatement{
-  List queryEntries;
+  List<ParsedExpression> queryEntries;
   boolean isDistinct;
   String tableName;
   String tableAlias;
   ParsedExpression whereClause;
-  List groupByEntries;
-  List orderByEntries;
+  List<ParsedExpression> groupByEntries;
+  List<ParsedExpression> orderByEntries;
   int limit, offset;
-  public ParsedStatement(List queryEntries, boolean isDistinct,
+  public ParsedStatement(List<ParsedExpression> queryEntries, boolean isDistinct,
     String tableName, String tableAlias,
     ParsedExpression whereClause,
-    List groupByEntries,
-    List orderByEntries,
+    List<ParsedExpression> groupByEntries,
+    List<ParsedExpression> orderByEntries,
     int limit, int offset){
     this.queryEntries = queryEntries;
     this.isDistinct = isDistinct;
@@ -799,12 +799,12 @@ class ParsedStatement{
 }
 public class ExpressionParser implements ExpressionParserConstants {
   ParsedExpression content;
-  List queryEntries;
+  List<ParsedExpression> queryEntries;
   boolean isDistinct;
   String tableName;
   String tableAlias;
-  List groupByEntries;
-  List orderByEntries;
+  List<ParsedExpression> groupByEntries;
+  List<ParsedExpression> orderByEntries;
   int limit;
   int offset;
   Date currentDate;
@@ -896,23 +896,23 @@ public class ExpressionParser implements ExpressionParserConstants {
   }
 
   final public ParsedStatement selectStatement() throws ParseException {
-  List result;
-  Expression expr;
+  List<ParsedExpression> result;
+  ParsedExpression expr;
   boolean isDistinct;
   String tableName;
   String tableAlias;
   ParsedExpression whereClause, entry;
-  List groupByEntries;
-  List orderByEntries;
+  List<ParsedExpression> groupByEntries;
+  List<ParsedExpression> orderByEntries;
   int limit, offset;
   Token t;
-    result = new LinkedList();
+    result = new LinkedList<ParsedExpression>();
     isDistinct = false;
     tableName = null;
     tableAlias = null;
     whereClause = null;
-    groupByEntries = new LinkedList();
-    orderByEntries = new LinkedList();
+    groupByEntries = new LinkedList<ParsedExpression>();
+    orderByEntries = new LinkedList<ParsedExpression>();
     limit = -1;
     offset = 0;
     jj_consume_token(SELECT);
