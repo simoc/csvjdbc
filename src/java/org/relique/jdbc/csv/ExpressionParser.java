@@ -452,7 +452,6 @@ class BinaryOperation extends Expression{
     return null;
   }
   private Date incrementDate(Date date, int nDays){
-    int sign = nDays > 0 ? 1 : -1;
     long newTime = date.getTime() +
       nDays * MILLISECONDS_PER_DAY + MILLISECONDS_PER_DAY / 2;
     Date newDate = new Date(newTime);
