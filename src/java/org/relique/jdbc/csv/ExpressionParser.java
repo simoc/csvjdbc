@@ -68,14 +68,14 @@ class CurrentDateConstant extends Expression{
   }
 }
 class Placeholder extends Expression{
-  static int nextIndex = 1;
-  Integer index;
+  public static int nextIndex = 1;
+  private int index;
   public Placeholder(){
-    index = Integer.valueOf(nextIndex);
+    index = nextIndex;
     nextIndex++;
   }
   public Object eval(Map env){
-    return env.get(index);
+    return env.get("?" + index);
   }
   public String toString(){
     return "?";
@@ -519,7 +519,7 @@ class ParsedExpression extends LogicalExpression{
   }
   public void setPlaceholdersValues(Object[] values){
     for(int i=1; i<values.length; i++){
-      placeholders.put(Integer.valueOf(i), values[i]);
+      placeholders.put("?" + i, values[i]);
     }
   }
 }
