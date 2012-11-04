@@ -16,7 +16,7 @@ class NumericConstant extends Expression{
   public NumericConstant(Number d){
     value = d;
   }
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     return value;
   }
   public String toString(){
@@ -31,7 +31,7 @@ class StringConstant extends Expression{
   public StringConstant(String s){
     value = s;
   }
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     return value;
   }
   public String toString(){
@@ -42,7 +42,7 @@ class StringConstant extends Expression{
   }
 }
 class NullConstant extends Expression{
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     return null;
   }
   public String toString(){
@@ -57,7 +57,7 @@ class CurrentDateConstant extends Expression{
   public CurrentDateConstant(ExpressionParser parent){
     this.parent = parent;
   }
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     return parent.getCurrentDate();
   }
   public String toString(){
@@ -74,7 +74,7 @@ class Placeholder extends Expression{
     index = nextIndex;
     nextIndex++;
   }
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     return env.get("?" + index);
   }
   public String toString(){
@@ -89,7 +89,7 @@ class ColumnName extends Expression{
   public ColumnName(String columnName){
     this .columnName = columnName.toUpperCase();
   }
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     return env.get(columnName);
   }
   public String toString(){
@@ -106,7 +106,7 @@ class SQLLowerFunction extends Expression{
   public SQLLowerFunction(Expression expression){
     this.expression = expression;
   }
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     Object retval = expression.eval(env);
     if (retval != null)
       retval = retval.toString().toLowerCase();
@@ -126,7 +126,7 @@ class SQLRoundFunction extends Expression{
   public SQLRoundFunction(Expression expression){
     this.expression = expression;
   }
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     Object retval = expression.eval(env);
     if (retval != null) {
       if (!(retval instanceof Number)) {
@@ -162,7 +162,7 @@ class SQLUpperFunction extends Expression{
   public SQLUpperFunction(Expression expression){
     this.expression = expression;
   }
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     Object retval = expression.eval(env);
     if (retval != null)
       retval = retval.toString().toUpperCase();
@@ -179,7 +179,7 @@ class SQLUpperFunction extends Expression{
 }
 abstract class AggregateFunction extends Expression{
   public abstract List<String> aggregateColumns();
-  public abstract void processRow(Map env);
+  public abstract void processRow(Map<String, Object> env);
 }
 class SQLCountFunction extends AggregateFunction{
   Expression expression;
@@ -187,7 +187,7 @@ class SQLCountFunction extends AggregateFunction{
   public SQLCountFunction(Expression expression){
     this.expression = expression;
   }
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     Object o = env.get("@GROUPROWS");
     if (o != null) {
       /*
@@ -216,7 +216,7 @@ class SQLCountFunction extends AggregateFunction{
     result.add(this);
     return result;
   }
-  public void processRow(Map env){
+  public void processRow(Map<String, Object> env){
     if (expression instanceof AsteriskExpression) {
       counter++;
     } else {
@@ -235,7 +235,7 @@ class SQLMaxFunction extends AggregateFunction{
   public SQLMaxFunction(Expression expression){
     this.expression = expression;
   }
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     Object o = env.get("@GROUPROWS");
     if (o != null) {
       /*
@@ -271,7 +271,7 @@ class SQLMaxFunction extends AggregateFunction{
     result.add(this);
     return result;
   }
-  public void processRow(Map env){
+  public void processRow(Map<String, Object> env){
     /*
      * Only consider non-null values.
      */
@@ -288,7 +288,7 @@ class SQLMinFunction extends AggregateFunction{
   public SQLMinFunction(Expression expression){
     this.expression = expression;
   }
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     Object o = env.get("@GROUPROWS");
     if (o != null) {
       /*
@@ -324,7 +324,7 @@ class SQLMinFunction extends AggregateFunction{
     result.add(this);
     return result;
   }
-  public void processRow(Map env){
+  public void processRow(Map<String, Object> env){
     /*
      * Only consider non-null values.
      */
@@ -346,7 +346,7 @@ class QueryEnvEntry extends Expression{
     this .key = fieldName.toUpperCase();
     this .expression = exp;
   }
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     return expression.eval(env);
   }
   public String toString(){
@@ -370,7 +370,7 @@ class BinaryOperation extends Expression{
     this .left = left;
     this .right = right;
   }
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     Object leftEval = left.eval(env);
     Object rightEval = right.eval(env);
     try {
@@ -476,29 +476,29 @@ class BinaryOperation extends Expression{
   }
 }
 abstract class LogicalExpression extends Expression{
-  public boolean isTrue(Map env){
+  public boolean isTrue(Map<String, Object> env){
     return false;
   }
 }
 class ParsedExpression extends LogicalExpression{
   public Expression content;
-  private Map placeholders;
+  private Map<String, Object> placeholders;
   public ParsedExpression(Expression left){
     content = left;
-    placeholders = new HashMap();
+    placeholders = new HashMap<String, Object>();
   }
-  public boolean isTrue(Map env){
+  public boolean isTrue(Map<String, Object> env){
     if(placeholders != null) {
-      Map useThisEnv = new HashMap();
+      Map<String, Object> useThisEnv = new HashMap<String, Object>();
       useThisEnv.putAll(env);
       useThisEnv.putAll(placeholders);
       env = useThisEnv;
     }
     return ((LogicalExpression)content).isTrue(env);
   }
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     if(placeholders != null) {
-      Map useThisEnv = new HashMap();
+      Map<String, Object> useThisEnv = new HashMap<String, Object>();
       useThisEnv.putAll(env);
       useThisEnv.putAll(placeholders);
       env = useThisEnv;
@@ -528,7 +528,7 @@ class NotExpression extends LogicalExpression{
   public NotExpression(LogicalExpression arg){
     this .content = arg;
   }
-  public boolean isTrue(Map env){
+  public boolean isTrue(Map<String, Object> env){
     return !content.isTrue(env);
   }
   public String toString(){
@@ -547,7 +547,7 @@ class OrExpression extends LogicalExpression{
     this .left = left;
     this .right = right;
   }
-  public boolean isTrue(Map env){
+  public boolean isTrue(Map<String, Object> env){
     return left.isTrue(env) || right.isTrue(env);
   }
   public String toString(){
@@ -572,7 +572,7 @@ class AndExpression extends LogicalExpression{
     this .left = left;
     this .right = right;
   }
-  public boolean isTrue(Map env){
+  public boolean isTrue(Map<String, Object> env){
     return left.isTrue(env) && right.isTrue(env);
   }
   public String toString(){
@@ -599,7 +599,7 @@ class RelopExpression extends LogicalExpression{
     this .left = left;
     this .right = right;
   }
-  public boolean isTrue(Map env){
+  public boolean isTrue(Map<String, Object> env){
     Comparable leftValue = (Comparable)left.eval(env);
     Comparable rightValue = (Comparable)right.eval(env);
     boolean result = false;
@@ -672,7 +672,7 @@ class BetweenExpression extends LogicalExpression{
     this .left = left;
     this .right = right;
   }
-  public boolean isTrue(Map env){
+  public boolean isTrue(Map<String, Object> env){
     Comparable leftValue = (Comparable)left.eval(env);
     Comparable rightValue = (Comparable)right.eval(env);
     Comparable objValue = (Comparable)obj.eval(env);
@@ -706,7 +706,7 @@ class IsNullExpression extends LogicalExpression{
   public IsNullExpression(Expression arg){
     this .arg = arg;
   }
-  public boolean isTrue(Map env){
+  public boolean isTrue(Map<String, Object> env){
     Object o = arg.eval(env);
     return (o == null);
   }
@@ -730,7 +730,7 @@ class LikeExpression extends LogicalExpression{
     this .arg1 = arg1;
     this .arg2 = arg2;
   }
-  public boolean isTrue(Map env){
+  public boolean isTrue(Map<String, Object> env){
     Object left = arg1.eval(env);
     Object right = arg2.eval(env);
     boolean result = false;
@@ -759,7 +759,7 @@ class AsteriskExpression extends LogicalExpression{
   public AsteriskExpression(String expression){
     this.expression = expression;
   }
-  public boolean isTrue(Map env){
+  public boolean isTrue(Map<String, Object> env){
     return false;
   }
   public String toString(){
@@ -833,7 +833,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     limit = parsedStatement.limit;
     offset = parsedStatement.offset;
   }
-  public Object eval(Map env){
+  public Object eval(Map<String, Object> env){
     return content.eval(env);
   }
   public String toString(){
