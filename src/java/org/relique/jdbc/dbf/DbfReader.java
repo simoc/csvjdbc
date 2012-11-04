@@ -15,9 +15,9 @@ public class DbfReader extends DataReader {
 	private List fields;
 	private Object record;
 	private int rowNo;
-	private Class fieldClass;
-	private Class recordClass;
-	private Class tableClass;
+	private Class<?> fieldClass;
+	private Class<?> recordClass;
+	private Class<?> tableClass;
 	private Method tableOpenMethod;
 	private Method tableGetFieldsMethod;
 	private Method tableCloseMethod;
@@ -52,7 +52,7 @@ public class DbfReader extends DataReader {
 			throw new SQLException("Error while being smart:" + e);
 		}
 		try {
-			Constructor tableConstructor = tableClass.getConstructor(new Class[] {File.class});
+			Constructor<?> tableConstructor = tableClass.getConstructor(new Class[] {File.class});
 			table = tableConstructor
 					.newInstance(new Object[] { new File(path) });
 			tableOpenMethod.invoke(table, new Object[] {});
