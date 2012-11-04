@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
-import org.relique.jdbc.csv.Expression;
 class NumericConstant extends Expression{
   Number value;
   public NumericConstant(Number d){
@@ -1376,7 +1375,6 @@ public class ExpressionParser implements ExpressionParserConstants {
 
   final public Expression simpleExpression() throws ParseException {
   Expression arg;
-  Token t;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case OPENPARENTHESIS:
       jj_consume_token(OPENPARENTHESIS);

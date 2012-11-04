@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
-import org.relique.jdbc.csv.Expression;
 class NumericConstant extends Expression{
   Number value;
   public NumericConstant(Number d){
@@ -1248,7 +1247,6 @@ Expression multiplyOperation():{
 }
 Expression simpleExpression():{
   Expression arg;
-  Token t;
 }
 {
   <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {

@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
-import org.relique.jdbc.csv.Expression;
 
 /** Token Manager. */
 public class ExpressionParserTokenManager implements ExpressionParserConstants
