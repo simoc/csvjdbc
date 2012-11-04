@@ -576,16 +576,19 @@ public class CsvResultSet implements ResultSet {
 			}
 			for (int i = 0; i < this.queryEnvironment.size(); i++) {
 				Object[] o = (Object[]) this.queryEnvironment.get(i);
-				queryEnvironmentColumns.add(o[0].toString());
 				if (!groupingColumns.contains(o[0])) {
 					if (o[1] != null) {
 						Expression expr = (Expression)((Object[])o)[1];
 						for (Object o2 : expr.usedColumns()) {
-							if (!groupingColumns.contains(o2.toString())) {
-								/*
-								 * GROUP BY must include all queried columns.
-								 */
-								throw new SQLException("Column not included in GROUP BY: " + o2);
+							String columnName = o2.toString();
+							if (!groupingColumns.contains(columnName)) {
+								String tableAlias = this.reader.getTableAlias();
+								if (tableAlias == null || (!groupingColumns.contains(tableAlias + "." + columnName))) {
+									/*
+									 * GROUP BY must include all queried columns.
+									 */
+									throw new SQLException("Column not included in GROUP BY: " + columnName);
+								}
 							}
 						}
 					}

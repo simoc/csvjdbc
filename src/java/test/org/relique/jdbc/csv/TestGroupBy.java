@@ -248,7 +248,23 @@ public class TestGroupBy extends TestCase {
 		assertTrue("The MAX_AMOUNT is wrong", fuzzyEquals(7.23, results.getDouble("MAX_AMOUNT")));
 		assertFalse(results.next());
 	}
-	
+
+	public void testGroupByOrderByCount() throws SQLException {
+		Properties props = new Properties();
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select Job, COUNT(Job) C from sample4 GROUP BY Job ORDER BY C DESC");
+		assertTrue(results.next());
+		assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
+		assertEquals("The COUNT is wrong", 3, results.getInt("C"));
+		assertTrue(results.next());
+		assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
+		assertEquals("The COUNT is wrong", 1, results.getInt("C"));
+		assertFalse(results.next());
+	}
+
 	public void testGroupByColumnNumber() throws SQLException {
 		Properties props = new Properties();
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
@@ -262,7 +278,21 @@ public class TestGroupBy extends TestCase {
 		assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
 		assertFalse(results.next());
 	}
-	
+
+	public void testGroupByTableAlias() throws SQLException {
+		Properties props = new Properties();
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select Job from sample4 T GROUP BY T.Job");
+		assertTrue(results.next());
+		assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
+		assertTrue(results.next());
+		assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
+		assertFalse(results.next());
+	}
+
 	public void testGroupByExpression() throws SQLException {
 		Properties props = new Properties();
 		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
