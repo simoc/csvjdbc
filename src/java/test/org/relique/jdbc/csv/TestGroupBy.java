@@ -375,4 +375,69 @@ public class TestGroupBy extends TestCase {
 			assertEquals("java.sql.SQLException: ORDER BY column not included in GROUP BY: ID", "" + e);
 		}
 	}
+
+	public void testHavingSimple() throws SQLException {
+		Properties props = new Properties();
+		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
+		props.put("suppressHeaders", "true");
+		props.put("fileExtension", ".txt");
+		props.put("commentChar", "#");
+		props.put("columnTypes", "Date,Integer,Integer,Integer,Integer,Double");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("select FROM_BLZ from transactions group by FROM_BLZ having FROM_BLZ > 10020000");
+		assertTrue(results.next());
+		assertEquals("The FROM_BLZ is wrong", 10020500, results.getInt("FROM_BLZ"));
+		assertTrue(results.next());
+		assertEquals("The FROM_BLZ is wrong", 10020200, results.getInt("FROM_BLZ"));
+		assertFalse(results.next());
+	}
+	
+	public void testHavingCount() throws SQLException {
+		Properties props = new Properties();
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("select Job, COUNT(Job) from sample5 group by Job having COUNT(Job) > 1");
+		assertTrue(results.next());
+		assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
+		assertEquals("The COUNT(Job) is wrong", 3, results.getInt(2));
+		assertTrue(results.next());
+		assertEquals("The Job is wrong", "Office Employee", results.getString("Job"));
+		assertEquals("The COUNT(Job) is wrong", 4, results.getInt(2));
+		assertFalse(results.next());
+	}
+	
+	public void testHavingWithBadColumnName() throws SQLException {		
+		try {
+			Properties props = new Properties();
+			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+			Statement stmt = conn.createStatement();
+
+			stmt.executeQuery("SELECT Id FROM sample group by Id HAVING XXXX = 1");
+			fail("Should raise a java.sqlSQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: Invalid column name: XXXX", "" + e);
+		}
+	}
+	
+	public void testHavingUngroupedColumn() throws SQLException {		
+		try {
+			Properties props = new Properties();
+			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+			Statement stmt = conn.createStatement();
+
+			stmt.executeQuery("SELECT Id FROM sample group by Id HAVING Name = 'foo'");
+			fail("Should raise a java.sqlSQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: Invalid HAVING column: NAME", "" + e);
+		}
+	}
 }

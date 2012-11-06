@@ -85,6 +85,8 @@ public class CsvResultSet implements ResultSet {
 
 	private List<Expression> groupByColumns;
 
+	private Expression havingClause;
+
 	private List<Object []> orderByColumns;
 
 	private List<Object []> queryEnvironment;
@@ -176,13 +178,20 @@ public class CsvResultSet implements ResultSet {
      * @throws ClassNotFoundException in case the typed columns fail
      * @throws SQLException 
      */
-    protected CsvResultSet(CsvStatement statement, DataReader reader,
-			String tableName, List<Object []> queryEnvironment, boolean isDistinct, int isScrollable, 
+    protected CsvResultSet(CsvStatement statement,
+    		DataReader reader,
+			String tableName,
+			List<Object []> queryEnvironment,
+			boolean isDistinct,
+			int isScrollable, 
 			Expression whereClause,
 			List<Expression> groupByColumns,
+			Expression havingClause,
 			List<Object []> orderByColumns,
-			int sqlLimit, int sqlOffset,
-			String columnTypes, int skipLeadingLines) throws ClassNotFoundException, SQLException {
+			int sqlLimit,
+			int sqlOffset,
+			String columnTypes,
+			int skipLeadingLines) throws ClassNotFoundException, SQLException {
         this.statement = statement;
         maxRows = statement.getMaxRows();
         fetchSize = statement.getFetchSize();
@@ -197,6 +206,7 @@ public class CsvResultSet implements ResultSet {
         	this.groupByColumns = new ArrayList<Expression>(groupByColumns);
         else
         	this.groupByColumns = null;
+        this.havingClause = havingClause;
         if (orderByColumns != null)
         	this.orderByColumns = new ArrayList<Object []>(orderByColumns);
         else
@@ -282,6 +292,8 @@ public class CsvResultSet implements ResultSet {
 			for (Expression expr : this.groupByColumns) {
 				this.usedColumns.addAll(expr.usedColumns());
 			}
+	        if (havingClause!= null)
+	        	this.usedColumns.addAll(havingClause.usedColumns());
 		}
 
 		/*
@@ -368,7 +380,8 @@ public class CsvResultSet implements ResultSet {
         }
         
 		/*
-		 * Check that all columns used in the WHERE, GROUP BY and ORDER BY clauses do exist in the table.
+		 * Check that all columns used in the WHERE, GROUP BY, HAVING
+		 * and ORDER BY clauses do exist in the table.
 		 */
 		if (!((CsvConnection)statement.getConnection()).isIndexedFiles()) {
 			for (Object usedColumn : this.usedColumns) {
@@ -381,7 +394,10 @@ public class CsvResultSet implements ResultSet {
 			if (this.orderByColumns != null) {
 				for (Object []o : this.orderByColumns) {
 					Expression expr = (Expression)o[1];
-					List<String> exprUsedColumns = expr.usedColumns();
+					List<String> exprUsedColumns = new LinkedList<String>(expr.usedColumns());
+					for (AggregateFunction aggregatFunction : expr.aggregateFunctions()) {
+						exprUsedColumns.addAll(aggregatFunction.aggregateColumns());
+					}
 					if (exprUsedColumns.isEmpty()) {
 						/*
 						 * Must order by something that contains at least one column, not 'foo' or 1+1.
@@ -439,7 +455,9 @@ public class CsvResultSet implements ResultSet {
     				 */
     				Map<String, Object> firstRow = new HashMap<String, Object>(values.get(0));
     				firstRow.put("@GROUPROWS", values);
-    				bufferedRecordEnvironments.add(firstRow);
+
+    				if (this.havingClause == null || this.havingClause.isTrue(firstRow))
+    					bufferedRecordEnvironments.add(firstRow);
     			}
 
     			if (this.orderByColumns != null)
@@ -591,6 +609,13 @@ public class CsvResultSet implements ResultSet {
 								}
 							}
 						}
+					}
+				}
+			}
+			if (this.havingClause != null) {
+				for (String columnName : this.havingClause.usedColumns()) {
+					if (!queryEnvironmentColumns.contains(columnName)) {
+						throw new SQLException("Invalid HAVING column: " + columnName);
 					}
 				}
 			}

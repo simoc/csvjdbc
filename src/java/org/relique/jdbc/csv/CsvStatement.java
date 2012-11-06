@@ -441,6 +441,7 @@ public class CsvStatement implements Statement {
 					parser.getColumns(), parser.isDistinct(),
 					this.isScrollable, parser.getWhereClause(),
 					parser.getGroupByColumns(),
+					parser.getHavingClause(),
 					parser.getOrderByColumns(),
 					parser.getLimit(), parser.getOffset(),
 					connection.getColumnTypes(tableName), 

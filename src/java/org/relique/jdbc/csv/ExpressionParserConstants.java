@@ -71,35 +71,37 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int BY = 34;
   /** RegularExpression Id. */
-  int LIMIT = 35;
+  int HAVING = 35;
   /** RegularExpression Id. */
-  int OFFSET = 36;
+  int LIMIT = 36;
   /** RegularExpression Id. */
-  int NAME = 37;
+  int OFFSET = 37;
   /** RegularExpression Id. */
-  int STRING = 38;
+  int NAME = 38;
   /** RegularExpression Id. */
-  int RELOP = 39;
+  int STRING = 39;
   /** RegularExpression Id. */
-  int ASTERISK = 40;
+  int RELOP = 40;
   /** RegularExpression Id. */
-  int NAMEASTERISK = 41;
+  int ASTERISK = 41;
   /** RegularExpression Id. */
-  int MINUS = 42;
+  int NAMEASTERISK = 42;
   /** RegularExpression Id. */
-  int PLUS = 43;
+  int MINUS = 43;
   /** RegularExpression Id. */
-  int DIVIDE = 44;
+  int PLUS = 44;
   /** RegularExpression Id. */
-  int OPENPARENTHESIS = 45;
+  int DIVIDE = 45;
   /** RegularExpression Id. */
-  int CLOSEPARENTHESIS = 46;
+  int OPENPARENTHESIS = 46;
   /** RegularExpression Id. */
-  int TABLENAME = 51;
+  int CLOSEPARENTHESIS = 47;
   /** RegularExpression Id. */
-  int QUOTEDTABLENAME = 52;
+  int TABLENAME = 52;
   /** RegularExpression Id. */
-  int UNEXPECTED_CHAR = 53;
+  int QUOTEDTABLENAME = 53;
+  /** RegularExpression Id. */
+  int UNEXPECTED_CHAR = 54;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -143,6 +145,7 @@ public interface ExpressionParserConstants {
     "\"GROUP\"",
     "\"ORDER\"",
     "\"BY\"",
+    "\"HAVING\"",
     "\"LIMIT\"",
     "\"OFFSET\"",
     "<NAME>",

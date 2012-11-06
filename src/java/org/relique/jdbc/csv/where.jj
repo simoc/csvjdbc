@@ -800,12 +800,14 @@ class ParsedStatement{
   String tableAlias;
   ParsedExpression whereClause;
   List<ParsedExpression> groupByEntries;
+  ParsedExpression havingClause;
   List<ParsedExpression> orderByEntries;
   int limit, offset;
   public ParsedStatement(List<ParsedExpression> queryEntries, boolean isDistinct,
     String tableName, String tableAlias,
     ParsedExpression whereClause,
     List<ParsedExpression> groupByEntries,
+    ParsedExpression havingClause,
     List<ParsedExpression> orderByEntries,
     int limit, int offset){
     this.queryEntries = queryEntries;
@@ -814,6 +816,7 @@ class ParsedStatement{
     this.tableAlias = tableAlias;
     this.whereClause = whereClause;
     this.groupByEntries = groupByEntries;
+    this.havingClause = havingClause;
     this.orderByEntries = orderByEntries;
     this.limit = limit;
     this.offset = offset;
@@ -826,6 +829,7 @@ public class ExpressionParser{
   String tableName;
   String tableAlias;
   List<ParsedExpression> groupByEntries;
+  ParsedExpression havingClause;
   List<ParsedExpression> orderByEntries;
   int limit;
   int offset;
@@ -852,6 +856,7 @@ public class ExpressionParser{
     tableAlias = parsedStatement.tableAlias;
     content = parsedStatement.whereClause;
     groupByEntries = parsedStatement.groupByEntries;
+    havingClause = parsedStatement.havingClause;
     orderByEntries = parsedStatement.orderByEntries;
     limit = parsedStatement.limit;
     offset = parsedStatement.offset;
@@ -975,6 +980,9 @@ TOKEN:{
   <BY:"BY">
 }
 TOKEN:{
+  <HAVING:"HAVING">
+}
+TOKEN:{
   <LIMIT:"LIMIT">
 }
 TOKEN:{
@@ -1075,6 +1083,7 @@ ParsedStatement selectStatement():{
   String tableAlias;
   ParsedExpression whereClause, entry;
   List<ParsedExpression> groupByEntries;
+  ParsedExpression havingClause;
   List<ParsedExpression> orderByEntries;
   int limit, offset;
   Token t;
@@ -1087,6 +1096,7 @@ ParsedStatement selectStatement():{
     tableAlias = null;
     whereClause = null;
     groupByEntries = new LinkedList<ParsedExpression>();
+    havingClause = null;
     orderByEntries = new LinkedList<ParsedExpression>();
     limit = -1;
     offset = 0;
@@ -1097,12 +1107,12 @@ ParsedStatement selectStatement():{
   (
     <FROM>(t=<QUOTEDTABLENAME>|t=<TABLENAME>){tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?
     (<WHERE>whereClause = logicalExpression())?
-    (<GROUP><BY>entry = groupByEntry(){groupByEntries.add(entry);}(<COMMA>entry = groupByEntry(){groupByEntries.add(entry);})*)?
+    (<GROUP><BY>entry = groupByEntry(){groupByEntries.add(entry);}(<COMMA>entry = groupByEntry(){groupByEntries.add(entry);})*(<HAVING>havingClause = logicalExpression())?)?
     (<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?
     (<LIMIT>t=<UNSIGNEDINT>{limit = Integer.parseInt(t.image);}(<OFFSET>t=<UNSIGNEDINT>{offset = Integer.parseInt(t.image);})?)?
   )?
   <EOF>{
-    return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, groupByEntries, orderByEntries, limit, offset);
+    return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, groupByEntries, havingClause, orderByEntries, limit, offset);
   }
 }
 ParsedExpression queryEnvEntry():{

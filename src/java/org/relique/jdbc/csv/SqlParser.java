@@ -52,6 +52,7 @@ public class SqlParser
   private ParsedExpression whereClause;
   private List<Object []> environment;
   private List<Expression> groupByColumns;
+  private ParsedExpression havingClause;
   private List<Object []> orderByColumns;
 
   private int limit;
@@ -148,6 +149,7 @@ public class SqlParser
 		  ParsedExpression cc = it2.next();
 		  groupByColumns.add(cc.content);
 	  }
+	  this.havingClause = cs2.havingClause;
 
 	  Iterator<ParsedExpression> it3 = cs2.orderByEntries.iterator();
 	  if (it3.hasNext())
@@ -175,6 +177,10 @@ public class SqlParser
 
   public List<Expression> getGroupByColumns() {
 		return groupByColumns;
+  }
+
+  public Expression getHavingClause() {
+	  return havingClause;
   }
 
   public List<Object []> getOrderByColumns() {
