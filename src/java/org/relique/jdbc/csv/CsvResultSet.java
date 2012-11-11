@@ -84,6 +84,8 @@ public class CsvResultSet implements ResultSet {
 	private Expression whereClause;
 
 	private List<Expression> groupByColumns;
+	
+	private List<Expression> distinctColumns;
 
 	private Expression havingClause;
 
@@ -628,6 +630,25 @@ public class CsvResultSet implements ResultSet {
 					}
 				}
 			}
+
+			/*
+			 * A query containing GROUP BY without any aggregate functions can be simplified
+			 * to a SELECT DISTINCT, avoiding the need to load all records into memory.
+			 */
+			boolean hasAggregateFunctions = false;
+			for (int i = 0; i < this.queryEnvironment.size(); i++) {
+				Object[] o = this.queryEnvironment.get(i);
+				Expression expr = (Expression)o[1];
+				if (expr.aggregateFunctions().size() > 0)
+					hasAggregateFunctions = true;
+			}
+			if (this.havingClause != null && this.havingClause.aggregateFunctions().size() > 0)
+				hasAggregateFunctions = true;
+			if (!hasAggregateFunctions) {
+				this.distinctValues = new HashSet<ArrayList<Object>>();
+				this.distinctColumns = new ArrayList<Expression>(this.groupByColumns);
+				this.groupByColumns = null;
+			}
 		}
     }
 
@@ -703,8 +724,15 @@ public class CsvResultSet implements ResultSet {
 				Map<String, Object> objectEnvironment = updateRecordEnvironment(thereWasAnAnswer);
 				while (thereWasAnAnswer) {
 					if (whereClause == null || whereClause.isTrue(objectEnvironment)) {
-						if (distinctValues == null || addDistinctEnvironment()) {
-							break;
+						/*
+						 * Check HAVING clause if no aggregate functions in query and
+						 * it is being processed just like SELECT DISTINCT.
+						 * In this case HAVING is exactly the same as a WHERE clause.
+						 */
+						if (this.distinctColumns == null || this.havingClause == null || this.havingClause.isTrue(objectEnvironment)) {
+							if (distinctValues == null || addDistinctEnvironment(objectEnvironment)) {
+								break;
+							}
 						}
 					}
 					thereWasAnAnswer = reader.next();
@@ -773,28 +801,33 @@ public class CsvResultSet implements ResultSet {
 		return objectEnvironment;
 	}
 
-    private boolean addDistinctEnvironment() {
+    private boolean addDistinctEnvironment(Map<String, Object> objectEnvironment) {
     	boolean isDistinct;
 
     	/*
-    	 * Create list of query values for this row.
+    	 * Create list of query values for this row, either for a simple
+    	 * GROUP BY statement, or for a SELECT DISTINCT.
     	 */
-    	ArrayList<Object> distinctEnvironment = new ArrayList<Object>(queryEnvironment.size());
-		for (int i = 0; i < queryEnvironment.size(); i++){
-			Object[] o = (Object[]) queryEnvironment.get(i);
-			Object value = ((Expression) o[1]).eval(recordEnvironment);
-			distinctEnvironment.add(value);
+    	ArrayList<Object> environment;
+    	if (this.distinctColumns != null) {
+    		environment = new ArrayList<Object>(distinctColumns.size());
+    		for (int i = 0; i < distinctColumns.size(); i++) {
+    			Object value = distinctColumns.get(i).eval(objectEnvironment);
+    			environment.add(value);
+    		}
+    	} else {
+    		environment = new ArrayList<Object>(queryEnvironment.size());
+    		for (int i = 0; i < queryEnvironment.size(); i++) {
+    			Object[] o = (Object[]) queryEnvironment.get(i);
+    			Object value = ((Expression) o[1]).eval(objectEnvironment);
+    			environment.add(value);
+    		}
 		}
 
 		/*
 		 * Has this list of values been read before for this query?
 		 */
-    	if (distinctValues.contains(distinctEnvironment)) {
-    		isDistinct = false;
-    	} else {
-    		distinctValues.add(distinctEnvironment);
-    		isDistinct = true;
-    	}
+    	isDistinct = distinctValues.add(environment);
     	return isDistinct;
     }
 

@@ -395,8 +395,25 @@ public class TestGroupBy extends TestCase {
 		assertEquals("The FROM_BLZ is wrong", 10020200, results.getInt("FROM_BLZ"));
 		assertFalse(results.next());
 	}
-	
+
 	public void testHavingCount() throws SQLException {
+		Properties props = new Properties();
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("select Job from sample5 group by Job having COUNT(Job) = 1");
+		assertTrue(results.next());
+		assertEquals("The Job is wrong", "Piloto", results.getString("Job"));
+		assertTrue(results.next());
+		assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
+		assertTrue(results.next());
+		assertEquals("The Job is wrong", "Office Manager", results.getString("Job"));
+		assertFalse(results.next());
+	}
+
+	public void testSelectAndHavingCount() throws SQLException {
 		Properties props = new Properties();
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
