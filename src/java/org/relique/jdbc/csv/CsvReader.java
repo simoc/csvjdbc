@@ -15,6 +15,7 @@ public class CsvReader extends DataReader {
 	int transposedLines;
 	private int transposedFieldsToSkip;
 	String[] columnNames;
+	String []aliasedColumnNames;
 	private String[] columnTypes;
 	Vector<String []> firstTable;
 	int joiningValueNo;
@@ -115,6 +116,22 @@ public class CsvReader extends DataReader {
 			return columnNames;
 	}
 
+	public String[] getAliasedColumnNames() {
+		if (this.aliasedColumnNames == null) {
+			String tableAlias = rawReader.getTableAlias();
+			if (tableAlias != null) {
+				/*
+				 * Create array of "T.ID" column aliases that we can use for every row.
+				 */
+				String []columnNames = getColumnNames();
+				this.aliasedColumnNames = new String[columnNames.length];
+				for (int i = 0; i < columnNames.length; i++)
+					this.aliasedColumnNames[i] = tableAlias + "." + columnNames[i].toUpperCase();
+			}
+		}
+		return this.aliasedColumnNames;
+	}
+
 	public Object getField(int i) throws SQLException {
 		if(isPlainReader())
 			return rawReader.getField(i);
@@ -127,22 +144,29 @@ public class CsvReader extends DataReader {
 	}
 
 	public Map<String, Object> getEnvironment() throws SQLException {
-		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("@STRINGCONVERTER", converter);
+
 		if(fieldValues.length != getColumnNames().length)
 			throw new SQLException("data contains " + fieldValues.length + " columns, expected " + getColumnNames().length);
 		if(columnTypes == null)
 			getColumnTypes();
-		String tableAlias = rawReader.getTableAlias();
-		for (int i = 0; i < getColumnNames().length; i++) {
-			String key = getColumnNames()[i].toUpperCase();
+		String []columnNames = getColumnNames();
+		String []columnAliases = getAliasedColumnNames();
+
+		int nKeys = 1 + columnNames.length;
+		if (columnAliases != null)
+			nKeys += columnAliases.length;
+		Map<String, Object> result = new HashMap<String, Object>(nKeys, 1);
+		result.put("@STRINGCONVERTER", converter);
+
+		for (int i = 0; i < columnNames.length; i++) {
+			String key = columnNames[i].toUpperCase();
 			Object value = converter.convert(columnTypes[i], fieldValues[i]);
 			result.put(key, value);
-			if (tableAlias != null) {
+			if (columnAliases != null) {
 				/*
 				 * Also allow column value to be accessed as S.ID  if table alias S is set.
 				 */
-				result.put(tableAlias + "." + key, value);
+				result.put(columnAliases[i], value);
 			}
 			
 		}
