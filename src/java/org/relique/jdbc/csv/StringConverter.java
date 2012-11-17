@@ -40,65 +40,100 @@ public class StringConverter {
 		return str;
 	}
 
-	public boolean parseBoolean(String str) {
-		return Boolean.valueOf(str).booleanValue();
+	public Boolean parseBoolean(String str) {
+		return Boolean.valueOf(str);
 	}
 
-	public byte parseByte(String str) {
+	public Byte parseByte(String str) {
 		try {
-			return (str == null) ? 0 : Byte.parseByte(str);
+			Byte b;
+			if (str == null)
+				b = Byte.valueOf((byte)0);
+			else
+				b = Byte.valueOf(Byte.parseByte(str));
+			return b;
 		} catch (RuntimeException e) {
-			return 0;
+			return Byte.valueOf((byte)0);
 		}
 	}
 
-	public short parseShort(String str) {
+	public Short parseShort(String str) {
 		try {
-			return (str == null) ? 0 : Short.parseShort(str);
+			Short s;
+			if (str == null)
+				s = Short.valueOf(str);
+			else
+				s = Short.valueOf(Short.parseShort(str));
+			return s;
 		} catch (RuntimeException e) {
-			return 0;
+			return Short.valueOf((short)0);
 		}
 	}
 
-	public int parseInt(String str) {
+	public Integer parseInt(String str) {
 		try {
-			return (str == null) ? 0 : Integer.parseInt(str);
+			Integer i;
+			if (str == null)
+				i = Integer.valueOf(0);
+			else
+				i = Integer.valueOf(Integer.parseInt(str));
+			return i;
 		} catch (RuntimeException e) {
-			return 0;
+			return Integer.valueOf(0);
 		}
 	}
 
-	public long parseLong(String str) {
+	public Long parseLong(String str) {
 		try {
-			return (str == null) ? 0 : Long.parseLong(str);
+			Long l;
+			if (str == null)
+				l = Long.valueOf(0);
+			else
+				l = Long.valueOf(Long.parseLong(str));
+			return l;
 		} catch (RuntimeException e) {
-			return 0;
+			return Long.valueOf(0);
 		}
 	}
 
-	public float parseFloat(String str) {
+	public Float parseFloat(String str) {
 		try {
-			if(str != null)
+			Float f;
+			if (str == null)
+				f = Float.valueOf(0);
+			else {
 				str = str.replace(",", ".");
-			return (str == null) ? 0 : Float.parseFloat(str);
+				f = Float.valueOf(Float.parseFloat(str));
+			}
+			return f;
 		} catch (RuntimeException e) {
-			return 0;
+			return Float.valueOf(0);
 		}
 	}
 
-	public double parseDouble(String str) {
+	public Double parseDouble(String str) {
 		try {
-			if(str != null)
+			Double d;
+			if (str == null)
+				d = Double.valueOf(0);
+			else {
 				str = str.replace(",", ".");
-			return (str == null) ? 0 : Double.parseDouble(str);
+				d = Double.valueOf(Double.parseDouble(str));
+			}
+			return d;
 		} catch (RuntimeException e) {
-			return 0;
+			return Double.valueOf(0);
 		}
 	}
 
 	public byte[] parseBytes(String str) {
 		try {
-			return (str == null) ? null : str.getBytes();
+			byte []b;
+			if (str == null)
+				b = null;
+			else
+				b = str.getBytes();
+			return b;
 		} catch (RuntimeException e) {
 			return null;
 		}
@@ -106,7 +141,12 @@ public class StringConverter {
 
 	public BigDecimal parseBigDecimal(String str) {
 		try {
-			return (str == null) ? null : new BigDecimal(str);
+			BigDecimal bd;
+			if (str == null)
+				bd = null;
+			else
+				bd = new BigDecimal(str);
+			return bd;
 		} catch (RuntimeException e) {
 			return null;
 		}
