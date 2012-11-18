@@ -125,7 +125,7 @@ public class FileSetInputStream extends InputStream {
 		}
 		fileNameRE = Pattern.compile(".*" + fileNamePattern);
 		readingHeader = true;
-		String currentName = (String) fileNames.remove(0);
+		String currentName = fileNames.remove(0);
 		dataTail = getTailFromName(currentName);
 		if (headerless)
 			tail = dataTail;
@@ -200,7 +200,7 @@ public class FileSetInputStream extends InputStream {
 			pos = 0;
 			String currentName;
 			if (fileNames.size() > 0) {
-				currentName = (String) fileNames.remove(0);
+				currentName = fileNames.remove(0);
 			} else {
 				currentFile = null;
 				return -1;

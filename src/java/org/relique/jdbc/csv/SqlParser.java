@@ -165,7 +165,7 @@ public class SqlParser
   public String[] getColumnNames() {
 	  String[] result = new String[environment.size()];
 	  for (int i=0; i<environment.size(); i++){
-		  Object[] entry = (Object[]) environment.get(i);
+		  Object[] entry = environment.get(i);
 		  result[i] = (String) entry[0];
 	  }
 	  return result;
@@ -196,12 +196,12 @@ public class SqlParser
   }
 
   public String getAlias(int i) {
-	  Object[] o = (Object[]) environment.get(i);
+	  Object[] o = environment.get(i);
 	  return (String) o[0];
   }
 
   public Expression getExpression(int i) {
-	  Object[] o = (Object[]) environment.get(i);
+	  Object[] o = environment.get(i);
 	  return (Expression) o[1];
   }
 

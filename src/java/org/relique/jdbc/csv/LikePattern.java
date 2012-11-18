@@ -45,7 +45,7 @@ public class LikePattern {
 			 */
 			retval = likePattern.equals(input);
 		} else {
-			Pattern p = (Pattern)compiledRegexs.get(likePattern);
+			Pattern p = compiledRegexs.get(likePattern);
 			if (p == null) {
 				/*
 				 * First convert LIKE pattern to a regular expression.
