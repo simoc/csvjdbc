@@ -348,7 +348,7 @@ public class StringConverter {
     		Object[] args = new Object[1];
     		args[0] = stringRepresentation;
 			try {
-				value = ((Method)(converterMethodForClass.get(sqlTypeName))).invoke(this, args);
+				value = converterMethodForClass.get(sqlTypeName).invoke(this, args);
 			} catch (IllegalArgumentException e) {
 			} catch (IllegalAccessException e) {
 			} catch (InvocationTargetException e) {

@@ -248,7 +248,7 @@ public class CsvRawReader {
 		if (fixedWidthColumns != null) {
 			retval = new int[fixedWidthColumns.size()];
 			for (int i = 0; i < retval.length; i++) {
-				int []columnIndexes = (int [])fixedWidthColumns.get(i);
+				int []columnIndexes = fixedWidthColumns.get(i);
 				retval[i] = columnIndexes[1] - columnIndexes[0] + 1;
 			}
 		} else {
@@ -296,7 +296,7 @@ public class CsvRawReader {
 		if (line == null)
 			line = "";
 		for (int i = 0; i < values.length; i++) {
-			int []columnIndexes = (int [])fixedWidthColumns.get(i);
+			int []columnIndexes = fixedWidthColumns.get(i);
 			if (columnIndexes[0] >= line.length())
 				values[i] = "";
 			else if (columnIndexes[1] >= line.length())

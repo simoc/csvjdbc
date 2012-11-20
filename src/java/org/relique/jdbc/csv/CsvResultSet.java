@@ -247,7 +247,7 @@ public class CsvResultSet implements ResultSet {
 		 * Replace any "select *" with the list of column names in that table.
 		 */
 		for (int i = 0; i < this.queryEnvironment.size(); i++) {
-			Object[] o = (Object[])this.queryEnvironment.get(i);
+			Object[] o = this.queryEnvironment.get(i);
 			if (o[1] instanceof AsteriskExpression) {
 				AsteriskExpression asteriskExpression = (AsteriskExpression)o[1];
 				
@@ -284,7 +284,7 @@ public class CsvResultSet implements ResultSet {
 					if (index < 0 || index >= this.queryEnvironment.size()) {
 						throw new SQLException("Invalid GROUP BY column: " + (index + 1));
 					}
-					Object[] q = (Object[])this.queryEnvironment.get(index);
+					Object[] q = this.queryEnvironment.get(index);
 					this.groupByColumns.set(i, (Expression)q[1]);
 				}
 			}
@@ -318,7 +318,7 @@ public class CsvResultSet implements ResultSet {
 					if (index < 0 || index >= this.queryEnvironment.size()) {
 						throw new SQLException("Invalid ORDER BY column: " + (index + 1));
 					}
-					Object[] q = (Object[])this.queryEnvironment.get(index);
+					Object[] q = this.queryEnvironment.get(index);
 					o[1] = q[1];
 				}
 			}
@@ -350,7 +350,7 @@ public class CsvResultSet implements ResultSet {
 			 */
 			List<String> allUsedColumns = new LinkedList<String>();
 			for (int i = 0; i < this.queryEnvironment.size(); i++) {
-				Object[] o = (Object[]) this.queryEnvironment.get(i);
+				Object[] o = this.queryEnvironment.get(i);
 				if (o[1] != null) {
 					allUsedColumns.addAll(((Expression)o[1]).usedColumns());
 				}
@@ -367,7 +367,7 @@ public class CsvResultSet implements ResultSet {
         	 * Check that each selected expression is valid, using only column names contained in the table.
         	 */
     		for (int i = 0; i < this.queryEnvironment.size(); i++) {
-				Object[] o = (Object[]) this.queryEnvironment.get(i);
+				Object[] o = this.queryEnvironment.get(i);
 				if (o[1] != null) {
 					Expression expr = (Expression)o[1];
 					List<String> exprUsedColumns = expr.usedColumns();
@@ -585,20 +585,20 @@ public class CsvResultSet implements ResultSet {
 			}
 			ArrayList<String> queryEnvironmentColumns = new ArrayList<String>();
 			for (int i = 0; i < this.queryEnvironment.size(); i++) {
-				Object[] o = (Object[]) this.queryEnvironment.get(i);
+				Object[] o = this.queryEnvironment.get(i);
 				queryEnvironmentColumns.add(o[0].toString());
 				if (o[1] != null) {
-					Expression expr = (Expression)((Object[])o)[1];
+					Expression expr = (Expression)o[1];
 					for (Object o2 : expr.usedColumns()) {
 						queryEnvironmentColumns.add(o2.toString());
 					}
 				}
 			}
 			for (int i = 0; i < this.queryEnvironment.size(); i++) {
-				Object[] o = (Object[]) this.queryEnvironment.get(i);
+				Object[] o = this.queryEnvironment.get(i);
 				if (!groupingColumns.contains(o[0])) {
 					if (o[1] != null) {
-						Expression expr = (Expression)((Object[])o)[1];
+						Expression expr = (Expression)o[1];
 						for (Object o2 : expr.usedColumns()) {
 							String columnName = o2.toString();
 							if (!groupingColumns.contains(columnName)) {
@@ -768,7 +768,7 @@ public class CsvResultSet implements ResultSet {
     		return objectEnvironment;
     	}
 		for (int i = 0; i < queryEnvironment.size(); i++){
-			Object[] o = (Object[]) queryEnvironment.get(i);
+			Object[] o = queryEnvironment.get(i);
 			String key = (String) o[0];
 			Object value = ((Expression) o[1]).eval(recordEnvironment);
 			objectEnvironment.put(key.toUpperCase(), value);
@@ -818,7 +818,7 @@ public class CsvResultSet implements ResultSet {
     	} else {
     		environment = new ArrayList<Object>(queryEnvironment.size());
     		for (int i = 0; i < queryEnvironment.size(); i++) {
-    			Object[] o = (Object[]) queryEnvironment.get(i);
+    			Object[] o = queryEnvironment.get(i);
     			Object value = ((Expression) o[1]).eval(objectEnvironment);
     			environment.add(value);
     		}
@@ -892,7 +892,7 @@ public class CsvResultSet implements ResultSet {
         if (columnIndex < 1 || columnIndex > this.queryEnvironment.size()) {
             throw new SQLException("Column not found: invalid index: "+columnIndex);
         }
-		Object[] o = (Object[]) queryEnvironment.get(columnIndex-1);
+		Object[] o = queryEnvironment.get(columnIndex-1);
 		try{
 			return ((Expression) o[1]).eval(recordEnvironment).toString();
 		} catch (NullPointerException e){
@@ -1536,7 +1536,7 @@ public class CsvResultSet implements ResultSet {
     			env.put("@STRINGCONVERTER", converter);
 
     		for(int i=0; i<columnCount; i++) {
-				Object[] o = (Object[]) queryEnvironment.get(i);
+				Object[] o = queryEnvironment.get(i);
 				columnNames[i] = (String)o[0];
 				columnLabels[i] = columnNames[i];
 
@@ -1601,7 +1601,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Object getObject(int columnIndex) throws SQLException {
-		Object[] o = (Object[]) queryEnvironment.get(columnIndex-1);
+		Object[] o = queryEnvironment.get(columnIndex-1);
 		try{
 			return ((Expression) o[1]).eval(recordEnvironment);
 		} catch (NullPointerException e){
@@ -3507,7 +3507,7 @@ public class CsvResultSet implements ResultSet {
 			throw new SQLException("Can't access columns with empty name by name");
 		for (int i = 0; i < this.queryEnvironment.size(); i++)
 		{
-			Object[] queryEnvEntry = (Object[]) this.queryEnvironment.get(i);
+			Object[] queryEnvEntry = this.queryEnvironment.get(i);
 			if(((String)queryEnvEntry[0]).equalsIgnoreCase(columnLabel))
 				return i+1;
 		}

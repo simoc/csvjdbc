@@ -129,7 +129,7 @@ public class SqlParser
 
 	  Iterator<ParsedExpression> it = cs2.queryEntries.iterator();
 	  while (it.hasNext()) {
-		  ParsedExpression parsedExpression = (ParsedExpression)it.next();
+		  ParsedExpression parsedExpression = it.next();
 		  if (parsedExpression != null) {
 			QueryEnvEntry cc = (QueryEnvEntry)parsedExpression.content;
 			String key = cc.key;
