@@ -1179,6 +1179,7 @@ public class CsvConnection implements Connection {
 	 * @param columnTypes comma-separated list of data types.
 	 * @deprecated Pass columnTypes when creating driver.  To be removed in a future version.
 	 */
+	@Deprecated
 	public void setColumnTypes(String columnTypes) {
 		this.columnTypes.put(null, columnTypes);
 	}
@@ -1197,6 +1198,7 @@ public class CsvConnection implements Connection {
 	 * @param indexedFiles flag true if indexed files are to be read.
 	 * @deprecated Pass indexedFiles when creating driver.  To be removed in a future version.
 	 */
+	@Deprecated
 	public void setIndexedFiles(boolean indexedFiles) {
 		this.indexedFiles = indexedFiles;
 	}

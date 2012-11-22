@@ -1010,6 +1010,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @deprecated
      */
+    @Deprecated
     public BigDecimal getBigDecimal(int columnIndex, int scale)
             throws SQLException {
         // let getBigDecimal(int) handle this for now
@@ -1128,6 +1129,7 @@ public class CsvResultSet implements ResultSet {
      * @deprecated use <code>getCharacterStream</code> in place of
      *              <code>getUnicodeStream</code>
      */
+    @Deprecated
     public InputStream getUnicodeStream(int columnIndex) throws SQLException {
         // delegate to getAsciiStream(int)
         return getAsciiStream(columnIndex);
@@ -1287,6 +1289,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @deprecated
      */
+    @Deprecated
     public BigDecimal getBigDecimal(String columnName, int scale)
             throws SQLException {
     	return getBigDecimal(findColumn(columnName));
@@ -1403,6 +1406,7 @@ public class CsvResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @deprecated use <code>getCharacterStream</code> instead
      */
+    @Deprecated
     public InputStream getUnicodeStream(String columnName) throws SQLException {
     	return getUnicodeStream(findColumn(columnName));
     }

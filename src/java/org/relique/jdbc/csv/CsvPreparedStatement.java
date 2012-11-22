@@ -309,6 +309,7 @@ public class CsvPreparedStatement extends CsvStatement implements
 		this.parameters[arg0] = arg1;
 	}
 
+	@Deprecated
 	public void setUnicodeStream(int arg0, InputStream arg1, int arg2)
 			throws SQLException {
 		// TODO Auto-generated method stub
