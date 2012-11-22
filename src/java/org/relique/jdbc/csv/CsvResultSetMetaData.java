@@ -274,8 +274,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 	 */
 	public int getColumnType(int column) throws SQLException {
 		String columnTypeName = getColumnTypeName(column);
-		Integer value = (Integer) typeNameToTypeCode
-				.get(columnTypeName);
+		Integer value = typeNameToTypeCode.get(columnTypeName);
 		return value.intValue();
 	}
 
