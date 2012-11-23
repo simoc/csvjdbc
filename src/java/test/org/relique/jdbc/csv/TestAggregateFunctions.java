@@ -208,7 +208,22 @@ public class TestAggregateFunctions extends TestCase {
 		stmt.close();
 		conn.close();
 	}
-	
+
+	public void testMaxNoResultsExpression() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT MAX(ID)+1 FROM sample8 WHERE ID > 999");
+		assertTrue(results.next());
+		assertEquals("Incorrect max", null, results.getObject(1));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+
 	public void testMaxDate() throws SQLException {
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,Date,Time");

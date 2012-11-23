@@ -396,6 +396,10 @@ class BinaryOperation extends Expression{
   public Object eval(Map<String, Object> env){
     Object leftEval = left.eval(env);
     Object rightEval = right.eval(env);
+
+    if (leftEval == null || rightEval == null)
+      return null;
+
     try {
       Integer leftInt = (Integer)leftEval;
       BigInteger bil = new BigInteger(leftInt.toString());
