@@ -224,6 +224,23 @@ public class TestAggregateFunctions extends TestCase {
 		conn.close();
 	}
 
+	public void testMaxRound() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Double,Double,Double,Double,Double,Double,Double");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT ROUND(MAX(C5)) FROM numeric");
+		assertTrue(results.next());
+		assertEquals("Incorrect max", 3, results.getInt(1));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+
 	public void testMaxDate() throws SQLException {
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,Date,Time");

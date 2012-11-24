@@ -119,6 +119,11 @@ class SQLLowerFunction extends Expression{
     result.addAll(expression.usedColumns());
     return result;
   }
+  public List<AggregateFunction> aggregateFunctions(){
+    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+    result.addAll(expression.aggregateFunctions());
+    return result;
+  }
 }
 class SQLRoundFunction extends Expression{
   Expression expression;
@@ -155,6 +160,11 @@ class SQLRoundFunction extends Expression{
     result.addAll(expression.usedColumns());
     return result;
   }
+  public List<AggregateFunction> aggregateFunctions(){
+    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+    result.addAll(expression.aggregateFunctions());
+    return result;
+  }
 }
 class SQLUpperFunction extends Expression{
   Expression expression;
@@ -173,6 +183,11 @@ class SQLUpperFunction extends Expression{
   public List<String> usedColumns(){
     List<String> result = new LinkedList<String>();
     result.addAll(expression.usedColumns());
+    return result;
+  }
+  public List<AggregateFunction> aggregateFunctions(){
+    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+    result.addAll(expression.aggregateFunctions());
     return result;
   }
 }
