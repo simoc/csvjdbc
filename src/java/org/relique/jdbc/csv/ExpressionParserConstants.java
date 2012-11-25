@@ -61,47 +61,49 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int MIN = 29;
   /** RegularExpression Id. */
-  int FROM = 30;
+  int SUM = 30;
   /** RegularExpression Id. */
-  int WHERE = 31;
+  int FROM = 31;
   /** RegularExpression Id. */
-  int GROUP = 32;
+  int WHERE = 32;
   /** RegularExpression Id. */
-  int ORDER = 33;
+  int GROUP = 33;
   /** RegularExpression Id. */
-  int BY = 34;
+  int ORDER = 34;
   /** RegularExpression Id. */
-  int HAVING = 35;
+  int BY = 35;
   /** RegularExpression Id. */
-  int LIMIT = 36;
+  int HAVING = 36;
   /** RegularExpression Id. */
-  int OFFSET = 37;
+  int LIMIT = 37;
   /** RegularExpression Id. */
-  int NAME = 38;
+  int OFFSET = 38;
   /** RegularExpression Id. */
-  int STRING = 39;
+  int NAME = 39;
   /** RegularExpression Id. */
-  int RELOP = 40;
+  int STRING = 40;
   /** RegularExpression Id. */
-  int ASTERISK = 41;
+  int RELOP = 41;
   /** RegularExpression Id. */
-  int NAMEASTERISK = 42;
+  int ASTERISK = 42;
   /** RegularExpression Id. */
-  int MINUS = 43;
+  int NAMEASTERISK = 43;
   /** RegularExpression Id. */
-  int PLUS = 44;
+  int MINUS = 44;
   /** RegularExpression Id. */
-  int DIVIDE = 45;
+  int PLUS = 45;
   /** RegularExpression Id. */
-  int OPENPARENTHESIS = 46;
+  int DIVIDE = 46;
   /** RegularExpression Id. */
-  int CLOSEPARENTHESIS = 47;
+  int OPENPARENTHESIS = 47;
   /** RegularExpression Id. */
-  int TABLENAME = 52;
+  int CLOSEPARENTHESIS = 48;
   /** RegularExpression Id. */
-  int QUOTEDTABLENAME = 53;
+  int TABLENAME = 53;
   /** RegularExpression Id. */
-  int UNEXPECTED_CHAR = 54;
+  int QUOTEDTABLENAME = 54;
+  /** RegularExpression Id. */
+  int UNEXPECTED_CHAR = 55;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -140,6 +142,7 @@ public interface ExpressionParserConstants {
     "\"COUNT\"",
     "\"MAX\"",
     "\"MIN\"",
+    "\"SUM\"",
     "\"FROM\"",
     "\"WHERE\"",
     "\"GROUP\"",

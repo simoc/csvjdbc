@@ -373,6 +373,83 @@ class SQLMinFunction extends AggregateFunction{
     }
   }
 }
+class SQLSumFunction extends AggregateFunction{
+  Expression expression;
+  BigDecimal sum = null;
+  public SQLSumFunction(Expression expression){
+    this.expression = expression;
+  }
+  public Object eval(Map<String, Object> env){
+    Object retval = null;
+    Object o = env.get("@GROUPROWS");
+    if (o != null) {
+      /*
+       * Find the sum of rows grouped together
+       * by the GROUP BY clause.
+       */
+      List groupRows = (List)o;
+      BigDecimal groupSum = null;
+      for (int i = 0; i < groupRows.size(); i++) {
+        o = expression.eval((Map)groupRows.get(i));
+        if (o != null){
+          try{
+            if (groupSum == null)
+              groupSum = new BigDecimal(o.toString());
+            else
+              groupSum = groupSum.add(new BigDecimal(o.toString()));
+          } catch (NumberFormatException e) {
+          }
+        }
+      }
+      try{
+        if (groupSum != null)
+          retval = Long.valueOf(groupSum.longValueExact());
+      } catch (ArithmeticException e){
+        retval = groupSum.doubleValue();
+      }
+      return retval;
+    }
+
+    try{
+      if (sum != null)
+        retval = Long.valueOf(sum.longValueExact());
+    } catch (ArithmeticException e){
+      retval = sum.doubleValue();
+    }
+    return retval;
+  }
+  public String toString(){
+    return "SUM("+expression+")";
+  }
+  public List<String> usedColumns(){
+    return new LinkedList<String>();
+  }
+  public List<String> aggregateColumns(){
+    List<String> result = new LinkedList<String>();
+    result.addAll(expression.usedColumns());
+    return result;
+  }
+  public List<AggregateFunction> aggregateFunctions(){
+    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+    result.add(this);
+    return result;
+  }
+  public void processRow(Map<String, Object> env){
+    /*
+     * Only consider non-null values.
+     */
+    Object o = expression.eval(env);
+    if (o != null){
+      try{
+        if (sum == null)
+          sum = new BigDecimal(o.toString());
+        else
+          sum = sum.add(new BigDecimal(o.toString()));
+      } catch (NumberFormatException e) {
+      }
+    }
+  }
+}
 class QueryEnvEntry extends Expression{
   String key;
   Expression expression;
@@ -981,6 +1058,9 @@ TOKEN:{
   <MIN:"MIN">
 }
 TOKEN:{
+  <SUM:"SUM">
+}
+TOKEN:{
   /*
    * Change to IN_TABLE state after parsing "FROM" keyword.
    */
@@ -1142,7 +1222,7 @@ ParsedExpression queryEnvEntry():{
   {
     alias = null;
   }
-  (expression = binaryOperation()((<AS>)?alias = columnName())? {
+  (expression = binaryOperation()((<AS>)?alias = columnAlias())? {
     if (alias != null)
       result = new QueryEnvEntry(((ColumnName)alias).columnName, expression);
     else if (expression instanceof ColumnName)
@@ -1299,6 +1379,9 @@ Expression simpleExpression():{
   | <MIN> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
     return new SQLMinFunction(arg);
   }
+  | <SUM> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
+    return new SQLSumFunction(arg);
+  }
   | arg = columnName(){
     return arg;
   }
@@ -1361,6 +1444,14 @@ String stringConstantAtom():{
 {
   t = <STRING>{
     return t.image.substring(1, t.image.length()-1);
+  }
+}
+Expression columnAlias():{
+  Token t;
+}
+{
+  (t=<NAME>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>){
+    return new ColumnName(t.image);
   }
 }
 

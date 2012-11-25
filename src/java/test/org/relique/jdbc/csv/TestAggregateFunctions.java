@@ -309,4 +309,56 @@ public class TestAggregateFunctions extends TestCase {
 		stmt.close();
 		conn.close();
 	}
+	
+	public void testSum() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select SUM(ID) from sample8");
+		assertTrue(results.next());
+		assertEquals("Incorrect sum", 21, results.getInt(1));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+
+	public void testSumTwoColumns() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,Int,Int,Long,Double,Double,Double");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select sum(c4), sum(c5) from numeric");
+		assertTrue(results.next());
+		assertEquals("Incorrect sum", 989999995600L, results.getLong(1));
+		assertEquals("Incorrect sum", "3.14", results.getString(2));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+
+	public void testSumNoResults() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select SUM(ID) from sample8 where id > 999");
+		assertTrue(results.next());
+		assertEquals("Incorrect sum", null, results.getObject(1));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
 }
