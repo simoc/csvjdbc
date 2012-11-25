@@ -376,6 +376,7 @@ class SQLMinFunction extends AggregateFunction{
 class SQLSumFunction extends AggregateFunction{
   Expression expression;
   BigDecimal sum = null;
+  int counter = 0;
   public SQLSumFunction(Expression expression){
     this.expression = expression;
   }
@@ -389,6 +390,7 @@ class SQLSumFunction extends AggregateFunction{
        */
       List groupRows = (List)o;
       BigDecimal groupSum = null;
+      counter = 0;
       for (int i = 0; i < groupRows.size(); i++) {
         o = expression.eval((Map)groupRows.get(i));
         if (o != null){
@@ -397,6 +399,7 @@ class SQLSumFunction extends AggregateFunction{
               groupSum = new BigDecimal(o.toString());
             else
               groupSum = groupSum.add(new BigDecimal(o.toString()));
+            counter++;
           } catch (NumberFormatException e) {
           }
         }
@@ -445,9 +448,26 @@ class SQLSumFunction extends AggregateFunction{
           sum = new BigDecimal(o.toString());
         else
           sum = sum.add(new BigDecimal(o.toString()));
+        counter++;
       } catch (NumberFormatException e) {
       }
     }
+  }
+}
+class SQLAvgFunction extends SQLSumFunction{
+  public SQLAvgFunction(Expression expression){
+    super(expression);
+  }
+  public Object eval(Map<String, Object> env){
+    Object o = super.eval(env);
+    if (o != null){
+      double average = ((Number)o).doubleValue() / counter;
+      o = new Double(average);
+    }
+    return o;
+  }
+  public String toString(){
+    return "AVG("+expression+")";
   }
 }
 class QueryEnvEntry extends Expression{
@@ -1061,6 +1081,9 @@ TOKEN:{
   <SUM:"SUM">
 }
 TOKEN:{
+  <AVG:"AVG">
+}
+TOKEN:{
   /*
    * Change to IN_TABLE state after parsing "FROM" keyword.
    */
@@ -1382,6 +1405,9 @@ Expression simpleExpression():{
   | <SUM> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
     return new SQLSumFunction(arg);
   }
+  | <AVG> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
+    return new SQLAvgFunction(arg);
+  }
   | arg = columnName(){
     return arg;
   }
@@ -1450,7 +1476,7 @@ Expression columnAlias():{
   Token t;
 }
 {
-  (t=<NAME>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>){
+  (t=<NAME>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>){
     return new ColumnName(t.image);
   }
 }

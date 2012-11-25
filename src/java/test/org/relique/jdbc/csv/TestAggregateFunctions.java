@@ -361,4 +361,56 @@ public class TestAggregateFunctions extends TestCase {
 		stmt.close();
 		conn.close();
 	}
+	
+	public void testAvg() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select AVG(ID) from sample8");
+		assertTrue(results.next());
+		assertEquals("Incorrect avg", "3.5", results.getString(1));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+
+	public void testAvgTwoColumns() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,Int,Int,Long,Double,Double,Double");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select avg(c2), avg(c5) from numeric");
+		assertTrue(results.next());
+		assertEquals("Incorrect avg", "-497.5", results.getString(1));
+		assertEquals("Incorrect avg", "1.57", results.getString(2));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+
+	public void testAvgNoResults() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select AVG(ID) from sample8 where id > 999");
+		assertTrue(results.next());
+		assertEquals("Incorrect avg", null, results.getObject(1));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
 }

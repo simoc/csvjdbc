@@ -352,6 +352,7 @@ class SQLMinFunction extends AggregateFunction{
 class SQLSumFunction extends AggregateFunction{
   Expression expression;
   BigDecimal sum = null;
+  int counter = 0;
   public SQLSumFunction(Expression expression){
     this.expression = expression;
   }
@@ -365,6 +366,7 @@ class SQLSumFunction extends AggregateFunction{
        */
       List groupRows = (List)o;
       BigDecimal groupSum = null;
+      counter = 0;
       for (int i = 0; i < groupRows.size(); i++) {
         o = expression.eval((Map)groupRows.get(i));
         if (o != null){
@@ -373,6 +375,7 @@ class SQLSumFunction extends AggregateFunction{
               groupSum = new BigDecimal(o.toString());
             else
               groupSum = groupSum.add(new BigDecimal(o.toString()));
+            counter++;
           } catch (NumberFormatException e) {
           }
         }
@@ -421,9 +424,26 @@ class SQLSumFunction extends AggregateFunction{
           sum = new BigDecimal(o.toString());
         else
           sum = sum.add(new BigDecimal(o.toString()));
+        counter++;
       } catch (NumberFormatException e) {
       }
     }
+  }
+}
+class SQLAvgFunction extends SQLSumFunction{
+  public SQLAvgFunction(Expression expression){
+    super(expression);
+  }
+  public Object eval(Map<String, Object> env){
+    Object o = super.eval(env);
+    if (o != null){
+      double average = ((Number)o).doubleValue() / counter;
+      o = new Double(average);
+    }
+    return o;
+  }
+  public String toString(){
+    return "AVG("+expression+")";
   }
 }
 class QueryEnvEntry extends Expression{
@@ -1190,6 +1210,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     case MAX:
     case MIN:
     case SUM:
+    case AVG:
     case NAME:
     case STRING:
     case MINUS:
@@ -1205,6 +1226,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       case MAX:
       case MIN:
       case SUM:
+      case AVG:
       case NAME:
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case AS:
@@ -1321,6 +1343,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     case MAX:
     case MIN:
     case SUM:
+    case AVG:
     case NAME:
     case STRING:
     case MINUS:
@@ -1434,6 +1457,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     case MAX:
     case MIN:
     case SUM:
+    case AVG:
     case NAME:
     case STRING:
     case MINUS:
@@ -1552,6 +1576,13 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
     {if (true) return new SQLSumFunction(arg);}
+      break;
+    case AVG:
+      jj_consume_token(AVG);
+      jj_consume_token(OPENPARENTHESIS);
+      arg = binaryOperation();
+      jj_consume_token(CLOSEPARENTHESIS);
+    {if (true) return new SQLAvgFunction(arg);}
       break;
     case NAME:
       arg = columnName();
@@ -1672,6 +1703,9 @@ public class ExpressionParser implements ExpressionParserConstants {
     case UPPER:
       t = jj_consume_token(UPPER);
       break;
+    case AVG:
+      t = jj_consume_token(AVG);
+      break;
     case COUNT:
       t = jj_consume_token(COUNT);
       break;
@@ -1710,10 +1744,10 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0xc00000,0xc00000,0x40,0x80,0x0,0x40000,0x40000,0x0,0x80,0x0,0x0,0x80,0x0,0x0,0x0,0x80000000,0x40000,0x7f040000,0x0,0x7f203300,0x8000,0x4000,0x7f213300,0x1a0000,0x0,0x0,0x7f203300,0x0,0x0,0x7f203300,0x0,0x300,0x0,0x7f000000,};
+      jj_la1_0 = new int[] {0xc00000,0xc00000,0x40,0x80,0x0,0x40000,0x40000,0x0,0x80,0x0,0x0,0x80,0x0,0x0,0x0,0x0,0x40000,0xff040000,0x0,0xff203300,0x8000,0x4000,0xff213300,0x1a0000,0x0,0x0,0xff203300,0x0,0x0,0xff203300,0x0,0x300,0x0,0xff000000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x600000,0x0,0x80,0x1,0x0,0x10,0x2,0x0,0x4,0x40,0x20,0x0,0x0,0x80,0xc00,0x9d80,0x0,0x0,0x9180,0x200,0x3000,0x4400,0x9580,0x3000,0x4400,0x9180,0x1000,0x0,0x100,0x80,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0xc00000,0x0,0x100,0x2,0x0,0x20,0x4,0x0,0x8,0x80,0x40,0x1,0x0,0x100,0x1800,0x13b00,0x0,0x0,0x12300,0x400,0x6000,0x8800,0x12b00,0x6000,0x8800,0x12300,0x2000,0x0,0x200,0x100,};
    }
 
   /** Constructor with InputStream. */
@@ -1830,7 +1864,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[56];
+    boolean[] la1tokens = new boolean[57];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -1847,7 +1881,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 56; i++) {
+    for (int i = 0; i < 57; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
