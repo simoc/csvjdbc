@@ -2958,8 +2958,10 @@ public class TestCsvDriver extends TestCase {
 	}
 	
 	public void testLiteralWithUnicode() throws SQLException {
+		Properties props = new Properties();
+		props.put("charset", "UTF-8");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath);
+				+ filePath, props);
 
 		Statement stmt = conn.createStatement();
 
