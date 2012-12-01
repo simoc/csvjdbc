@@ -509,6 +509,29 @@ public class TestSqlParser extends TestCase {
 		assertEquals((Object)(new Double("2.5")), cs.eval(env));
 	}
 
+	public void testEvaluateShortOperations() throws Exception {
+		ExpressionParser cs;
+		cs = new ExpressionParser(new StringReader("A+1 AS result"));
+		cs.parseQueryEnvEntry();
+		Map<String, Object> env = new HashMap<String, Object>();
+		env.put("A", new Short("1"));
+		Object o = cs.eval(env);
+		assertEquals(o.toString(), "2");
+
+		cs = new ExpressionParser(new StringReader("A+B AS result"));
+		cs.parseQueryEnvEntry();		
+		env.put("A", new Short("3"));
+		env.put("B", new Short("4"));
+		o = cs.eval(env);
+		assertEquals(o.toString(), "7");
+		
+		cs = new ExpressionParser(new StringReader("A/2 AS result"));
+		cs.parseQueryEnvEntry();		
+		env.put("A", new Short("25"));
+		o = cs.eval(env);
+		assertEquals(o.toString(), "12");
+	}
+
 	public void testEvaluateDateOperations() throws Exception {
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("CURRENT_DATE AS now"));
