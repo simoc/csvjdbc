@@ -165,7 +165,9 @@ class SQLRoundFunction extends Expression{
         }
       }
       if (retval != null) {
-        if (!(retval instanceof Integer)) {
+        if (retval instanceof Short) {
+          retval = new Integer(((Short)retval).intValue());
+        } else if (!(retval instanceof Integer)) {
           double d = ((Number)retval).doubleValue();
           if (d < Integer.MIN_VALUE || d > Integer.MAX_VALUE)
 	    retval = new Double(Math.round(d));
@@ -513,9 +515,17 @@ class BinaryOperation extends Expression{
       return null;
 
     try {
-      Integer leftInt = (Integer)leftEval;
+      Integer leftInt;
+      if (leftEval instanceof Short)
+        leftInt = Integer.valueOf(((Short)leftEval).intValue());
+      else
+        leftInt = (Integer)leftEval;
       BigInteger bil = new BigInteger(leftInt.toString());
-      Integer rightInt = (Integer)rightEval;
+      Integer rightInt;
+      if (rightEval instanceof Short)
+        rightInt = Integer.valueOf(((Short)rightEval).intValue());
+      else
+        rightInt = (Integer)rightEval;
       BigInteger bir = new BigInteger(rightInt.toString());
       if (op == '+')return new Integer(bil.add(bir).toString());
       if (op == '-')return new Integer(bil.subtract(bir).toString());
@@ -542,7 +552,11 @@ class BinaryOperation extends Expression{
           StringConverter sc = (StringConverter) stringConverter.eval(env);
           return sc.parseTimestamp(leftD.toString() + " " + rightT.toString());
         } else {
-          Integer rightInt = (Integer)rightEval;
+          Integer rightInt;
+          if (rightEval instanceof Short)
+            rightInt = Integer.valueOf(((Short)rightEval).intValue());
+          else
+            rightInt = (Integer)rightEval;
 	  return incrementDate(leftD, rightInt.intValue());
         }
       } else if (op == '+' && rightEval instanceof Date){
@@ -553,11 +567,17 @@ class BinaryOperation extends Expression{
           StringConverter sc = (StringConverter) stringConverter.eval(env);
           return sc.parseTimestamp(rightD.toString() + " " + leftT.toString());
         } else {
-          Integer leftInt = (Integer)leftEval;
+          Integer leftInt;
+          if (leftEval instanceof Short)
+            leftInt = Integer.valueOf(((Short)leftEval).intValue());
+          else
+            leftInt = (Integer)leftEval;
 	  return incrementDate(rightD, leftInt.intValue());
         }
       } else if (op == '-' && leftEval instanceof Date && rightEval instanceof Integer){
 	  return incrementDate((Date)leftEval, -((Integer)rightEval).intValue());
+      } else if (op == '-' && leftEval instanceof Date && rightEval instanceof Short){
+	  return incrementDate((Date)leftEval, -((Short)rightEval).intValue());
       } else if (op == '-' && (leftEval instanceof Date || rightEval instanceof Date)){
 	  if (!(leftEval instanceof Date)) {
             Expression stringConverter = new ColumnName("@StringConverter");
