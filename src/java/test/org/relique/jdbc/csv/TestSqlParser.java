@@ -532,6 +532,34 @@ public class TestSqlParser extends TestCase {
 		assertEquals(o.toString(), "12");
 	}
 
+	public void testEvaluateLongOperations() throws Exception {
+		ExpressionParser cs;
+		cs = new ExpressionParser(new StringReader("A+5678678678 AS result"));
+		cs.parseQueryEnvEntry();
+		Map<String, Object> env = new HashMap<String, Object>();
+		env.put("A", new Integer("1"));
+		Object o = cs.eval(env);
+		assertEquals(o.toString(), "5678678679");
+
+		cs = new ExpressionParser(new StringReader("A-50000000000 AS result"));
+		cs.parseQueryEnvEntry();		
+		env.put("A", new Long("120000000000"));
+		o = cs.eval(env);
+		assertEquals(o.toString(), "70000000000");
+
+		cs = new ExpressionParser(new StringReader("A*5000000000 AS result"));
+		cs.parseQueryEnvEntry();		
+		env.put("A", new Integer("3"));
+		o = cs.eval(env);
+		assertEquals(o.toString(), "15000000000");
+		
+		cs = new ExpressionParser(new StringReader("A/10 AS result"));
+		cs.parseQueryEnvEntry();		
+		env.put("A", new Long("-1234567891230"));
+		o = cs.eval(env);
+		assertEquals(o.toString(), "-123456789123");
+	}
+
 	public void testEvaluateDateOperations() throws Exception {
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("CURRENT_DATE AS now"));
