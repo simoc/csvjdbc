@@ -552,7 +552,13 @@ public class TestSqlParser extends TestCase {
 		env.put("A", new Integer("3"));
 		o = cs.eval(env);
 		assertEquals(o.toString(), "15000000000");
-		
+
+		cs = new ExpressionParser(new StringReader("A*10000L AS result"));
+		cs.parseQueryEnvEntry();		
+		env.put("A", new Integer("1000000"));
+		o = cs.eval(env);
+		assertEquals(o.toString(), "10000000000");
+
 		cs = new ExpressionParser(new StringReader("A/10 AS result"));
 		cs.parseQueryEnvEntry();		
 		env.put("A", new Long("-1234567891230"));

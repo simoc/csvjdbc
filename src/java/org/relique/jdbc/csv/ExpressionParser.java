@@ -143,7 +143,7 @@ class SQLRoundFunction extends Expression{
       if (retval != null) {
         if (retval instanceof Short) {
           retval = new Integer(((Short)retval).intValue());
-        } else if (!(retval instanceof Integer)) {
+        } else if (!(retval instanceof Integer || retval instanceof Long)) {
           double d = ((Number)retval).doubleValue();
           if (d < Integer.MIN_VALUE || d > Integer.MAX_VALUE)
             retval = new Double(Math.round(d));
@@ -492,21 +492,42 @@ class BinaryOperation extends Expression{
 
     try {
       Integer leftInt;
-      if (leftEval instanceof Short)
+      BigInteger bil;
+      boolean isLongExpression = false;
+      if (leftEval instanceof Short) {
         leftInt = Integer.valueOf(((Short)leftEval).intValue());
-      else
+        bil = new BigInteger(leftInt.toString());
+      } else if (leftEval instanceof Long) {
+        bil = new BigInteger(leftEval.toString());
+        isLongExpression = true;
+      } else {
         leftInt = (Integer)leftEval;
-      BigInteger bil = new BigInteger(leftInt.toString());
+        bil = new BigInteger(leftInt.toString());
+      }
       Integer rightInt;
-      if (rightEval instanceof Short)
+      BigInteger bir;
+      if (rightEval instanceof Short) {
         rightInt = Integer.valueOf(((Short)rightEval).intValue());
-      else
+        bir = new BigInteger(rightInt.toString());
+      } else if (rightEval instanceof Long) {
+        bir = new BigInteger(rightEval.toString());
+        isLongExpression = true;
+      } else {
         rightInt = (Integer)rightEval;
-      BigInteger bir = new BigInteger(rightInt.toString());
-      if (op == '+')return new Integer(bil.add(bir).toString());
-      if (op == '-')return new Integer(bil.subtract(bir).toString());
-      if (op == '*')return new Integer(bil.multiply(bir).toString());
-      if (op == '/')return new Integer(bil.divide(bir).toString());
+        bir = new BigInteger(rightInt.toString());
+      }
+      if (op == '+')
+        bil = bil.add(bir);
+      if (op == '-')
+        bil = bil.subtract(bir);
+      if (op == '*')
+        bil = bil.multiply(bir);
+      if (op == '/')
+        bil = bil.divide(bir);
+      if (isLongExpression)
+        return new Long(bil.toString());
+      else
+        return new Integer(bil.toString());
     }
     catch (ClassCastException e){}try {
       Number leftN = (Number)leftEval;
@@ -528,12 +549,14 @@ class BinaryOperation extends Expression{
           StringConverter sc = (StringConverter) stringConverter.eval(env);
           return sc.parseTimestamp(leftD.toString() + " " + rightT.toString());
         } else {
-          Integer rightInt;
+          Long rightLong;
           if (rightEval instanceof Short)
-            rightInt = Integer.valueOf(((Short)rightEval).intValue());
+            rightLong = Long.valueOf(((Short)rightEval).longValue());
+          else if (rightEval instanceof Long)
+            rightLong = (Long)rightEval;
           else
-            rightInt = (Integer)rightEval;
-          return incrementDate(leftD, rightInt.intValue());
+            rightLong = Long.valueOf(((Integer)rightEval).intValue());
+          return incrementDate(leftD, rightLong.longValue());
         }
       } else if (op == '+' && rightEval instanceof Date){
         Date rightD = (Date)rightEval;
@@ -543,13 +566,17 @@ class BinaryOperation extends Expression{
           StringConverter sc = (StringConverter) stringConverter.eval(env);
           return sc.parseTimestamp(rightD.toString() + " " + leftT.toString());
         } else {
-          Integer leftInt;
+          Long leftLong;
           if (leftEval instanceof Short)
-            leftInt = Integer.valueOf(((Short)leftEval).intValue());
+            leftLong = Long.valueOf(((Short)leftEval).intValue());
+          else if (leftEval instanceof Long)
+            leftLong = (Long)rightEval;
           else
-            leftInt = (Integer)leftEval;
-          return incrementDate(rightD, leftInt.intValue());
+            leftLong = Long.valueOf(((Integer)leftEval).intValue());
+          return incrementDate(rightD, leftLong.longValue());
         }
+      } else if (op == '-' && leftEval instanceof Date && rightEval instanceof Long){
+          return incrementDate((Date)leftEval, -((Long)rightEval).longValue());
       } else if (op == '-' && leftEval instanceof Date && rightEval instanceof Integer){
           return incrementDate((Date)leftEval, -((Integer)rightEval).intValue());
       } else if (op == '-' && leftEval instanceof Date && rightEval instanceof Short){
@@ -586,7 +613,7 @@ class BinaryOperation extends Expression{
     if(op == '+')return ""+leftEval+rightEval;
     return null;
   }
-  private Date incrementDate(Date date, int nDays){
+  private Date incrementDate(Date date, long nDays){
     long newTime = date.getTime() +
       nDays * MILLISECONDS_PER_DAY + MILLISECONDS_PER_DAY / 2;
     Date newDate = new Date(newTime);
@@ -1647,7 +1674,8 @@ public class ExpressionParser implements ExpressionParserConstants {
 
   final public Expression numericConstant() throws ParseException {
   Token t;
-  String sign;
+  String sign, digits;
+  boolean isLong;
    sign="";
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case MINUS:
@@ -1671,11 +1699,19 @@ public class ExpressionParser implements ExpressionParserConstants {
       throw new ParseException();
     }
     Number value = null;
+    digits = sign+t.image;
+    isLong = false;
+    if (digits.toUpperCase().endsWith("L")){
+      digits = digits.substring(0, digits.length() - 1);
+      isLong = true;
+    }
     try {
-      value = new Integer(sign+t.image);
+      value = new Long(digits);
+      if (isLong == false && value.longValue() >= Integer.MIN_VALUE && value.longValue() <= Integer.MAX_VALUE)
+        value = Integer.valueOf(value.intValue());
     }
     catch (NumberFormatException e){
-      value = new Double(sign+t.image);
+      value = new Double(digits);
     }
     {if (true) return new NumericConstant(value);}
     throw new Error("Missing return statement in function");
@@ -1764,10 +1800,10 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0xc00000,0xc00000,0x40,0x80,0x0,0x40000,0x40000,0x0,0x80,0x0,0x0,0x80,0x0,0x0,0x0,0x0,0x40000,0xff040000,0x0,0xff203300,0x8000,0x4000,0xff213300,0x1a0000,0x0,0x0,0xff203300,0x0,0x0,0xff203300,0x0,0x300,0x0,0xff000000,};
+      jj_la1_0 = new int[] {0x1800000,0x1800000,0x40,0x80,0x0,0x80000,0x80000,0x0,0x80,0x0,0x0,0x80,0x0,0x0,0x0,0x0,0x80000,0xfe080000,0x0,0xfe406300,0x10000,0x8000,0xfe426300,0x340000,0x0,0x0,0xfe406300,0x0,0x0,0xfe406300,0x0,0x300,0x0,0xfe000000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0xc00000,0x0,0x100,0x2,0x0,0x20,0x4,0x0,0x8,0x80,0x40,0x1,0x0,0x100,0x1800,0x13b00,0x0,0x0,0x12300,0x400,0x6000,0x8800,0x12b00,0x6000,0x8800,0x12300,0x2000,0x0,0x200,0x100,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x1800000,0x0,0x200,0x4,0x0,0x40,0x8,0x0,0x10,0x100,0x80,0x2,0x0,0x201,0x3000,0x27601,0x0,0x0,0x24601,0x800,0xc000,0x11000,0x25601,0xc000,0x11000,0x24601,0x4000,0x0,0x400,0x201,};
    }
 
   /** Constructor with InputStream. */
@@ -1884,7 +1920,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[57];
+    boolean[] la1tokens = new boolean[58];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -1901,7 +1937,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 57; i++) {
+    for (int i = 0; i < 58; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

@@ -25,87 +25,89 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int EXPONENT = 11;
   /** RegularExpression Id. */
-  int NULL = 12;
+  int TYPESUFFIX = 12;
   /** RegularExpression Id. */
-  int CURRENT_DATE = 13;
+  int NULL = 13;
   /** RegularExpression Id. */
-  int AND = 14;
+  int CURRENT_DATE = 14;
   /** RegularExpression Id. */
-  int OR = 15;
+  int AND = 15;
   /** RegularExpression Id. */
-  int NOT = 16;
+  int OR = 16;
   /** RegularExpression Id. */
-  int IS = 17;
+  int NOT = 17;
   /** RegularExpression Id. */
-  int AS = 18;
+  int IS = 18;
   /** RegularExpression Id. */
-  int LIKE = 19;
+  int AS = 19;
   /** RegularExpression Id. */
-  int BETWEEN = 20;
+  int LIKE = 20;
   /** RegularExpression Id. */
-  int PLACEHOLDER = 21;
+  int BETWEEN = 21;
   /** RegularExpression Id. */
-  int ASC = 22;
+  int PLACEHOLDER = 22;
   /** RegularExpression Id. */
-  int DESC = 23;
+  int ASC = 23;
   /** RegularExpression Id. */
-  int LOWER = 24;
+  int DESC = 24;
   /** RegularExpression Id. */
-  int ROUND = 25;
+  int LOWER = 25;
   /** RegularExpression Id. */
-  int UPPER = 26;
+  int ROUND = 26;
   /** RegularExpression Id. */
-  int COUNT = 27;
+  int UPPER = 27;
   /** RegularExpression Id. */
-  int MAX = 28;
+  int COUNT = 28;
   /** RegularExpression Id. */
-  int MIN = 29;
+  int MAX = 29;
   /** RegularExpression Id. */
-  int SUM = 30;
+  int MIN = 30;
   /** RegularExpression Id. */
-  int AVG = 31;
+  int SUM = 31;
   /** RegularExpression Id. */
-  int FROM = 32;
+  int AVG = 32;
   /** RegularExpression Id. */
-  int WHERE = 33;
+  int FROM = 33;
   /** RegularExpression Id. */
-  int GROUP = 34;
+  int WHERE = 34;
   /** RegularExpression Id. */
-  int ORDER = 35;
+  int GROUP = 35;
   /** RegularExpression Id. */
-  int BY = 36;
+  int ORDER = 36;
   /** RegularExpression Id. */
-  int HAVING = 37;
+  int BY = 37;
   /** RegularExpression Id. */
-  int LIMIT = 38;
+  int HAVING = 38;
   /** RegularExpression Id. */
-  int OFFSET = 39;
+  int LIMIT = 39;
   /** RegularExpression Id. */
-  int NAME = 40;
+  int OFFSET = 40;
   /** RegularExpression Id. */
-  int STRING = 41;
+  int NAME = 41;
   /** RegularExpression Id. */
-  int RELOP = 42;
+  int STRING = 42;
   /** RegularExpression Id. */
-  int ASTERISK = 43;
+  int RELOP = 43;
   /** RegularExpression Id. */
-  int NAMEASTERISK = 44;
+  int ASTERISK = 44;
   /** RegularExpression Id. */
-  int MINUS = 45;
+  int NAMEASTERISK = 45;
   /** RegularExpression Id. */
-  int PLUS = 46;
+  int MINUS = 46;
   /** RegularExpression Id. */
-  int DIVIDE = 47;
+  int PLUS = 47;
   /** RegularExpression Id. */
-  int OPENPARENTHESIS = 48;
+  int DIVIDE = 48;
   /** RegularExpression Id. */
-  int CLOSEPARENTHESIS = 49;
+  int OPENPARENTHESIS = 49;
   /** RegularExpression Id. */
-  int TABLENAME = 54;
+  int CLOSEPARENTHESIS = 50;
   /** RegularExpression Id. */
-  int QUOTEDTABLENAME = 55;
+  int TABLENAME = 55;
   /** RegularExpression Id. */
-  int UNEXPECTED_CHAR = 56;
+  int QUOTEDTABLENAME = 56;
+  /** RegularExpression Id. */
+  int UNEXPECTED_CHAR = 57;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -126,6 +128,7 @@ public interface ExpressionParserConstants {
     "<UNSIGNEDNUMBER>",
     "<DIGITS>",
     "<EXPONENT>",
+    "\"L\"",
     "\"NULL\"",
     "\"CURRENT_DATE\"",
     "\"AND\"",
