@@ -103,11 +103,13 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int CLOSEPARENTHESIS = 50;
   /** RegularExpression Id. */
-  int TABLENAME = 55;
+  int SEMICOLON = 51;
   /** RegularExpression Id. */
-  int QUOTEDTABLENAME = 56;
+  int TABLENAME = 56;
   /** RegularExpression Id. */
-  int UNEXPECTED_CHAR = 57;
+  int QUOTEDTABLENAME = 57;
+  /** RegularExpression Id. */
+  int UNEXPECTED_CHAR = 58;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -167,6 +169,7 @@ public interface ExpressionParserConstants {
     "\"/\"",
     "\"(\"",
     "\")\"",
+    "\";\"",
     "\" \"",
     "\"\\t\"",
     "\"\\r\"",

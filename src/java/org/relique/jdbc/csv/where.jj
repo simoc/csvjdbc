@@ -1197,6 +1197,9 @@ TOKEN:{
 TOKEN:{
   <CLOSEPARENTHESIS:")">
 }
+TOKEN:{
+  <SEMICOLON:";">
+}
 <IN_TABLE> SKIP:{
   " "
   | "\t"
@@ -1209,7 +1212,7 @@ TOKEN:{
  * Switch back to DEFAULT state after parsing table name.
  */
 <IN_TABLE> TOKEN:{
-  <TABLENAME:(~[" ", "\t", "\r", "\n"])+> : DEFAULT
+  <TABLENAME:(~[" ", "\t", "\r", "\n", ";"])+> : DEFAULT
 }
 <IN_TABLE> TOKEN:{
   <QUOTEDTABLENAME:"\""(~["\""])+"\""> : DEFAULT
@@ -1284,6 +1287,7 @@ ParsedStatement selectStatement():{
     (<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?
     (<LIMIT>t=<UNSIGNEDINT>{limit = Integer.parseInt(t.image);}(<OFFSET>t=<UNSIGNEDINT>{offset = Integer.parseInt(t.image);})?)?
   )?
+  (<SEMICOLON>)?
   <EOF>{
     return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, groupByEntries, havingClause, orderByEntries, limit, offset);
   }

@@ -669,4 +669,14 @@ public class TestSqlParser extends TestCase {
 		assertNotNull("query has a WHERE clause", whereClause);
 		assertEquals("Incorrect WHERE", "L [TITLE] '%NOT WHERE I BELONG%'", whereClause.toString());
 	}
+
+	public void testParsingEndingWithSemiColon() throws Exception {
+		SqlParser parser1 = new SqlParser();
+		parser1.parse("SELECT Id FROM sample;");
+		assertEquals("sample", parser1.getTableName());
+
+		SqlParser parser2 = new SqlParser();
+		parser2.parse("SELECT Id FROM sample\n;");
+		assertEquals("sample", parser2.getTableName());
+	}
 }
