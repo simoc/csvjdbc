@@ -112,7 +112,8 @@ public class SqlParser
 	  tableName = null;
 	  tableAlias = null;
 
-	  sql = sql.trim();
+	  // Ensure last line of SQL statement ends with newline so we can correctly skip single-line comments.
+	  sql = sql + "\n";
 
 	  environment = new ArrayList<Object []>();
 

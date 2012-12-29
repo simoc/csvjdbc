@@ -679,4 +679,33 @@ public class TestSqlParser extends TestCase {
 		parser2.parse("SELECT Id FROM sample\n;");
 		assertEquals("sample", parser2.getTableName());
 	}
+
+	public void testParsingComments() throws Exception {
+		SqlParser parser1 = new SqlParser();
+		parser1.parse("-- Comment Before\n" +
+			"--\n" +
+			"SELECT Id FROM sample\n" +
+			"-- Comment After");
+		assertEquals("sample", parser1.getTableName());
+		String[] cols = parser1.getColumnNames();
+		assertTrue("Incorrect Column Count", cols.length == 1);
+		assertTrue("Column Name Col 0 '" + cols[0] + "' is not equal Id",
+				cols[0].equalsIgnoreCase("Id"));
+
+		SqlParser parser2 = new SqlParser();
+		parser2.parse("SELECT\r\n" +
+			"MONTH, -- 1=January\r\n" +
+			"TEMPERATURE * (9.0 / 5) + 32 AS TEMP -- in Fahrenheit\r\n" +
+			"FROM\r\n" +
+			"climate\r\n" +
+			"WHERE\r\n" +
+			"CITYID = 77 -- See CITYINDEX.TXT\r\n");
+		assertEquals("climate", parser2.getTableName());
+		cols = parser2.getColumnNames();
+		assertTrue("Incorrect Column Count", cols.length == 2);
+		assertTrue("Column Name Col 0 '" + cols[0] + "' is not equal MONTH",
+			cols[0].equalsIgnoreCase("MONTH"));
+		assertTrue("Column Name Col 1 '" + cols[1] + "' is not equal TEMP",
+			cols[1].equalsIgnoreCase("TEMP"));
+	}
 }

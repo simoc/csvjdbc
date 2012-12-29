@@ -1046,6 +1046,14 @@ SKIP:{
   | "\r"
   | "\n"
 }
+SPECIAL_TOKEN:{
+  /*
+   * Skip "--" single-line comments in SQL statement.  A space is required
+   * after "--" so that expression "i--1" is not interpreted as a comment.
+   */
+  <SINGLELINECOMMENT: "--"([" ", "\t"])+ (~["\r", "\n"])* ("\n"|"\r"|"\r\n")?
+  | "--"("\n"|"\r"|"\r\n")>
+}
 TOKEN:{
   <SELECT:"SELECT">
 }
