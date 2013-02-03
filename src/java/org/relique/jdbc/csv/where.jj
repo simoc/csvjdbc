@@ -1362,21 +1362,35 @@ LogicalExpression logicalUnaryExpression():{
 }
 LogicalExpression relationalExpression():{
   Expression arg1, arg2, arg3;
+  LogicalExpression expr;
   String op;
   Token t;
+  boolean negate;
 }
 {
+  {
+    negate = false;
+  }
   arg1 = binaryOperation()(op = relOp()arg2 = binaryOperation(){
     return new RelopExpression(op, arg1, arg2);
   }
-  | <BETWEEN>arg2 = binaryOperation()<AND>arg3 = binaryOperation(){
-    return new BetweenExpression(arg1, arg2, arg3);
-  }
-  | <IS><NULL>{
-    return new IsNullExpression(arg1);
+  | (<NOT>{negate=true;})?(<BETWEEN>arg2 = binaryOperation()<AND>arg3 = binaryOperation(){
+    expr = new BetweenExpression(arg1, arg2, arg3);
+    if (negate)
+      expr = new NotExpression(expr);
+    return expr;
   }
   | <LIKE>t = <STRING>{
-    return new LikeExpression(arg1, new StringConstant(t.image.substring(1, t.image.length()-1)));
+    expr = new LikeExpression(arg1, new StringConstant(t.image.substring(1, t.image.length()-1)));
+    if (negate)
+      expr = new NotExpression(expr);
+    return expr;
+  })
+  | <IS>(<NOT>{negate=true;})?<NULL>{
+    expr = new IsNullExpression(arg1);
+    if (negate)
+      expr = new NotExpression(expr);
+    return expr;
   }
   )
 }
