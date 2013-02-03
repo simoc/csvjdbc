@@ -69,6 +69,7 @@ public class TestOrderBy extends TestCase {
 		props.put("fileExtension", ".txt");
 		props.put("commentChar", "#");
 		props.put("columnTypes", "Integer,String");
+		props.put("charset", "UTF-8");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
 		Statement stmt = conn.createStatement();
@@ -83,7 +84,7 @@ public class TestOrderBy extends TestCase {
 		assertEquals("The BLZ_NAME is wrong", "BHF-BANK (Berlin)", results.getString("BANK_NAME"));
 		assertTrue(results.next());
 		assertEquals("The BLZ is wrong", 10020500, results.getInt("BLZ"));
-		assertEquals("The BLZ_NAME is wrong", "Bank für Sozialwirtschaft (Berlin)", results.getString("BANK_NAME"));
+		assertEquals("The BLZ_NAME is wrong", "Bank f\u00FCr Sozialwirtschaft (Berlin)", results.getString("BANK_NAME"));
 		assertTrue(results.next());
 		assertEquals("The BLZ is wrong", 10020000, results.getInt("BLZ"));
 		assertEquals("The BLZ_NAME is wrong", "Berliner Bank -alt- (Berlin)", results.getString("BANK_NAME"));
@@ -92,7 +93,7 @@ public class TestOrderBy extends TestCase {
 		assertEquals("The BLZ_NAME is wrong", "Bundesbank (Berlin)", results.getString("BANK_NAME"));
 		assertTrue(results.next());
 		assertEquals("The BLZ is wrong", 10020400, results.getInt("BLZ"));
-		assertEquals("The BLZ_NAME is wrong", "Citadele Bank Zndl Deutschland (München)", results.getString("BANK_NAME"));
+		assertEquals("The BLZ_NAME is wrong", "Citadele Bank Zndl Deutschland (M\u00FCnchen)", results.getString("BANK_NAME"));
 		assertTrue(results.next());
 		assertEquals("The BLZ is wrong", 10019610, results.getInt("BLZ"));
 		assertEquals("The BLZ_NAME is wrong", "Dexia Kommunalbank Deutschland (Berlin)", results.getString("BANK_NAME"));
