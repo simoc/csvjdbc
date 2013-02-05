@@ -1227,6 +1227,65 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	public void testWhereWithIn() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,String,Timestamp,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select Name from sample5 where id in (3, 4, 5)");
+
+		assertTrue(results.next());
+		assertEquals("The Name is wrong", "Maria Cristina Lucero", results.getString("Name"));
+		assertTrue(results.next());
+		assertEquals("The Name is wrong", "Felipe Grajales", results.getString("Name"));
+		assertTrue(results.next());
+		assertEquals("The Name is wrong", "Melquisedec Rojas Castillo", results.getString("Name"));
+		assertFalse(results.next());
+	}
+
+	public void testWhereWithInNoResults() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,String,Timestamp,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select Name from sample5 where id in (23, 24, 25)");
+
+		assertFalse(results.next());
+	}
+
+	public void testWhereWithNotIn() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select Id from sample where Id not in ('A123', 'B234', 'X234')");
+
+		assertTrue(results.next());
+		assertEquals("The Id is wrong", "Q123", results.getString("Id"));
+		assertTrue(results.next());
+		assertEquals("The Id is wrong", "C456", results.getString("Id"));
+		assertTrue(results.next());
+		assertEquals("The Id is wrong", "D789", results.getString("Id"));
+		assertFalse(results.next());
+	}
+
+	public void testWhereWithInEmpty() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+
+		Statement stmt = conn.createStatement();
+
+		try {
+			stmt.executeQuery("select * from sample where Name in ()");
+			fail("SQL Query should fail");
+		} catch (SQLException e) {
+			assertTrue(e.getMessage().startsWith("Syntax Error"));
+		}
+	}
+
 	/**
 	 * @throws SQLException
 	 */

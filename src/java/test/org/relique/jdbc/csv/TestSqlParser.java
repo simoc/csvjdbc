@@ -263,6 +263,9 @@ public class TestSqlParser extends TestCase {
 		parser.parse("SELECT * FROM test WHERE B NOT LIKE 'X%'");
 		whereClause = parser.getWhereClause();
 		assertEquals("Incorrect WHERE", "NOT L [B] 'X%'", whereClause.toString());
+		parser.parse("SELECT * FROM test WHERE B IN ('XX', 'YY')");
+		whereClause = parser.getWhereClause();
+		assertEquals("Incorrect WHERE", "IN [B] ('XX', 'YY')", whereClause.toString());
 
 		parser
 				.parse("SELECT * FROM test WHERE B IS NULL OR B BETWEEN '20' AND 'AA' AND B LIKE '20 AND AA'");
