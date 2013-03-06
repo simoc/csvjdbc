@@ -154,7 +154,7 @@ public class TestCsvDriver extends TestCase {
 			results.getString("Job");
 			fail("Should not find the column 'Job'");
 		} catch (SQLException e) {
-			assertEquals("java.sql.SQLException: Column not found: invalid index: 0", "" + e);
+			assertEquals("java.sql.SQLException: Column not found: Job", "" + e);
 		}
 		assertTrue(!results.next());
 	}
@@ -234,6 +234,30 @@ public class TestCsvDriver extends TestCase {
 				"Peter \"peg leg\"; Jimmy & Samantha \"Sam\""));
 		assertTrue("Incorrect EXTRA_FIELD Value", results.getString(
 				"EXTRA_FIELD").equals("G"));
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+
+	public void testFindColumn() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+
+		assertEquals("Incorrect Column", 1, results.findColumn("ID"));
+		assertEquals("Incorrect Column", 2, results.findColumn("Name"));
+		assertEquals("Incorrect Column", 3, results.findColumn("EXTRA_FIELD"));
+
+		try {
+			results.findColumn("foo");
+			fail("Should raise a java.sqlSQLException");
+		} catch (SQLException e) {
+			assertEquals("java.sql.SQLException: Column not found: foo", "" + e);
+		}
 
 		results.close();
 		stmt.close();
@@ -1159,7 +1183,7 @@ public class TestCsvDriver extends TestCase {
 			results.getString("id");
 			fail("Should not find the column 'id'");
 		} catch (SQLException e) {
-			assertEquals("java.sql.SQLException: Column not found: invalid index: 0", "" + e);
+			assertEquals("java.sql.SQLException: Column not found: id", "" + e);
 		}
 		assertEquals("The name is wrong", "Felipe Grajales", results
 				.getString("name"));
@@ -1304,7 +1328,7 @@ public class TestCsvDriver extends TestCase {
 			results.getString("id");
 			fail("Should not find the column 'id'");
 		} catch (SQLException e) {
-			assertEquals("java.sql.SQLException: Column not found: invalid index: 0", "" + e);
+			assertEquals("java.sql.SQLException: Column not found: id", "" + e);
 		}
 		assertEquals("The name is wrong", "3", results.getString("rc"));
 		// would like to test the full_name_nd, but can't insert the Arabic

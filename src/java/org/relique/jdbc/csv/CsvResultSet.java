@@ -2122,6 +2122,9 @@ public class CsvResultSet implements ResultSet {
 
     @Override
 	public int findColumn(String columnLabel) throws SQLException {
+    	
+    	checkOpen();
+
 		if (columnLabel.equals(""))
 			throw new SQLException("Can't access columns with empty name by name");
 		for (int i = 0; i < this.queryEnvironment.size(); i++)
@@ -2130,9 +2133,9 @@ public class CsvResultSet implements ResultSet {
 			if(((String)queryEnvEntry[0]).equalsIgnoreCase(columnLabel))
 				return i+1;
 		}
-		return 0;
+		throw new SQLException("Column not found: " + columnLabel);
 	}
-    
+
     @Override
 	public NClob getNClob(int arg0) throws SQLException {
 		// TODO Auto-generated method stub
