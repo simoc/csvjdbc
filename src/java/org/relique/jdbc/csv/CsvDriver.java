@@ -110,39 +110,21 @@ public class CsvDriver implements Driver
   }
 
 
-  /**
-   *Gets the majorVersion attribute of the CsvDriver object
-   *
-   * @return    The majorVersion value
-   * @since
-   */
+  @Override
   public int getMajorVersion()
   {
     return 1;
   }
 
 
-  /**
-   *Gets the minorVersion attribute of the CsvDriver object
-   *
-   * @return    The minorVersion value
-   * @since
-   */
+  @Override
   public int getMinorVersion()
   {
     return 0;
   }
 
 
-  /**
-   *Description of the Method
-   *
-   * @param  url               Description of Parameter
-   * @param  info              Description of Parameter
-   * @return                   Description of the Returned Value
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
+  @Override
   public Connection connect(String url, Properties info) throws SQLException
   {
     DriverManager.println("CsvJdbc - CsvDriver:connect() - url=" + url);
@@ -263,28 +245,14 @@ public class CsvDriver implements Driver
     return connection;
   }
 
-
-  /**
-   *Description of the Method
-   *
-   * @param  url               Description of Parameter
-   * @return                   Description of the Returned Value
-   * @exception  SQLException  Description of Exception
-   * @since
-   */
+  @Override
   public boolean acceptsURL(String url) throws SQLException
   {
     DriverManager.println("CsvJdbc - CsvDriver:accept() - url=" + url);
     return url.startsWith(URL_PREFIX);
   }
 
-
-  /**
-   *Description of the Method
-   *
-   * @return    Description of the Returned Value
-   * @since
-   */
+  @Override
   public boolean jdbcCompliant()
   {
     return false;

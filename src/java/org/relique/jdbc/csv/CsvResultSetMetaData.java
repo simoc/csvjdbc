@@ -56,192 +56,88 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 		this.columnDisplaySizes = columnDisplaySizes;
 	}
 
-	/**
-	 * Returns the name of the class for the specified column. Always returns
-	 * String.
-	 * 
-	 * @param column
-	 *            The column number
-	 * @return The name of the class for the requested column
-	 * @exception SQLException
-	 *                Thrown if there was a problem
-	 */
+	@Override
 	public String getColumnClassName(int column) throws SQLException {
 		return columnTypes[column - 1];
 	}
 
-	/**
-	 * Returns the number of columns in the table.
-	 * 
-	 * @return The number of columns in the table
-	 * @exception SQLException
-	 *                Thrown if there is a a problem
-	 */
+	@Override
 	public int getColumnCount() throws SQLException {
 		return columnTypes.length;
 	}
 
-	/**
-	 * Returns the name of the catalog for the specified column. Returns "".
-	 * 
-	 * @param column
-	 *            The column to get the catalog for
-	 * @return The catalog name (always "")
-	 * @exception SQLException
-	 *                Thrown if there is a problem
-	 */
+	@Override
 	public String getCatalogName(int column) throws SQLException {
 		return "";
 	}
 
-	/**
-	 * Returns the display column size for the specified column. Always returns
-	 * 20.
-	 * 
-	 * @param column
-	 *            The column to get the size of
-	 * @return The size of the requested column
-	 * @exception SQLException
-	 *                Thrown if there is a problem.
-	 */
+	@Override
 	public int getColumnDisplaySize(int column) throws SQLException {
 		return columnDisplaySizes[column - 1];
 	}
 
-	/**
-	 * Gets the auto increment flag for the specified column.
-	 * 
-	 * @param column
-	 *            The column to get the flag for
-	 * @return The autoIncrement flag (always false)
-	 * @exception SQLException
-	 *                Thrown if there is a problem
-	 */
+	@Override
 	public boolean isAutoIncrement(int column) throws SQLException {
 		return false;
 	}
 
-	/**
-	 * Returns the case sensitivity flag for the specified column
-	 * 
-	 * @param column
-	 *            The column to return the flag for
-	 * @return The caseSensitive flag (always false)
-	 * @exception SQLException
-	 *                Thrown if there is a problem
-	 */
+	@Override
 	public boolean isCaseSensitive(int column) throws SQLException {
 		// all columns are uppercase
 		return false;
 	}
 
-	/**
-	 * Returns the searchable flag for the specified column
-	 * 
-	 * @param column
-	 *            the column to return the flag form
-	 * @return The searchable flag (always false)
-	 * @exception SQLException
-	 *                Thrown if there is a problem
-	 */
+	@Override
 	public boolean isSearchable(int column) throws SQLException {
 		// the implementation doesn't support the where clause
 		return false;
 	}
 
-	/**
-	 * Returns the currency flag for the specified column
-	 * 
-	 * @param column
-	 *            The column to get the flag for
-	 * @return The currency flag (always false)
-	 * @exception SQLException
-	 *                Thrown if there is a problem
-	 */
+	@Override
 	public boolean isCurrency(int column) throws SQLException {
 		return false;
 	}
 
-	/**
-	 * Returns the nullable flag for the specified column
-	 * 
-	 * @param column
-	 *            The column to return the flag for
-	 * @return The nullable flag (always unknown)
-	 * @exception SQLException
-	 *                Thrown if there is a problem
-	 */
+	@Override
 	public int isNullable(int column) throws SQLException {
 		return ResultSetMetaData.columnNullableUnknown;
 	}
 
-	/**
-	 * Returns the signed flag for the specified column
-	 * 
-	 * @param column
-	 *            The column to return the flag for
-	 * @return The signed flag (always false)
-	 * @exception SQLException
-	 *                Thrown if there is a problem
-	 */
+	@Override
 	public boolean isSigned(int column) throws SQLException {
 		return false;
 	}
 
-	/**
-	 * Returns a comment regarding the specified column
-	 * 
-	 * @param column
-	 *            The column to get the label for
-	 * @return the label for the specified column
-	 * @exception SQLException
-	 *                Thrown if there is a problem
-	 */
+	@Override
 	public String getColumnLabel(int column) throws SQLException {
 		// SQL column numbers start at 1
 		return columnLabels[column - 1];
 	}
 
-	/**
-	 * Returns the name of the specified column
-	 * 
-	 * @param column
-	 *            The column to get the name of
-	 * @return The name of the column
-	 * @exception SQLException
-	 *                Thrown if there is a problem
-	 */
+	@Override
 	public String getColumnName(int column) throws SQLException {
 		// SQL column numbers start at 1
 		return columnNames[column - 1];
 	}
 
-	/**
-	 * Comments to be done
-	 */
+	@Override
 	public String getSchemaName(int column) throws SQLException {
 		return "";
 	}
 
-	/**
-	 * Comments to be done
-	 */
+	@Override
 	public int getPrecision(int column) throws SQLException {
 		// All the fields are text, should this throw an SQLException?
 		return 0;
 	}
 
-	/**
-	 * Comments to be done
-	 */
+	@Override
 	public int getScale(int column) throws SQLException {
 		// All the fields are text, should this throw an SQLException?
 		return 0;
 	}
 
-	/**
-	 * Comments to be done
-	 */
+	@Override
 	public String getTableName(int column) throws SQLException {
 		return tableName;
 	}
@@ -269,48 +165,40 @@ public class CsvResultSetMetaData implements ResultSetMetaData {
 		}
 	};
 
-	/**
-	 * Comments to be done
-	 */
+	@Override
 	public int getColumnType(int column) throws SQLException {
 		String columnTypeName = getColumnTypeName(column);
 		Integer value = typeNameToTypeCode.get(columnTypeName);
 		return value.intValue();
 	}
 
-	/**
-	 * Comments to be done
-	 */
+	@Override
 	public String getColumnTypeName(int column) throws SQLException {
 		return columnTypes[column - 1];
 	}
 
-	/**
-	 * Comments to be done
-	 */
+	@Override
 	public boolean isReadOnly(int column) throws SQLException {
 		return true;
 	}
 
-	/**
-	 * Comments to be done
-	 */
+	@Override
 	public boolean isWritable(int column) throws SQLException {
 		return false;
 	}
 
-	/**
-	 * Comments to be done
-	 */
+	@Override
 	public boolean isDefinitelyWritable(int column) throws SQLException {
 		return false;
 	}
 
+	@Override
 	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	@Override
 	public <T> T unwrap(Class<T> arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
