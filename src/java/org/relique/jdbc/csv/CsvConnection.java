@@ -564,24 +564,6 @@ public class CsvConnection implements Connection {
         throw new UnsupportedOperationException("Connection.getHoldability() unsupported");
     }
 
-    /* Removed since this only builds under JDK 1.4
-    public Savepoint setSavepoint() throws SQLException {
-        throw new UnsupportedOperationException("Connection.setSavepoint() unsupported");
-    }
-
-    public Savepoint setSavepoint(String name) throws SQLException {
-        throw new UnsupportedOperationException("Connection.setSavepoint(String) unsupported");
-    }
-
-    public void rollback(Savepoint savepoint) throws SQLException {
-        throw new UnsupportedOperationException("Connection.rollback(Savepoint) unsupported");
-    }
-
-    public void releaseSavepoint(Savepoint savepoint) throws SQLException {
-        throw new UnsupportedOperationException("Connection.releaseSavepoint(Savepoint) unsupported");
-    }
-     */
-
     @Override
     public Statement createStatement(int resultSetType,
                                      int resultSetConcurrency,
