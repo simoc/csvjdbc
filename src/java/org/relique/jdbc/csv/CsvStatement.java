@@ -471,4 +471,13 @@ public class CsvStatement implements Statement {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public boolean isCloseOnCompletion() throws SQLException {
+		return false;
+	}
+
+	public void closeOnCompletion() throws SQLException {
+		throw new UnsupportedOperationException(
+			"Statement.closeOnCompletion() not supported");
+	}
 }

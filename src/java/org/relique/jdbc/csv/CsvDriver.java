@@ -22,6 +22,7 @@ import java.util.Properties;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Logger;
 
 import org.relique.io.TableReader;
 
@@ -257,6 +258,12 @@ public class CsvDriver implements Driver
   {
     return false;
   }
+
+  public Logger getParentLogger() throws SQLFeatureNotSupportedException
+  {
+    throw new SQLFeatureNotSupportedException("Driver.getParentLogger() not supported");
+  }
+
   // This static block inits the driver when the class is loaded by the JVM.
   static
   {

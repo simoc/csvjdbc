@@ -1051,4 +1051,19 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		return null;
 	}
 
+	public boolean generatedKeyAlwaysReturned() throws SQLException {
+		return false;
+	}
+
+	public ResultSet getPseudoColumns(String catalog,
+		String schemaPattern,
+		String tableNamePattern,
+		String columnNamePattern) throws SQLException {
+
+		String columnNames = "TABLE_CAT,TABLE_SCHEM,TABLE_NAME,COLUMN_NAME,DATA_TYPE,COLUMN_SIZE,DECIMAL_DIGITS,NUM_PREC_RADIX,COLUMN_USAGE,REMARKS,CHAR_OCTET_LENGTH,IS_NULLABLE";
+		String columnTypes = "String,String,String,String,Integer,Integer,Integer,Integer,String,String,Integer,String";
+		ArrayList<Object []> columnValues = new ArrayList<Object []>();
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
+		return retval;
+	}
 }

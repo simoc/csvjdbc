@@ -32,6 +32,7 @@ import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Savepoint;
@@ -44,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.concurrent.Executor;
 
 import org.relique.io.CryptoFilter;
 import org.relique.io.TableReader;
@@ -944,6 +946,26 @@ public class CsvConnection implements Connection {
 			throws SQLClientInfoException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public int getNetworkTimeout() throws SQLException {
+		return 0;
+	}
+
+	public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Connection.setNetworkTimeout(Executor,int) not supported");
+	}
+
+	public void abort(Executor executor) throws SQLException {
+        	throw new UnsupportedOperationException(
+                	"Connection.abort(Executor) not supported");
+	}
+
+	public String getSchema() throws SQLException {
+		return null;
+	}
+
+	public void setSchema(String schema) throws SQLException {
 	}
 
 	public int getTransposedLines() {

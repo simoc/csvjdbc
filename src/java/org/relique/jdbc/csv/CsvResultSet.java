@@ -2208,5 +2208,14 @@ public class CsvResultSet implements ResultSet {
 		
 	}
 
+	public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+        	throw new UnsupportedOperationException(
+                	"ResultSet.getObject(String, Class<T>) not supported");
+	}
+
+	public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+        	throw new UnsupportedOperationException(
+                	"ResultSet.getObject(int, Class<T>) not supported");
+	}
 }
 
