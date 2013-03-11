@@ -2349,7 +2349,27 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(url.startsWith("jdbc:relique:csv:"));
 		assertTrue(url.endsWith("/testdata/"));
 	}
-	
+
+	public void testConnectionClosed() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+		assertFalse(conn.isClosed());
+		conn.close();
+		assertTrue(conn.isClosed());
+
+		/*
+		 * Second close is ignored.
+		 */
+		conn.close();
+		try {
+			conn.createStatement();
+			fail("expected exception java.sql.SQLException");			
+		} catch (SQLException e) {
+			assertEquals("wrong exception and/or exception text!",
+				"java.sql.SQLException: Connection is already closed", "" + e);
+		}
+	}
+
 	/**
 	 * you can access columns that do not have a name by number
 	 * 

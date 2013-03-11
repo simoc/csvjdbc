@@ -478,9 +478,17 @@ public class CsvConnection implements Connection
 		return timeZoneName;
 	}
 
+    private void checkOpen() throws SQLException
+    {
+    	if (closed)
+    		throw new SQLException("Connection is already closed");
+    }
+
 	@Override
 	public Statement createStatement() throws SQLException
 	{
+		checkOpen();
+
 		CsvStatement statement = new CsvStatement(this,
 				java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE);
 		statements.add(statement);
@@ -490,6 +498,8 @@ public class CsvConnection implements Connection
 	@Override
 	public PreparedStatement prepareStatement(String sql) throws SQLException
 	{
+		checkOpen();
+
 		return new CsvPreparedStatement(this, sql,
 				java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE);
 	}
@@ -511,12 +521,16 @@ public class CsvConnection implements Connection
 	@Override
 	public void setAutoCommit(boolean autoCommit) throws SQLException
 	{
+		checkOpen();
+
 		this.autoCommit = autoCommit;
 	}
 
 	@Override
 	public boolean getAutoCommit() throws SQLException
 	{
+		checkOpen();
+
 		return this.autoCommit;
 	}
 
@@ -565,6 +579,8 @@ public class CsvConnection implements Connection
 	@Override
 	public DatabaseMetaData getMetaData() throws SQLException
 	{
+		checkOpen();
+
 		return new CsvDatabaseMetaData(this);
 	}
 
@@ -581,24 +597,32 @@ public class CsvConnection implements Connection
 	@Override
 	public boolean isReadOnly() throws SQLException
 	{
+		checkOpen();
+
 		return true;
 	}
 
 	@Override
 	public void setCatalog(String catalog) throws SQLException
 	{
+		checkOpen();
+
 		// silently ignore this request
 	}
 
 	@Override
 	public String getCatalog() throws SQLException
 	{
+		checkOpen();
+
 		return null;
 	}
 
 	@Override
 	public void setTransactionIsolation(int level) throws SQLException
 	{
+		checkOpen();
+
 		throw new UnsupportedOperationException(
 				"Connection.setTransactionIsolation(int) unsupported");
 	}
@@ -606,12 +630,16 @@ public class CsvConnection implements Connection
 	@Override
 	public int getTransactionIsolation() throws SQLException
 	{
+		checkOpen();
+
 		return Connection.TRANSACTION_NONE;
 	}
 
 	@Override
 	public SQLWarning getWarnings() throws SQLException
 	{
+		checkOpen();
+
 		if (raiseUnsupportedOperationException)
 		{
 			throw new UnsupportedOperationException(
@@ -628,6 +656,8 @@ public class CsvConnection implements Connection
 	@Override
 	public void clearWarnings() throws SQLException
 	{
+		checkOpen();
+
 		if (raiseUnsupportedOperationException)
 			throw new UnsupportedOperationException(
 					"Connection.getWarnings() unsupported. Set driver property "
@@ -641,6 +671,8 @@ public class CsvConnection implements Connection
 	public Statement createStatement(int resultSetType, int resultSetConcurrency)
 			throws SQLException
 	{
+		checkOpen();
+
 		CsvStatement statement = new CsvStatement(this, resultSetType);
 		statements.add(statement);
 		return statement;
@@ -1177,12 +1209,16 @@ public class CsvConnection implements Connection
 
 	public int getNetworkTimeout() throws SQLException
 	{
+		checkOpen();
+
 		return 0;
 	}
 
 	public void setNetworkTimeout(Executor executor, int milliseconds)
 			throws SQLException
 	{
+		checkOpen();
+
 		throw new SQLFeatureNotSupportedException(
 				"Connection.setNetworkTimeout(Executor,int) not supported");
 	}
@@ -1195,11 +1231,14 @@ public class CsvConnection implements Connection
 
 	public String getSchema() throws SQLException
 	{
+		checkOpen();
+
 		return null;
 	}
 
 	public void setSchema(String schema) throws SQLException
 	{
+		checkOpen();
 	}
 
 	public int getTransposedLines()
