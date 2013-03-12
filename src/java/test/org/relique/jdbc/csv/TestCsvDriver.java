@@ -2370,6 +2370,28 @@ public class TestCsvDriver extends TestCase {
 		}
 	}
 
+	public void testStatementClosed() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+		Statement stmt = conn.createStatement();
+		assertFalse(stmt.isClosed());
+		stmt.close();
+		assertTrue(stmt.isClosed());
+
+		/*
+		 * Second close is ignored.
+		 */
+		stmt.close();
+
+		try {
+			stmt.executeQuery("SELECT * FROM sample");
+			fail("expected exception java.sql.SQLException");			
+		} catch (SQLException e) {
+			assertEquals("wrong exception and/or exception text!",
+				"java.sql.SQLException: Statement is already closed", "" + e);
+		}
+	}
+
 	/**
 	 * you can access columns that do not have a name by number
 	 * 

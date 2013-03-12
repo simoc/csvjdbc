@@ -48,6 +48,7 @@ public class CsvStatement implements Statement
 	protected ResultSet lastResultSet = null;
 	private int maxRows = 0;
 	private int fetchSize = 1;
+	private boolean closed;
 
 	protected int scrollType = ResultSet.TYPE_SCROLL_INSENSITIVE;
 
@@ -71,6 +72,12 @@ public class CsvStatement implements Statement
 		this.scrollType = scrollType;
 	}
 
+    private void checkOpen() throws SQLException
+    {
+    	if (closed)
+    		throw new SQLException("Statement is already closed");
+    }
+
 	@Override
 	public void setMaxFieldSize(int p0) throws SQLException
 	{
@@ -81,6 +88,8 @@ public class CsvStatement implements Statement
 	@Override
 	public void setMaxRows(int max) throws SQLException
 	{
+		checkOpen();
+
 		maxRows = max;
 	}
 
@@ -115,6 +124,8 @@ public class CsvStatement implements Statement
 	@Override
 	public void setFetchSize(int rows) throws SQLException
 	{
+		checkOpen();
+
 		this.fetchSize = rows;
 	}
 
@@ -127,30 +138,40 @@ public class CsvStatement implements Statement
 	@Override
 	public int getMaxRows() throws SQLException
 	{
+		checkOpen();
+
 		return maxRows;
 	}
 
 	@Override
 	public int getQueryTimeout() throws SQLException
 	{
+		checkOpen();
+
 		return 0;
 	}
 
 	@Override
 	public SQLWarning getWarnings() throws SQLException
 	{
+		checkOpen();
+
 		return null;
 	}
 
 	@Override
 	public ResultSet getResultSet() throws SQLException
 	{
+		checkOpen();
+
 		return lastResultSet;
 	}
 
 	@Override
 	public int getUpdateCount() throws SQLException
 	{
+		checkOpen();
+
 		/*
 		 * Driver is read-only, so no updates are possible.
 		 */
@@ -160,6 +181,8 @@ public class CsvStatement implements Statement
 	@Override
 	public boolean getMoreResults() throws SQLException
 	{
+		checkOpen();
+
 		try
 		{
 			/*
@@ -184,6 +207,8 @@ public class CsvStatement implements Statement
 	@Override
 	public int getFetchSize() throws SQLException
 	{
+		checkOpen();
+
 		return fetchSize;
 	}
 
@@ -196,18 +221,24 @@ public class CsvStatement implements Statement
 	@Override
 	public int getResultSetType() throws SQLException
 	{
+		checkOpen();
+
 		return this.scrollType;
 	}
 
 	@Override
 	public Connection getConnection() throws SQLException
 	{
+		checkOpen();
+
 		return connection;
 	}
 
 	@Override
 	public ResultSet executeQuery(String sql) throws SQLException
 	{
+		checkOpen();
+
 		DriverManager.println("CsvJdbc - CsvStatement:executeQuery() - sql= "
 				+ sql);
 
@@ -419,6 +450,7 @@ public class CsvStatement implements Statement
 		finally
 		{
 			lastResultSet = null;
+			closed = true;
 		}
 		connection.removeStatement(this);
 	}
@@ -432,11 +464,14 @@ public class CsvStatement implements Statement
 	@Override
 	public void clearWarnings() throws SQLException
 	{
+		checkOpen();
 	}
 
 	@Override
 	public boolean execute(String p0) throws SQLException
 	{
+		checkOpen();
+
 		try
 		{
 			executeQuery(p0);
@@ -543,22 +578,21 @@ public class CsvStatement implements Statement
 	@Override
 	public boolean isClosed() throws SQLException
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return closed;
 	}
 
 	@Override
 	public boolean isPoolable() throws SQLException
 	{
-		// TODO Auto-generated method stub
+		checkOpen();
+
 		return false;
 	}
 
 	@Override
 	public void setPoolable(boolean poolable) throws SQLException
 	{
-		// TODO Auto-generated method stub
-
+		checkOpen();
 	}
 
 	@Override
@@ -577,6 +611,8 @@ public class CsvStatement implements Statement
 
 	public boolean isCloseOnCompletion() throws SQLException
 	{
+		checkOpen();
+
 		return false;
 	}
 
