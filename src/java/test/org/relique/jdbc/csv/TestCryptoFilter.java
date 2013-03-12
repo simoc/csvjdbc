@@ -269,40 +269,51 @@ public class TestCryptoFilter extends TestCase {
 		Statement stmt = null;
 		ResultSet rset = null;
 
-		// encrypted
-		props = new Properties();
-		props.put("fileExtension", ".txt");
-		props.put("cryptoFilterClassName", "org.relique.io.XORCipher");
-		props.put("cryptoFilterParameterTypes", "String");
-		props.put("cryptoFilterParameters", "gaius vipsanius agrippa");
-		Connection connEncr = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath, props);
-		stmt = connEncr.createStatement();
-		long encryptStartMillis = System.currentTimeMillis();
-		rset = stmt.executeQuery("SELECT * FROM speedtest_decypher");
+		long timeNoEncrypt = 0;
+		long timeEncrypt = 0;
+
 		int encryptCount = 0;
-		while (rset.next())
-			encryptCount++;
-		long encryptEndMillis = System.currentTimeMillis();
-		
-		// non encrypted
-		props = new Properties();
-		props.put("fileExtension", ".csv");
-		conn = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath, props);
-		stmt = conn.createStatement();
-		long noEncryptStartMillis = System.currentTimeMillis();
-		rset = stmt.executeQuery("SELECT * FROM speedtest_decypher");
 		int noEncryptCount = 0;
-		while (rset.next())
-			noEncryptCount++;
-		long noEncryptEndMillis = System.currentTimeMillis();
+
+		// Run queries twice to reduce the chances of system load causing the test to fail.
+		for (int i = 0; i < 2; i++) {
+			// encrypted
+			props = new Properties();
+			props.put("fileExtension", ".txt");
+			props.put("cryptoFilterClassName", "org.relique.io.XORCipher");
+			props.put("cryptoFilterParameterTypes", "String");
+			props.put("cryptoFilterParameters", "gaius vipsanius agrippa");
+			Connection connEncr = DriverManager.getConnection("jdbc:relique:csv:"
+					+ filePath, props);
+			stmt = connEncr.createStatement();
+			long encryptStartMillis = System.currentTimeMillis();
+			rset = stmt.executeQuery("SELECT * FROM speedtest_decypher");
+			while (rset.next())
+				encryptCount++;
+			connEncr.close();
+			long encryptEndMillis = System.currentTimeMillis();
+
+			timeEncrypt += encryptEndMillis - encryptStartMillis;
+
+			// non encrypted
+			props = new Properties();
+			props.put("fileExtension", ".csv");
+			conn = DriverManager.getConnection("jdbc:relique:csv:"
+					+ filePath, props);
+			stmt = conn.createStatement();
+			long noEncryptStartMillis = System.currentTimeMillis();
+			rset = stmt.executeQuery("SELECT * FROM speedtest_decypher");
+			while (rset.next())
+				noEncryptCount++;
+			conn.close();
+			long noEncryptEndMillis = System.currentTimeMillis();
+			
+			timeNoEncrypt += noEncryptEndMillis - noEncryptStartMillis;
+		}
 
 		// comparing results
 		assertEquals(noEncryptCount, encryptCount);
 
-		long timeNoEncrypt = noEncryptEndMillis - noEncryptStartMillis;
-		long timeEncrypt = encryptEndMillis - encryptStartMillis;
 		assertTrue("timeNoEncrypt = " + timeNoEncrypt
 				+ "ms; timeEncrypt = " + timeEncrypt + "ms",
 				timeEncrypt <= 10 * timeNoEncrypt);
