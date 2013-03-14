@@ -72,7 +72,7 @@ public class CsvStatement implements Statement
 		this.scrollType = scrollType;
 	}
 
-    private void checkOpen() throws SQLException
+    protected void checkOpen() throws SQLException
     {
     	if (closed)
     		throw new SQLException("Statement is already closed");

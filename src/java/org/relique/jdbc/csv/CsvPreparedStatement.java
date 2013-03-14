@@ -1,3 +1,19 @@
+/*
+ *  CsvJdbc - a JDBC driver for CSV files
+ *  Copyright (C) 2001  Jonathan Ackerman
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.relique.jdbc.csv;
 
 import java.io.InputStream;
@@ -23,19 +39,24 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class CsvPreparedStatement extends CsvStatement implements
-		PreparedStatement {
-
+		PreparedStatement
+{
 	private Object[] parameters;
 	private String templateQuery;
 	private SqlParser parser;
 
-	protected CsvPreparedStatement(CsvConnection connection, String sql, int isScrollable) throws SQLException {
+	protected CsvPreparedStatement(CsvConnection connection, String sql,
+			int isScrollable) throws SQLException
+	{
 		super(connection, isScrollable);
 
 		parser = new SqlParser();
-		try {
+		try
+		{
 			parser.parse(sql);
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			throw new SQLException("Syntax Error. " + e.getMessage());
 		}
 
@@ -43,36 +64,53 @@ public class CsvPreparedStatement extends CsvStatement implements
 		templateQuery = sql;
 	}
 
+	private void checkParameterIndex(int parameterIndex) throws SQLException
+	{
+		if (parameterIndex < 1 || parameterIndex >= parameters.length)
+			throw new SQLException("Parameter index out of range: " + parameterIndex);
+	}
+
 	@Override
-	public void addBatch() throws SQLException {
+	public void addBatch() throws SQLException
+	{
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void clearParameters() throws SQLException {
-		for(int i=1; i<parameters.length; i++) {
+	public void clearParameters() throws SQLException
+	{
+		for (int i = 1; i < parameters.length; i++)
+		{
 			parameters[i] = null;
 		}
 	}
 
 	@Override
-	public boolean execute() throws SQLException {
+	public boolean execute() throws SQLException
+	{
 		throw new SQLException("execute() not Supported !");
 	}
 
 	@Override
-	public ResultSet executeQuery() throws SQLException {
+	public ResultSet executeQuery() throws SQLException
+	{
+
+		checkOpen();
+
 		DriverManager.println("CsvJdbc - CsvStatement:executeQuery() - sql= "
 				+ templateQuery);
 
 		/*
 		 * Close any previous ResultSet, as required by JDBC.
 		 */
-		try {
+		try
+		{
 			if (lastResultSet != null)
 				lastResultSet.close();
-		} finally {
+		}
+		finally
+		{
 			lastResultSet = null;
 		}
 
@@ -81,294 +119,494 @@ public class CsvPreparedStatement extends CsvStatement implements
 	}
 
 	@Override
-	public int executeUpdate() throws SQLException {
+	public int executeUpdate() throws SQLException
+	{
+		checkOpen();
+
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public ResultSetMetaData getMetaData() throws SQLException {
+	public ResultSetMetaData getMetaData() throws SQLException
+	{
+		checkOpen();
+
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ParameterMetaData getParameterMetaData() throws SQLException {
+	public ParameterMetaData getParameterMetaData() throws SQLException
+	{
+		checkOpen();
+
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void setArray(int arg0, Array arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setArray(int parameterIndex, Array x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setAsciiStream(int arg0, InputStream arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setAsciiStream(int parameterIndex, InputStream x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setAsciiStream(int arg0, InputStream arg1, int arg2)
-			throws SQLException {
+	public void setAsciiStream(int parameterIndex, InputStream x, int length)
+			throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setAsciiStream(int arg0, InputStream arg1, long arg2)
-			throws SQLException {
+	public void setAsciiStream(int parameterIndex, InputStream x, long length)
+			throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setBigDecimal(int arg0, BigDecimal arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setBigDecimal(int parameterIndex, BigDecimal x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setBinaryStream(int arg0, InputStream arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setBinaryStream(int parameterIndex, InputStream x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setBinaryStream(int arg0, InputStream arg1, int arg2)
-			throws SQLException {
+	public void setBinaryStream(int parameterIndex, InputStream x, int length)
+			throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setBinaryStream(int arg0, InputStream arg1, long arg2)
-			throws SQLException {
+	public void setBinaryStream(int parameterIndex, InputStream x, long length)
+			throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setBlob(int arg0, Blob arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setBlob(int parameterIndex, Blob x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setBlob(int arg0, InputStream arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setBlob(int parameterIndex, InputStream x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setBlob(int arg0, InputStream arg1, long arg2)
-			throws SQLException {
+	public void setBlob(int parameterIndex, InputStream x, long length)
+			throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setBoolean(int arg0, boolean arg1) throws SQLException {
-		this.parameters[arg0] = Boolean.valueOf(arg1);
+	public void setBoolean(int parameterIndex, boolean x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = Boolean.valueOf(x);
 	}
 
 	@Override
-	public void setByte(int arg0, byte arg1) throws SQLException {
-		this.parameters[arg0] = Byte.valueOf(arg1);
+	public void setByte(int parameterIndex, byte x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = Byte.valueOf(x);
 	}
 
 	@Override
-	public void setBytes(int arg0, byte[] arg1) throws SQLException {
+	public void setBytes(int parameterIndex, byte[] x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setCharacterStream(int arg0, Reader arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setCharacterStream(int parameterIndex, Reader x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setCharacterStream(int arg0, Reader arg1, int arg2)
-			throws SQLException {
+	public void setCharacterStream(int parameterIndex, Reader x, int length)
+			throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setCharacterStream(int arg0, Reader arg1, long arg2)
-			throws SQLException {
+	public void setCharacterStream(int parameterIndex, Reader x, long length)
+			throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setClob(int arg0, Clob arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setClob(int parameterIndex, Clob x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setClob(int arg0, Reader arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setClob(int parameterIndex, Reader x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setClob(int arg0, Reader arg1, long arg2) throws SQLException {
+	public void setClob(int parameterIndex, Reader x, long length) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setDate(int arg0, Date arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setDate(int parameterIndex, Date x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setDate(int arg0, Date arg1, Calendar arg2) throws SQLException {
+	public void setDate(int parameterIndex, Date x, Calendar cal) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setDouble(int arg0, double arg1) throws SQLException {
+	public void setDouble(int parameterIndex, double x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setFloat(int arg0, float arg1) throws SQLException {
-		this.parameters[arg0] = Float.valueOf(arg1);
+	public void setFloat(int parameterIndex, float x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = Float.valueOf(x);
 	}
 
 	@Override
-	public void setInt(int arg0, int arg1) throws SQLException {
-		this.parameters[arg0] = Integer.valueOf(arg1);
+	public void setInt(int parameterIndex, int x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = Integer.valueOf(x);
 	}
 
 	@Override
-	public void setLong(int arg0, long arg1) throws SQLException {
-		this.parameters[arg0] = Long.valueOf(arg1);
+	public void setLong(int parameterIndex, long x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = Long.valueOf(x);
 	}
 
 	@Override
-	public void setNCharacterStream(int arg0, Reader arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setNCharacterStream(int parameterIndex, Reader x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setNCharacterStream(int arg0, Reader arg1, long arg2)
-			throws SQLException {
+	public void setNCharacterStream(int parameterIndex, Reader x, long length)
+			throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setNClob(int arg0, NClob arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setNClob(int parameterIndex, NClob x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setNClob(int arg0, Reader arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setNClob(int parameterIndex, Reader x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setNClob(int arg0, Reader arg1, long arg2) throws SQLException {
+	public void setNClob(int parameterIndex, Reader x, long length) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setNString(int arg0, String arg1) throws SQLException {
+	public void setNString(int parameterIndex, String x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setNull(int arg0, int arg1) throws SQLException {
+	public void setNull(int parameterIndex, int sqlType) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setNull(int arg0, int arg1, String arg2) throws SQLException {
+	public void setNull(int parameterIndex, int sqlType, String typeName) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setObject(int arg0, Object arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setObject(int parameterIndex, Object x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setObject(int arg0, Object arg1, int arg2) throws SQLException {
+	public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setObject(int arg0, Object arg1, int arg2, int arg3)
-			throws SQLException {
+	public void setObject(int parameterIndex, Object x, int targetSqlType, int scaleOrLength)
+			throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setRef(int arg0, Ref arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setRef(int parameterIndex, Ref x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setRowId(int arg0, RowId arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setRowId(int parameterIndex, RowId x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setSQLXML(int arg0, SQLXML arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setSQLXML(int parameterIndex, SQLXML x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setShort(int arg0, short arg1) throws SQLException {
-		this.parameters[arg0] = Short.valueOf(arg1);
+	public void setShort(int parameterIndex, short x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = Short.valueOf(x);
 	}
 
 	@Override
-	public void setString(int arg0, String arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setString(int parameterIndex, String x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setTime(int arg0, Time arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setTime(int parameterIndex, Time x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setTime(int arg0, Time arg1, Calendar arg2) throws SQLException {
+	public void setTime(int parameterIndex, Time x, Calendar cal) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setTimestamp(int arg0, Timestamp arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setTimestamp(int parameterIndex, Timestamp x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
-	public void setTimestamp(int arg0, Timestamp arg1, Calendar arg2)
-			throws SQLException {
+	public void setTimestamp(int parameterIndex, Timestamp x, Calendar cal)
+			throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setURL(int arg0, URL arg1) throws SQLException {
-		this.parameters[arg0] = arg1;
+	public void setURL(int parameterIndex, URL x) throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
+		this.parameters[parameterIndex] = x;
 	}
 
 	@Override
 	@Deprecated
-	public void setUnicodeStream(int arg0, InputStream arg1, int arg2)
-			throws SQLException {
+	public void setUnicodeStream(int parameterIndex, InputStream x, int length)
+			throws SQLException
+	{
+		checkOpen();
+		checkParameterIndex(parameterIndex);
+
 		// TODO Auto-generated method stub
 
 	}
-
 }
