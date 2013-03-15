@@ -105,6 +105,76 @@ public class TestPrepareStatement extends TestCase {
 		assertFalse(results.next());
 	}
 
+	public void testShortParameter() throws SQLException {
+		Properties props = new Properties();
+		props.put("extension", ".csv");
+		props.put("columnTypes", "Short,String,String");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		String queryString = "SELECT * FROM sample4 WHERE id = ?";
+		PreparedStatement prepstmt = conn.prepareStatement(queryString);
+
+		prepstmt.setShort(1, (short)3);
+		ResultSet results = prepstmt.executeQuery();
+
+		assertTrue(results.next());
+		assertEquals("Column Job is wrong", "Finance Manager", results.getString("Job"));
+		assertFalse(results.next());
+	}
+
+	public void testLongParameter() throws SQLException {
+		Properties props = new Properties();
+		props.put("headerline", "BLZ,BANK_NAME");
+		props.put("suppressHeaders", "true");
+		props.put("fileExtension", ".txt");
+		props.put("commentChar", "#");
+		props.put("columnTypes", "Long,String");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		String queryString = "SELECT * FROM banks WHERE BLZ = ?";
+		PreparedStatement prepstmt = conn.prepareStatement(queryString);
+
+		long blz = 10020200;
+		prepstmt.setLong(1, blz);
+		ResultSet results = prepstmt.executeQuery();
+
+		assertTrue(results.next());
+		assertEquals("Column BANK_NAME is wrong", "BHF-BANK (Berlin)", results.getString("BANK_NAME"));
+		assertFalse(results.next());
+	}
+
+	public void testFloatParameter() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Byte,Short,Integer,Long,Float,Double,BigDecimal");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		String queryString = "SELECT * FROM numeric WHERE C5 < ?";
+		PreparedStatement prepstmt = conn.prepareStatement(queryString);
+
+		prepstmt.setFloat(1, (float)3);
+		ResultSet results = prepstmt.executeQuery();
+
+		assertTrue(results.next());
+		assertEquals("Column C5 is wrong", "0.0", results.getString("C5"));
+		assertFalse(results.next());
+	}
+
+	public void testDoubleParameter() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Byte,Short,Integer,Long,Float,Double,BigDecimal");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		String queryString = "SELECT * FROM numeric WHERE C6 < ?";
+		PreparedStatement prepstmt = conn.prepareStatement(queryString);
+
+		prepstmt.setDouble(1, 1000.0);
+		ResultSet results = prepstmt.executeQuery();
+
+		assertTrue(results.next());
+		assertEquals("Column C6 is wrong", "-0.0", results.getString("C6"));
+		assertFalse(results.next());
+	}
+
 	public void testCanReuseAPreparedStatement() throws SQLException {
 		Properties props = new Properties();
 		props.put("extension", ".csv");
