@@ -366,7 +366,7 @@ public class CsvPreparedStatement extends CsvStatement implements
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
+		this.parameters[parameterIndex] = new Double(x);
 
 	}
 
