@@ -455,6 +455,9 @@ public class TestSqlParser extends TestCase {
 		cs = new ExpressionParser(new StringReader("UPPER(A)"));
 		cs.parseQueryEnvEntry();
 		assertEquals("UPPER([A]): UPPER([A])", cs.toString());
+		cs = new ExpressionParser(new StringReader("LENGTH(A)"));
+		cs.parseQueryEnvEntry();
+		assertEquals("LENGTH([A]): LENGTH([A])", cs.toString());
 	}
 
 	public void testParsingQueryEnvironmentWithoutExpressions()

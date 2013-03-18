@@ -1855,6 +1855,22 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());		
 	}
 
+	public void testLengthFunction() throws SQLException {
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,String,Date,Time");
+		props.put("charset", "UTF-8");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select length(Name) as X, length(Job) as Y, length('') as Z from sample5 where id = 8");
+		assertTrue(results.next());
+		assertEquals("The Length is wrong", 27, results.getInt(1));
+		assertEquals("The Length is wrong", 15, results.getInt(2));
+		assertEquals("The Length is wrong", 0, results.getInt(3));
+		assertFalse(results.next());		
+	}
+
 	public void testRoundFunction() throws SQLException {
 		Properties props = new Properties();
 		props.put("columnTypes", "Byte,Short,Integer,Long,Float,Double,BigDecimal");

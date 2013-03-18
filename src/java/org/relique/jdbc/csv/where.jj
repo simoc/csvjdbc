@@ -16,11 +16,12 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-options{
-  STATIC = false;
-  LOOKAHEAD = 1;
-  IGNORE_CASE = true;
-  JDK_VERSION = "1.5";
+options
+{
+	STATIC = false;
+	LOOKAHEAD = 1;
+	IGNORE_CASE = true;
+	JDK_VERSION = "1.5";
 }
 PARSER_BEGIN(ExpressionParser)
 package org.relique.jdbc.csv;
@@ -34,1594 +35,2057 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
-class NumericConstant extends Expression{
-  Number value;
-  public NumericConstant(Number d){
-    value = d;
-  }
-  public Object eval(Map<String, Object> env){
-    return value;
-  }
-  public String toString(){
-    return value.toString();
-  }
-  public List<String> usedColumns(){
-    return new LinkedList<String>();
-  }
+class NumericConstant extends Expression
+{
+	Number value;
+	public NumericConstant(Number d)
+	{
+		value = d;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		return value;
+	}
+	public String toString()
+	{
+		return value.toString();
+	}
+	public List<String> usedColumns()
+	{
+		return new LinkedList<String>();
+	}
 }
-class StringConstant extends Expression{
-  String value;
-  public StringConstant(String s){
-    value = s;
-  }
-  public Object eval(Map<String, Object> env){
-    return value;
-  }
-  public String toString(){
-    return "'"+value+"'";
-  }
-  public List<String> usedColumns(){
-    return new LinkedList<String>();
-  }
+class StringConstant extends Expression
+{
+	String value;
+	public StringConstant(String s)
+	{
+		value = s;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		return value;
+	}
+	public String toString()
+	{
+		return "'"+value+"'";
+	}
+	public List<String> usedColumns()
+	{
+		return new LinkedList<String>();
+	}
 }
-class NullConstant extends Expression{
-  public Object eval(Map<String, Object> env){
-    return null;
-  }
-  public String toString(){
-    return "null";
-  }
-  public List<String> usedColumns(){
-    return new LinkedList<String>();
-  }
+class NullConstant extends Expression
+{
+	public Object eval(Map<String, Object> env)
+	{
+		return null;
+	}
+	public String toString()
+	{
+		return "null";
+	}
+	public List<String> usedColumns()
+	{
+		return new LinkedList<String>();
+	}
 }
-class CurrentDateConstant extends Expression{
-  ExpressionParser parent;
-  public CurrentDateConstant(ExpressionParser parent){
-    this.parent = parent;
-  }
-  public Object eval(Map<String, Object> env){
-    return parent.getCurrentDate();
-  }
-  public String toString(){
-    return "CURRENT_DATE";
-  }
-  public List<String> usedColumns(){
-    return new LinkedList<String>();
-  }
+class CurrentDateConstant extends Expression
+{
+	ExpressionParser parent;
+	public CurrentDateConstant(ExpressionParser parent)
+	{
+		this.parent = parent;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		return parent.getCurrentDate();
+	}
+	public String toString()
+	{
+		return "CURRENT_DATE";
+	}
+	public List<String> usedColumns()
+	{
+		return new LinkedList<String>();
+	}
 }
-class Placeholder extends Expression{
-  public static int nextIndex = 1;
-  private int index;
-  public Placeholder(){
-    index = nextIndex;
-    nextIndex++;
-  }
-  public Object eval(Map<String, Object> env){
-    return env.get("?" + index);
-  }
-  public String toString(){
-    return "?";
-  }
-  public List<String> usedColumns(){
-    return new LinkedList<String>();
-  }
+class Placeholder extends Expression
+{
+	public static int nextIndex = 1;
+	private int index;
+	public Placeholder()
+	{
+		index = nextIndex;
+		nextIndex++;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		return env.get("?" + index);
+	}
+	public String toString()
+	{
+		return "?";
+	}
+	public List<String> usedColumns()
+	{
+		return new LinkedList<String>();
+	}
 }  
-class ColumnName extends Expression{
-  String columnName;
-  public ColumnName(String columnName){
-    this .columnName = columnName.toUpperCase();
-  }
-  public Object eval(Map<String, Object> env){
-    return env.get(columnName);
-  }
-  public String toString(){
-    return "["+columnName+"]";
-  }
-  public List<String> usedColumns(){
-    List<String> result = new LinkedList<String>();
-    result.add(columnName);
-    return result;
-  }
+class ColumnName extends Expression
+{
+	String columnName;
+	public ColumnName(String columnName)
+	{
+		this.columnName = columnName.toUpperCase();
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		return env.get(columnName);
+	}
+	public String toString()
+	{
+		return "["+columnName+"]";
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.add(columnName);
+		return result;
+	}
 }
-class SQLLowerFunction extends Expression{
-  Expression expression;
-  public SQLLowerFunction(Expression expression){
-    this.expression = expression;
-  }
-  public Object eval(Map<String, Object> env){
-    Object retval = expression.eval(env);
-    if (retval != null)
-      retval = retval.toString().toLowerCase();
-    return retval;
-  }
-  public String toString(){
-    return "LOWER("+expression+")";
-  }
-  public List<String> usedColumns(){
-    List<String> result = new LinkedList<String>();
-    result.addAll(expression.usedColumns());
-    return result;
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-    result.addAll(expression.aggregateFunctions());
-    return result;
-  }
+class SQLLowerFunction extends Expression
+{
+	Expression expression;
+	public SQLLowerFunction(Expression expression)
+	{
+		this.expression = expression;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		Object retval = expression.eval(env);
+		if (retval != null)
+			retval = retval.toString().toLowerCase();
+		return retval;
+	}
+	public String toString()
+	{
+		return "LOWER("+expression+")";
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(expression.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.addAll(expression.aggregateFunctions());
+		return result;
+	}
 }
-class SQLRoundFunction extends Expression{
-  Expression expression;
-  public SQLRoundFunction(Expression expression){
-    this.expression = expression;
-  }
-  public Object eval(Map<String, Object> env){
-    Object retval = expression.eval(env);
-    if (retval != null) {
-      if (!(retval instanceof Number)) {
-        try {
-          retval = new Double(retval.toString());
-        } catch(NumberFormatException e) {
-          retval = null;
-        }
-      }
-      if (retval != null) {
-        if (retval instanceof Short) {
-          retval = new Integer(((Short)retval).intValue());
-        } else if (!(retval instanceof Integer || retval instanceof Long)) {
-          double d = ((Number)retval).doubleValue();
-          if (d < Integer.MIN_VALUE || d > Integer.MAX_VALUE)
-	    retval = new Double(Math.round(d));
-          else
-	    retval = new Integer((int)Math.round(d));
-        }
-      }
-    }
-    return retval;
-  }
-  public String toString(){
-    return "ROUND("+expression+")";
-  }
-  public List<String> usedColumns(){
-    List<String> result = new LinkedList<String>();
-    result.addAll(expression.usedColumns());
-    return result;
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-    result.addAll(expression.aggregateFunctions());
-    return result;
-  }
+class SQLRoundFunction extends Expression
+{
+	Expression expression;
+	public SQLRoundFunction(Expression expression)
+	{
+		this.expression = expression;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		Object retval = expression.eval(env);
+		if (retval != null)
+		{
+			if (!(retval instanceof Number))
+			{
+				try
+				{
+					retval = new Double(retval.toString());
+				}
+				catch(NumberFormatException e)
+				{
+					retval = null;
+				}
+			}
+			if (retval != null)
+			{
+				if (retval instanceof Short)
+				{
+					retval = new Integer(((Short)retval).intValue());
+				}
+				else if (!(retval instanceof Integer || retval instanceof Long))
+				{
+					double d = ((Number)retval).doubleValue();
+					if (d < Integer.MIN_VALUE || d > Integer.MAX_VALUE)
+						retval = new Double(Math.round(d));
+					else
+						retval = new Integer((int)Math.round(d));
+				}
+			}
+		}
+		return retval;
+	}
+	public String toString()
+	{
+		return "ROUND("+expression+")";
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(expression.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.addAll(expression.aggregateFunctions());
+		return result;
+	}
 }
-class SQLUpperFunction extends Expression{
-  Expression expression;
-  public SQLUpperFunction(Expression expression){
-    this.expression = expression;
-  }
-  public Object eval(Map<String, Object> env){
-    Object retval = expression.eval(env);
-    if (retval != null)
-      retval = retval.toString().toUpperCase();
-    return retval;
-  }
-  public String toString(){
-    return "UPPER("+expression+")";
-  }
-  public List<String> usedColumns(){
-    List<String> result = new LinkedList<String>();
-    result.addAll(expression.usedColumns());
-    return result;
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-    result.addAll(expression.aggregateFunctions());
-    return result;
-  }
+class SQLUpperFunction extends Expression
+{
+	Expression expression;
+	public SQLUpperFunction(Expression expression)
+	{
+		this.expression = expression;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		Object retval = expression.eval(env);
+		if (retval != null)
+			retval = retval.toString().toUpperCase();
+		return retval;
+	}
+	public String toString()
+	{
+		return "UPPER("+expression+")";
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(expression.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.addAll(expression.aggregateFunctions());
+		return result;
+	}
 }
-abstract class AggregateFunction extends Expression{
-  public abstract List<String> aggregateColumns();
-  public abstract void processRow(Map<String, Object> env);
+class SQLLengthFunction extends Expression
+{
+	Expression expression;
+	public SQLLengthFunction(Expression expression)
+	{
+		this.expression = expression;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		Object retval = expression.eval(env);
+		if (retval != null)
+			retval = Integer.valueOf(retval.toString().length());
+		return retval;
+	}
+	public String toString()
+	{
+		return "LENGTH("+expression+")";
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(expression.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.addAll(expression.aggregateFunctions());
+		return result;
+	}
 }
-class SQLCountFunction extends AggregateFunction{
-  Expression expression;
-  int counter = 0;
-  public SQLCountFunction(Expression expression){
-    this.expression = expression;
-  }
-  public Object eval(Map<String, Object> env){
-    Object o = env.get("@GROUPROWS");
-    if (o != null) {
-      /*
-       * The count is the number of rows grouped together
-       * by the GROUP BY clause.
-       */
-      List groupRows = (List)o;
-      return Integer.valueOf(groupRows.size());
-    }
-    return Integer.valueOf(counter);
-  }
-  public String toString(){
-    return "COUNT("+expression+")";
-  }
-  public List<String> usedColumns(){
-    return new LinkedList<String>();
-  }
-  public List<String> aggregateColumns(){
-    List<String> result = new LinkedList<String>();
-    if (!(expression instanceof AsteriskExpression))
-      result.addAll(expression.usedColumns());
-    return result;
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-    result.add(this);
-    return result;
-  }
-  public void processRow(Map<String, Object> env){
-    if (expression instanceof AsteriskExpression) {
-      counter++;
-    } else {
-      /*
-       * Only count non-null values.
-       */
-      Object o = expression.eval(env);
-      if (o != null)
-        counter++;
-    }
-  }
+abstract class AggregateFunction extends Expression
+{
+	public abstract List<String> aggregateColumns();
+	public abstract void processRow(Map<String, Object> env);
 }
-class SQLMaxFunction extends AggregateFunction{
-  Expression expression;
-  Object max = null;
-  public SQLMaxFunction(Expression expression){
-    this.expression = expression;
-  }
-  public Object eval(Map<String, Object> env){
-    Object o = env.get("@GROUPROWS");
-    if (o != null) {
-      /*
-       * Find the maximum from the rows grouped together
-       * by the GROUP BY clause.
-       */
-      List groupRows = (List)o;
-      Object maxInGroup = null;
-      for (int i = 0; i < groupRows.size(); i++) {
-        o = expression.eval((Map)groupRows.get(i));
-        if (o != null){
-          if (maxInGroup == null || ((Comparable)maxInGroup).compareTo(o) < 0)
-            maxInGroup = o;
-        }
-      }
-      return maxInGroup;
-    }
-    return max;
-  }
-  public String toString(){
-    return "MAX("+expression+")";
-  }
-  public List<String> usedColumns(){
-    return new LinkedList<String>();
-  }
-  public List<String> aggregateColumns(){
-    List<String> result = new LinkedList<String>();
-    result.addAll(expression.usedColumns());
-    return result;
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-    result.add(this);
-    return result;
-  }
-  public void processRow(Map<String, Object> env){
-    /*
-     * Only consider non-null values.
-     */
-    Object o = expression.eval(env);
-    if (o != null){
-      if (max == null || ((Comparable)max).compareTo(o) < 0)
-        max = o;
-    }
-  }
+class SQLCountFunction extends AggregateFunction
+{
+	Expression expression;
+	int counter = 0;
+	public SQLCountFunction(Expression expression)
+	{
+		this.expression = expression;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		Object o = env.get("@GROUPROWS");
+		if (o != null)
+		{
+			/*
+			 * The count is the number of rows grouped together
+			 * by the GROUP BY clause.
+			 */
+			List groupRows = (List)o;
+			return Integer.valueOf(groupRows.size());
+		}
+		return Integer.valueOf(counter);
+	}
+	public String toString()
+	{
+		return "COUNT("+expression+")";
+	}
+	public List<String> usedColumns()
+	{
+		return new LinkedList<String>();
+	}
+	public List<String> aggregateColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		if (!(expression instanceof AsteriskExpression))
+			result.addAll(expression.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.add(this);
+		return result;
+	}
+	public void processRow(Map<String, Object> env)
+	{
+		if (expression instanceof AsteriskExpression)
+		{
+			counter++;
+		}
+		else
+		{
+			/*
+			 * Only count non-null values.
+			 */
+			Object o = expression.eval(env);
+			if (o != null)
+				counter++;
+		}
+	}
 }
-class SQLMinFunction extends AggregateFunction{
-  Expression expression;
-  Object min = null;
-  public SQLMinFunction(Expression expression){
-    this.expression = expression;
-  }
-  public Object eval(Map<String, Object> env){
-    Object o = env.get("@GROUPROWS");
-    if (o != null) {
-      /*
-       * Find the minimum from the rows grouped together
-       * by the GROUP BY clause.
-       */
-      List groupRows = (List)o;
-      Object minInGroup = null;
-      for (int i = 0; i < groupRows.size(); i++) {
-        o = expression.eval((Map)groupRows.get(i));
-        if (o != null){
-          if (minInGroup == null || ((Comparable)minInGroup).compareTo(o) > 0)
-            minInGroup = o;
-        }
-      }
-      return minInGroup;
-    }
-    return min;
-  }
-  public String toString(){
-    return "MIN("+expression+")";
-  }
-  public List<String> usedColumns(){
-    return new LinkedList<String>();
-  }
-  public List<String> aggregateColumns(){
-    List<String> result = new LinkedList<String>();
-    result.addAll(expression.usedColumns());
-    return result;
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-    result.add(this);
-    return result;
-  }
-  public void processRow(Map<String, Object> env){
-    /*
-     * Only consider non-null values.
-     */
-    Object o = expression.eval(env);
-    if (o != null){
-      if (min == null || ((Comparable)min).compareTo(o) > 0)
-        min = o;
-    }
-  }
+class SQLMaxFunction extends AggregateFunction
+{
+	Expression expression;
+	Object max = null;
+	public SQLMaxFunction(Expression expression)
+	{
+		this.expression = expression;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		Object o = env.get("@GROUPROWS");
+		if (o != null)
+		{
+			/*
+			 * Find the maximum from the rows grouped together
+			 * by the GROUP BY clause.
+			 */
+			List groupRows = (List)o;
+			Object maxInGroup = null;
+			for (int i = 0; i < groupRows.size(); i++)
+			{
+				o = expression.eval((Map)groupRows.get(i));
+				if (o != null)
+				{
+					if (maxInGroup == null || ((Comparable)maxInGroup).compareTo(o) < 0)
+						maxInGroup = o;
+				}
+			}
+			return maxInGroup;
+		}
+		return max;
+	}
+	public String toString()
+	{
+		return "MAX("+expression+")";
+	}
+	public List<String> usedColumns()
+	{
+		return new LinkedList<String>();
+	}
+	public List<String> aggregateColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(expression.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.add(this);
+		return result;
+	}
+	public void processRow(Map<String, Object> env)
+	{
+		/*
+		 * Only consider non-null values.
+		 */
+		Object o = expression.eval(env);
+		if (o != null)
+		{
+			if (max == null || ((Comparable)max).compareTo(o) < 0)
+				max = o;
+		}
+	}
 }
-class SQLSumFunction extends AggregateFunction{
-  Expression expression;
-  BigDecimal sum = null;
-  int counter = 0;
-  public SQLSumFunction(Expression expression){
-    this.expression = expression;
-  }
-  public Object eval(Map<String, Object> env){
-    Object retval = null;
-    Object o = env.get("@GROUPROWS");
-    if (o != null) {
-      /*
-       * Find the sum of rows grouped together
-       * by the GROUP BY clause.
-       */
-      List groupRows = (List)o;
-      BigDecimal groupSum = null;
-      counter = 0;
-      for (int i = 0; i < groupRows.size(); i++) {
-        o = expression.eval((Map)groupRows.get(i));
-        if (o != null){
-          try{
-            if (groupSum == null)
-              groupSum = new BigDecimal(o.toString());
-            else
-              groupSum = groupSum.add(new BigDecimal(o.toString()));
-            counter++;
-          } catch (NumberFormatException e) {
-          }
-        }
-      }
-      try{
-        if (groupSum != null)
-          retval = Long.valueOf(groupSum.longValueExact());
-      } catch (ArithmeticException e){
-        retval = groupSum.doubleValue();
-      }
-      return retval;
-    }
+class SQLMinFunction extends AggregateFunction
+{
+	Expression expression;
+	Object min = null;
+	public SQLMinFunction(Expression expression)
+	{
+		this.expression = expression;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		Object o = env.get("@GROUPROWS");
+		if (o != null)
+		{
+			/*
+			 * Find the minimum from the rows grouped together
+			 * by the GROUP BY clause.
+			 */
+			List groupRows = (List)o;
+			Object minInGroup = null;
+			for (int i = 0; i < groupRows.size(); i++)
+			{
+				o = expression.eval((Map)groupRows.get(i));
+				if (o != null)
+				{
+					if (minInGroup == null || ((Comparable)minInGroup).compareTo(o) > 0)
+						minInGroup = o;
+				}
+			}
+			return minInGroup;
+		}
+		return min;
+	}
+	public String toString()
+	{
+		return "MIN("+expression+")";
+	}
+	public List<String> usedColumns()
+	{
+		return new LinkedList<String>();
+	}
+	public List<String> aggregateColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(expression.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.add(this);
+		return result;
+	}
+	public void processRow(Map<String, Object> env)
+	{
+		/*
+		 * Only consider non-null values.
+		 */
+		Object o = expression.eval(env);
+		if (o != null)
+		{
+			if (min == null || ((Comparable)min).compareTo(o) > 0)
+				min = o;
+		}
+	}
+}
+class SQLSumFunction extends AggregateFunction
+{
+	Expression expression;
+	BigDecimal sum = null;
+	int counter = 0;
+	public SQLSumFunction(Expression expression)
+	{
+		this.expression = expression;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		Object retval = null;
+		Object o = env.get("@GROUPROWS");
+		if (o != null)
+		{
+			/*
+			 * Find the sum of rows grouped together
+			 * by the GROUP BY clause.
+			 */
+			List groupRows = (List)o;
+			BigDecimal groupSum = null;
+			counter = 0;
+			for (int i = 0; i < groupRows.size(); i++)
+			{
+				o = expression.eval((Map)groupRows.get(i));
+				if (o != null)
+				{
+					try
+					{
+						if (groupSum == null)
+							groupSum = new BigDecimal(o.toString());
+						else
+							groupSum = groupSum.add(new BigDecimal(o.toString()));
+						counter++;
+					}
+					catch (NumberFormatException e)
+					{
+					}
+				}
+			}
+			try
+			{
+				if (groupSum != null)
+					retval = Long.valueOf(groupSum.longValueExact());
+			}
+			catch (ArithmeticException e)
+			{
+				retval = groupSum.doubleValue();
+			}
+			return retval;
+		}
 
-    try{
-      if (sum != null)
-        retval = Long.valueOf(sum.longValueExact());
-    } catch (ArithmeticException e){
-      retval = sum.doubleValue();
-    }
-    return retval;
-  }
-  public String toString(){
-    return "SUM("+expression+")";
-  }
-  public List<String> usedColumns(){
-    return new LinkedList<String>();
-  }
-  public List<String> aggregateColumns(){
-    List<String> result = new LinkedList<String>();
-    result.addAll(expression.usedColumns());
-    return result;
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-    result.add(this);
-    return result;
-  }
-  public void processRow(Map<String, Object> env){
-    /*
-     * Only consider non-null values.
-     */
-    Object o = expression.eval(env);
-    if (o != null){
-      try{
-        if (sum == null)
-          sum = new BigDecimal(o.toString());
-        else
-          sum = sum.add(new BigDecimal(o.toString()));
-        counter++;
-      } catch (NumberFormatException e) {
-      }
-    }
-  }
+		try
+		{
+			if (sum != null)
+				retval = Long.valueOf(sum.longValueExact());
+		}
+		catch (ArithmeticException e)
+		{
+			retval = sum.doubleValue();
+		}
+		return retval;
+	}
+	public String toString()
+	{
+		return "SUM("+expression+")";
+	}
+	public List<String> usedColumns()
+	{
+		return new LinkedList<String>();
+	}
+	public List<String> aggregateColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(expression.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.add(this);
+		return result;
+	}
+	public void processRow(Map<String, Object> env)
+	{
+		/*
+		 * Only consider non-null values.
+		 */
+		Object o = expression.eval(env);
+		if (o != null)
+		{
+			try
+			{
+				if (sum == null)
+					sum = new BigDecimal(o.toString());
+				else
+					sum = sum.add(new BigDecimal(o.toString()));
+				counter++;
+			}
+			catch (NumberFormatException e)
+			{
+			}
+		}
+	}
 }
-class SQLAvgFunction extends SQLSumFunction{
-  public SQLAvgFunction(Expression expression){
-    super(expression);
-  }
-  public Object eval(Map<String, Object> env){
-    Object o = super.eval(env);
-    if (o != null){
-      double average = ((Number)o).doubleValue() / counter;
-      o = new Double(average);
-    }
-    return o;
-  }
-  public String toString(){
-    return "AVG("+expression+")";
-  }
+class SQLAvgFunction extends SQLSumFunction
+{
+	public SQLAvgFunction(Expression expression)
+	{
+		super(expression);
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		Object o = super.eval(env);
+		if (o != null)
+		{
+			double average = ((Number)o).doubleValue() / counter;
+			o = new Double(average);
+		}
+		return o;
+	}
+	public String toString()
+	{
+		return "AVG("+expression+")";
+	}
 }
-class QueryEnvEntry extends Expression{
-  String key;
-  Expression expression;
-  public QueryEnvEntry(String fieldName){
-    this .key = fieldName.toUpperCase();
-    this .expression = new ColumnName(fieldName);
-  }
-  public QueryEnvEntry(String fieldName, Expression exp){
-    this .key = fieldName.toUpperCase();
-    this .expression = exp;
-  }
-  public Object eval(Map<String, Object> env){
-    return expression.eval(env);
-  }
-  public String toString(){
-    return key+": "+expression.toString();
-  }
+class QueryEnvEntry extends Expression
+{
+	String key;
+	Expression expression;
+	public QueryEnvEntry(String fieldName)
+	{
+		this.key = fieldName.toUpperCase();
+		this.expression = new ColumnName(fieldName);
+	}
+	public QueryEnvEntry(String fieldName, Expression exp)
+	{
+		this.key = fieldName.toUpperCase();
+		this.expression = exp;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		return expression.eval(env);
+	}
+	public String toString()
+	{
+		return key+": "+expression.toString();
+	}
 }
-class OrderByEntry extends Expression{
-  String order;
-  Expression expression;
-  public OrderByEntry(Expression expression, String order){
-    this.order = order;
-    this.expression = expression;
-  }
+class OrderByEntry extends Expression
+{
+	String order;
+	Expression expression;
+	public OrderByEntry(Expression expression, String order)
+	{
+		this.order = order;
+		this.expression = expression;
+	}
 }
-class BinaryOperation extends Expression{
-  private static final long MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
-  char op;
-  Expression left, right;
-  public BinaryOperation(char op, Expression left, Expression right){
-    this .op = op;
-    this .left = left;
-    this .right = right;
-  }
-  public Object eval(Map<String, Object> env){
-    Object leftEval = left.eval(env);
-    Object rightEval = right.eval(env);
+class BinaryOperation extends Expression
+{
+	private static final long MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+	char op;
+	Expression left, right;
+	public BinaryOperation(char op, Expression left, Expression right)
+	{
+		this.op = op;
+		this.left = left;
+		this.right = right;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		Object leftEval = left.eval(env);
+		Object rightEval = right.eval(env);
 
-    if (leftEval == null || rightEval == null)
-      return null;
+		if (leftEval == null || rightEval == null)
+			return null;
 
-    try {
-      Integer leftInt;
-      BigInteger bil;
-      boolean isLongExpression = false;
-      if (leftEval instanceof Short) {
-        leftInt = Integer.valueOf(((Short)leftEval).intValue());
-        bil = new BigInteger(leftInt.toString());
-      } else if (leftEval instanceof Long) {
-        bil = new BigInteger(leftEval.toString());
-        isLongExpression = true;
-      } else {
-        leftInt = (Integer)leftEval;
-        bil = new BigInteger(leftInt.toString());
-      }
-      Integer rightInt;
-      BigInteger bir;
-      if (rightEval instanceof Short) {
-        rightInt = Integer.valueOf(((Short)rightEval).intValue());
-        bir = new BigInteger(rightInt.toString());
-      } else if (rightEval instanceof Long) {
-        bir = new BigInteger(rightEval.toString());
-        isLongExpression = true;
-      } else {
-        rightInt = (Integer)rightEval;
-        bir = new BigInteger(rightInt.toString());
-      }
-      if (op == '+')
-        bil = bil.add(bir);
-      if (op == '-')
-        bil = bil.subtract(bir);
-      if (op == '*')
-        bil = bil.multiply(bir);
-      if (op == '/')
-        bil = bil.divide(bir);
-      if (isLongExpression)
-        return new Long(bil.toString());
-      else
-        return new Integer(bil.toString());
-    }
-    catch (ClassCastException e){}try {
-      Number leftN = (Number)leftEval;
-      BigDecimal bdl = new BigDecimal(leftN.toString());
-      Number rightN = (Number)rightEval;
-      BigDecimal bdr = new BigDecimal(rightN.toString());
-      if (op == '+')return new Double(bdl.add(bdr).toString());
-      if (op == '-')return new Double(bdl.subtract(bdr).toString());
-      if (op == '*')return new Double(bdl.multiply(bdr).toString());
-      MathContext mc = new MathContext("precision=14 roundingMode=HALF_UP");
-      if (op == '/')return new Double(bdl.divide(bdr, mc.getPrecision(), mc.getRoundingMode()).toString());
-    }
-    catch (ClassCastException e){}try {
-      if (op == '+' && leftEval instanceof Date){
-        Date leftD = (Date)leftEval;
-        if (rightEval instanceof Time) {
-          Time rightT = (Time)rightEval;
-          Expression stringConverter = new ColumnName("@StringConverter");
-          StringConverter sc = (StringConverter) stringConverter.eval(env);
-          return sc.parseTimestamp(leftD.toString() + " " + rightT.toString());
-        } else {
-          Long rightLong;
-          if (rightEval instanceof Short)
-            rightLong = Long.valueOf(((Short)rightEval).longValue());
-          else if (rightEval instanceof Long)
-            rightLong = (Long)rightEval;
-          else
-            rightLong = Long.valueOf(((Integer)rightEval).intValue());
-	  return incrementDate(leftD, rightLong.longValue());
-        }
-      } else if (op == '+' && rightEval instanceof Date){
-        Date rightD = (Date)rightEval;
-        if (leftEval instanceof Time) {
-          Time leftT = (Time)leftEval;
-          Expression stringConverter = new ColumnName("@StringConverter");
-          StringConverter sc = (StringConverter) stringConverter.eval(env);
-          return sc.parseTimestamp(rightD.toString() + " " + leftT.toString());
-        } else {
-          Long leftLong;
-          if (leftEval instanceof Short)
-            leftLong = Long.valueOf(((Short)leftEval).intValue());
-          else if (leftEval instanceof Long)
-            leftLong = (Long)rightEval;
-          else
-            leftLong = Long.valueOf(((Integer)leftEval).intValue());
-	  return incrementDate(rightD, leftLong.longValue());
-        }
-      } else if (op == '-' && leftEval instanceof Date && rightEval instanceof Long){
-	  return incrementDate((Date)leftEval, -((Long)rightEval).longValue());
-      } else if (op == '-' && leftEval instanceof Date && rightEval instanceof Integer){
-	  return incrementDate((Date)leftEval, -((Integer)rightEval).intValue());
-      } else if (op == '-' && leftEval instanceof Date && rightEval instanceof Short){
-	  return incrementDate((Date)leftEval, -((Short)rightEval).intValue());
-      } else if (op == '-' && (leftEval instanceof Date || rightEval instanceof Date)){
-	  if (!(leftEval instanceof Date)) {
-            Expression stringConverter = new ColumnName("@StringConverter");
-            StringConverter sc = (StringConverter) stringConverter.eval(env);
-            leftEval = sc.parseDate(leftEval.toString());
-	  }
-	  if (!(rightEval instanceof Date)) {
-            Expression stringConverter = new ColumnName("@StringConverter");
-            StringConverter sc = (StringConverter) stringConverter.eval(env);
-            rightEval = sc.parseDate(rightEval.toString());
-	  }
-	  if (leftEval != null && rightEval != null) {
-	    long nMillis = ((Date)leftEval).getTime() - ((Date)(rightEval)).getTime();
-	    long nDays = (nMillis + MILLISECONDS_PER_DAY / 2) / MILLISECONDS_PER_DAY;
-	    return new Integer((int)nDays);
-	  }
-      }
-    }
-    catch (ClassCastException e){}try {
-      if (op == '+' || op == '-'){
-        Timestamp leftD = (Timestamp)leftEval;
-        long time = leftD.getTime();
-        Number rightN = (Number)rightEval;
-        BigDecimal bdr = new BigDecimal(rightN.toString());
-        if (op == '+')return new Timestamp(time + bdr.longValue());
-        if (op == '-')return new Timestamp(time - bdr.longValue());
-      }
-    }
-    catch (ClassCastException e){}
-    if(op == '+')return ""+leftEval+rightEval;
-    return null;
-  }
-  private Date incrementDate(Date date, long nDays){
-    long newTime = date.getTime() +
-      nDays * MILLISECONDS_PER_DAY + MILLISECONDS_PER_DAY / 2;
-    Date newDate = new Date(newTime);
-    /* Remove any time component from calculated date */
-    newDate = Date.valueOf(newDate.toString());
-    return newDate;
-  }
-  public String toString(){
-    return ""+op+" "+left+" "+right;
-  }
-  public List<String> usedColumns(){
-    List<String> result = new LinkedList<String>();
-    result.addAll(left.usedColumns());
-    result.addAll(right.usedColumns());
-    return result;
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-    result.addAll(left.aggregateFunctions());
-    result.addAll(right.aggregateFunctions());
-    return result;
-  }
+		try
+		{
+			Integer leftInt;
+			BigInteger bil;
+			boolean isLongExpression = false;
+
+			if (leftEval instanceof Short)
+			{
+				leftInt = Integer.valueOf(((Short)leftEval).intValue());
+				bil = new BigInteger(leftInt.toString());
+			}
+			else if (leftEval instanceof Long)
+			{
+				bil = new BigInteger(leftEval.toString());
+				isLongExpression = true;
+			}
+			else
+			{
+				leftInt = (Integer)leftEval;
+				bil = new BigInteger(leftInt.toString());
+			}
+			Integer rightInt;
+			BigInteger bir;
+			if (rightEval instanceof Short)
+			{
+				rightInt = Integer.valueOf(((Short)rightEval).intValue());
+				bir = new BigInteger(rightInt.toString());
+			}
+			else if (rightEval instanceof Long)
+			{
+				bir = new BigInteger(rightEval.toString());
+				isLongExpression = true;
+			}
+			else
+			{
+				rightInt = (Integer)rightEval;
+				bir = new BigInteger(rightInt.toString());
+			}
+			if (op == '+')
+				bil = bil.add(bir);
+			if (op == '-')
+				bil = bil.subtract(bir);
+			if (op == '*')
+				bil = bil.multiply(bir);
+			if (op == '/')
+				bil = bil.divide(bir);
+			if (isLongExpression)
+				return new Long(bil.toString());
+			else
+				return new Integer(bil.toString());
+		}
+		catch (ClassCastException e)
+		{
+		}
+		try
+		{
+			Number leftN = (Number)leftEval;
+			BigDecimal bdl = new BigDecimal(leftN.toString());
+			Number rightN = (Number)rightEval;
+			BigDecimal bdr = new BigDecimal(rightN.toString());
+			if (op == '+')
+				return new Double(bdl.add(bdr).toString());
+			if (op == '-')
+				return new Double(bdl.subtract(bdr).toString());
+			if (op == '*')
+				return new Double(bdl.multiply(bdr).toString());
+			MathContext mc = new MathContext("precision=14 roundingMode=HALF_UP");
+			if (op == '/')
+				return new Double(bdl.divide(bdr, mc.getPrecision(), mc.getRoundingMode()).toString());
+		}
+		catch (ClassCastException e)
+		{
+		}
+		try
+		{
+			if (op == '+' && leftEval instanceof Date)
+			{
+				Date leftD = (Date)leftEval;
+				if (rightEval instanceof Time)
+				{
+					Time rightT = (Time)rightEval;
+					Expression stringConverter = new ColumnName("@StringConverter");
+					StringConverter sc = (StringConverter) stringConverter.eval(env);
+					return sc.parseTimestamp(leftD.toString() + " " + rightT.toString());
+				}
+				else
+				{
+					Long rightLong;
+					if (rightEval instanceof Short)
+						rightLong = Long.valueOf(((Short)rightEval).longValue());
+					else if (rightEval instanceof Long)
+						rightLong = (Long)rightEval;
+					else
+						rightLong = Long.valueOf(((Integer)rightEval).intValue());
+	  				return incrementDate(leftD, rightLong.longValue());
+				}
+			}
+			else if (op == '+' && rightEval instanceof Date)
+			{
+				Date rightD = (Date)rightEval;
+				if (leftEval instanceof Time)
+				{
+					Time leftT = (Time)leftEval;
+					Expression stringConverter = new ColumnName("@StringConverter");
+					StringConverter sc = (StringConverter) stringConverter.eval(env);
+					return sc.parseTimestamp(rightD.toString() + " " + leftT.toString());
+				}
+				else
+				{
+					Long leftLong;
+					if (leftEval instanceof Short)
+						leftLong = Long.valueOf(((Short)leftEval).intValue());
+					else if (leftEval instanceof Long)
+						leftLong = (Long)rightEval;
+					else
+						leftLong = Long.valueOf(((Integer)leftEval).intValue());
+					return incrementDate(rightD, leftLong.longValue());
+				}
+			}
+			else if (op == '-' && leftEval instanceof Date && rightEval instanceof Long)
+			{
+				return incrementDate((Date)leftEval, -((Long)rightEval).longValue());
+			}
+			else if (op == '-' && leftEval instanceof Date && rightEval instanceof Integer)
+			{
+				return incrementDate((Date)leftEval, -((Integer)rightEval).intValue());
+			}
+			else if (op == '-' && leftEval instanceof Date && rightEval instanceof Short)
+			{
+				return incrementDate((Date)leftEval, -((Short)rightEval).intValue());
+			}
+			else if (op == '-' && (leftEval instanceof Date || rightEval instanceof Date))
+			{
+				if (!(leftEval instanceof Date))
+				{
+					Expression stringConverter = new ColumnName("@StringConverter");
+					StringConverter sc = (StringConverter) stringConverter.eval(env);
+					leftEval = sc.parseDate(leftEval.toString());
+				}
+				if (!(rightEval instanceof Date))
+				{
+					Expression stringConverter = new ColumnName("@StringConverter");
+					StringConverter sc = (StringConverter) stringConverter.eval(env);
+					rightEval = sc.parseDate(rightEval.toString());
+	  			}
+				if (leftEval != null && rightEval != null)
+				{
+					long nMillis = ((Date)leftEval).getTime() - ((Date)(rightEval)).getTime();
+					long nDays = (nMillis + MILLISECONDS_PER_DAY / 2) / MILLISECONDS_PER_DAY;
+					return new Integer((int)nDays);
+				}
+			}
+		}
+		catch (ClassCastException e)
+		{
+		}
+		try
+		{
+			if (op == '+' || op == '-')
+			{
+				Timestamp leftD = (Timestamp)leftEval;
+				long time = leftD.getTime();
+				Number rightN = (Number)rightEval;
+				BigDecimal bdr = new BigDecimal(rightN.toString());
+				if (op == '+')
+					return new Timestamp(time + bdr.longValue());
+				if (op == '-')
+					return new Timestamp(time - bdr.longValue());
+			}
+		}
+		catch (ClassCastException e)
+		{
+		}
+		if(op == '+')
+			return ""+leftEval+rightEval;
+		return null;
+	}
+	private Date incrementDate(Date date, long nDays)
+	{
+		long newTime = date.getTime() +
+		nDays * MILLISECONDS_PER_DAY + MILLISECONDS_PER_DAY / 2;
+		Date newDate = new Date(newTime);
+		/* Remove any time component from calculated date */
+		newDate = Date.valueOf(newDate.toString());
+		return newDate;
+	}
+	public String toString()
+	{
+		return ""+op+" "+left+" "+right;
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(left.usedColumns());
+		result.addAll(right.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.addAll(left.aggregateFunctions());
+		result.addAll(right.aggregateFunctions());
+		return result;
+	}
 }
-abstract class LogicalExpression extends Expression{
-  public boolean isTrue(Map<String, Object> env){
-    return false;
-  }
+abstract class LogicalExpression extends Expression
+{
+	public boolean isTrue(Map<String, Object> env)
+	{
+		return false;
+	}
 }
-class ParsedExpression extends LogicalExpression{
-  public Expression content;
-  private Map<String, Object> placeholders;
-  public ParsedExpression(Expression left){
-    content = left;
-    placeholders = new HashMap<String, Object>();
-  }
-  public boolean isTrue(Map<String, Object> env){
-    if(placeholders != null) {
-      Map<String, Object> useThisEnv = new HashMap<String, Object>();
-      useThisEnv.putAll(env);
-      useThisEnv.putAll(placeholders);
-      env = useThisEnv;
-    } 
-    return ((LogicalExpression)content).isTrue(env);
-  }
-  public Object eval(Map<String, Object> env){
-    if(placeholders != null) {
-      Map<String, Object> useThisEnv = new HashMap<String, Object>();
-      useThisEnv.putAll(env);
-      useThisEnv.putAll(placeholders);
-      env = useThisEnv;
-    } 
-    return content.eval(env);
-  }
-  public String toString(){
-    return content.toString();
-  }
-  public List<String> usedColumns(){
-    return content.usedColumns();
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    return content.aggregateFunctions();
-  }
-  public int getPlaceholdersCount(){
-    return Placeholder.nextIndex - 1;
-  }
-  public void setPlaceholdersValues(Object[] values){
-    for(int i=1; i<values.length; i++){
-      placeholders.put("?" + i, values[i]);
-    }
-  }
+class ParsedExpression extends LogicalExpression
+{
+	public Expression content;
+	private Map<String, Object> placeholders;
+	public ParsedExpression(Expression left)
+	{
+		content = left;
+		placeholders = new HashMap<String, Object>();
+	}
+	public boolean isTrue(Map<String, Object> env)
+	{
+		if(placeholders != null)
+		{
+			Map<String, Object> useThisEnv = new HashMap<String, Object>();
+			useThisEnv.putAll(env);
+			useThisEnv.putAll(placeholders);
+			env = useThisEnv;
+		} 
+		return ((LogicalExpression)content).isTrue(env);
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		if(placeholders != null)
+		{
+			Map<String, Object> useThisEnv = new HashMap<String, Object>();
+			useThisEnv.putAll(env);
+			useThisEnv.putAll(placeholders);
+			env = useThisEnv;
+		} 
+		return content.eval(env);
+	}
+	public String toString()
+	{
+		return content.toString();
+	}
+	public List<String> usedColumns()
+	{
+		return content.usedColumns();
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		return content.aggregateFunctions();
+	}
+	public int getPlaceholdersCount()
+	{
+		return Placeholder.nextIndex - 1;
+	}
+	public void setPlaceholdersValues(Object[] values)
+	{
+		for(int i=1; i<values.length; i++)
+		{
+			placeholders.put("?" + i, values[i]);
+		}
+	}
 }
-class NotExpression extends LogicalExpression{
-  LogicalExpression content;
-  public NotExpression(LogicalExpression arg){
-    this .content = arg;
-  }
-  public boolean isTrue(Map<String, Object> env){
-    return !content.isTrue(env);
-  }
-  public String toString(){
-    return "NOT "+content;
-  }
-  public List<String> usedColumns(){
-    return content.usedColumns();
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    return content.aggregateFunctions();
-  }
+class NotExpression extends LogicalExpression
+{
+	LogicalExpression content;
+	public NotExpression(LogicalExpression arg)
+	{
+		this.content = arg;
+	}
+	public boolean isTrue(Map<String, Object> env)
+	{
+		return !content.isTrue(env);
+	}
+	public String toString()
+	{
+		return "NOT "+content;
+	}
+	public List<String> usedColumns()
+	{
+		return content.usedColumns();
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		return content.aggregateFunctions();
+	}
 }
-class OrExpression extends LogicalExpression{
-  LogicalExpression left, right;
-  public OrExpression(LogicalExpression left, LogicalExpression right){
-    this .left = left;
-    this .right = right;
-  }
-  public boolean isTrue(Map<String, Object> env){
-    return left.isTrue(env) || right.isTrue(env);
-  }
-  public String toString(){
-    return "OR "+left+" "+right;
-  }
-  public List<String> usedColumns(){
-    List<String> result = new LinkedList<String>();
-    result.addAll(left.usedColumns());
-    result.addAll(right.usedColumns());
-    return result;
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-    result.addAll(left.aggregateFunctions());
-    result.addAll(right.aggregateFunctions());
-    return result;
-  }
+class OrExpression extends LogicalExpression
+{
+	LogicalExpression left, right;
+	public OrExpression(LogicalExpression left, LogicalExpression right)
+	{
+		this.left = left;
+		this.right = right;
+	}
+	public boolean isTrue(Map<String, Object> env)
+	{
+		return left.isTrue(env) || right.isTrue(env);
+	}
+	public String toString()
+	{
+		return "OR "+left+" "+right;
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(left.usedColumns());
+		result.addAll(right.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.addAll(left.aggregateFunctions());
+		result.addAll(right.aggregateFunctions());
+		return result;
+	}
 }
-class AndExpression extends LogicalExpression{
-  LogicalExpression left, right;
-  public AndExpression(LogicalExpression left, LogicalExpression right){
-    this .left = left;
-    this .right = right;
-  }
-  public boolean isTrue(Map<String, Object> env){
-    return left.isTrue(env) && right.isTrue(env);
-  }
-  public String toString(){
-    return "AND "+left+" "+right;
-  }
-  public List<String> usedColumns(){
-    List<String> result = new LinkedList<String>();
-    result.addAll(left.usedColumns());
-    result.addAll(right.usedColumns());
-    return result;
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-    result.addAll(left.aggregateFunctions());
-    result.addAll(right.aggregateFunctions());
-    return result;
-  }
+class AndExpression extends LogicalExpression
+{
+	LogicalExpression left, right;
+	public AndExpression(LogicalExpression left, LogicalExpression right)
+	{
+		this.left = left;
+		this.right = right;
+	}
+	public boolean isTrue(Map<String, Object> env)
+	{
+		return left.isTrue(env) && right.isTrue(env);
+	}
+	public String toString()
+	{
+		return "AND "+left+" "+right;
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(left.usedColumns());
+		result.addAll(right.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.addAll(left.aggregateFunctions());
+		result.addAll(right.aggregateFunctions());
+		return result;
+	}
 }
-class RelopExpression extends LogicalExpression{
-  String op;
-  Expression left, right;
-  public RelopExpression(String op, Expression left, Expression right){
-    this .op = op;
-    this .left = left;
-    this .right = right;
-  }
-  public boolean isTrue(Map<String, Object> env){
-    Comparable leftValue = (Comparable)left.eval(env);
-    Comparable rightValue = (Comparable)right.eval(env);
-    boolean result = false;
-    Integer leftComparedToRightObj = null;
-    try {
-      leftComparedToRightObj = new Integer(leftValue.compareTo(rightValue));
-    }
-    catch (ClassCastException e){}try {
-      if (leftComparedToRightObj == null && leftValue instanceof Date){
-        Expression stringConverter = new ColumnName("@StringConverter");
-        StringConverter sc = (StringConverter) stringConverter.eval(env);
-        Date date = sc.parseDate(rightValue.toString());
-        leftComparedToRightObj = new Integer(leftValue.compareTo(date));
-      }else if (leftComparedToRightObj == null && rightValue instanceof Date){
-        Expression stringConverter = new ColumnName("@StringConverter");
-        StringConverter sc = (StringConverter) stringConverter.eval(env);
-        Date date = sc.parseDate(leftValue.toString());
-        leftComparedToRightObj = new Integer(date.compareTo((Date)rightValue));
-      }else{
-        Double leftDouble = new Double(((Number)leftValue).toString());
-        Double rightDouble = new Double(((Number)rightValue).toString());
-        leftComparedToRightObj = new Integer(leftDouble.compareTo(rightDouble));
-      }
-    }
-    catch (ClassCastException e){}catch (NumberFormatException e){}if (leftComparedToRightObj != null){
-      int leftComparedToRight = leftComparedToRightObj.intValue();
-      if (leftValue != null && rightValue != null){
-        if (op.equals("=")){
-          result = leftComparedToRight == 0;
-        }
-        else if (op.equals("<>") || op.equals("!=")){
-          result = leftComparedToRight != 0;
-        }
-        else if (op.equals(">")){
-          result = leftComparedToRight>0;
-        }
-        else if (op.equals("<")){
-          result = leftComparedToRight<0;
-        }
-        else if (op.equals("<=") || op.equals("=<")){
-          result = leftComparedToRight <= 0;
-        }
-        else if (op.equals(">=") || op.equals("=>")){
-          result = leftComparedToRight >= 0;
-        }
-      }
-    }
-    return result;
-  }
-  public String toString(){
-    return op+" "+left+" "+right;
-  }
-  public List<String> usedColumns(){
-    List<String> result = new LinkedList<String>();
-    result.addAll(left.usedColumns());
-    result.addAll(right.usedColumns());
-    return result;
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-    result.addAll(left.aggregateFunctions());
-    result.addAll(right.aggregateFunctions());
-    return result;
-  }
+class RelopExpression extends LogicalExpression
+{
+	String op;
+	Expression left, right;
+	public RelopExpression(String op, Expression left, Expression right)
+	{
+		this.op = op;
+		this.left = left;
+		this.right = right;
+	}
+	public boolean isTrue(Map<String, Object> env)
+	{
+		Comparable leftValue = (Comparable)left.eval(env);
+		Comparable rightValue = (Comparable)right.eval(env);
+		boolean result = false;
+		Integer leftComparedToRightObj = null;
+		try
+		{
+			leftComparedToRightObj = new Integer(leftValue.compareTo(rightValue));
+		}
+		catch (ClassCastException e)
+		{
+		}
+		try
+		{
+			if (leftComparedToRightObj == null && leftValue instanceof Date)
+			{
+				Expression stringConverter = new ColumnName("@StringConverter");
+				StringConverter sc = (StringConverter) stringConverter.eval(env);
+				Date date = sc.parseDate(rightValue.toString());
+				leftComparedToRightObj = new Integer(leftValue.compareTo(date));
+			}
+			else if (leftComparedToRightObj == null && rightValue instanceof Date)
+			{
+				Expression stringConverter = new ColumnName("@StringConverter");
+				StringConverter sc = (StringConverter) stringConverter.eval(env);
+				Date date = sc.parseDate(leftValue.toString());
+				leftComparedToRightObj = new Integer(date.compareTo((Date)rightValue));
+			}
+			else
+			{
+				Double leftDouble = new Double(((Number)leftValue).toString());
+				Double rightDouble = new Double(((Number)rightValue).toString());
+				leftComparedToRightObj = new Integer(leftDouble.compareTo(rightDouble));
+			}
+		}
+    	catch (ClassCastException e)
+		{
+		}
+		catch (NumberFormatException e){}if (leftComparedToRightObj != null)
+		{
+			int leftComparedToRight = leftComparedToRightObj.intValue();
+			if (leftValue != null && rightValue != null)
+			{
+				if (op.equals("="))
+				{
+					result = leftComparedToRight == 0;
+				}
+				else if (op.equals("<>") || op.equals("!="))
+				{
+					result = leftComparedToRight != 0;
+				}
+				else if (op.equals(">"))
+				{
+					result = leftComparedToRight>0;
+				}
+				else if (op.equals("<"))
+				{
+					result = leftComparedToRight<0;
+				}
+				else if (op.equals("<=") || op.equals("=<"))
+				{
+					result = leftComparedToRight <= 0;
+				}
+				else if (op.equals(">=") || op.equals("=>"))
+				{
+					result = leftComparedToRight >= 0;
+				}
+			}
+		}
+		return result;
+	}
+	public String toString()
+	{
+		return op+" "+left+" "+right;
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(left.usedColumns());
+		result.addAll(right.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.addAll(left.aggregateFunctions());
+		result.addAll(right.aggregateFunctions());
+		return result;
+	}
 }
-class BetweenExpression extends LogicalExpression{
-  Expression obj, left, right;
-  public BetweenExpression(Expression obj, Expression left, Expression right){
-    this .obj = obj;
-    this .left = left;
-    this .right = right;
-  }
-  public boolean isTrue(Map<String, Object> env){
-    Comparable leftValue = (Comparable)left.eval(env);
-    Comparable rightValue = (Comparable)right.eval(env);
-    Comparable objValue = (Comparable)obj.eval(env);
-    boolean result = true;
-    try {
-      if (objValue.compareTo(leftValue)<0)result = false;
-      if (objValue.compareTo(rightValue)>0)result = false;
-    }
-    catch (ClassCastException e){}return result;
-  }
-  public String toString(){
-    return "B "+obj+" "+left+" "+right;
-  }
-  public List<String> usedColumns(){
-    List<String> result = new LinkedList<String>();
-    result.addAll(obj.usedColumns());
-    result.addAll(left.usedColumns());
-    result.addAll(right.usedColumns());
-    return result;
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-    result.addAll(obj.aggregateFunctions());
-    result.addAll(left.aggregateFunctions());
-    result.addAll(right.aggregateFunctions());
-    return result;
-  }
+class BetweenExpression extends LogicalExpression
+{
+	Expression obj, left, right;
+	public BetweenExpression(Expression obj, Expression left, Expression right)
+	{
+		this.obj = obj;
+		this.left = left;
+		this.right = right;
+	}
+	public boolean isTrue(Map<String, Object> env)
+	{
+		Comparable leftValue = (Comparable)left.eval(env);
+		Comparable rightValue = (Comparable)right.eval(env);
+		Comparable objValue = (Comparable)obj.eval(env);
+		boolean result = true;
+		try
+		{
+			if (objValue.compareTo(leftValue)<0)
+				result = false;
+			if (objValue.compareTo(rightValue)>0)
+				result = false;
+		}
+		catch (ClassCastException e)
+		{
+		}
+		return result;
+	}
+	public String toString()
+	{
+		return "B "+obj+" "+left+" "+right;
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(obj.usedColumns());
+		result.addAll(left.usedColumns());
+		result.addAll(right.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.addAll(obj.aggregateFunctions());
+		result.addAll(left.aggregateFunctions());
+		result.addAll(right.aggregateFunctions());
+		return result;
+	}
 }
-class IsNullExpression extends LogicalExpression{
-  Expression arg;
-  public IsNullExpression(Expression arg){
-    this .arg = arg;
-  }
-  public boolean isTrue(Map<String, Object> env){
-    Object o = arg.eval(env);
-    return (o == null);
-  }
-  public String toString(){
-    return "N "+arg;
-  }
-  public List<String> usedColumns(){
-    List<String> result = new LinkedList<String>();
-    result.addAll(arg.usedColumns());
-    return result;
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-    result.addAll(arg.aggregateFunctions());
-    return result;
-  }
+class IsNullExpression extends LogicalExpression
+{
+	Expression arg;
+	public IsNullExpression(Expression arg)
+	{
+		this.arg = arg;
+	}
+	public boolean isTrue(Map<String, Object> env)
+	{
+		Object o = arg.eval(env);
+		return (o == null);
+	}
+	public String toString()
+	{
+		return "N "+arg;
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(arg.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.addAll(arg.aggregateFunctions());
+		return result;
+	}
 }
-class LikeExpression extends LogicalExpression{
-  Expression arg1, arg2;
-  public LikeExpression(Expression arg1, Expression arg2){
-    this .arg1 = arg1;
-    this .arg2 = arg2;
-  }
-  public boolean isTrue(Map<String, Object> env){
-    Object left = arg1.eval(env);
-    Object right = arg2.eval(env);
-    boolean result = false;
-    if (left != null && right != null)
-      result = LikePattern.matches(right.toString(), left.toString());
-    return result;
-  }
-  public String toString(){
-    return "L "+arg1+" "+arg2;
-  }
-  public List<String> usedColumns(){
-    List<String> result = new LinkedList<String>();
-    result.addAll(arg1.usedColumns());
-    result.addAll(arg2.usedColumns());
-    return result;
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-    result.addAll(arg1.aggregateFunctions());
-    result.addAll(arg2.aggregateFunctions());
-    return result;
-  }
+class LikeExpression extends LogicalExpression
+{
+	Expression arg1, arg2;
+	public LikeExpression(Expression arg1, Expression arg2)
+	{
+		this.arg1 = arg1;
+		this.arg2 = arg2;
+	}
+	public boolean isTrue(Map<String, Object> env)
+	{
+		Object left = arg1.eval(env);
+		Object right = arg2.eval(env);
+		boolean result = false;
+		if (left != null && right != null)
+			result = LikePattern.matches(right.toString(), left.toString());
+		return result;
+	}
+	public String toString()
+	{
+		return "L "+arg1+" "+arg2;
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(arg1.usedColumns());
+		result.addAll(arg2.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.addAll(arg1.aggregateFunctions());
+		result.addAll(arg2.aggregateFunctions());
+		return result;
+	}
 }
-class InExpression extends LogicalExpression{
-  Expression obj;
-  List<Expression> inList;
-  public InExpression(Expression obj, List<Expression> inList){
-    this .obj = obj;
-    this .inList = inList;
-  }
-  public boolean isTrue(Map<String, Object> env){
-    Object objValue = obj.eval(env);
-    for (Expression expr: inList){
-      Comparable exprValue = (Comparable)expr.eval(env);
-      if (objValue.equals(exprValue))
-        return true;
-    }
-    return false;
-  }
-  public String toString(){
-    StringBuffer sb = new StringBuffer();
-    sb.append("IN ");
-    sb.append(obj.toString());
-    sb.append(" (");
-    String delimiter = "";
-    for (Expression expr: inList){
-      sb.append(delimiter);
-      sb.append(expr.toString());
-      delimiter = ", ";
-    }
-    sb.append(")");
-    return sb.toString();
-  }
-  public List<String> usedColumns(){
-    List<String> result = new LinkedList<String>();
-    result.addAll(obj.usedColumns());
-    for (Expression expr: inList){
-      result.addAll(expr.usedColumns());
-    }
-    return result;
-  }
-  public List<AggregateFunction> aggregateFunctions(){
-    List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-    for (Expression expr: inList){
-      result.addAll(expr.aggregateFunctions());
-    }
-    return result;
-  }
+class InExpression extends LogicalExpression
+{
+	Expression obj;
+	List<Expression> inList;
+	public InExpression(Expression obj, List<Expression> inList)
+	{
+		this.obj = obj;
+		this.inList = inList;
+	}
+	public boolean isTrue(Map<String, Object> env)
+	{
+		Object objValue = obj.eval(env);
+		for (Expression expr: inList)
+		{
+			Comparable exprValue = (Comparable)expr.eval(env);
+			if (objValue.equals(exprValue))
+				return true;
+		}
+		return false;
+	}
+	public String toString()
+	{
+		StringBuffer sb = new StringBuffer();
+		sb.append("IN ");
+		sb.append(obj.toString());
+		sb.append(" (");
+		String delimiter = "";
+		for (Expression expr: inList)
+		{
+			sb.append(delimiter);
+			sb.append(expr.toString());
+			delimiter = ", ";
+		}
+		sb.append(")");
+		return sb.toString();
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(obj.usedColumns());
+		for (Expression expr: inList)
+		{
+			result.addAll(expr.usedColumns());
+		}
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		for (Expression expr: inList)
+		{
+			result.addAll(expr.aggregateFunctions());
+		}
+		return result;
+	}
 }
-class AsteriskExpression extends LogicalExpression{
-  String expression;
-  public AsteriskExpression(String expression){
-    this.expression = expression;
-  }
-  public boolean isTrue(Map<String, Object> env){
-    return false;
-  }
-  public String toString(){
-    return expression;
-  }
-  public List<String> usedColumns(){
-    List<String> result = new LinkedList<String>();
-    return result;
-  }
+class AsteriskExpression extends LogicalExpression
+{
+	String expression;
+	public AsteriskExpression(String expression)
+	{
+		this.expression = expression;
+	}
+	public boolean isTrue(Map<String, Object> env)
+	{
+		return false;
+	}
+	public String toString()
+	{
+		return expression;
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		return result;
+	}
 }
-class ParsedStatement{
-  List<ParsedExpression> queryEntries;
-  boolean isDistinct;
-  String tableName;
-  String tableAlias;
-  ParsedExpression whereClause;
-  List<ParsedExpression> groupByEntries;
-  ParsedExpression havingClause;
-  List<ParsedExpression> orderByEntries;
-  int limit, offset;
-  public ParsedStatement(List<ParsedExpression> queryEntries, boolean isDistinct,
-    String tableName, String tableAlias,
-    ParsedExpression whereClause,
-    List<ParsedExpression> groupByEntries,
-    ParsedExpression havingClause,
-    List<ParsedExpression> orderByEntries,
-    int limit, int offset){
-    this.queryEntries = queryEntries;
-    this.isDistinct = isDistinct;
-    this.tableName = tableName;
-    this.tableAlias = tableAlias;
-    this.whereClause = whereClause;
-    this.groupByEntries = groupByEntries;
-    this.havingClause = havingClause;
-    this.orderByEntries = orderByEntries;
-    this.limit = limit;
-    this.offset = offset;
-  }
+class ParsedStatement
+{
+	List<ParsedExpression> queryEntries;
+	boolean isDistinct;
+	String tableName;
+	String tableAlias;
+	ParsedExpression whereClause;
+	List<ParsedExpression> groupByEntries;
+	ParsedExpression havingClause;
+	List<ParsedExpression> orderByEntries;
+	int limit, offset;
+	public ParsedStatement(List<ParsedExpression> queryEntries, boolean isDistinct,
+	String tableName, String tableAlias,
+	ParsedExpression whereClause,
+	List<ParsedExpression> groupByEntries,
+	ParsedExpression havingClause,
+	List<ParsedExpression> orderByEntries,
+	int limit, int offset)
+	{
+		this.queryEntries = queryEntries;
+		this.isDistinct = isDistinct;
+		this.tableName = tableName;
+		this.tableAlias = tableAlias;
+		this.whereClause = whereClause;
+		this.groupByEntries = groupByEntries;
+		this.havingClause = havingClause;
+		this.orderByEntries = orderByEntries;
+		this.limit = limit;
+		this.offset = offset;
+	}
 }
-public class ExpressionParser{
-  ParsedExpression content;
-  List<ParsedExpression> queryEntries;
-  boolean isDistinct;
-  String tableName;
-  String tableAlias;
-  List<ParsedExpression> groupByEntries;
-  ParsedExpression havingClause;
-  List<ParsedExpression> orderByEntries;
-  int limit;
-  int offset;
-  Date currentDate;
-  public void parseLogicalExpression()throws ParseException{
-    content = logicalExpression();
-  }
-  public void parseGroupByEntry()throws ParseException{
-    content = groupByEntry();
-  }
-  public void parseOrderByEntry()throws ParseException{
-    content = orderByEntry();
-  }
-  public void parseQueryEnvEntry()throws ParseException{
-    content = queryEnvEntry();
-  }
-  public void parseSelectStatement()throws ParseException{
-    /* Reset prepared statement place-holder counter */
-    Placeholder.nextIndex = 1;
-    ParsedStatement parsedStatement = selectStatement();
-    queryEntries = parsedStatement.queryEntries;
-    isDistinct = parsedStatement.isDistinct;
-    tableName = parsedStatement.tableName;
-    tableAlias = parsedStatement.tableAlias;
-    content = parsedStatement.whereClause;
-    groupByEntries = parsedStatement.groupByEntries;
-    havingClause = parsedStatement.havingClause;
-    orderByEntries = parsedStatement.orderByEntries;
-    limit = parsedStatement.limit;
-    offset = parsedStatement.offset;
-  }
-  public Object eval(Map<String, Object> env){
-    return content.eval(env);
-  }
-  public String toString(){
-    return ""+content;
-  }
-  public Date getCurrentDate(){
-    if (currentDate == null){
-      currentDate = new Date(System.currentTimeMillis());
-      /* Remove any time component from the date */
-      currentDate = Date.valueOf(currentDate.toString());
-    }
-    return currentDate;
-  }
+public class ExpressionParser
+{
+	ParsedExpression content;
+	List<ParsedExpression> queryEntries;
+	boolean isDistinct;
+	String tableName;
+	String tableAlias;
+	List<ParsedExpression> groupByEntries;
+	ParsedExpression havingClause;
+	List<ParsedExpression> orderByEntries;
+	int limit;
+	int offset;
+	Date currentDate;
+	public void parseLogicalExpression()throws ParseException
+	{
+		content = logicalExpression();
+	}
+	public void parseGroupByEntry()throws ParseException
+	{
+		content = groupByEntry();
+	}
+	public void parseOrderByEntry()throws ParseException
+	{
+		content = orderByEntry();
+	}
+	public void parseQueryEnvEntry()throws ParseException
+	{
+		content = queryEnvEntry();
+	}
+	public void parseSelectStatement()throws ParseException
+	{
+		/* Reset prepared statement place-holder counter */
+		Placeholder.nextIndex = 1;
+		ParsedStatement parsedStatement = selectStatement();
+		queryEntries = parsedStatement.queryEntries;
+		isDistinct = parsedStatement.isDistinct;
+		tableName = parsedStatement.tableName;
+		tableAlias = parsedStatement.tableAlias;
+		content = parsedStatement.whereClause;
+		groupByEntries = parsedStatement.groupByEntries;
+		havingClause = parsedStatement.havingClause;
+		orderByEntries = parsedStatement.orderByEntries;
+		limit = parsedStatement.limit;
+		offset = parsedStatement.offset;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		return content.eval(env);
+	}
+	public String toString()
+	{
+		return ""+content;
+	}
+	public Date getCurrentDate()
+	{
+		if (currentDate == null)
+		{
+			currentDate = new Date(System.currentTimeMillis());
+			/* Remove any time component from the date */
+			currentDate = Date.valueOf(currentDate.toString());
+		}
+		return currentDate;
+	}
 }
 PARSER_END(ExpressionParser)
-SKIP:{
-  " "
-  | "\t"
-  | "\r"
-  | "\n"
+SKIP:
+{
+	" "
+	| "\t"
+	| "\r"
+	| "\n"
 }
-SPECIAL_TOKEN:{
-  /*
-   * Skip "--" single-line comments in SQL statement.  A space is required
-   * after "--" so that expression "i--1" is not interpreted as a comment.
-   */
-  <SINGLELINECOMMENT: "--"([" ", "\t"])+ (~["\r", "\n"])* ("\n"|"\r"|"\r\n")?
-  | "--"("\n"|"\r"|"\r\n")>
+SPECIAL_TOKEN:
+{
+	/*
+	 * Skip "--" single-line comments in SQL statement.  A space is required
+	 * after "--" so that expression "i--1" is not interpreted as a comment.
+	 */
+	<SINGLELINECOMMENT: "--"([" ", "\t"])+ (~["\r", "\n"])* ("\n"|"\r"|"\r\n")?
+		| "--"("\n"|"\r"|"\r\n")>
 }
-TOKEN:{
-  <SELECT:"SELECT">
+TOKEN:
+{
+	<SELECT:"SELECT">
 }
-TOKEN:{
-  <DISTINCT:"DISTINCT">
+TOKEN:
+{
+	<DISTINCT:"DISTINCT">
 }
-TOKEN:{
-  <COMMA:",">
+TOKEN:
+{
+	<COMMA:",">
 }
-TOKEN:{
-  <UNSIGNEDINT:<DIGITS>>
+TOKEN:
+{
+	<UNSIGNEDINT:<DIGITS>>
 }
-TOKEN:{
-  <UNSIGNEDNUMBER:<DIGITS> (<EXPONENT>)?
-  | <DIGITS>"."<DIGITS> (<EXPONENT>)?
-  | "."<DIGITS> (<EXPONENT>)?
-  | <DIGITS>"." (<EXPONENT>)?
-  | <DIGITS><TYPESUFFIX> >
+TOKEN:
+{
+	<UNSIGNEDNUMBER:<DIGITS> (<EXPONENT>)?
+		| <DIGITS>"."<DIGITS> (<EXPONENT>)?
+		| "."<DIGITS> (<EXPONENT>)?
+		| <DIGITS>"." (<EXPONENT>)?
+		| <DIGITS><TYPESUFFIX> >
 }
-TOKEN:{
-  <#DIGITS:(["0"-"9"])+>
+TOKEN:
+{
+	<#DIGITS:(["0"-"9"])+>
 }
-TOKEN:{
-  <#EXPONENT: ["e","E"] (["+","-"])? <DIGITS>>
+TOKEN:
+{
+	<#EXPONENT: ["e","E"] (["+","-"])? <DIGITS>>
 }
-TOKEN:{
-  <#TYPESUFFIX:"L">
+TOKEN:
+{
+	<#TYPESUFFIX:"L">
 }
-TOKEN:{
-  <NULL:"NULL">
+TOKEN:
+{
+	<NULL:"NULL">
 }
-TOKEN:{
-  <CURRENT_DATE:"CURRENT_DATE">
+TOKEN:
+{
+	<CURRENT_DATE:"CURRENT_DATE">
 }
-TOKEN:{
-  <AND:"AND">
+TOKEN:
+{
+	<AND:"AND">
 }
-TOKEN:{
-  <OR:"OR">
+TOKEN:
+{
+	<OR:"OR">
 }
-TOKEN:{
-  <NOT:"NOT">
+TOKEN:
+{
+	<NOT:"NOT">
 }
-TOKEN:{
-  <IS:"IS">
+TOKEN:
+{
+	<IS:"IS">
 }
-TOKEN:{
-  <AS:"AS">
+TOKEN:
+{
+	<AS:"AS">
 }
-TOKEN:{
-  <LIKE:"LIKE">
+TOKEN:
+{
+	<LIKE:"LIKE">
 }
-TOKEN:{
-  <BETWEEN:"BETWEEN">
+TOKEN:
+{
+	<BETWEEN:"BETWEEN">
 }
-TOKEN:{
-  <IN:"IN">
+TOKEN:
+{
+	<IN:"IN">
 }
-TOKEN:{
-  <PLACEHOLDER:"?">
+TOKEN:
+{
+	<PLACEHOLDER:"?">
 }
-TOKEN:{
-  <ASC:"ASC">
+TOKEN:
+{
+	<ASC:"ASC">
 }
-TOKEN:{
-  <DESC:"DESC">
+TOKEN:
+{
+	<DESC:"DESC">
 }
-TOKEN:{
-  <LOWER:"LOWER">
+TOKEN:
+{
+	<LOWER:"LOWER">
 }
-TOKEN:{
-  <ROUND:"ROUND">
+TOKEN:
+{
+	<ROUND:"ROUND">
 }
-TOKEN:{
-  <UPPER:"UPPER">
+TOKEN:
+{
+	<UPPER:"UPPER">
 }
-TOKEN:{
-  <COUNT:"COUNT">
+TOKEN:
+{
+	<LENGTH:"LENGTH">
 }
-TOKEN:{
-  <MAX:"MAX">
+TOKEN:
+{
+	<COUNT:"COUNT">
 }
-TOKEN:{
-  <MIN:"MIN">
+TOKEN:
+{
+	<MAX:"MAX">
 }
-TOKEN:{
-  <SUM:"SUM">
+TOKEN:
+{
+	<MIN:"MIN">
 }
-TOKEN:{
-  <AVG:"AVG">
+TOKEN:
+{
+	<SUM:"SUM">
 }
-TOKEN:{
-  /*
-   * Change to IN_TABLE state after parsing "FROM" keyword.
-   */
-  <FROM:"FROM"> : IN_TABLE
+TOKEN:
+{
+	<AVG:"AVG">
 }
-TOKEN:{
-  <WHERE:"WHERE">
+TOKEN:
+{
+	/*
+	 * Change to IN_TABLE state after parsing "FROM" keyword.
+	 */
+	<FROM:"FROM"> : IN_TABLE
 }
-TOKEN:{
-  <GROUP:"GROUP">
+TOKEN:
+{
+	<WHERE:"WHERE">
 }
-TOKEN:{
-  <ORDER:"ORDER">
+TOKEN:
+{
+	<GROUP:"GROUP">
 }
-TOKEN:{
-  <BY:"BY">
+TOKEN:
+{
+	<ORDER:"ORDER">
 }
-TOKEN:{
-  <HAVING:"HAVING">
+TOKEN:
+{
+	<BY:"BY">
 }
-TOKEN:{
-  <LIMIT:"LIMIT">
+TOKEN:
+{
+	<HAVING:"HAVING">
 }
-TOKEN:{
-  <OFFSET:"OFFSET">
+TOKEN:
+{
+	<LIMIT:"LIMIT">
 }
-TOKEN:{
-  <NAME:(["0"-"9", "A"-"Z", "a"-"z", "_", "."])+>
+TOKEN:
+{
+	<OFFSET:"OFFSET">
 }
-TOKEN:{
-  <STRING:"'"(~["'"])*"'">
+TOKEN:
+{
+	<NAME:(["0"-"9", "A"-"Z", "a"-"z", "_", "."])+>
 }
-TOKEN:{
-  <RELOP:(">"
-  | "<"
-  | ">="
-  | "<="
-  | "<>"
-  | "="
-  | "!=")>
+TOKEN:
+{
+	<STRING:"'"(~["'"])*"'">
 }
-TOKEN:{
-  <ASTERISK:"*">
+TOKEN:
+{
+	<RELOP:(">"
+		| "<"
+		| ">="
+		| "<="
+		| "<>"
+		| "="
+		| "!=")>
 }
-TOKEN:{
-  <NAMEASTERISK:<NAME>".*">
+TOKEN:
+{
+	<ASTERISK:"*">
 }
-TOKEN:{
-  <MINUS:"-">
+TOKEN:
+{
+	<NAMEASTERISK:<NAME>".*">
 }
-TOKEN:{
-  <PLUS:"+">
+TOKEN:
+{
+	<MINUS:"-">
 }
-TOKEN:{
-  <DIVIDE:"/">
+TOKEN:
+{
+	<PLUS:"+">
 }
-TOKEN:{
-  <OPENPARENTHESIS:"(">
+TOKEN:
+{
+	<DIVIDE:"/">
 }
-TOKEN:{
-  <CLOSEPARENTHESIS:")">
+TOKEN:
+{
+	<OPENPARENTHESIS:"(">
 }
-TOKEN:{
-  <SEMICOLON:";">
+TOKEN:
+{
+	<CLOSEPARENTHESIS:")">
 }
-<IN_TABLE> SKIP:{
-  " "
-  | "\t"
-  | "\r"
-  | "\n"
+TOKEN:
+{
+	<SEMICOLON:";">
+}
+<IN_TABLE> SKIP:
+{
+	" "
+	| "\t"
+	| "\r"
+	| "\n"
 }
 /*
  * Tablename is a sequence of non-whitespace or double-quoted
  * string when in IN_TABLE state.
  * Switch back to DEFAULT state after parsing table name.
  */
-<IN_TABLE> TOKEN:{
-  <TABLENAME:(~[" ", "\t", "\r", "\n", ";"])+> : DEFAULT
+<IN_TABLE> TOKEN:
+{
+	<TABLENAME:(~[" ", "\t", "\r", "\n", ";"])+> : DEFAULT
 }
-<IN_TABLE> TOKEN:{
-  <QUOTEDTABLENAME:"\""(~["\""])+"\""> : DEFAULT
+<IN_TABLE> TOKEN:
+{
+	<QUOTEDTABLENAME:"\""(~["\""])+"\""> : DEFAULT
 }
 /*
  * See http://www.engr.mun.ca/~theo/JavaCC-FAQ/javacc-faq-moz.htm
  * 3.19  How do I throw a ParseException instead of a TokenMgrError?
  */
-<*> TOKEN:{
-  <UNEXPECTED_CHAR: ~[]>
+<*> TOKEN:
+{
+	<UNEXPECTED_CHAR: ~[]>
 }
-ParsedExpression logicalExpression():{
-  LogicalExpression left;
+ParsedExpression logicalExpression():
+{
+	LogicalExpression left;
 }
 {
-  left = logicalOrExpression(){
-    return new ParsedExpression(left);
-  }
+	left = logicalOrExpression()
+	{
+		return new ParsedExpression(left);
+	}
 }
-ParsedExpression groupByEntry():{
+ParsedExpression groupByEntry():
+{
   Expression left;
 }
 {
-  left = binaryOperation(){
-    return new ParsedExpression(left);
-  }
+	left = binaryOperation()
+	{
+		return new ParsedExpression(left);
+	}
 }
-ParsedExpression orderByEntry():{
-  Expression left;
-  String order;
-  Token t;
+ParsedExpression orderByEntry():
+{
+	Expression left;
+	String order;
+	Token t;
 }
 {
-  {order = "ASC";}
-  left = binaryOperation()(t=<ASC>{order=t.image;}|t=<DESC>{order=t.image;})?{
-    return new ParsedExpression(new OrderByEntry(left, order));
-  }
+	{order = "ASC";}
+	left = binaryOperation()(t=<ASC>{order=t.image;}|t=<DESC>{order=t.image;})?
+	{
+		return new ParsedExpression(new OrderByEntry(left, order));
+	}
 }
-ParsedStatement selectStatement():{
-  List<ParsedExpression> result;
-  ParsedExpression expr;
-  boolean isDistinct;
-  String tableName;
-  String tableAlias;
-  ParsedExpression whereClause, entry;
-  List<ParsedExpression> groupByEntries;
-  ParsedExpression havingClause;
-  List<ParsedExpression> orderByEntries;
-  int limit, offset;
-  Token t;
+ParsedStatement selectStatement():
+{
+	List<ParsedExpression> result;
+	ParsedExpression expr;
+	boolean isDistinct;
+	String tableName;
+	String tableAlias;
+	ParsedExpression whereClause, entry;
+	List<ParsedExpression> groupByEntries;
+	ParsedExpression havingClause;
+	List<ParsedExpression> orderByEntries;
+	int limit, offset;
+	Token t;
 }
 {
-  {
-    result = new LinkedList<ParsedExpression>();
-    isDistinct = false;
-    tableName = null;
-    tableAlias = null;
-    whereClause = null;
-    groupByEntries = new LinkedList<ParsedExpression>();
-    havingClause = null;
-    orderByEntries = new LinkedList<ParsedExpression>();
-    limit = -1;
-    offset = 0;
-  }
-  <SELECT>
-  (<DISTINCT>{isDistinct = true;})?
-  expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*
-  (
-    <FROM>(t=<QUOTEDTABLENAME>|t=<TABLENAME>){tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?
-    (<WHERE>whereClause = logicalExpression())?
-    (<GROUP><BY>entry = groupByEntry(){groupByEntries.add(entry);}(<COMMA>entry = groupByEntry(){groupByEntries.add(entry);})*(<HAVING>havingClause = logicalExpression())?)?
-    (<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?
-    (<LIMIT>t=<UNSIGNEDINT>{limit = Integer.parseInt(t.image);}(<OFFSET>t=<UNSIGNEDINT>{offset = Integer.parseInt(t.image);})?)?
-  )?
-  (<SEMICOLON>)?
-  <EOF>{
-    return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, groupByEntries, havingClause, orderByEntries, limit, offset);
-  }
+	{
+		result = new LinkedList<ParsedExpression>();
+		isDistinct = false;
+		tableName = null;
+		tableAlias = null;
+		whereClause = null;
+		groupByEntries = new LinkedList<ParsedExpression>();
+		havingClause = null;
+		orderByEntries = new LinkedList<ParsedExpression>();
+		limit = -1;
+		offset = 0;
+	}
+	<SELECT>
+	(<DISTINCT>{isDistinct = true;})?
+	expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*
+	(
+		<FROM>(t=<QUOTEDTABLENAME>|t=<TABLENAME>){tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?
+		(<WHERE>whereClause = logicalExpression())?
+		(<GROUP><BY>entry = groupByEntry(){groupByEntries.add(entry);}(<COMMA>entry = groupByEntry(){groupByEntries.add(entry);})*(<HAVING>havingClause = logicalExpression())?)?
+		(<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?
+		(<LIMIT>t=<UNSIGNEDINT>{limit = Integer.parseInt(t.image);}(<OFFSET>t=<UNSIGNEDINT>{offset = Integer.parseInt(t.image);})?)?
+	)?
+	(<SEMICOLON>)?
+	<EOF>
+	{
+		return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, groupByEntries, havingClause, orderByEntries, limit, offset);
+	}
 }
-ParsedExpression queryEnvEntry():{
-  Expression expression, alias, result, asterisk;
-  Token t;
+ParsedExpression queryEnvEntry():
+{
+	Expression expression, alias, result, asterisk;
+	Token t;
 }
 {
-  {
-    alias = null;
-  }
-  (expression = binaryOperation()((<AS>)?alias = columnAlias())? {
-    if (alias != null)
-      result = new QueryEnvEntry(((ColumnName)alias).columnName, expression);
-    else if (expression instanceof ColumnName)
-      result = new QueryEnvEntry(((ColumnName)expression).columnName, expression);
-    else
-      result = new QueryEnvEntry(expression.toString(), expression);
-    return new ParsedExpression(result);
-  }
-  )
-  | (t=<ASTERISK>|t=<NAMEASTERISK>){
-      asterisk = new AsteriskExpression(t.image);
-      return new ParsedExpression(new QueryEnvEntry(t.image, asterisk));
-  }
-
+	{
+		alias = null;
+	}
+	(expression = binaryOperation()((<AS>)?alias = columnAlias())?
+	{
+		if (alias != null)
+			result = new QueryEnvEntry(((ColumnName)alias).columnName, expression);
+		else if (expression instanceof ColumnName)
+			result = new QueryEnvEntry(((ColumnName)expression).columnName, expression);
+		else
+			result = new QueryEnvEntry(expression.toString(), expression);
+		return new ParsedExpression(result);
+	}
+	)
+	| (t=<ASTERISK>|t=<NAMEASTERISK>)
+	{
+		asterisk = new AsteriskExpression(t.image);
+		return new ParsedExpression(new QueryEnvEntry(t.image, asterisk));
+	}
 }
-LogicalExpression logicalOrExpression():{
-  LogicalExpression left, right;
+LogicalExpression logicalOrExpression():
+{
+	LogicalExpression left, right;
 }
 {
-  left = logicalAndExpression()(<OR>right = logicalAndExpression(){
-    left = new OrExpression(left, right);
-  }
-  )*{
-    return left;
-  }
+	left = logicalAndExpression()(<OR>right = logicalAndExpression()
+	{
+		left = new OrExpression(left, right);
+	}
+	)*
+	{
+		return left;
+	}
 }
-LogicalExpression logicalAndExpression():{
-  LogicalExpression left, right;
+LogicalExpression logicalAndExpression():
+{
+	LogicalExpression left, right;
 }
 {
-  left = logicalUnaryExpression()(<AND>right = logicalUnaryExpression(){
-    left = new AndExpression(left, right);
-  }
-  )*{
-    return left;
-  }
+		left = logicalUnaryExpression()(<AND>right = logicalUnaryExpression(){
+		left = new AndExpression(left, right);
+	}
+	)*
+	{
+		return left;
+	}
 }
-LogicalExpression logicalUnaryExpression():{
-  LogicalExpression arg;
+LogicalExpression logicalUnaryExpression():
+{
+	LogicalExpression arg;
 }
 {
-  <NOT>arg = logicalUnaryExpression(){
-    return new NotExpression(arg);
-  }
-  | <OPENPARENTHESIS>arg = logicalOrExpression()<CLOSEPARENTHESIS>{
-    return arg;
-  }
-  | arg = relationalExpression(){
-    return arg;
-  }
+	<NOT>arg = logicalUnaryExpression()
+	{
+		return new NotExpression(arg);
+	}
+	| <OPENPARENTHESIS>arg = logicalOrExpression()<CLOSEPARENTHESIS>
+	{
+		return arg;
+	}
+	| arg = relationalExpression()
+	{
+		return arg;
+	}
 }
-LogicalExpression relationalExpression():{
-  Expression arg1, arg2, arg3;
-  LogicalExpression expr;
-  String op;
-  Token t;
-  boolean negate;
-  List<Expression> inEntries;
+LogicalExpression relationalExpression():
+{
+	Expression arg1, arg2, arg3;
+	LogicalExpression expr;
+	String op;
+	Token t;
+	boolean negate;
+	List<Expression> inEntries;
 }
 {
-  {
-    negate = false;
-    inEntries = new LinkedList<Expression>();
-  }
-  arg1 = binaryOperation()(op = relOp()arg2 = binaryOperation(){
-    return new RelopExpression(op, arg1, arg2);
-  }
-  | (<NOT>{negate=true;})?(<BETWEEN>arg2 = binaryOperation()<AND>arg3 = binaryOperation(){
-    expr = new BetweenExpression(arg1, arg2, arg3);
-    if (negate)
-      expr = new NotExpression(expr);
-    return expr;
-  }
-  | <LIKE>t = <STRING>{
-    expr = new LikeExpression(arg1, new StringConstant(t.image.substring(1, t.image.length()-1)));
-    if (negate)
-      expr = new NotExpression(expr);
-    return expr;
-  }
-  | <IN><OPENPARENTHESIS>arg2 = binaryOperation(){inEntries.add(arg2);}(<COMMA>arg2 = binaryOperation(){inEntries.add(arg2);})*<CLOSEPARENTHESIS>{
-      expr = new InExpression(arg1, inEntries);
-      if (negate)
-        expr = new NotExpression(expr);
-      return expr;
-    }
-  )
-  | <IS>(<NOT>{negate=true;})?<NULL>{
-    expr = new IsNullExpression(arg1);
-    if (negate)
-      expr = new NotExpression(expr);
-    return expr;
-  }
-  )
+	{
+		negate = false;
+		inEntries = new LinkedList<Expression>();
+	}
+	arg1 = binaryOperation()(op = relOp()arg2 = binaryOperation()
+	{
+		return new RelopExpression(op, arg1, arg2);
+	}
+	| (<NOT>{negate=true;})?(<BETWEEN>arg2 = binaryOperation()<AND>arg3 = binaryOperation()
+	{
+		expr = new BetweenExpression(arg1, arg2, arg3);
+		if (negate)
+			expr = new NotExpression(expr);
+		return expr;
+	}
+	| <LIKE>t = <STRING>
+	{
+		expr = new LikeExpression(arg1, new StringConstant(t.image.substring(1, t.image.length()-1)));
+		if (negate)
+			expr = new NotExpression(expr);
+		return expr;
+	}
+	| <IN><OPENPARENTHESIS>arg2 = binaryOperation(){inEntries.add(arg2);}(<COMMA>arg2 = binaryOperation(){inEntries.add(arg2);})*<CLOSEPARENTHESIS>
+	{
+		expr = new InExpression(arg1, inEntries);
+		if (negate)
+			expr = new NotExpression(expr);
+		return expr;
+	}
+	)
+	| <IS>(<NOT>{negate=true;})?<NULL>
+	{
+		expr = new IsNullExpression(arg1);
+		if (negate)
+			expr = new NotExpression(expr);
+		return expr;
+	}
+	)
 }
-String relOp():{
-  Token t;
+String relOp():
+{
+	Token t;
 }
 {
-  t = <RELOP>{
-    return new String(t.image);
-  }
+	t = <RELOP>
+	{
+		return new String(t.image);
+	}
 }
-char binAddOp():{
-  Token t;
+char binAddOp():
+{
+	Token t;
 }
 {
-  (t = <PLUS>|t=<MINUS>){
-    return t.image.charAt(0);
-  }
+	(t = <PLUS>|t=<MINUS>)
+	{
+		return t.image.charAt(0);
+	}
 }
-char binMultiplyOp():{
-  Token t;
+char binMultiplyOp():
+{
+	Token t;
 }
 {
-  (t = <ASTERISK>|t=<DIVIDE>){
-    return t.image.charAt(0);
-  }
+	(t = <ASTERISK>|t=<DIVIDE>)
+	{
+		return t.image.charAt(0);
+	}
 }
-Expression countOperation():{
-  Expression arg;
-  Token t;
+Expression countOperation():
+{
+	Expression arg;
+	Token t;
 }
 {
-  (t=<ASTERISK>) {
-    return new AsteriskExpression(t.image);
-  }
-  | arg = binaryOperation() {
-    return arg;
-  }
+	(t=<ASTERISK>)
+	{
+		return new AsteriskExpression(t.image);
+	}
+	| arg = binaryOperation()
+	{
+		return arg;
+	}
 }
-Expression binaryOperation():{
-  Expression left, right;
-  char op;
+Expression binaryOperation():
+{
+	Expression left, right;
+	char op;
 }
 {
-  left = multiplyOperation()(op = binAddOp()right = multiplyOperation(){
-    left = new BinaryOperation(op, left, right);
-  }
-  )*{
-    return left;
-  }
+	left = multiplyOperation()(op = binAddOp()right = multiplyOperation()
+	{
+		left = new BinaryOperation(op, left, right);
+	}
+	)*
+	{
+		return left;
+	}
 }
-Expression multiplyOperation():{
-  Expression left, right;
-  char op;
+Expression multiplyOperation():
+{
+	Expression left, right;
+	char op;
 }
 {
-  left = simpleExpression()(op = binMultiplyOp()right = simpleExpression(){
-    left = new BinaryOperation(op, left, right);
-  }
-  )*{
-    return left;
-  }
+	left = simpleExpression()(op = binMultiplyOp()right = simpleExpression()
+	{
+		left = new BinaryOperation(op, left, right);
+	}
+	)*
+	{
+		return left;
+	}
 }
-Expression simpleExpression():{
-  Expression arg;
+Expression simpleExpression():
+{
+	Expression arg;
 }
 {
-  <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
-    return arg;
-  }
-  | <UPPER> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
-    return new SQLUpperFunction(arg);
-  }
-  | <LOWER> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
-    return new SQLLowerFunction(arg);
-  }
-  | <ROUND> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
-    return new SQLRoundFunction(arg);
-  }
-  | <COUNT> <OPENPARENTHESIS> arg = countOperation() <CLOSEPARENTHESIS> {
-    return new SQLCountFunction(arg);
-  }
-  | <MAX> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
-    return new SQLMaxFunction(arg);
-  }
-  | <MIN> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
-    return new SQLMinFunction(arg);
-  }
-  | <SUM> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
-    return new SQLSumFunction(arg);
-  }
-  | <AVG> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS> {
-    return new SQLAvgFunction(arg);
-  }
-  | arg = columnName(){
-    return arg;
-  }
-  | arg = numericConstant(){
-    return arg;
-  }
-  | arg = stringConstant(){
-    return arg;
-  }
-  | <NULL>{
-    return new NullConstant();
-  }
-  | <CURRENT_DATE>{
-    return new CurrentDateConstant(this);
-  }
-  | <PLACEHOLDER>{
-    return new Placeholder();
-  }
+	<OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return arg;
+	}
+	| <UPPER> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLUpperFunction(arg);
+	}
+	| <LOWER> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLLowerFunction(arg);
+	}
+	| <LENGTH> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLLengthFunction(arg);
+	}
+	| <ROUND> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLRoundFunction(arg);
+	}
+	| <COUNT> <OPENPARENTHESIS> arg = countOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLCountFunction(arg);
+	}
+	| <MAX> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLMaxFunction(arg);
+	}
+	| <MIN> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLMinFunction(arg);
+	}
+	| <SUM> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLSumFunction(arg);
+	}
+	| <AVG> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLAvgFunction(arg);
+	}
+	| arg = columnName()
+	{
+		return arg;
+	}
+	| arg = numericConstant()
+	{
+		return arg;
+	}
+	| arg = stringConstant()
+	{
+		return arg;
+	}
+	| <NULL>
+	{
+		return new NullConstant();
+	}
+	| <CURRENT_DATE>
+	{
+		return new CurrentDateConstant(this);
+	}
+	| <PLACEHOLDER>
+	{
+		return new Placeholder();
+	}
 }
-Expression columnName():{
-  Token t;
+Expression columnName():
+{
+	Token t;
 }
 {
-  t = <NAME>{
-    return new ColumnName(t.image);
-  }
+	t = <NAME>
+	{
+		return new ColumnName(t.image);
+	}
 }
-Expression numericConstant():{
-  Token t;
-  String sign, digits;
-  boolean isLong;
+Expression numericConstant():
+{
+	Token t;
+	String sign, digits;
+	boolean isLong;
 }
 {
-  {sign="";}
-  (t=<MINUS>{sign=t.image;})?
-  (t = <UNSIGNEDNUMBER>|t = <UNSIGNEDINT>){
-    Number value = null;
-    digits = sign+t.image;
-    isLong = false;
-    if (digits.toUpperCase().endsWith("L")){
-      digits = digits.substring(0, digits.length() - 1);
-      isLong = true;
-    }
-    try {
-      value = new Long(digits);
-      if (isLong == false && value.longValue() >= Integer.MIN_VALUE && value.longValue() <= Integer.MAX_VALUE)
-        value = Integer.valueOf(value.intValue());
-    }
-    catch (NumberFormatException e){
-      value = new Double(digits);
-    }
-    return new NumericConstant(value);
-  }
+	{sign="";}
+	(t=<MINUS>{sign=t.image;})?
+	(t = <UNSIGNEDNUMBER>|t = <UNSIGNEDINT>)
+	{
+		Number value = null;
+		digits = sign+t.image;
+		isLong = false;
+		if (digits.toUpperCase().endsWith("L"))
+		{
+			digits = digits.substring(0, digits.length() - 1);
+			isLong = true;
+		}
+		try
+		{
+			value = new Long(digits);
+			if (isLong == false && value.longValue() >= Integer.MIN_VALUE && value.longValue() <= Integer.MAX_VALUE)
+				value = Integer.valueOf(value.intValue());
+		}
+		catch (NumberFormatException e)
+		{
+			value = new Double(digits);
+		}
+		return new NumericConstant(value);
+	}
 }
-Expression stringConstant():{
-  String left, right;
+Expression stringConstant():
+{
+	String left, right;
 }
 {
-  left = stringConstantAtom()(right = stringConstantAtom(){
-    left = left+"'"+right;
-  }
-  )*{
-    return new StringConstant(left);
-  }
+	left = stringConstantAtom()(right = stringConstantAtom()
+	{
+		left = left+"'"+right;
+	}
+	)*
+	{
+		return new StringConstant(left);
+	}
 }
-String stringConstantAtom():{
-  Token t;
+String stringConstantAtom():
+{
+	Token t;
 }
 {
-  t = <STRING>{
-    return t.image.substring(1, t.image.length()-1);
-  }
+	t = <STRING>
+	{
+		return t.image.substring(1, t.image.length()-1);
+	}
 }
-Expression columnAlias():{
-  Token t;
+Expression columnAlias():
+{
+	Token t;
 }
 {
-  (t=<NAME>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>){
-    return new ColumnName(t.image);
-  }
+	(t=<NAME>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<LENGTH>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>)
+	{
+		return new ColumnName(t.image);
+	}
 }
 
