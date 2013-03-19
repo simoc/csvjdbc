@@ -20,17 +20,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class Expression {
-	public Object eval(Map<String, Object> env) {
+public abstract class Expression
+{
+	public Object eval(Map<String, Object> env)
+	{
 		return null;
 	}
-	public List<String> usedColumns() {
+	public List<String> usedColumns()
+	{
 		return null;
 	}
-	public List<AggregateFunction> aggregateFunctions() {
+	public List<AggregateFunction> aggregateFunctions()
+	{
 		return new LinkedList<AggregateFunction>();
 	}
-	public boolean isTrue(Map<String, Object> env){
+	public boolean isTrue(Map<String, Object> env)
+	{
 	    return false;
 	}
 }

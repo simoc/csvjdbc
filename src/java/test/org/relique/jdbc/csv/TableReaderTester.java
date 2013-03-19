@@ -14,9 +14,11 @@ import org.relique.io.TableReader;
  * Class for testing TableReader functionality that enables user to provide the
  * database tables from a Java class.
  */
-public class TableReaderTester implements TableReader {
-
-	public Reader getReader(Statement statement, String tableName) throws SQLException {
+public class TableReaderTester implements TableReader
+{
+	@Override
+	public Reader getReader(Statement statement, String tableName) throws SQLException
+	{
 		if (tableName.equalsIgnoreCase("AIRLINE"))
 			return new StringReader("CODE,NAME\nLH,Lufthansa\nBA,British Airways\nAF,Air France\n");
 		else if (tableName.equalsIgnoreCase("AIRPORT"))
@@ -24,7 +26,9 @@ public class TableReaderTester implements TableReader {
 		throw new SQLException("Table does not exist: " + tableName);
 	}
 
-	public List<String> getTableNames(Connection connection) throws SQLException {
+	@Override
+	public List<String> getTableNames(Connection connection) throws SQLException
+	{
 		Vector<String> v = new Vector<String>();
 		v.add("AIRLINE");
 		v.add("AIRPORT");

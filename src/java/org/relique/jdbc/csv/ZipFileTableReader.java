@@ -39,22 +39,28 @@ public class ZipFileTableReader implements TableReader
 	private String fileExtension;
 	private String charset;
 
-	public ZipFileTableReader(String zipFilename, String charset) throws IOException {
+	public ZipFileTableReader(String zipFilename, String charset) throws IOException
+	{
 		this.zipFilename = zipFilename;
 		this.zipFile = new ZipFile(zipFilename);
 		this.charset = charset;
 	}
 
-	public void setExtension(String fileExtension) {
+	public void setExtension(String fileExtension)
+	{
 		this.fileExtension = fileExtension;
 	}
 
-	public String getZipFilename() {
+	public String getZipFilename()
+	{
 		return zipFilename;
 	}
 
-	public Reader getReader(Statement statement, String tableName) throws SQLException {
-		try {
+	@Override
+	public Reader getReader(Statement statement, String tableName) throws SQLException
+	{
+		try
+		{
 			ZipEntry zipEntry = zipFile.getEntry(tableName + fileExtension);
 			if (zipEntry == null)
 				throw new SQLException("Table not found: " + tableName);
@@ -65,16 +71,20 @@ public class ZipFileTableReader implements TableReader
 			else
 				reader = new InputStreamReader(zipFile.getInputStream(zipEntry));
 			return reader;
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			throw new SQLException(e);
 		}
 	}
 
-	public List<String> getTableNames(Connection connection) throws SQLException {
+	@Override
+	public List<String> getTableNames(Connection connection) throws SQLException
+	{
 		Vector<String> v = new Vector<String>();
 		Enumeration<? extends ZipEntry> en = zipFile.entries();
-		while (en.hasMoreElements()) {
-
+		while (en.hasMoreElements())
+		{
 			/*
 			 * Strip file extensions.
 			 */
