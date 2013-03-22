@@ -107,6 +107,8 @@
           description="Creates the jar file for the system">
     <jar jarfile="${jar.file}">
       <fileset dir="${class.dir}" includes="org/**/*.class"/>
+      <!-- For java.sql.DriverManager Service Provider mechanism -->
+      <service type="java.sql.Driver" provider="org.relique.jdbc.csv.CsvDriver"/>
     </jar>
   </target>
 
