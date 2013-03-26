@@ -640,29 +640,13 @@ public class CsvConnection implements Connection
 	{
 		checkOpen();
 
-		if (raiseUnsupportedOperationException)
-		{
-			throw new UnsupportedOperationException(
-					"Connection.getWarnings() unsupported. Set driver property "
-							+ CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION
-							+ " to avoid this exception.");
-		}
-		else
-		{
-			return null;
-		}
+		return null;
 	}
 
 	@Override
 	public void clearWarnings() throws SQLException
 	{
 		checkOpen();
-
-		if (raiseUnsupportedOperationException)
-			throw new UnsupportedOperationException(
-					"Connection.getWarnings() unsupported. Set driver property "
-							+ CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION
-							+ " to avoid this exception.");
 	}
 
 	// --------------------------JDBC 2.0-----------------------------
