@@ -520,17 +520,22 @@ public class CsvConnection implements Connection
 	{
 	}
 
-	@Override
-	public void close() throws SQLException
+	private synchronized void closeStatements() throws SQLException
 	{
-		// close all created statements
-		for (Enumeration<Statement> i = statements.elements(); i
-				.hasMoreElements();)
+		// close all created statements (synchronized so that closing runs only one time from one thread).
+		for (Enumeration<Statement> i = statements.elements(); i.hasMoreElements();)
 		{
 			CsvStatement statement = (CsvStatement) i.nextElement();
 			statement.close();
 		}
 		statements.clear();
+	}
+
+	@Override
+	public void close() throws SQLException
+	{
+		closeStatements();
+
 		// set this Connection as closed
 		closed = true;
 	}
