@@ -73,17 +73,6 @@ public class CsvConnection implements Connection
 	/** Field quotechar to use */
 	private char quotechar = CsvDriver.DEFAULT_QUOTECHAR;
 
-	public boolean isRaiseUnsupportedOperationException()
-	{
-		return raiseUnsupportedOperationException;
-	}
-
-	private void setRaiseUnsupportedOperationException(
-			boolean raiseUnsupportedOperationException)
-	{
-		this.raiseUnsupportedOperationException = raiseUnsupportedOperationException;
-	}
-
 	/** Lookup table with headerline to use for each table */
 	private HashMap<String, String> headerlines = new HashMap<String, String>();
 
@@ -98,13 +87,6 @@ public class CsvConnection implements Connection
 
 	/** Lookup table with column data types for each table */
 	private HashMap<String, String> columnTypes = new HashMap<String, String>();
-
-	/**
-	 * whether ot not to raise a UnsupportedOperationException when calling a
-	 * method irrelevant in this context (ex: autocommit whereas there is only
-	 * readonly accesses)
-	 */
-	private boolean raiseUnsupportedOperationException;
 
 	/** Collection of all created Statements */
 	private Vector<Statement> statements = new Vector<Statement>();
@@ -392,12 +374,6 @@ public class CsvConnection implements Connection
 		setIgnoreUnparseableLines(Boolean.parseBoolean(info.getProperty(
 				CsvDriver.IGNORE_UNPARSEABLE_LINES,
 				CsvDriver.DEFAULT_IGNORE_UNPARSEABLE_LINES)));
-
-		setRaiseUnsupportedOperationException(Boolean
-				.parseBoolean(info
-						.getProperty(
-								CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION,
-								CsvDriver.DEFAULT_RAISE_UNSUPPORTED_OPERATION_EXCEPTION)));
 	}
 
 	/**
@@ -587,11 +563,7 @@ public class CsvConnection implements Connection
 	@Override
 	public void setReadOnly(boolean readOnly) throws SQLException
 	{
-		if (raiseUnsupportedOperationException)
-			throw new UnsupportedOperationException(
-					"Connection.setReadOnly(boolean) unsupported. Set driver property "
-							+ CsvDriver.RAISE_UNSUPPORTED_OPERATION_EXCEPTION
-							+ " to avoid this exception.");
+		checkOpen();
 	}
 
 	@Override

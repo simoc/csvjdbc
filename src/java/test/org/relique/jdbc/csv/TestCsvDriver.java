@@ -2610,19 +2610,6 @@ public class TestCsvDriver extends TestCase {
 		}
 	}
 
-	// Actually this is more a Connection test than a Driver test
-	public void testRaiseUnsupportedOperationException() throws SQLException {
-		Properties props = new Properties();
-		props.put("raiseUnsupportedOperationException", "false");
-
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath, props);
-
-		conn.setAutoCommit(true);
-		conn.getAutoCommit();
-		conn.setReadOnly(true);
-	}
-
 	public void testTimestampInTimeZoneRome() throws SQLException,
 			ParseException {
 		Properties props = new Properties();
