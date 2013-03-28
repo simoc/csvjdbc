@@ -3017,6 +3017,30 @@ public class TestCsvDriver extends TestCase {
 		assertNull("Warnings should still be null", results.getWarnings());
 	}
 
+	public void testStringWasNull() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT ID FROM sample");
+		assertTrue(results.next());
+		assertEquals("ID wrong", "Q123", results.getString(1));
+		assertFalse(results.wasNull());
+	}
+
+	public void testObjectWasNull() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT ID FROM sample");
+		assertTrue(results.next());
+		assertEquals("ID wrong", "Q123", results.getObject(1));
+		assertFalse(results.wasNull());
+	}
+
 	public void testTableReader() throws SQLException {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" +
 			TableReaderTester.class.getName());
