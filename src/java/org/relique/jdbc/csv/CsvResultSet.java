@@ -838,10 +838,7 @@ public class CsvResultSet implements ResultSet {
     public String getString(int columnIndex) throws SQLException {
         // perform pre-accessor method processing
         preAccessor(columnIndex);
-        // use CsvReader.getColumn(String) to retrieve the column
-        if (columnIndex < 1 || columnIndex > this.queryEnvironment.size()) {
-            throw new SQLException("Column not found: invalid index: "+columnIndex);
-        }
+
 		Object[] o = queryEnvironment.get(columnIndex-1);
 		try{
 			return ((Expression) o[1]).eval(recordEnvironment).toString();
@@ -1105,6 +1102,9 @@ public class CsvResultSet implements ResultSet {
 
     @Override
     public Object getObject(int columnIndex) throws SQLException {
+    	// perform pre-accessor method processing
+        preAccessor(columnIndex);
+
 		Object[] o = queryEnvironment.get(columnIndex-1);
 		try{
 			return ((Expression) o[1]).eval(recordEnvironment);
@@ -1813,6 +1813,10 @@ public class CsvResultSet implements ResultSet {
     private void preAccessor(int columnIndex) throws SQLException {
         // set last read column index for wasNull()
         lastIndexRead = columnIndex;
+
+        if (columnIndex < 1 || columnIndex > this.queryEnvironment.size()) {
+            throw new SQLException("Column not found: invalid index: "+columnIndex);
+        }
     }
 
     @Override
