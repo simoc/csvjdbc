@@ -120,6 +120,8 @@ public class CsvResultSet implements ResultSet
 	
 	private int fetchSize;
 
+	private int fetchDirection;
+
 	private int limit;
 
 	private boolean isClosed = false;
@@ -206,6 +208,7 @@ public class CsvResultSet implements ResultSet
 		this.statement = statement;
 		maxRows = statement.getMaxRows();
 		fetchSize = statement.getFetchSize();
+		fetchDirection = statement.getFetchDirection();
 		this.limit = sqlLimit;
 		this.isScrollable = isScrollable;
 		this.reader = reader;
@@ -1603,15 +1606,26 @@ public class CsvResultSet implements ResultSet
 	@Override
 	public void setFetchDirection(int direction) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.setFetchDirection(int) unsupported");
+		checkOpen();
+
+		if (direction == ResultSet.FETCH_FORWARD ||
+			direction == ResultSet.FETCH_REVERSE ||
+			direction == ResultSet.FETCH_UNKNOWN)
+		{
+			this.fetchDirection = direction;
+		}
+		else
+		{
+			throw new SQLException("setFetchDirection: direction not supported: " + direction);
+		}
 	}
 
 	@Override
 	public int getFetchDirection() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getFetchDirection() unsupported");
+		checkOpen();
+
+		return fetchDirection;
 	}
 
 	@Override

@@ -2940,6 +2940,20 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("getFetchSize() incorrect", 20, results.getFetchSize());
 	}
 
+	public void testFetchDirection() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+		stmt.setFetchDirection(ResultSet.FETCH_UNKNOWN);
+		assertEquals("getFetchDirection() incorrect", ResultSet.FETCH_UNKNOWN, stmt.getFetchDirection());
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample5");
+		assertEquals("getFetchDirection() incorrect", ResultSet.FETCH_UNKNOWN, results.getFetchDirection());
+		results.setFetchDirection(ResultSet.FETCH_FORWARD);
+		assertEquals("getFetchDirection() incorrect", ResultSet.FETCH_FORWARD, results.getFetchDirection());
+	}
+
 	public void testResultSet() throws SQLException {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);

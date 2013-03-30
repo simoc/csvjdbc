@@ -48,6 +48,7 @@ public class CsvStatement implements Statement
 	protected ResultSet lastResultSet = null;
 	private int maxRows = 0;
 	private int fetchSize = 1;
+	private int fetchDirection = ResultSet.FETCH_FORWARD;
 	private boolean closed;
 
 	protected int scrollType = ResultSet.TYPE_SCROLL_INSENSITIVE;
@@ -115,10 +116,20 @@ public class CsvStatement implements Statement
 	}
 
 	@Override
-	public void setFetchDirection(int p0) throws SQLException
+	public void setFetchDirection(int direction) throws SQLException
 	{
-		throw new SQLException("setFetchDirection(int " + p0
-				+ ") not Supported !");
+		checkOpen();
+
+		if (direction == ResultSet.FETCH_FORWARD ||
+			direction == ResultSet.FETCH_REVERSE ||
+			direction == ResultSet.FETCH_UNKNOWN)
+		{
+			this.fetchDirection = direction;
+		}
+		else
+		{
+			throw new SQLException("setFetchDirection: direction not supported: " + direction);
+		}
 	}
 
 	@Override
@@ -201,7 +212,9 @@ public class CsvStatement implements Statement
 	@Override
 	public int getFetchDirection() throws SQLException
 	{
-		throw new SQLException("getFetchDirection() not Supported !");
+		checkOpen();
+
+		return fetchDirection;
 	}
 
 	@Override
