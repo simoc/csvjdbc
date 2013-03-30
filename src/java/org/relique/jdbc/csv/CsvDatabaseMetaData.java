@@ -469,7 +469,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	@Override
 	public int getResultSetHoldability() throws SQLException
 	{
-		return java.sql.ResultSet.HOLD_CURSORS_OVER_COMMIT;
+		return ResultSet.HOLD_CURSORS_OVER_COMMIT;
 	}
 
 	@Override
@@ -1071,9 +1071,9 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	}
 
 	@Override
-	public boolean supportsResultSetHoldability(int arg0) throws SQLException
+	public boolean supportsResultSetHoldability(int holdability) throws SQLException
 	{
-		return false;
+		return (holdability == ResultSet.HOLD_CURSORS_OVER_COMMIT);
 	}
 
 	@Override

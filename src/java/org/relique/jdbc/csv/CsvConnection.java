@@ -30,6 +30,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -675,15 +676,18 @@ public class CsvConnection implements Connection
 	@Override
 	public void setHoldability(int holdability) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.setHoldability(int) unsupported");
+		checkOpen();
+
+		if (holdability != ResultSet.HOLD_CURSORS_OVER_COMMIT)
+			throw new SQLFeatureNotSupportedException("setHoldability: holdability not supported: " + holdability);
 	}
 
 	@Override
 	public int getHoldability() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.getHoldability() unsupported");
+		checkOpen();
+
+		return ResultSet.HOLD_CURSORS_OVER_COMMIT;
 	}
 
 	@Override
