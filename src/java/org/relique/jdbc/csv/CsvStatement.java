@@ -95,23 +95,22 @@ public class CsvStatement implements Statement
 	}
 
 	@Override
-	public void setEscapeProcessing(boolean p0) throws SQLException
+	public void setEscapeProcessing(boolean enable) throws SQLException
 	{
-		throw new SQLException("setEscapeProcessing(boolean " + p0
+		throw new SQLException("setEscapeProcessing(boolean " + enable
 				+ ") not Supported !");
 	}
 
 	@Override
-	public void setQueryTimeout(int p0) throws SQLException
+	public void setQueryTimeout(int seconds) throws SQLException
 	{
-		throw new SQLException("setQueryTimeout(int " + p0
-				+ ") not Supported !");
+		throw new SQLException("setQueryTimeout(int " + seconds + ") not Supported !");
 	}
 
 	@Override
-	public void setCursorName(String p0) throws SQLException
+	public void setCursorName(String name) throws SQLException
 	{
-		throw new SQLException("setCursorName(String \"" + p0
+		throw new SQLException("setCursorName(String \"" + name
 				+ "\") not Supported !");
 	}
 
@@ -228,7 +227,9 @@ public class CsvStatement implements Statement
 	@Override
 	public int getResultSetConcurrency() throws SQLException
 	{
-		throw new SQLException("getResultSetConcurrency() not Supported !");
+		checkOpen();
+		
+		return ResultSet.CONCUR_READ_ONLY;
 	}
 
 	@Override
@@ -252,8 +253,7 @@ public class CsvStatement implements Statement
 	{
 		checkOpen();
 
-		DriverManager.println("CsvJdbc - CsvStatement:executeQuery() - sql= "
-				+ sql);
+		DriverManager.println("CsvJdbc - CsvStatement:executeQuery() - sql= " + sql);
 
 		/*
 		 * Close any previous ResultSet, as required by JDBC.
@@ -289,11 +289,9 @@ public class CsvStatement implements Statement
 		if (path != null)
 			DriverManager.println("Connection Path: " + path);
 		else
-			DriverManager.println("Connection TableReader: "
-					+ tableReader.getClass().getName());
+			DriverManager.println("Connection TableReader: " + tableReader.getClass().getName());
 		DriverManager.println("Parser Table Name: " + parser.getTableName());
-		DriverManager.println("Connection Extension: "
-				+ connection.getExtension());
+		DriverManager.println("Connection Extension: " + connection.getExtension());
 
 		DataReader reader = null;
 		String fileName = null;
@@ -321,14 +319,12 @@ public class CsvStatement implements Statement
 
 				if (!checkFile.exists())
 				{
-					throw new SQLException("Cannot open data file '" + fileName
-							+ "'  !");
+					throw new SQLException("Cannot open data file '" + fileName + "'  !");
 				}
 
 				if (!checkFile.canRead())
 				{
-					throw new SQLException("Data file '" + fileName
-							+ "'  not readable !");
+					throw new SQLException("Data file '" + fileName + "'  not readable !");
 				}
 			}
 
@@ -371,13 +367,11 @@ public class CsvStatement implements Statement
 						}
 						if (connection.getCharset() != null)
 						{
-							input = new BufferedReader(new InputStreamReader(
-									in, connection.getCharset()));
+							input = new BufferedReader(new InputStreamReader(in, connection.getCharset()));
 						}
 						else
 						{
-							input = new BufferedReader(
-									new InputStreamReader(in));
+							input = new BufferedReader(new InputStreamReader(in));
 						}
 					}
 					else
@@ -385,8 +379,7 @@ public class CsvStatement implements Statement
 						/*
 						 * Reader for table comes from user-provided class.
 						 */
-						input = new BufferedReader(tableReader.getReader(this,
-								tableName));
+						input = new BufferedReader(tableReader.getReader(this, tableName));
 					}
 
 					String headerline = connection.getHeaderline(tableName);
@@ -411,8 +404,7 @@ public class CsvStatement implements Statement
 			}
 			catch (IOException e)
 			{
-				throw new SQLException("Error reading data file. Message was: "
-						+ e);
+				throw new SQLException("Error reading data file: " + e);
 			}
 			catch (SQLException e)
 			{
@@ -448,8 +440,7 @@ public class CsvStatement implements Statement
 	@Override
 	public int executeUpdate(String sql) throws SQLException
 	{
-		throw new SQLException("executeUpdate(String \"" + sql
-				+ "\") not Supported !");
+		throw new SQLException("executeUpdate(String \"" + sql + "\") not Supported !");
 	}
 
 	@Override
@@ -481,27 +472,25 @@ public class CsvStatement implements Statement
 	}
 
 	@Override
-	public boolean execute(String p0) throws SQLException
+	public boolean execute(String sql) throws SQLException
 	{
 		checkOpen();
 
 		try
 		{
-			executeQuery(p0);
+			executeQuery(sql);
 			return true;
 		}
 		catch (Exception e)
 		{
-			throw new SQLException("execute(String \"" + p0
-					+ "\") not Supported !");
+			throw new SQLException("execute(String \"" + sql + "\") not Supported !");
 		}
 	}
 
 	@Override
-	public void addBatch(String p0) throws SQLException
+	public void addBatch(String sql) throws SQLException
 	{
-		throw new SQLException("addBatch(String \"" + p0
-				+ "\") not Supported !");
+		throw new SQLException("addBatch(String \"" + sql + "\") not Supported !");
 	}
 
 	@Override
