@@ -1,18 +1,18 @@
 /*
- *  CsvJdbc - a JDBC driver for CSV files
- *  Copyright (C) 2001  Jonathan Ackerman
+ *	CsvJdbc - a JDBC driver for CSV files
+ *	Copyright (C) 2001	Jonathan Ackerman
  *
- *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
- *  version 2.1 of the License, or (at your option) any later version.
- *  This library is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
- *  You should have received a copy of the GNU Lesser General Public
- *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *	This library is free software; you can redistribute it and/or
+ *	modify it under the terms of the GNU Lesser General Public
+ *	License as published by the Free Software Foundation; either
+ *	version 2.1 of the License, or (at your option) any later version.
+ *	This library is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *	Lesser General Public License for more details.
+ *	You should have received a copy of the GNU Lesser General Public
+ *	License along with this library; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package org.relique.jdbc.csv;
 
@@ -45,8 +45,8 @@ import org.relique.io.DataReader;
  * @version $Id: CsvRawReader.java,v 1.9 2011/10/25 17:24:38 simoc Exp $
  */
 
-public class CsvRawReader {
-
+public class CsvRawReader
+{
 	protected BufferedReader input;
 	protected String tableAlias;
 	protected String[] columnNames;
@@ -70,18 +70,18 @@ public class CsvRawReader {
 	 * Creation date: (6-11-2001 15:02:42)
 	 * 
 	 * @param fileName
-	 *            java.lang.String
+	 *			  java.lang.String
 	 * @param separator
-	 *            char
+	 *			  char
 	 * @param suppressHeaders
-	 *            boolean
+	 *			  boolean
 	 * @param quoteChar
-	 *            char
+	 *			  char
 	 * @param filter the decrypting filter
 	 * @param defectiveHeaders 
 	 * @param skipLeadingDataLines 
 	 * @exception java.lang.Exception
-	 *                The exception description.
+	 *				  The exception description.
 	 * @throws SQLException
 	 * @throws IOException
 	 * @throws FileNotFoundException
@@ -94,7 +94,8 @@ public class CsvRawReader {
 			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter, 
 			boolean defectiveHeaders, int skipLeadingDataLines, String quoteStyle,
 			ArrayList<int []> fixedWidthColumns)
-			throws IOException, SQLException {
+			throws IOException, SQLException
+	{
 		this.tableAlias = tableAlias;
 		this.separator = separator;
 		this.suppressHeaders = suppressHeaders;
@@ -109,27 +110,35 @@ public class CsvRawReader {
 		this.quoteStyle = quoteStyle;
 		this.fixedWidthColumns = fixedWidthColumns;
 
-		for (int i=0; i<skipLeadingLines; i++){
+		for (int i=0; i<skipLeadingLines; i++)
+		{
 			in.readLine();
 		}
 
-		if (this.suppressHeaders) {
+		if (this.suppressHeaders)
+		{
 			// column names specified by property are available. Read and use.
-			if (this.headerLine != null) {
+			if (this.headerLine != null)
+			{
 				this.columnNames = parseLine(this.headerLine, trimHeaders);
-			} else {
+			}
+			else
+			{
 				// No column names available. Read first data line and determine
 				// number of columns.
 				firstLineBuffer = getNextDataLine();
 				String[] data = parseLine(firstLineBuffer, false);
 				this.columnNames = new String[data.length];
-				for (int i = 0; i < data.length; i++) {
+				for (int i = 0; i < data.length; i++)
+				{
 					this.columnNames[i] = "COLUMN" + String.valueOf(i + 1);
 				}
 				data = null;
 				// throw away.
 			}
-		} else {
+		}
+		else
+		{
 			String tmpHeaderLine = getNextDataLine();
 			this.columnNames = parseLine(tmpHeaderLine, trimHeaders);
 			// some column names may be missing and should be corrected
@@ -142,13 +151,16 @@ public class CsvRawReader {
 				throw new SQLException("Table contains duplicate column names");
 		}
 
-		for (int i=0; i<skipLeadingDataLines; i++){
+		for (int i=0; i<skipLeadingDataLines; i++)
+		{
 			in.readLine();
 		}
 	}
 
-	private void fixDefectiveHeaders() {
-		for (int i = 0; i < this.columnNames.length; i++) {
+	private void fixDefectiveHeaders()
+	{
+		for (int i = 0; i < this.columnNames.length; i++)
+		{
 			if (this.columnNames[i].length() == 0)
 				this.columnNames[i] = "COLUMN" + String.valueOf(i + 1);
 		}
@@ -159,26 +171,34 @@ public class CsvRawReader {
 	 * 
 	 * @return Description of the Returned Value
 	 * @exception SQLException
-	 *                Description of Exception
+	 *				  Description of Exception
 	 * @since
 	 */
-	public boolean next() throws SQLException {
+	public boolean next() throws SQLException
+	{
 		fieldValues = new String[columnNames.length];
 		String dataLine = null;
-		try {
-			if (suppressHeaders && (firstLineBuffer != null)) {
+		try
+		{
+			if (suppressHeaders && (firstLineBuffer != null))
+			{
 				// The buffer is not empty yet, so use this first.
 				dataLine = firstLineBuffer;
 				firstLineBuffer = null;
-			} else {
+			}
+			else
+			{
 				// read new line of data from input.
 				dataLine = getNextDataLine();
 			}
-			if (dataLine == null) {
+			if (dataLine == null)
+			{
 				input.close();
 				return false;
 			}
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			e.printStackTrace();
 			throw new SQLException(e.toString());
 		}
@@ -191,41 +211,53 @@ public class CsvRawReader {
 	 * 
 	 * @since
 	 */
-	public void close() {
-		try {
+	public void close()
+	{
+		try
+		{
 			input.close();
 			firstLineBuffer = null;
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 		}
 	}
 
 	/**
 	 * 
 	 * @return The first next data line that contains the correct amount of
-	 *         columns. An amount of column is considered correct if it matches
-	 *         columnNames or if no columnNames is given and the amount is more
-	 *         than 1.
+	 *		   columns. An amount of column is considered correct if it matches
+	 *		   columnNames or if no columnNames is given and the amount is more
+	 *		   than 1.
 	 * @throws IOException
 	 */
-	protected String getNextDataLine() throws IOException {
+	protected String getNextDataLine() throws IOException
+	{
 		String tmp = input.readLine();
-		if (commentChar != 0 && tmp != null) {
+		if (commentChar != 0 && tmp != null)
+		{
 			while (tmp != null && (tmp.length() == 0 || tmp.charAt(0) == commentChar))
 				tmp = input.readLine();
 			// set it to 0: we don't skip data lines, only pre-header lines...
 			commentChar = 0;
 		}
-		if(ignoreUnparseableLines && tmp != null) {
-			try {
-				do {
+		if(ignoreUnparseableLines && tmp != null)
+		{
+			try
+			{
+				do
+				{
 					int fieldsCount = this.parseLine(tmp, true).length;
 					if (columnNames != null && columnNames.length == fieldsCount)
 						break; // we are satisfied
 					if (columnNames == null && fieldsCount != 1)
 						break; // also good enough - hopefully
 					tmp = input.readLine();
-				} while (tmp != null);
-			} catch (SQLException e) {
+				}
+				while (tmp != null);
+			}
+			catch (SQLException e)
+			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -239,26 +271,33 @@ public class CsvRawReader {
 	 * @return The columnNames value
 	 * @since
 	 */
-	public String[] getColumnNames() {
+	public String[] getColumnNames()
+	{
 		return columnNames;
 	}
 
-	public int[] getColumnSizes() {
+	public int[] getColumnSizes()
+	{
 		int []retval;
-		if (fixedWidthColumns != null) {
+		if (fixedWidthColumns != null)
+		{
 			retval = new int[fixedWidthColumns.size()];
-			for (int i = 0; i < retval.length; i++) {
+			for (int i = 0; i < retval.length; i++)
+			{
 				int []columnIndexes = fixedWidthColumns.get(i);
 				retval[i] = columnIndexes[1] - columnIndexes[0] + 1;
 			}
-		} else {
+		}
+		else
+		{
 			retval = new int[columnNames.length];
 			Arrays.fill(retval, DataReader.DEFAULT_COLUMN_SIZE);
 		}
 		return retval;
 	}
 
-	public String getTableAlias() {
+	public String getTableAlias()
+	{
 		return tableAlias;
 	}
 
@@ -266,12 +305,14 @@ public class CsvRawReader {
 	 * Get the value of the column at the specified index, 0 based.
 	 * 
 	 * @param columnIndex
-	 *            Description of Parameter
+	 *			  Description of Parameter
 	 * @return The column value
 	 * @since
 	 */
-	public String getField(int columnIndex) throws SQLException {
-		if (columnIndex >= fieldValues.length) {
+	public String getField(int columnIndex) throws SQLException
+	{
+		if (columnIndex >= fieldValues.length)
+		{
 			return null;
 		}
 		String result = fieldValues[columnIndex];
@@ -281,7 +322,8 @@ public class CsvRawReader {
 	}
 
 	protected String [] parseLine(String line, boolean trimValues)
-		throws SQLException {
+		throws SQLException
+	{
 		String []values;
 		if (fixedWidthColumns != null)
 			values = parseFixedLine(line, trimValues);
@@ -291,11 +333,13 @@ public class CsvRawReader {
 	}
 
 	private String [] parseFixedLine(String line, boolean trimValues)
-		throws SQLException {
+		throws SQLException
+	{
 		String []values = new String[fixedWidthColumns.size()];
 		if (line == null)
 			line = "";
-		for (int i = 0; i < values.length; i++) {
+		for (int i = 0; i < values.length; i++)
+		{
 			int []columnIndexes = fixedWidthColumns.get(i);
 			if (columnIndexes[0] >= line.length())
 				values[i] = "";
@@ -319,7 +363,8 @@ public class CsvRawReader {
 	 * @throws SQLException
 	 */
 	private String[] parseCsvLine(String line, boolean trimValues)
-			throws SQLException {
+			throws SQLException
+	{
 		// TODO: quoteChar should be recognized ONLY when close to separator. 
 		Vector<String> values = new Vector<String>();
 		boolean inQuotedString = false;
@@ -328,88 +373,123 @@ public class CsvRawReader {
 		int currentPos = 0;
 		int fullLine = 0;
 
-		while (fullLine == 0) {
+		while (fullLine == 0)
+		{
 			currentPos = 0;
 			line += separator; // this way fields are separator-terminated
-			while (currentPos < line.length()) {
+			while (currentPos < line.length())
+			{
 				char currentChar = line.charAt(currentPos);
 				if (value.length() == 0 && currentChar == quoteChar
-						&& !inQuotedString) {
+						&& !inQuotedString)
+				{
 					// acknowledge quoteChar only at beginning of value.
 					inQuotedString = true;
-				} else if (currentChar == '\\' && "C".equals(quoteStyle)) {
+				}
+				else if (currentChar == '\\' && "C".equals(quoteStyle))
+				{
 					// in C quoteStyle \\ escapes any character.
 					char nextChar = line.charAt(currentPos + 1);
 					value.append(nextChar);
 					currentPos++;
-				} else if (currentChar == quoteChar) {
+				}
+				else if (currentChar == quoteChar)
+				{
 					char nextChar = line.charAt(currentPos + 1);
-					if (!inQuotedString) {
+					if (!inQuotedString)
+					{
 						// accepting the single quoteChar because the whole
 						// value is not quoted.
 						value.append(quoteChar);
-					} else if (nextChar == quoteChar) {
+					}
+					else if (nextChar == quoteChar)
+					{
 						value.append(quoteChar);
-						if ("SQL".equals(quoteStyle)) {
+						if ("SQL".equals(quoteStyle))
+						{
 							// doubled quoteChar in quoted strings collapse to
 							// one single quoteChar in SQL quotestyle
 							currentPos++;
 						}
-					} else {
-						if (nextChar != separator) {
+					}
+					else
+					{
+						if (nextChar != separator)
+						{
 							throw new SQLException("Expecting " + separator
 									+ " in position " + (currentPos + 1)
 									+ ". Line=" + orgLine);
 						}
-						if (trimValues) {
+						if (trimValues)
+						{
 							values.add(value.toString().trim());
-						} else {
+						}
+						else
+						{
 							values.add(value.toString());
 						}
 						value.setLength(0);
 						inQuotedString = false;
 						currentPos++;
 					}
-				} else {
-					if (currentChar == separator) {
-						if (inQuotedString) {
+				}
+				else
+				{
+					if (currentChar == separator)
+					{
+						if (inQuotedString)
+						{
 							value.append(currentChar);
-						} else {
-							if (trimValues) {
+						}
+						else
+						{
+							if (trimValues)
+							{
 								values.add(value.toString().trim());
-							} else {
+							}
+							else
+							{
 								values.add(value.toString());
 							}
 							value.setLength(0);
 						}
-					} else {
+					}
+					else
+					{
 						// default action
 						value.append(currentChar);
 					}
 				}
 				currentPos++;
 			}
-			if (inQuotedString) {
+			if (inQuotedString)
+			{
 				// Line ended while looking for matching quoteChar. This means
 				// we are inside of a field (not yet fullLine).
 				// Remove extra separator added at start.
 				value = new StringBuffer(value.substring(0, value.length() - 1));
-				try {
+				try
+				{
 					String additionalLine = input.readLine();
 					if (additionalLine == null) 
 						throw new SQLException("EOF reached inside quoted mode");
 					line = "\n" + additionalLine;
-					if (orgLine == firstLineBuffer) {
+					if (orgLine == firstLineBuffer)
+					{
 						// We are reading and remembering the first record to
 						// determine the number of columns in the file.
 						// Append any extra lines we read for first record to
 						// the buffer too.
 						firstLineBuffer += "\n" + additionalLine;
 					}
-				} catch (IOException e) {
+				}
+				catch (IOException e)
+				{
 					throw new SQLException(e.toString());
 				}
-			} else {
+			}
+			else
+			{
 				fullLine = 1;
 			}
 
@@ -418,5 +498,4 @@ public class CsvRawReader {
 		values.copyInto(retVal);
 		return retVal;
 	}
-
 }
