@@ -466,8 +466,7 @@ public class CsvConnection implements Connection
 	{
 		checkOpen();
 
-		CsvStatement statement = new CsvStatement(this,
-				java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE);
+		CsvStatement statement = new CsvStatement(this, ResultSet.TYPE_SCROLL_INSENSITIVE);
 		statements.add(statement);
 		return statement;
 	}
@@ -477,8 +476,9 @@ public class CsvConnection implements Connection
 	{
 		checkOpen();
 
-		return new CsvPreparedStatement(this, sql,
-				java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE);
+		PreparedStatement preparedStatement = new CsvPreparedStatement(this, sql, ResultSet.TYPE_SCROLL_INSENSITIVE);
+		statements.add(preparedStatement);
+		return preparedStatement;
 	}
 
 	@Override
@@ -644,10 +644,11 @@ public class CsvConnection implements Connection
 	public PreparedStatement prepareStatement(String sql, int resultSetType,
 			int resultSetConcurrency) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.prepareStatement(String \"" + sql + "\", int "
-						+ resultSetType + ", int " + resultSetConcurrency
-						+ ") unsupported");
+		checkOpen();
+
+		PreparedStatement preparedStatement = new CsvPreparedStatement(this, sql, resultSetType);
+		statements.add(preparedStatement);
+		return preparedStatement;
 	}
 
 	@Override
@@ -695,8 +696,11 @@ public class CsvConnection implements Connection
 			int resultSetConcurrency, int resultSetHoldability)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.createStatement(int,int,int) unsupported");
+		checkOpen();
+
+		CsvStatement statement = new CsvStatement(this, resultSetType);
+		statements.add(statement);
+		return statement;
 	}
 
 	@Override
@@ -704,8 +708,11 @@ public class CsvConnection implements Connection
 			int resultSetConcurrency, int resultSetHoldability)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.prepareStatement(String,int,int,int) unsupported");
+		checkOpen();
+
+		PreparedStatement preparedStatement = new CsvPreparedStatement(this, sql, resultSetType);
+		statements.add(preparedStatement);
+		return preparedStatement;
 	}
 
 	@Override
