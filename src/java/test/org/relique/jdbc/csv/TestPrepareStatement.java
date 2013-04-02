@@ -71,8 +71,11 @@ public class TestPrepareStatement extends TestCase {
 		String queryString = "SELECT * FROM sample5 WHERE id BETWEEN ? AND ?";
 		try {
 			conn.prepareStatement(queryString);
+			conn.prepareStatement(queryString, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			conn.prepareStatement(queryString, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
+				ResultSet.HOLD_CURSORS_OVER_COMMIT);
 		} catch (UnsupportedOperationException e) {
-			fail("can't prepareStatement!");
+			fail("cannot prepareStatement!");
 		}
 	}
 
@@ -103,6 +106,21 @@ public class TestPrepareStatement extends TestCase {
 		assertEquals("Integer column ID is wrong", new Integer(3), results
 				.getObject("id"));
 		assertFalse(results.next());
+	}
+
+	public void testPreparedStatementIsClosed() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+		String queryString = "SELECT * FROM sample WHERE id = ?";
+		PreparedStatement prepstmt = conn.prepareStatement(queryString);
+
+		prepstmt.setString(1, "A123");
+		ResultSet results = prepstmt.executeQuery();
+
+		assertTrue(results.next());
+		assertEquals("Column EXTRA_FIELD is wrong", "A", results.getString("EXTRA_FIELD"));
+		conn.close();
+		assertTrue(prepstmt.isClosed());
+		
 	}
 
 	public void testShortParameter() throws SQLException {
