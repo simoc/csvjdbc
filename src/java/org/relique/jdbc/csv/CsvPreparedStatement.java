@@ -46,9 +46,9 @@ public class CsvPreparedStatement extends CsvStatement implements
 	private SqlParser parser;
 
 	protected CsvPreparedStatement(CsvConnection connection, String sql,
-			int isScrollable) throws SQLException
+			int resultSetType) throws SQLException
 	{
-		super(connection, isScrollable);
+		super(connection, resultSetType);
 
 		parser = new SqlParser();
 		try

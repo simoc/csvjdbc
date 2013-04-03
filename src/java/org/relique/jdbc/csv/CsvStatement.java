@@ -51,26 +51,26 @@ public class CsvStatement implements Statement
 	private int fetchDirection = ResultSet.FETCH_FORWARD;
 	private boolean closed;
 
-	protected int scrollType = ResultSet.TYPE_SCROLL_INSENSITIVE;
+	protected int resultSetType = ResultSet.TYPE_SCROLL_INSENSITIVE;
 
 	/**
 	 * Creates new Statement for use in executing SQL statements.
 	 * 
 	 * @param connection
 	 *            database connection to create statement for.
-	 * @param isScrollable
+	 * @param resultSetType
 	 *            either ResultSet.TYPE_SCROLL_INSENSITIVE or
 	 *            ResultSet.TYPE_SCROLL_SENSITIVE.
 	 */
-	protected CsvStatement(CsvConnection connection, int scrollType)
+	protected CsvStatement(CsvConnection connection, int resultSetType)
 	{
 		DriverManager.println("CsvJdbc - CsvStatement() - connection="
 				+ connection);
 		DriverManager.println("CsvJdbc - CsvStatement() - Asked for "
-				+ (scrollType == ResultSet.TYPE_SCROLL_SENSITIVE ? "Scrollable"
+				+ (resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE ? "Scrollable"
 						: "Not Scrollable"));
 		this.connection = connection;
-		this.scrollType = scrollType;
+		this.resultSetType = resultSetType;
 	}
 
     protected void checkOpen() throws SQLException
@@ -237,7 +237,7 @@ public class CsvStatement implements Statement
 	{
 		checkOpen();
 
-		return this.scrollType;
+		return this.resultSetType;
 	}
 
 	@Override
@@ -421,7 +421,7 @@ public class CsvStatement implements Statement
 		try
 		{
 			resultSet = new CsvResultSet(this, reader, tableName,
-					parser.getColumns(), parser.isDistinct(), this.scrollType,
+					parser.getColumns(), parser.isDistinct(), this.resultSetType,
 					parser.getWhereClause(), parser.getGroupByColumns(),
 					parser.getHavingClause(), parser.getOrderByColumns(),
 					parser.getLimit(), parser.getOffset(),
