@@ -64,7 +64,7 @@ public class TestScrollableDriver extends TestCase {
 
 		// create a Statement object to execute the query with
 		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-				0);
+			ResultSet.CONCUR_READ_ONLY);
 
 		// Select the ID and NAME columns from sample.csv
 		ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample");
@@ -227,7 +227,7 @@ public class TestScrollableDriver extends TestCase {
 
 		// create a Statement object to execute the query with
 		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-				0);
+			ResultSet.CONCUR_READ_ONLY);
 
 		// Select the ID and NAME columns from sample.csv
 		ResultSet results = stmt.executeQuery("SELECT ID, NAME FROM sample");
@@ -304,7 +304,7 @@ public class TestScrollableDriver extends TestCase {
 
 		// create a Statement object to execute the query with
 		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-				0);
+			ResultSet.CONCUR_READ_ONLY);
 
 		// Select the ID and NAME columns from sample.csv
 		ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample2");
@@ -424,7 +424,7 @@ public class TestScrollableDriver extends TestCase {
 				+ filePath);
 		// create a Statement object to execute the query with
 		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-				0);
+			ResultSet.CONCUR_READ_ONLY);
 
 		ResultSet results = stmt
 				.executeQuery("SELECT ID,Name FROM sample4 WHERE ID='05'");
@@ -457,7 +457,7 @@ public class TestScrollableDriver extends TestCase {
 				+ filePath);
 		// create a Statement object to execute the query with
 		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-				0);
+			ResultSet.CONCUR_READ_ONLY);
 
 		ResultSet results = stmt
 				.executeQuery("SELECT ID,Name FROM singlerecord");
@@ -497,7 +497,7 @@ public class TestScrollableDriver extends TestCase {
 				+ filePath);
 
 		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-				0);
+			ResultSet.CONCUR_READ_ONLY);
 
 		ResultSet results = stmt
 				.executeQuery("SELECT ID, Name, Job FROM sample4 WHERE Job = 'Project Manager'");
@@ -538,7 +538,7 @@ public class TestScrollableDriver extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		stmt.setMaxRows(4);
 		assertEquals("getMaxRows() incorrect", 4, stmt.getMaxRows());
 
@@ -559,7 +559,7 @@ public class TestScrollableDriver extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
 		results.next();
 		results.next();
@@ -580,7 +580,7 @@ public class TestScrollableDriver extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
 		results.next();
 		results.next();
@@ -601,7 +601,7 @@ public class TestScrollableDriver extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
 		results.next();
 		results.next();
@@ -622,7 +622,7 @@ public class TestScrollableDriver extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
 		results.next();
 		results.next();
@@ -643,7 +643,7 @@ public class TestScrollableDriver extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
 		results.next();
 		results.next();
@@ -664,7 +664,7 @@ public class TestScrollableDriver extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
 		results.next();
 		results.next();
@@ -685,7 +685,7 @@ public class TestScrollableDriver extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
 		results.next();
 		results.next();
@@ -706,7 +706,7 @@ public class TestScrollableDriver extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
 		results.next();
 		results.next();
@@ -727,7 +727,7 @@ public class TestScrollableDriver extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
 		results.next();
 		results.next();
@@ -748,7 +748,7 @@ public class TestScrollableDriver extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
 		results.next();
 		results.next();
@@ -769,7 +769,7 @@ public class TestScrollableDriver extends TestCase {
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 0);
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
 		results.next();
 		results.next();
