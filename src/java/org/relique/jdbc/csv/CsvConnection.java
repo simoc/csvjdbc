@@ -466,7 +466,7 @@ public class CsvConnection implements Connection
 	{
 		checkOpen();
 
-		CsvStatement statement = new CsvStatement(this, ResultSet.TYPE_SCROLL_INSENSITIVE);
+		CsvStatement statement = new CsvStatement(this, ResultSet.TYPE_FORWARD_ONLY);
 		statements.add(statement);
 		return statement;
 	}
@@ -476,7 +476,7 @@ public class CsvConnection implements Connection
 	{
 		checkOpen();
 
-		PreparedStatement preparedStatement = new CsvPreparedStatement(this, sql, ResultSet.TYPE_SCROLL_INSENSITIVE);
+		PreparedStatement preparedStatement = new CsvPreparedStatement(this, sql, ResultSet.TYPE_FORWARD_ONLY);
 		statements.add(preparedStatement);
 		return preparedStatement;
 	}

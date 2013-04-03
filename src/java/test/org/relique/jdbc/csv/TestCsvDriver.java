@@ -3218,4 +3218,68 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 		assertFalse(results.next());
 	}
+	
+	public void testGetRow() throws SQLException {
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+
+		Statement stmt = conn.createStatement();
+
+		// Select the ID and NAME columns from sample.csv
+		ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample");
+
+		assertEquals("incorrect row #", 0, results.getRow());
+		assertTrue(results.next());
+		assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
+		assertEquals("incorrect row #", 1, results.getRow());
+		assertTrue(results.next());
+		assertEquals("incorrect row #", 2, results.getRow());
+		assertTrue(results.next());
+		assertEquals("incorrect row #", 3, results.getRow());
+		assertTrue(results.next());
+		assertEquals("incorrect row #", 4, results.getRow());
+		assertTrue(results.next());
+		assertEquals("incorrect row #", 5, results.getRow());
+		assertTrue(results.next());
+		assertEquals("incorrect row #", 6, results.getRow());
+		assertFalse(results.next());
+		assertEquals("incorrect row #", 0, results.getRow());
+
+		results.close();
+
+		results = stmt.executeQuery("SELECT ID,NAME FROM sample ORDER BY ID");
+
+		assertEquals("incorrect row #", 0, results.getRow());
+		assertTrue(results.next());
+		assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
+		assertEquals("incorrect row #", 1, results.getRow());
+		assertTrue(results.next());
+		assertEquals("incorrect row #", 2, results.getRow());
+		assertTrue(results.next());
+		assertEquals("incorrect row #", 3, results.getRow());
+		assertTrue(results.next());
+		assertEquals("incorrect row #", 4, results.getRow());
+		assertTrue(results.next());
+		assertEquals("incorrect row #", 5, results.getRow());
+		assertTrue(results.next());
+		assertEquals("incorrect row #", 6, results.getRow());
+		assertFalse(results.next());
+		assertEquals("incorrect row #", 0, results.getRow());
+
+		results.close();
+
+		results = stmt.executeQuery("SELECT COUNT(*) FROM sample");
+
+		assertEquals("incorrect row #", 0, results.getRow());
+		assertTrue(results.next());
+		assertEquals("Incorrect COUNT Value", 6, results.getInt(1));
+		assertEquals("incorrect row #", 1, results.getRow());
+		assertFalse(results.next());
+		assertEquals("incorrect row #", 0, results.getRow());
+
+		// clean up
+		results.close();
+		stmt.close();
+		conn.close();
+	}
 }

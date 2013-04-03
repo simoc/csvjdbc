@@ -116,6 +116,9 @@ public class CsvResultSet implements ResultSet
 
 	private boolean hitTail = false;
 
+	/** Result of last call to next() */
+	private boolean nextResult = true;
+
 	private int maxRows;
 	
 	private int fetchSize;
@@ -457,7 +460,7 @@ public class CsvResultSet implements ResultSet
 
 		if (this.groupByColumns != null ||
 		this.orderByColumns != null || this.aggregateFunctions.size() > 0 ||
-			this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE)
+			isScrollable())
 		{
 			bufferedRecordEnvironments = new ArrayList<Map<String, Object>>();
 			currentRow = 0;
@@ -633,6 +636,12 @@ public class CsvResultSet implements ResultSet
 		}
 	}
 
+	private boolean isScrollable()
+	{
+		return (this.resultSetType == ResultSet.TYPE_SCROLL_INSENSITIVE ||
+			this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE);
+	}
+
 	/**
 	 * Check that all selected and ORDER BY columns also appear in any GROUP BY clause. 
 	 * @throws SQLException
@@ -769,21 +778,22 @@ public class CsvResultSet implements ResultSet
 	@Override
 	public boolean next() throws SQLException
 	{
+		boolean thereWasAnAnswer;
+
 		checkOpen();
 
 		if ((this.groupByColumns != null ||
 		this.aggregateFunctions.size() > 0 ||
-			this.orderByColumns != null || this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE) &&
+			this.orderByColumns != null || isScrollable()) &&
 			currentRow < bufferedRecordEnvironments.size())
 		{
 			currentRow++;
 			recordEnvironment = bufferedRecordEnvironments.get(currentRow - 1);
 			updateRecordEnvironment(true);
-			return true;
+			thereWasAnAnswer = true;
 		}
 		else
 		{
-			boolean thereWasAnAnswer;
 			if(maxRows != 0 && currentRow >= maxRows)
 			{
 				// Do not fetch any more rows, we have reached the row limit set by caller.
@@ -836,7 +846,7 @@ public class CsvResultSet implements ResultSet
 					objectEnvironment = updateRecordEnvironment(thereWasAnAnswer);
 				}
 			}
-			if (this.orderByColumns != null || this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE)
+			if (this.orderByColumns != null || isScrollable())
 			{
 				if(thereWasAnAnswer)
 				{
@@ -856,8 +866,10 @@ public class CsvResultSet implements ResultSet
 				else
 					hitTail = true;
 			}
-			return thereWasAnAnswer;
 		}
+
+		nextResult = thereWasAnAnswer;
+		return thereWasAnAnswer;
 	}
 
 	private Map<String, Object> updateRecordEnvironment(boolean thereWasAnAnswer)
@@ -1359,7 +1371,7 @@ public class CsvResultSet implements ResultSet
 	{
 		checkOpen();
 
-		if (this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE)
+		if (isScrollable())
 		{
 			return currentRow == 0;
 		}
@@ -1375,7 +1387,7 @@ public class CsvResultSet implements ResultSet
 	{
 		checkOpen();
 
-		if (this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE)
+		if (isScrollable())
 		{
 			return currentRow == bufferedRecordEnvironments.size() + 1;
 		}
@@ -1391,7 +1403,7 @@ public class CsvResultSet implements ResultSet
 	{
 		checkOpen();
 
-		if (this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE)
+		if (isScrollable())
 		{
 			return currentRow == 1;
 		}
@@ -1407,7 +1419,7 @@ public class CsvResultSet implements ResultSet
 	{
 		checkOpen();
 
-		if (this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE)
+		if (isScrollable())
 		{
 			if (!hitTail && currentRow != 0)
 			{
@@ -1428,7 +1440,7 @@ public class CsvResultSet implements ResultSet
 	{
 		checkOpen();
 
-		if (this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE)
+		if (isScrollable())
 		{
 			first();
 			previous();
@@ -1445,7 +1457,7 @@ public class CsvResultSet implements ResultSet
 	{
 		checkOpen();
 
-		if (this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE)
+		if (isScrollable())
 		{
 			while(next());
 		}
@@ -1461,7 +1473,7 @@ public class CsvResultSet implements ResultSet
 	{
 		checkOpen();
 
-		if (this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE)
+		if (isScrollable())
 		{
 			currentRow = 0;
 			boolean thereWasAnAnswer = next();
@@ -1480,7 +1492,7 @@ public class CsvResultSet implements ResultSet
 	{
 		checkOpen();
 
-		if (this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE)
+		if (isScrollable())
 		{
 			afterLast();
 			previous();
@@ -1495,15 +1507,12 @@ public class CsvResultSet implements ResultSet
 	@Override
 	public int getRow() throws SQLException
 	{
-		if (this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE)
-		{
-			return currentRow;
-		}
+		checkOpen();
+
+		if (isScrollable() == false && nextResult == false)
+			return 0;
 		else
-		{
-			throw new UnsupportedOperationException(
-				"ResultSet.getRow() unsupported");
-		}
+			return currentRow;
 	}
 
 	@Override
@@ -1511,7 +1520,7 @@ public class CsvResultSet implements ResultSet
 	{
 		checkOpen();
 
-		if (this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE)
+		if (isScrollable())
 		{
 			boolean found;
 			if(row < 0)
@@ -1555,7 +1564,7 @@ public class CsvResultSet implements ResultSet
 	{
 		checkOpen();
 
-		if (this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE)
+		if (isScrollable())
 		{
 			if(currentRow + rows >= 0)
 				return absolute(currentRow + rows);
@@ -1575,7 +1584,7 @@ public class CsvResultSet implements ResultSet
 	{
 		checkOpen();
 
-		if (this.resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE)
+		if (isScrollable())
 		{
 			if(currentRow > 1)
 			{
