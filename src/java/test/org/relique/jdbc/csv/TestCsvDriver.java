@@ -3229,9 +3229,11 @@ public class TestCsvDriver extends TestCase {
 		ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample");
 
 		assertEquals("incorrect row #", 0, results.getRow());
+		assertFalse(results.isAfterLast());
 		assertTrue(results.next());
 		assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
 		assertEquals("incorrect row #", 1, results.getRow());
+		assertFalse(results.isAfterLast());
 		assertTrue(results.next());
 		assertEquals("incorrect row #", 2, results.getRow());
 		assertTrue(results.next());
@@ -3244,15 +3246,18 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("incorrect row #", 6, results.getRow());
 		assertFalse(results.next());
 		assertEquals("incorrect row #", 0, results.getRow());
+		assertTrue(results.isAfterLast());
 
 		results.close();
 
 		results = stmt.executeQuery("SELECT ID,NAME FROM sample ORDER BY ID");
 
 		assertEquals("incorrect row #", 0, results.getRow());
+		assertFalse(results.isAfterLast());
 		assertTrue(results.next());
 		assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
 		assertEquals("incorrect row #", 1, results.getRow());
+		assertFalse(results.isAfterLast());
 		assertTrue(results.next());
 		assertEquals("incorrect row #", 2, results.getRow());
 		assertTrue(results.next());
@@ -3265,17 +3270,31 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("incorrect row #", 6, results.getRow());
 		assertFalse(results.next());
 		assertEquals("incorrect row #", 0, results.getRow());
+		assertTrue(results.isAfterLast());
 
 		results.close();
 
 		results = stmt.executeQuery("SELECT COUNT(*) FROM sample");
 
 		assertEquals("incorrect row #", 0, results.getRow());
+		assertFalse(results.isAfterLast());
 		assertTrue(results.next());
 		assertEquals("Incorrect COUNT Value", 6, results.getInt(1));
 		assertEquals("incorrect row #", 1, results.getRow());
+		assertFalse(results.isAfterLast());
 		assertFalse(results.next());
 		assertEquals("incorrect row #", 0, results.getRow());
+		assertTrue(results.isAfterLast());
+
+		results.close();
+
+		// Test result set returning no rows.
+		results = stmt.executeQuery("SELECT * FROM sample WHERE ID = 'unknown'");
+
+		assertEquals("incorrect row #", 0, results.getRow());
+		assertFalse(results.isAfterLast());
+		assertFalse(results.next());
+		assertFalse(results.isAfterLast());
 
 		// clean up
 		results.close();

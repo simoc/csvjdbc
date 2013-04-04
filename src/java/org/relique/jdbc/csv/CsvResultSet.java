@@ -530,6 +530,7 @@ public class CsvResultSet implements ResultSet
 			 * Rewind back to before the row so we can read it.
 			 */
 			currentRow = 0;
+			nextResult = true;
 			recordEnvironment = null;
 			updateRecordEnvironment(false);
 			hitTail = true;
@@ -573,6 +574,7 @@ public class CsvResultSet implements ResultSet
 			 * Rewind back to before the row so we can read it.
 			 */
 			currentRow = 0;
+			nextResult = true;
 			recordEnvironment = null;
 			updateRecordEnvironment(false);
 			hitTail = true;
@@ -603,6 +605,7 @@ public class CsvResultSet implements ResultSet
 			 * Rewind back to before first row so we can now read them in sorted order.
 			 */
 			currentRow = 0;
+			nextResult = true;
 			recordEnvironment = null;
 			updateRecordEnvironment(false);
 		}
@@ -630,6 +633,7 @@ public class CsvResultSet implements ResultSet
 				maxRows = savedMaxRows;
 				limit = savedLimit;
 				currentRow = 0;
+				nextResult = true;
 				if (bufferedRecordEnvironments != null)
 					bufferedRecordEnvironments.clear();
 			}
@@ -1393,8 +1397,10 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new UnsupportedOperationException(
-				"ResultSet.isAfterLast() unsupported");
+			/*
+			 * If next() has already returned false then we are after the last record.
+			 */
+			return (this.nextResult == false && this.currentRow > 0);
 		}
 	}
 
