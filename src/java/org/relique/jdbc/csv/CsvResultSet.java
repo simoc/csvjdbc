@@ -1387,8 +1387,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new UnsupportedOperationException(
-				"ResultSet.isBeforeFirst() unsupported");
+			throw new SQLException("ResultSet.isBeforeFirst() not possible for result set type TYPE_FORWARD_ONLY");
 		}
 	}
 
@@ -1421,8 +1420,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new UnsupportedOperationException(
-				"ResultSet.isFirst() unsupported");
+			throw new SQLException("ResultSet.isFirst() not possible for result set type TYPE_FORWARD_ONLY");
 		}
 	}
 
@@ -1442,8 +1440,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new UnsupportedOperationException(
-				"ResultSet.isLast() unsupported");
+			throw new SQLException("ResultSet.isLast() not possible for result set type TYPE_FORWARD_ONLY");
 		}
 	}
 
@@ -1459,8 +1456,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new UnsupportedOperationException(
-				"ResultSet.beforeFirst() unsupported");
+			throw new SQLException("ResultSet.beforeFirst() not possible for result set type TYPE_FORWARD_ONLY");
 		}
 	}
 
@@ -1475,8 +1471,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new UnsupportedOperationException(
-				"ResultSet.afterLast() unsupported");
+			throw new SQLException("ResultSet.afterLast() not possible for result set type TYPE_FORWARD_ONLY");
 		}
 	}
 
@@ -1494,8 +1489,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new UnsupportedOperationException(
-				"ResultSet.first() unsupported");
+			throw new SQLException("ResultSet.first() not possible for result set type TYPE_FORWARD_ONLY");
 		}
 	}
 
@@ -1566,8 +1560,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new UnsupportedOperationException(
-					"ResultSet.absolute() unsupported");
+			throw new SQLException("ResultSet.absolute() not possible for result set type TYPE_FORWARD_ONLY");
 		}
 	}
 
@@ -1586,8 +1579,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new UnsupportedOperationException(
-				"ResultSet.relative() unsupported");
+			throw new SQLException("ResultSet.relative() not possible for result set type TYPE_FORWARD_ONLY");
 		}
 	}
 
@@ -1615,8 +1607,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new UnsupportedOperationException(
-				"ResultSet.previous() unsupported");
+			throw new SQLException("ResultSet.previous() not possible for result set type TYPE_FORWARD_ONLY");
 		}
 	}
 
