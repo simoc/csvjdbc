@@ -261,6 +261,12 @@ public class CsvResultSet implements ResultSet
 				allReaderColumns.add(tableAlias + "." + columnName);
 		}
 
+		if (!(this.resultSetType == TYPE_FORWARD_ONLY || this.resultSetType == TYPE_SCROLL_INSENSITIVE ||
+			this.resultSetType == TYPE_SCROLL_SENSITIVE))
+		{
+			throw new SQLException("ResultSet type invalid: " + this.resultSetType);
+		}
+
 		/*
 		 * Replace any "select *" with the list of column names in that table.
 		 */
