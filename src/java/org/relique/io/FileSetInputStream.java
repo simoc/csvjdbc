@@ -38,8 +38,8 @@ import java.util.regex.Pattern;
  * @author Mario Frasca
  * 
  */
-public class FileSetInputStream extends InputStream {
-
+public class FileSetInputStream extends InputStream
+{
 	private List<String> fileNames;
 	private EncryptedFileInputStream currentFile;
 	private boolean readingHeader;
@@ -76,8 +76,8 @@ public class FileSetInputStream extends InputStream {
 	public FileSetInputStream(String dirName, String fileNamePattern,
 			String[] fieldsInName, char separator, boolean prepend,
 			boolean headerless, CryptoFilter filter, int skipLeadingDataLines)
-			throws IOException {
-
+			throws IOException
+	{
 		this.filter = filter;
 		this.skipLeadingDataLines = skipLeadingDataLines;
 		if (!headerless)
@@ -87,23 +87,31 @@ public class FileSetInputStream extends InputStream {
 		this.prepend = prepend;
 		this.separator = separator;
 		tail = "";
-		if (prepend) {
+		if (prepend)
+		{
 			tail += '\n';
-		} else {
+		}
+		else
+		{
 			if (fieldsInName != null)
 				tail += separator;
 		}
-		if (fieldsInName != null) {
-			for (int i = 0; i < fieldsInName.length; i++) {
+		if (fieldsInName != null)
+		{
+			for (int i = 0; i < fieldsInName.length; i++)
+			{
 				tail += fieldsInName[i];
 				if (i + 1 < fieldsInName.length)
 					tail += separator;
 			}
 		}
-		if (prepend) {
+		if (prepend)
+		{
 			if (fieldsInName != null)
 				tail += separator;
-		} else {
+		}
+		else
+		{
 			tail += '\n';
 		}
 
@@ -113,14 +121,17 @@ public class FileSetInputStream extends InputStream {
 
 		fileNameRE = Pattern.compile(fileNamePattern);
 
-		for (int i = 0; i < candidates.length; i++) {
+		for (int i = 0; i < candidates.length; i++)
+		{
 			Matcher m = fileNameRE.matcher(candidates[i]);
-			if (m.matches()) {
+			if (m.matches())
+			{
 				fileNames.add(dirName + candidates[i]);
 			}
 		}
 		Collections.sort(fileNames);
-		if (fileNames.size()==0){
+		if (fileNames.size()==0)
+		{
 			return;
 		}
 		fileNameRE = Pattern.compile(".*" + fileNamePattern);
@@ -136,12 +147,9 @@ public class FileSetInputStream extends InputStream {
 			pos = 1;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.io.FileInputStream#close()
-	 */
-	public void close() throws IOException {
+	@Override
+	public void close() throws IOException
+	{
 	}
 
 	/**
@@ -160,13 +168,16 @@ public class FileSetInputStream extends InputStream {
 	 * @throws IOException
 	 *             if an I/O error occurs.
 	 */
-	public int read() throws IOException {
+	@Override
+	public int read() throws IOException
+	{
 		// run out of input on all subfiles
 		if (currentFile == null)
 			return -1;
 
 		int ch;
-		if (doingTail) {
+		if (doingTail)
+		{
 			ch = readFromTail();
 			if (ch != -1)
 				return ch;
@@ -176,43 +187,57 @@ public class FileSetInputStream extends InputStream {
 
 		// shift the lookahead into the current char and get the new lookahead.
 		ch = lookahead;
-		do {
+		do
+		{
 			lookahead = currentFile.read();
 			// we ignore \r, which breaks things on files created with MacOS9
-		} while (lookahead == '\r');
+		}
+		while (lookahead == '\r');
 		// if we met a line border we have to output the lead/tail
-		if (prepend) {
+		if (prepend)
+		{
 			// prepending a non empty line...
-			if (ch == '\n' && !(lookahead == '\n' || lookahead == -1)) {
-				doingTail = true;
-				return readFromTail();
-			}
-		} else {
-			// appending to the end of just any line
-			if (currentLineLength > 0 && (ch == '\n' || ch == -1)) {
+			if (ch == '\n' && !(lookahead == '\n' || lookahead == -1))
+			{
 				doingTail = true;
 				return readFromTail();
 			}
 		}
-		if (ch < 0) {
+		else
+		{
+			// appending to the end of just any line
+			if (currentLineLength > 0 && (ch == '\n' || ch == -1))
+			{
+				doingTail = true;
+				return readFromTail();
+			}
+		}
+		if (ch < 0)
+		{
 			currentFile.close();
 			// open next file and possibly skip header
 			pos = 0;
 			String currentName;
-			if (fileNames.size() > 0) {
+			if (fileNames.size() > 0)
+			{
 				currentName = fileNames.remove(0);
-			} else {
+			}
+			else
+			{
 				currentFile = null;
 				return -1;
 			}
 			tail = getTailFromName(currentName);
 			currentFile = new EncryptedFileInputStream(currentName, filter);
 			// if files do contain a header, skip it
-			for(int i = 0; i < this.skipLeadingDataLines; i++){
+			for(int i = 0; i < this.skipLeadingDataLines; i++)
+			{
 				int ch2;
-				do{
+				do
+				{
 					ch2 = currentFile.read();
-				} while (ch2 != '\n' && ch2 != -1);
+				}
+				while (ch2 != '\n' && ch2 != -1);
 			}
 			doingTail = prepend;
 			if (doingTail)
@@ -224,49 +249,55 @@ public class FileSetInputStream extends InputStream {
 		return ch;
 	}
 
-	private String getTailFromName(String currentName) {
+	private String getTailFromName(String currentName)
+	{
 		Matcher m = fileNameRE.matcher(currentName);
 		m.matches();
 		String tail = "";
 		int groupCount = m.groupCount();
-		if (prepend) {
+		if (prepend)
+		{
 			tail += '\n';
-		} else {
+		}
+		else
+		{
 			if (groupCount > 0)
 				tail += separator;
 		}
-		for (int i = 1; i <= groupCount; i++) {
+		for (int i = 1; i <= groupCount; i++)
+		{
 			tail += m.group(i);
 			if (i < groupCount)
 				tail += separator;
 		}
-		if (prepend) {
+		if (prepend)
+		{
 			if (groupCount > 0)
 				tail += separator;
-		} else {
+		}
+		else
+		{
 			tail += '\n';
 		}
 		return tail;
 	}
 
-	private int readFromTail() {
+	private int readFromTail()
+	{
 		if (pos < tail.length())
 			return tail.charAt(pos++);
 		pos = 0;
-		if (readingHeader) {
+		if (readingHeader)
+		{
 			readingHeader = false;
 			tail = dataTail;
 		}
 		return -1;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.io.InputStream#reset()
-	 */
-	public synchronized void reset() throws IOException {
+	@Override
+	public synchronized void reset() throws IOException
+	{
 		super.reset();
 	}
-
 }
