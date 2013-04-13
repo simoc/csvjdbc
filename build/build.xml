@@ -58,7 +58,7 @@
   </path>
   <path id="test.classpath">
     <path refid="classpath"/>
-    <fileset dir="${junit.dir}">
+    <fileset dir="${junit.dir}" erroronmissingdir="false">
       <include name="junit*.jar"/>
     </fileset>
     <pathelement path="../classes"/>

@@ -41,10 +41,10 @@ public class TestFixedWidthFiles
 	@BeforeClass
 	public static void setUp()
 	{
-		filePath = "../src/testdata";
-		if (!new File(filePath).canRead())
-			filePath = "src/testdata";
-		assertTrue("Sample files location property not set !", new File(filePath).canRead());
+		filePath = ".." + File.separator + "src" + File.separator + "testdata";
+		if (!new File(filePath).isDirectory())
+			filePath = "src" + File.separator + "testdata";
+		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
 
 		// load CSV driver
 		try

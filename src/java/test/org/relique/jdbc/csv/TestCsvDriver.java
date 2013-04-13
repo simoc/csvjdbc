@@ -60,10 +60,10 @@ public class TestCsvDriver
 	@BeforeClass
 	public static void setUp()
 	{
-		filePath = "../src/testdata";
-		if (!new File(filePath).canRead())
-			filePath = "src/testdata";
-		assertTrue("Sample files location property not set !", new File(filePath).canRead());
+		filePath = ".." + File.separator + "src" + File.separator + "testdata";
+		if (!new File(filePath).isDirectory())
+			filePath = "src" + File.separator + "testdata";
+		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
 
 		// load CSV driver
 		try
@@ -2305,7 +2305,7 @@ public class TestCsvDriver
 		catch (SQLException e)
 		{
 			assertEquals("java.sql.SQLException: Cannot open data file '"
-					+ filePath + "/not_there.csv'  !", "" + e);
+					+ filePath + File.separator + "not_there.csv'  !", "" + e);
 		}
 
 		Properties props = new Properties();
@@ -2552,7 +2552,7 @@ public class TestCsvDriver
 				+ filePath);
 		String url = conn.getMetaData().getURL();
 		assertTrue(url.startsWith("jdbc:relique:csv:"));
-		assertTrue(url.endsWith("/testdata/"));
+		assertTrue(url.endsWith(File.separator + "testdata" + File.separator) || url.endsWith(File.separator + "testdata"));
 	}
 
 	@Test
