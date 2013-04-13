@@ -18,6 +18,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package test.org.relique.jdbc.csv;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -29,38 +35,41 @@ import java.text.SimpleDateFormat;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Tests use of SQL GROUP BY clause.
  */
-public class TestGroupBy extends TestCase {
+public class TestGroupBy
+{
+	private static String filePath;
+	private static DateFormat toUTC;
 
-	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
-	private String filePath;
-	private DateFormat toUTC;
-
-	public TestGroupBy(String name) {
-		super(name);
-	}
-
-	protected void setUp() {
-		filePath = System.getProperty(SAMPLE_FILES_LOCATION_PROPERTY);
-		if (filePath == null)
-			filePath = RunTests.DEFAULT_FILEPATH;
-		assertNotNull("Sample files location property not set !", filePath);
+	@BeforeClass
+	public static void setUp()
+	{
+		filePath = "../src/testdata";
+		if (!new File(filePath).canRead())
+			filePath = "src/testdata";
+		assertTrue("Sample files location property not set !", new File(filePath).canRead());
 
 		// load CSV driver
-		try {
+		try
+		{
 			Class.forName("org.relique.jdbc.csv.CsvDriver");
-		} catch (ClassNotFoundException e) {
+		}
+		catch (ClassNotFoundException e)
+		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
 		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));  
 	}
 
-	public void testGroupBySimple() throws SQLException {
+	@Test
+	public void testGroupBySimple() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
 		props.put("suppressHeaders", "true");
@@ -83,8 +92,10 @@ public class TestGroupBy extends TestCase {
 		assertEquals("The TO_BLZ is wrong", 10010010, results.getInt("TO_BLZ"));
 		assertFalse(results.next());
 	}
-	
-	public void testGroupByTwoColumns() throws SQLException {
+
+	@Test
+	public void testGroupByTwoColumns() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
 		props.put("suppressHeaders", "true");
@@ -122,7 +133,9 @@ public class TestGroupBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testGroupByNoResults() throws SQLException {
+	@Test
+	public void testGroupByNoResults() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
@@ -133,7 +146,9 @@ public class TestGroupBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testGroupByAllDifferent() throws SQLException {
+	@Test
+	public void testGroupByAllDifferent() throws SQLException
+	{
 		Properties props = new Properties();
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -150,8 +165,10 @@ public class TestGroupBy extends TestCase {
 		assertEquals("The ID is wrong", "04", results.getString("ID"));
 		assertFalse(results.next());
 	}
-	
-	public void testGroupByWhere() throws SQLException {
+
+	@Test
+	public void testGroupByWhere() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Timestamp");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
@@ -168,7 +185,9 @@ public class TestGroupBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testGroupByOrderBy() throws SQLException {
+	@Test
+	public void testGroupByOrderBy() throws SQLException
+	{
 		Properties props = new Properties();
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -181,8 +200,10 @@ public class TestGroupBy extends TestCase {
 		assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
 		assertFalse(results.next());
 	}
-	
-	public void testGroupByCount() throws SQLException {
+
+	@Test
+	public void testGroupByCount() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
 		props.put("suppressHeaders", "true");
@@ -213,11 +234,14 @@ public class TestGroupBy extends TestCase {
 	/**
 	 * Compare two values for near equality, allowing for floating point round-off.
 	 */
-	private boolean fuzzyEquals(double a, double b) {
+	private boolean fuzzyEquals(double a, double b)
+	{
 		return (a == b || Math.round(a * 1000) == Math.round(b * 1000));
 	}
 
-	public void testGroupByMinMax() throws SQLException {
+	@Test
+	public void testGroupByMinMax() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
 		props.put("suppressHeaders", "true");
@@ -249,7 +273,9 @@ public class TestGroupBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testGroupByOrderByCount() throws SQLException {
+	@Test
+	public void testGroupByOrderByCount() throws SQLException
+	{
 		Properties props = new Properties();
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -265,7 +291,9 @@ public class TestGroupBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testGroupByColumnNumber() throws SQLException {
+	@Test
+	public void testGroupByColumnNumber() throws SQLException
+	{
 		Properties props = new Properties();
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -279,7 +307,9 @@ public class TestGroupBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testGroupByTableAlias() throws SQLException {
+	@Test
+	public void testGroupByTableAlias() throws SQLException
+	{
 		Properties props = new Properties();
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -293,7 +323,9 @@ public class TestGroupBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testGroupByExpression() throws SQLException {
+	@Test
+	public void testGroupByExpression() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
 		props.put("suppressHeaders", "true");
@@ -318,7 +350,9 @@ public class TestGroupBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testGroupByWithLiteral() throws SQLException {
+	@Test
+	public void testGroupByWithLiteral() throws SQLException
+	{
 		Properties props = new Properties();
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -334,8 +368,11 @@ public class TestGroupBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testGroupByWithBadColumnName() throws SQLException {		
-		try {
+	@Test
+	public void testGroupByWithBadColumnName() throws SQLException
+	{		
+		try
+		{
 			Properties props = new Properties();
 			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -343,13 +380,18 @@ public class TestGroupBy extends TestCase {
 
 			stmt.executeQuery("SELECT Id FROM sample group by XXXX");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Invalid column name: XXXX", "" + e);
 		}
 	}
 
-	public void testSelectUngroupedColumn() throws SQLException {		
-		try {
+	@Test
+	public void testSelectUngroupedColumn() throws SQLException
+	{		
+		try
+		{
 			Properties props = new Properties();
 			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -357,13 +399,18 @@ public class TestGroupBy extends TestCase {
 
 			stmt.executeQuery("SELECT Id FROM sample4 group by Job");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Column not included in GROUP BY: ID", "" + e);
 		}
 	}
-	
-	public void testOrderByUngroupedColumn() throws SQLException {		
-		try {
+
+	@Test
+	public void testOrderByUngroupedColumn() throws SQLException
+	{		
+		try
+		{
 			Properties props = new Properties();
 			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -371,12 +418,16 @@ public class TestGroupBy extends TestCase {
 
 			stmt.executeQuery("SELECT Job FROM sample4 group by Job order by Id");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: ORDER BY column not included in GROUP BY: ID", "" + e);
 		}
 	}
 
-	public void testHavingSimple() throws SQLException {
+	@Test
+	public void testHavingSimple() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
 		props.put("suppressHeaders", "true");
@@ -396,7 +447,9 @@ public class TestGroupBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testHavingCount() throws SQLException {
+	@Test
+	public void testHavingCount() throws SQLException
+	{
 		Properties props = new Properties();
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -413,7 +466,9 @@ public class TestGroupBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testSelectAndHavingCount() throws SQLException {
+	@Test
+	public void testSelectAndHavingCount() throws SQLException
+	{
 		Properties props = new Properties();
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -429,9 +484,12 @@ public class TestGroupBy extends TestCase {
 		assertEquals("The COUNT(Job) is wrong", 4, results.getInt(2));
 		assertFalse(results.next());
 	}
-	
-	public void testHavingWithBadColumnName() throws SQLException {		
-		try {
+
+	@Test
+	public void testHavingWithBadColumnName() throws SQLException
+	{		
+		try
+		{
 			Properties props = new Properties();
 			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -439,13 +497,18 @@ public class TestGroupBy extends TestCase {
 
 			stmt.executeQuery("SELECT Id FROM sample group by Id HAVING XXXX = 1");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Invalid column name: XXXX", "" + e);
 		}
 	}
-	
-	public void testHavingUngroupedColumn() throws SQLException {		
-		try {
+
+	@Test
+	public void testHavingUngroupedColumn() throws SQLException
+	{		
+		try
+		{
 			Properties props = new Properties();
 			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -453,7 +516,9 @@ public class TestGroupBy extends TestCase {
 
 			stmt.executeQuery("SELECT Id FROM sample group by Id HAVING Name = 'foo'");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Invalid HAVING column: NAME", "" + e);
 		}
 	}

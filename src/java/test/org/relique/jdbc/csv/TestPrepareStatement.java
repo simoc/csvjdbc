@@ -18,6 +18,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package test.org.relique.jdbc.csv;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -25,65 +31,62 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import junit.framework.TestCase;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * This class is used to test the CsvJdbc driver.
  * 
  * @author Mario Frasca
- * @version $Id: TestPrepareStatement.java,v 1.2 2011/04/22 10:40:46 mfrasca Exp
- *          $
  */
-public class TestPrepareStatement extends TestCase {
-	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
-	private String filePath;
+public class TestPrepareStatement
+{
+	private static String filePath;
 
-	protected void setUp() {
-		filePath = System.getProperty(SAMPLE_FILES_LOCATION_PROPERTY);
-		if (filePath == null)
-			filePath = RunTests.DEFAULT_FILEPATH;
-		assertNotNull("Sample files location property not set !", filePath);
+	@BeforeClass
+	public static void setUp()
+	{
+		filePath = "../src/testdata";
+		if (!new File(filePath).canRead())
+			filePath = "src/testdata";
+		assertTrue("Sample files location property not set !", new File(filePath).canRead());
 
 		// load CSV driver
-		try {
+		try
+		{
 			Class.forName("org.relique.jdbc.csv.CsvDriver");
-		} catch (ClassNotFoundException e) {
+		}
+		catch (ClassNotFoundException e)
+		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
-
 	}
 
-	protected void tearDown() {
-		// and delete the files when ready
-	}
-
-	/**
-	 * using a wrong codec will cause an exception.
-	 * 
-	 * @throws SQLException
-	 */
-	public void testCanPrepareStatement() throws SQLException {
+	@Test
+	public void testCanPrepareStatement() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("extension", ".csv");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 
 		String queryString = "SELECT * FROM sample5 WHERE id BETWEEN ? AND ?";
-		try {
+		try
+		{
 			conn.prepareStatement(queryString);
 			conn.prepareStatement(queryString, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 			conn.prepareStatement(queryString, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
 				ResultSet.HOLD_CURSORS_OVER_COMMIT);
-		} catch (UnsupportedOperationException e) {
+		}
+		catch (UnsupportedOperationException e)
+		{
 			fail("cannot prepareStatement!");
 		}
 	}
 
-	/**
-	 * 
-	 * @throws SQLException
-	 */
-	public void testCanUsePreparedStatement() throws SQLException {
+	@Test
+	public void testCanUsePreparedStatement() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("extension", ".csv");
 		props.put("columnTypes", "Int,String,String,Timestamp,String");
@@ -108,7 +111,9 @@ public class TestPrepareStatement extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testPreparedStatementIsClosed() throws SQLException {
+	@Test
+	public void testPreparedStatementIsClosed() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
 		String queryString = "SELECT * FROM sample WHERE id = ?";
 		PreparedStatement prepstmt = conn.prepareStatement(queryString);
@@ -123,7 +128,9 @@ public class TestPrepareStatement extends TestCase {
 		
 	}
 
-	public void testShortParameter() throws SQLException {
+	@Test
+	public void testShortParameter() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("extension", ".csv");
 		props.put("columnTypes", "Short,String,String");
@@ -140,7 +147,9 @@ public class TestPrepareStatement extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testLongParameter() throws SQLException {
+	@Test
+	public void testLongParameter() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("headerline", "BLZ,BANK_NAME");
 		props.put("suppressHeaders", "true");
@@ -161,7 +170,9 @@ public class TestPrepareStatement extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testFloatParameter() throws SQLException {
+	@Test
+	public void testFloatParameter() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Byte,Short,Integer,Long,Float,Double,BigDecimal");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -177,7 +188,9 @@ public class TestPrepareStatement extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testDoubleParameter() throws SQLException {
+	@Test
+	public void testDoubleParameter() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Byte,Short,Integer,Long,Float,Double,BigDecimal");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -193,7 +206,9 @@ public class TestPrepareStatement extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testCanReuseAPreparedStatement() throws SQLException {
+	@Test
+	public void testCanReuseAPreparedStatement() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("extension", ".csv");
 		props.put("columnTypes", "Int,String,String,Timestamp,String");
@@ -222,7 +237,9 @@ public class TestPrepareStatement extends TestCase {
 		assertFalse(results2.next());
 	}
 
-	public void testCanUsePreparedStatementOnStrings() throws SQLException {
+	@Test
+	public void testCanUsePreparedStatementOnStrings() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("extension", ".csv");
 		props.put("columnTypes", "Int,String,String,Timestamp,String");
@@ -263,24 +280,28 @@ public class TestPrepareStatement extends TestCase {
 		assertFalse(results.next());
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testNoWhereClause() throws SQLException {
+	@Test
+	public void testNoWhereClause() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("extension", ".csv");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 
 		String queryString = "SELECT * FROM sample5";
-		try {
+		try
+		{
 			conn.prepareStatement(queryString);
-		} catch (UnsupportedOperationException e) {
+		}
+		catch (UnsupportedOperationException e)
+		{
 			fail("can't prepareStatement!");
 		}
 	}
 
-	public void testTableReader() throws SQLException {
+	@Test
+	public void testTableReader() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" +
 			TableReaderTester.class.getName());
 		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM airport where code=?");
@@ -290,8 +311,10 @@ public class TestPrepareStatement extends TestCase {
 		assertEquals("NAME wrong", "Paris Charles De Gaulle", results.getString("NAME"));
 		assertFalse(results.next());
 	}
-	
-	public void testPreparedStatementWithOrderBy() throws SQLException {
+
+	@Test
+	public void testPreparedStatementWithOrderBy() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("extension", ".csv");
 		props.put("columnTypes", "Int,String,String,Timestamp,String");

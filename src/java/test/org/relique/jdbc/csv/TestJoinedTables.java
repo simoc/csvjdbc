@@ -1,5 +1,11 @@
 package test.org.relique.jdbc.csv;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -7,33 +13,36 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import junit.framework.TestCase;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 
-public class TestJoinedTables extends TestCase {
+public class TestJoinedTables
+{
+	private static String filePath;
 
-	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
-	private String filePath;
-
-	public TestJoinedTables(String name) {
-		super(name);
-	}
-
-	protected void setUp() {
-		filePath = System.getProperty(SAMPLE_FILES_LOCATION_PROPERTY);
-		if (filePath == null)
-			filePath = RunTests.DEFAULT_FILEPATH;
-		assertNotNull("Sample files location property not set !", filePath);
+	@BeforeClass
+	public static void setUp()
+	{
+		filePath = "../src/testdata";
+		if (!new File(filePath).canRead())
+			filePath = "src/testdata";
+		assertTrue("Sample files location property not set !", new File(filePath).canRead());
 
 		// load CSV driver
-		try {
+		try
+		{
 			Class.forName("org.relique.jdbc.csv.CsvDriver");
-		} catch (ClassNotFoundException e) {
+		}
+		catch (ClassNotFoundException e)
+		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
-
 	}
-	
-	public void testHeaderIsTransposedFirstTable() throws SQLException {
+
+	@Test
+	public void testHeaderIsTransposedFirstTable() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("headerline", "L,P,K,U,W,D,T,V");
@@ -209,7 +218,9 @@ public class TestJoinedTables extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testHeaderLooksLikeHeader() throws SQLException {
+	@Test
+	public void testHeaderLooksLikeHeader() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("headerline", "P,D,T,V");
@@ -327,7 +338,9 @@ public class TestJoinedTables extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testHeaderLooksLikeHeaderIndexed() throws SQLException {
+	@Test
+	public void testHeaderLooksLikeHeaderIndexed() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("headerline", "P,J,D,T,V");
@@ -486,7 +499,10 @@ public class TestJoinedTables extends TestCase {
 		// assertFalse(results.next()); don't test this: I've added a third file for an other test.
 	}
 
-	public void donttestHeaderLooksLikeHeaderIndexedDifferentLength() throws SQLException {
+	@Test
+	@Ignore
+	public void donttestHeaderLooksLikeHeaderIndexedDifferentLength() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("headerline", "P,J,D,T,V");
@@ -555,6 +571,5 @@ public class TestJoinedTables extends TestCase {
 		assertEquals("d9", results.getObject("D"));
 		assertEquals("t9", results.getObject("T"));
 		assertEquals("v93", results.getObject("V"));
-
-}
+	}
 }

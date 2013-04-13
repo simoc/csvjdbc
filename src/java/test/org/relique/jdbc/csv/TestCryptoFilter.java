@@ -18,6 +18,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package test.org.relique.jdbc.csv;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -32,8 +37,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import junit.framework.TestCase;
-
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.relique.io.CryptoFilter;
 import org.relique.io.EncryptedFileOutputStream;
 import org.relique.io.XORCipher;
@@ -45,27 +51,27 @@ import org.relique.io.XORCipher;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCryptoFilter.java,v 1.6 2011/04/14 14:44:18 mfrasca Exp $
  */
-public class TestCryptoFilter extends TestCase {
-	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
-	private String filePath;
-	private int testSize = 1100;
+public class TestCryptoFilter
+{
+	private static String filePath;
+	private static int testSize = 1100;
 
-	public TestCryptoFilter(String name) {
-		super(name);
-	}
-
-	protected void setUp() {
-		filePath = System.getProperty(SAMPLE_FILES_LOCATION_PROPERTY);
-		if (filePath == null)
-			filePath = RunTests.DEFAULT_FILEPATH;
-		assertNotNull("Sample files location property not set !", filePath);
+	@BeforeClass
+	public static void setUp()
+	{
+		filePath = "../src/testdata";
+		if (!new File(filePath).canRead())
+			filePath = "src/testdata";
+		assertTrue("Sample files location property not set !", new File(filePath).canRead());
 
 		// load CSV driver
-		try {
+		try
+		{
 			Class.forName("org.relique.jdbc.csv.CsvDriver");
-		} catch (ClassNotFoundException e) {
+		}
+		catch (ClassNotFoundException e)
+		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
 
@@ -73,8 +79,10 @@ public class TestCryptoFilter extends TestCase {
 		String source = filePath + System.getProperty("file.separator")
 				+ "scrambled.txt";
 		int sampleLength = (int) new File(source).length();
-		try {
-			for (int i = 0; i < testSize; i++) {
+		try
+		{
+			for (int i = 0; i < testSize; i++)
+			{
 				String destination = filePath
 						+ System.getProperty("file.separator") + "scrambled_"
 						+ i + ".txt";
@@ -85,7 +93,8 @@ public class TestCryptoFilter extends TestCase {
 				BufferedOutputStream out = new BufferedOutputStream(fos);
 				byte[] buffer = new byte[sampleLength];
 				int len = 0;
-				while ((len = in.read(buffer)) >= 0) {
+				while ((len = in.read(buffer)) >= 0)
+				{
 					out.write(buffer, 0, len);
 				}
 				in.close();
@@ -93,15 +102,20 @@ public class TestCryptoFilter extends TestCase {
 				out.close();
 				fos.close();
 			}
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	protected void tearDown() {
+
+	@AfterClass
+	public static void tearDown()
+	{
 		// and delete the files when ready
-		for (int i = 0; i < testSize; i++) {
+		for (int i = 0; i < testSize; i++)
+		{
 			String testFile = filePath + System.getProperty("file.separator")
 					+ "scrambled_" + i + ".txt";
 			File file = new File(testFile);
@@ -113,26 +127,29 @@ public class TestCryptoFilter extends TestCase {
 	 * using a wrong codec will cause an exception.
 	 * @throws SQLException
 	 */
-	public void testCryptoFilterNoCodec() throws SQLException {
+	@Test
+	public void testCryptoFilterNoCodec() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("cryptoFilterClassName", "org.relique.io.NotACodec");
 		props.put("cryptoFilterParameterTypes", "String");
 		props.put("cryptoFilterParameters", "@0y");
-		try {
+		try
+		{
 			DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 			fail("managed to initialize not existing CryptoFilter");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals(
 					"java.sql.SQLException: could not find codec class org.relique.io.NotACodec",
 					"" + e);
 		}
 	}
 
-	/**
-	 * 
-	 * @throws SQLException
-	 */
-	public void testCryptoFilter() throws SQLException {
+	@Test
+	public void testCryptoFilter() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("cryptoFilterClassName", "org.relique.io.XORCipher");
@@ -160,7 +177,9 @@ public class TestCryptoFilter extends TestCase {
 	 * wrong key: behave as if the file was empty.
 	 * @throws SQLException
 	 */
-	public void testCryptoFilterWrongKey() throws SQLException {
+	@Test
+	public void testCryptoFilterWrongKey() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("cryptoFilterClassName", "org.relique.io.XORCipher");
@@ -179,7 +198,9 @@ public class TestCryptoFilter extends TestCase {
 	 * file with empty lines
 	 * @throws SQLException
 	 */
-	public void testCryptoFilterWithEmptyLines() throws SQLException {
+	@Test
+	public void testCryptoFilterWithEmptyLines() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("cryptoFilterClassName", "org.relique.io.XORCipher");
@@ -188,8 +209,10 @@ public class TestCryptoFilter extends TestCase {
 		props.put("ignoreNonParseableLines", "True");
 
 		boolean generating_input_file = false;
-		if(generating_input_file  ) {
-			try {
+		if(generating_input_file)
+		{
+			try
+			{
 				File f = new File(filePath, "scrambled_trailing.txt");
 				String filename = f.getAbsolutePath();
 				CryptoFilter cip = new XORCipher(new String("gaius vipsanius agrippa"));;
@@ -200,9 +223,13 @@ public class TestCryptoFilter extends TestCase {
 				out.write((new String("2,due\n")).getBytes());
 				out.write((new String("3,tre\n")).getBytes());
 				out.write((new String("\n")).getBytes());
-			} catch (FileNotFoundException e) {
+			}
+			catch (FileNotFoundException e)
+			{
 				e.printStackTrace();
-			} catch (IOException e) {
+			}
+			catch (IOException e)
+			{
 				e.printStackTrace();
 			}
 		}
@@ -224,8 +251,10 @@ public class TestCryptoFilter extends TestCase {
 		assertEquals("The value is wrong", "tre", results.getString("value"));
 		assertTrue(!results.next());
 	}
-	
-	public void testSecondQuery() throws SQLException {
+
+	@Test
+	public void testSecondQuery() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("cryptoFilterClassName", "org.relique.io.XORCipher");
@@ -257,7 +286,9 @@ public class TestCryptoFilter extends TestCase {
 		assertTrue(!results.next());
 	}
 
-	public void testScrambledFileSpeed() throws SQLException {
+	@Test
+	public void testScrambledFileSpeed() throws SQLException
+	{
 		// not so sure why we need this test... timings are so terribly system
 		// dependent, this test will cause random regressions just because the
 		// load on the server performing the test might happen to be heavier
@@ -276,7 +307,8 @@ public class TestCryptoFilter extends TestCase {
 		int noEncryptCount = 0;
 
 		// Run queries twice to reduce the chances of system load causing the test to fail.
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < 2; i++)
+		{
 			// encrypted
 			props = new Properties();
 			props.put("fileExtension", ".txt");
@@ -319,7 +351,9 @@ public class TestCryptoFilter extends TestCase {
 				timeEncrypt <= 10 * timeNoEncrypt);
 	}
 
-	public void testOpenManyCryptoFiles() throws SQLException, IOException {
+	@Test
+	public void testOpenManyCryptoFiles() throws SQLException, IOException
+	{
 		// the properties for the connection:
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
@@ -331,10 +365,12 @@ public class TestCryptoFilter extends TestCase {
 				+ filePath, props);
 		Statement stmt = conn.createStatement();
 
-		for (int i = 0; i < testSize; i++) {
+		for (int i = 0; i < testSize; i++)
+		{
 			ResultSet results = stmt.executeQuery("SELECT * FROM scrambled_" + i);
 			assertTrue(results.next());
-			while (results.next()) {
+			while (results.next())
+			{
 				// nothing really
 			}
 			results.close();
@@ -342,8 +378,5 @@ public class TestCryptoFilter extends TestCase {
 
 		stmt.close();
 		conn.close();
-
 	}
-
-
 }

@@ -18,6 +18,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package test.org.relique.jdbc.csv;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -29,39 +34,43 @@ import java.text.SimpleDateFormat;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Tests reading of database tables from ZIP files.
  */
-public class TestZipFiles extends TestCase {
-	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
-	private String filePath;
-	private DateFormat toUTC;
+public class TestZipFiles
+{
+	private static String filePath;
+	private static DateFormat toUTC;
 	private static String TEST_ZIP_FILENAME_1 = "olympic-medals.zip";
 	private static String TEST_ZIP_FILENAME_2 = "encodings.zip";
 
-	public TestZipFiles(String name) {
-		super(name);
-	}
-
-	protected void setUp() {
-		filePath = System.getProperty(SAMPLE_FILES_LOCATION_PROPERTY);
-		if (filePath == null)
-			filePath = RunTests.DEFAULT_FILEPATH;
-		assertNotNull("Sample files location property not set !", filePath);
+	@BeforeClass
+	public static void setUp()
+	{
+		filePath = "../src/testdata";
+		if (!new File(filePath).canRead())
+			filePath = "src/testdata";
+		assertTrue("Sample files location property not set !", new File(filePath).canRead());
 
 		// load CSV driver
-		try {
+		try
+		{
 			Class.forName("org.relique.jdbc.csv.CsvDriver");
-		} catch (ClassNotFoundException e) {
+		}
+		catch (ClassNotFoundException e)
+		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
 		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));  
 	}
 
-	public void testConnectionName() throws SQLException {
+	@Test
+	public void testConnectionName() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
 			+ filePath + File.separator + TEST_ZIP_FILENAME_1);
 		String url = conn.getMetaData().getURL();
@@ -69,10 +78,9 @@ public class TestZipFiles extends TestCase {
 		assertTrue(url.endsWith(TEST_ZIP_FILENAME_1));
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testSelect() throws SQLException {
+	@Test
+	public void testSelect() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Short,String,String,Short,Short,Short");
 
@@ -94,10 +102,9 @@ public class TestZipFiles extends TestCase {
 		assertEquals("The GOLD is wrong", 32, results.getShort(4));
 	}
 	
-	/**
-	 * @throws SQLException
-	 */
-	public void testListTables() throws SQLException {
+	@Test
+	public void testListTables() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
 			+ filePath + File.separator + TEST_ZIP_FILENAME_1);
 
@@ -109,39 +116,45 @@ public class TestZipFiles extends TestCase {
 		assertFalse(results.next());
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testBadTableNameFails() throws SQLException {
+	@Test
+	public void testBadTableNameFails() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
 			+ filePath + File.separator + TEST_ZIP_FILENAME_1);
 
 		Statement stmt = conn.createStatement();
 
-		try {
+		try
+		{
 			stmt.executeQuery("SELECT * FROM abc");
 			fail("Query should fail");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			String message = "" + e;
 			assertTrue(message.startsWith("java.sql.SQLException: Table not found:"));
 		}
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testBadZipFileFails() throws SQLException {
-		try {
+	@Test
+	public void testBadZipFileFails() throws SQLException
+	{
+		try
+		{
 			DriverManager.getConnection("jdbc:relique:csv:zip:"
 				+ filePath + File.separator + "abc" + TEST_ZIP_FILENAME_1);
 			fail("Connection should fail");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			String message = "" + e;
 			assertTrue(message.startsWith("java.sql.SQLException: Failed opening ZIP file:"));
 		}
 	}
-	
-	public void testCharsetISO8859_1() throws SQLException {
+
+	@Test
+	public void testCharsetISO8859_1() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "String");
 		props.put("charset", "ISO-8859-1");
@@ -160,8 +173,10 @@ public class TestZipFiles extends TestCase {
 		assertTrue(results.next());
 		assertEquals("ISO8859-1 encoding is wrong", "\u00A9 Copyright", results.getString(1));
 	}
-	
-	public void testCharsetUTF_8() throws SQLException {
+
+	@Test
+	public void testCharsetUTF_8() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "String");
 		props.put("charset", "UTF-8");
@@ -181,7 +196,9 @@ public class TestZipFiles extends TestCase {
 		assertEquals("UTF-8 encoding is wrong", "\u00A9 Copyright", results.getString(1));
 	}
 
-	public void testCharsetUTF_16() throws SQLException {
+	@Test
+	public void testCharsetUTF_16() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "String");
 		props.put("charset", "UTF-16");

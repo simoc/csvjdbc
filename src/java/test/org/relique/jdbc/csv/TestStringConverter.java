@@ -17,9 +17,9 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
-
 package test.org.relique.jdbc.csv;
+
+import static org.junit.Assert.assertEquals;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -27,32 +27,29 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.relique.jdbc.csv.StringConverter;
-
-import junit.framework.TestCase;
 
 /**
  * This class is used to test the SqlParser class.
  * 
  * @author Mario Frasca
- * @version $Id: TestStringConverter.java,v 1.4 2010/09/14 15:03:09 mfrasca Exp $
  */
-public class TestStringConverter extends TestCase {
-	
-	private DateFormat toUTC;
+public class TestStringConverter
+{	
+	private static DateFormat toUTC;
 
-	public void setUp() {
+	@BeforeClass
+	public static void setUp()
+	{
 		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));  
 	}
-	
-	public static String timestampToUTC(Timestamp ts) {
-		TestStringConverter o = new TestStringConverter();
-		o.setUp();
-		return o.toUTC.format(ts);
-	}
 
-	public void testParseDateFixedSize() {
+	@Test
+	public void testParseDateFixedSize()
+	{
 		StringConverter sc = new StringConverter("dd-mm-yyyy", "", "");
 		
 		Date got, expect;
@@ -66,7 +63,9 @@ public class TestStringConverter extends TestCase {
 		assertEquals(expect, got);
 	}
 
-	public void testParseDateVariableSize() {
+	@Test
+	public void testParseDateVariableSize()
+	{
 		StringConverter sc = new StringConverter("m-d-yyyy", "", "");
 
 		Date got, expect;
@@ -80,7 +79,9 @@ public class TestStringConverter extends TestCase {
 		assertEquals(got, expect);
 	}
 
-	public void testParseDateVariableSizeYMD() {
+	@Test
+	public void testParseDateVariableSizeYMD()
+	{
 		StringConverter sc = new StringConverter("yyyy-m-d", "", "");
 
 		Date got, expect;
@@ -94,7 +95,9 @@ public class TestStringConverter extends TestCase {
 		assertEquals(got, expect);
 	}
 
-	public void testParseDateVariableSizeMYD() {
+	@Test
+	public void testParseDateVariableSizeMYD()
+	{
 		StringConverter sc = new StringConverter("m-yyyy-d", "", "");
 
 		Date got, expect;
@@ -108,7 +111,9 @@ public class TestStringConverter extends TestCase {
 		assertEquals(got, expect);
 	}
 
-	public void testParseTimestampWithTimeZoneGuadeloupe() {
+	@Test
+	public void testParseTimestampWithTimeZoneGuadeloupe()
+	{
 		// Guadeloupe lies 4 hours behind UTC, no daylight savings
 		StringConverter sc = new StringConverter("", "", "America/Guadeloupe");
 		Timestamp got;
@@ -119,8 +124,10 @@ public class TestStringConverter extends TestCase {
 		got = sc.parseTimestamp("2010-07-01 12:00:00");
 		assertEquals("2010-07-01 16:00:00", toUTC.format(got));
 	}
-	
-	public void testParseDateWithTimeZoneYakutsk() {
+
+	@Test
+	public void testParseDateWithTimeZoneYakutsk()
+	{
 		// in January Yakutsk lies 9 hours ahead of UTC
 		StringConverter sc = new StringConverter("", "", "Asia/Yakutsk");
 		Timestamp got;
@@ -133,7 +140,9 @@ public class TestStringConverter extends TestCase {
 		assertEquals("2010-07-01 02:00:00", toUTC.format(got));
 	}
 
-	public void testParseDateWithTimeZoneSantiago() {
+	@Test
+	public void testParseDateWithTimeZoneSantiago()
+	{
 		// in January Santiago lies 3 hours behind of UTC
 		StringConverter sc = new StringConverter("", "", "America/Santiago");
 		Timestamp got;
@@ -146,7 +155,9 @@ public class TestStringConverter extends TestCase {
 		assertEquals("2010-07-01 16:00:00", toUTC.format(got));
 	}
 
-	public void testParseDateWithTimeZoneAthens() {
+	@Test
+	public void testParseDateWithTimeZoneAthens()
+	{
 		// in January Athens lies 2 hours ahead of UTC
 		StringConverter sc = new StringConverter("", "", "Europe/Athens");
 		Timestamp got;
@@ -159,7 +170,9 @@ public class TestStringConverter extends TestCase {
 		assertEquals("2010-07-01 09:00:00", toUTC.format(got));
 	}
 
-	public void testParseDateWithTimeZoneDefaultJanuary() {
+	@Test
+	public void testParseDateWithTimeZoneDefaultJanuary()
+	{
 		// defaulting to UTC
 		StringConverter sc = new StringConverter("", "", "");
 		Timestamp got;
@@ -168,7 +181,9 @@ public class TestStringConverter extends TestCase {
 		assertEquals("2010-01-01 12:00:00", toUTC.format(got));
 	}
 
-	public void testParseDateWithTimeZoneDefaultJuly() {
+	@Test
+	public void testParseDateWithTimeZoneDefaultJuly()
+	{
 		// defaulting to UTC
 		StringConverter sc = new StringConverter("", "", "");
 		Timestamp got;
@@ -177,7 +192,9 @@ public class TestStringConverter extends TestCase {
 		assertEquals("2010-07-01 12:00:00", toUTC.format(got));
 	}
 
-	public void testParseDateWithTimeZoneUTCJanuary() {
+	@Test
+	public void testParseDateWithTimeZoneUTCJanuary()
+	{
 		// explicit UTC
 		StringConverter sc = new StringConverter("", "", "UTC");
 		Timestamp got;
@@ -186,7 +203,9 @@ public class TestStringConverter extends TestCase {
 		assertEquals("2010-01-01 12:00:00", toUTC.format(got));
 	}
 
-	public void testParseDateWithTimeZoneUTCJuly() {
+	@Test
+	public void testParseDateWithTimeZoneUTCJuly()
+	{
 		// explicit UTC
 		StringConverter sc = new StringConverter("", "", "UTC");
 		Timestamp got;
@@ -194,5 +213,4 @@ public class TestStringConverter extends TestCase {
 		got = sc.parseTimestamp("2010-07-01 12:00:00");
 		assertEquals("2010-07-01 12:00:00", toUTC.format(got));
 	}
-
 }

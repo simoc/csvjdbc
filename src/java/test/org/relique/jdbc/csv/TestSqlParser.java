@@ -17,14 +17,19 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package test.org.relique.jdbc.csv;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.StringReader;
 import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.relique.jdbc.csv.Expression;
 import org.relique.jdbc.csv.ExpressionParser;
 import org.relique.jdbc.csv.ParseException;
@@ -35,14 +40,12 @@ import org.relique.jdbc.csv.StringConverter;
  * This class is used to test the SqlParser class.
  * 
  * @author Jonathan Ackerman
- * @version $Id: TestSqlParser.java,v 1.23 2011/10/25 17:24:38 simoc Exp $
  */
-public class TestSqlParser extends TestCase {
-	public TestSqlParser(String name) {
-		super(name);
-	}
-
-	public void testParserSimple() throws Exception {
+public class TestSqlParser
+{
+	@Test
+	public void testParserSimple() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 
 		parser.parse("SELECT location, parameter, ts, waarde, unit FROM total");
@@ -79,11 +82,14 @@ public class TestSqlParser extends TestCase {
 		assertEquals("Incorrect Column Name Col 3", "[NAME.SUFFIX]", colSpec[1]
 				.toString());
 
-		try {
+		try
+		{
 			String query = "SELECT location!parameter FROM total";
 			parser.parse(query);
 			fail("incorrect query '" + query + "' parsed as correct");
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 		}
 
 		parser.parse("SELECT location+parameter FROM total");
@@ -99,7 +105,9 @@ public class TestSqlParser extends TestCase {
 		assertEquals("Incorrect Column Name Col 1", "* [LOCATION] [PARAMETER]", colNames[0]);
 	}
 
-	public void testParser() throws Exception {
+	@Test
+	public void testParser() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 
 		parser.parse("SELECT FLD_A,FLD_B, TEST, H FROM test");
@@ -114,7 +122,9 @@ public class TestSqlParser extends TestCase {
 		assertTrue("Incorrect Column Name Col 3", cols[3].equals("H"));
 	}
 
-	public void testLiteralAsAlias() throws Exception {
+	@Test
+	public void testLiteralAsAlias() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 
 		parser.parse("SELECT 'abc' as FLD_A, 123 as FLD_B FROM test");
@@ -129,7 +139,9 @@ public class TestSqlParser extends TestCase {
 				cols[1].equalsIgnoreCase("FLD_B"));
 	}
 
-	public void testFieldAsAlias() throws Exception {
+	@Test
+	public void testFieldAsAlias() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 
 		parser.parse("SELECT abc as FLD_A, eee as FLD_B FROM test");
@@ -149,7 +161,9 @@ public class TestSqlParser extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testAllColumns() throws Exception {
+	@Test
+	public void testAllColumns() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 
 		parser.parse("SELECT * FROM test");
@@ -164,7 +178,9 @@ public class TestSqlParser extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testWhereCorrect() throws Exception {
+	@Test
+	public void testWhereCorrect() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 		parser.parse("SELECT FLD_A, FLD_B FROM test WHERE FLD_A = 20");
 		assertEquals("Incorrect table name", "test", parser.getTableName());
@@ -187,7 +203,9 @@ public class TestSqlParser extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testWhereParsing() throws Exception {
+	@Test
+	public void testWhereParsing() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 		Expression whereClause;
 
@@ -217,29 +235,40 @@ public class TestSqlParser extends TestCase {
 				whereClause.toString());
 	}
 
-	public void testWhereMoreParsing() throws Exception {
+	@Test
+	public void testWhereMoreParsing() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 		String query;
 
-		try {
+		try
+		{
 			query = "SELECT * FROM test WHERE FLD_A = '20' AND AND = 'AA'";
 			parser.parse(query);
 			fail("incorrect query '" + query + "' parsed as correct");
-		} catch (ParseException e) {
+		}
+		catch (ParseException e)
+		{
 		}
 
-		try {
+		try
+		{
 			query = "SELECT * FROM test WHERE = 'AA'";
 			parser.parse(query);
 			fail("incorrect query '" + query + "' parsed as correct");
-		} catch (ParseException e) {
+		}
+		catch (ParseException e)
+		{
 		}
 
-		try {
+		try
+		{
 			query = "SELECT * FROM test WHERE FLD_A = '20' = 'AA'";
 			parser.parse(query);
 			fail("incorrect query '" + query + "' parsed as correct");
-		} catch (ParseException e) {
+		}
+		catch (ParseException e)
+		{
 		}
 
 		parser.parse("SELECT * FROM test WHERE B IS NULL");
@@ -274,11 +303,14 @@ public class TestSqlParser extends TestCase {
 				"OR N [B] AND B [B] '20' 'AA' L [B] '20 AND AA'", whereClause
 						.toString());
 
-		try {
+		try
+		{
 			query = "SELECT * FROM test WHERE a=0 AND FLD_A";
 			parser.parse(query);
 			fail("incorrect query '" + query + "' parsed as correct");
-		} catch (ParseException e) {
+		}
+		catch (ParseException e)
+		{
 		}
 
 		parser.parse("SELECT * FROM test WHERE B = (20)");
@@ -299,7 +331,9 @@ public class TestSqlParser extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testWhereEvaluating() throws Exception {
+	@Test
+	public void testWhereEvaluating() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 		Map<String, Object> env = new HashMap<String, Object>();
 
@@ -341,7 +375,9 @@ public class TestSqlParser extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testWhereComparisons() throws Exception {
+	@Test
+	public void testWhereComparisons() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 		Map<String, Object> env = new HashMap<String, Object>();
 		env.put("C", new Integer("12"));
@@ -362,7 +398,9 @@ public class TestSqlParser extends TestCase {
 		assertEquals(true, parser.getWhereClause().isTrue(env));
 	}
 
-	public void testParsingWhereEmptyString() throws Exception {
+	@Test
+	public void testParsingWhereEmptyString() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 		Map<String, Object> env = new HashMap<String, Object>();
 		env.put("C", new String(""));
@@ -370,8 +408,10 @@ public class TestSqlParser extends TestCase {
 		parser.parse("SELECT * FROM test WHERE c=''");
 		assertEquals(true, parser.getWhereClause().isTrue(env));
 	}
-	
-	public void testParsingWhereSingleQuoteString() throws Exception {
+
+	@Test
+	public void testParsingWhereSingleQuoteString() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 		Map<String, Object> env = new HashMap<String, Object>();
 		env.put("C", new String("it's"));
@@ -379,8 +419,10 @@ public class TestSqlParser extends TestCase {
 		parser.parse("SELECT * FROM test WHERE c='it''s'");
 		assertEquals(true, parser.getWhereClause().isTrue(env));
 	}
-	
-	public void testWhereEvaluatingIndistinguishedNumbers() throws Exception {
+
+	@Test
+	public void testWhereEvaluatingIndistinguishedNumbers() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 		Map<String, Object> env = new HashMap<String, Object>();
 
@@ -394,7 +436,9 @@ public class TestSqlParser extends TestCase {
 		assertEquals(true, parser.getWhereClause().isTrue(env));
 	}
 
-	public void testWhereEvaluatingIndistinguishedNegativeNumbers() throws Exception {
+	@Test
+	public void testWhereEvaluatingIndistinguishedNegativeNumbers() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 		Map<String, Object> env = new HashMap<String, Object>();
 
@@ -408,7 +452,9 @@ public class TestSqlParser extends TestCase {
 		assertEquals(true, parser.getWhereClause().isTrue(env));
 	}
 
-	public void testParsingQueryEnvironmentEntries() throws Exception {
+	@Test
+	public void testParsingQueryEnvironmentEntries() throws Exception
+	{
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("*"));
 		cs.parseQueryEnvEntry();
@@ -460,8 +506,10 @@ public class TestSqlParser extends TestCase {
 		assertEquals("LENGTH([A]): LENGTH([A])", cs.toString());
 	}
 
+	@Test
 	public void testParsingQueryEnvironmentWithoutExpressions()
-			throws Exception {
+			throws Exception
+	{
 		SqlParser parser = new SqlParser();
 		parser.parse("SELECT A FROM test");
 		assertEquals("[A]", parser.getExpression(0).toString());
@@ -471,7 +519,9 @@ public class TestSqlParser extends TestCase {
 		assertEquals("'123'", parser.getExpression(0).toString());
 	}
 
-	public void testParsingQueryEnvironmentWithExpressions() throws Exception {
+	@Test
+	public void testParsingQueryEnvironmentWithExpressions() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 		parser.parse("SELECT A+B AS SUM FROM test");
 		assertEquals("+ [A] [B]", parser.getExpression(0).toString());
@@ -481,8 +531,10 @@ public class TestSqlParser extends TestCase {
 		assertEquals("+ [A] [B]", parser.getExpression(0).toString());
 		assertEquals("+ + [B] [C] '123'", parser.getExpression(1).toString());
 	}
-	
-	public void testEvaluateBinaryOperationsSum() throws Exception {
+
+	@Test
+	public void testEvaluateBinaryOperationsSum() throws Exception
+	{
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("A+b AS result"));
 		cs.parseQueryEnvEntry();
@@ -497,7 +549,9 @@ public class TestSqlParser extends TestCase {
 		assertEquals("11", ""+cs.eval(env));
 	}
 
-	public void testEvaluateBinaryOperationsOtherThanSum() throws Exception {
+	@Test
+	public void testEvaluateBinaryOperationsOtherThanSum() throws Exception
+	{
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("a-b AS result"));
 		cs.parseQueryEnvEntry();
@@ -525,7 +579,9 @@ public class TestSqlParser extends TestCase {
 		assertEquals((Object)(new Double("2.5")), cs.eval(env));
 	}
 
-	public void testEvaluateShortOperations() throws Exception {
+	@Test
+	public void testEvaluateShortOperations() throws Exception
+	{
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("A+1 AS result"));
 		cs.parseQueryEnvEntry();
@@ -548,7 +604,9 @@ public class TestSqlParser extends TestCase {
 		assertEquals(o.toString(), "12");
 	}
 
-	public void testEvaluateLongOperations() throws Exception {
+	@Test
+	public void testEvaluateLongOperations() throws Exception
+	{
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("A+5678678678 AS result"));
 		cs.parseQueryEnvEntry();
@@ -582,7 +640,9 @@ public class TestSqlParser extends TestCase {
 		assertEquals(o.toString(), "-123456789123");
 	}
 
-	public void testEvaluateDateOperations() throws Exception {
+	@Test
+	public void testEvaluateDateOperations() throws Exception
+	{
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("CURRENT_DATE AS now"));
 		cs.parseQueryEnvEntry();
@@ -627,7 +687,9 @@ public class TestSqlParser extends TestCase {
 		assertEquals(o, new Integer(3));
 	}
 
-	public void testParsingIgnoresCase() throws Exception {
+	@Test
+	public void testParsingIgnoresCase() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 		parser.parse("SELECT A+B AS SUM FROM test");
 		assertEquals("+ [A] [B]", parser.getExpression(0).toString());
@@ -639,14 +701,18 @@ public class TestSqlParser extends TestCase {
 		assertEquals("+ [A] [B]", parser.getExpression(0).toString());
 	}
 
-	public void testParsingTableAlias() throws Exception {
+	@Test
+	public void testParsingTableAlias() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 
 		parser.parse("SELECT Ab.Name FROM sample AS Ab WHERE Ab.ID='A123'");
 		assertEquals("AB", parser.getTableAlias());
 	}
-	
-	public void testParsingWithNewlines() throws Exception {
+
+	@Test
+	public void testParsingWithNewlines() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 
 		parser.parse("\r\nSELECT NAME\r\nas FLD_A\r\nFROM test\r\nWHERE ID=1\r\n");
@@ -659,14 +725,18 @@ public class TestSqlParser extends TestCase {
 				cols[0].equalsIgnoreCase("fld_a"));
 	}
 
-	public void testParsingComma() throws Exception {
+	@Test
+	public void testParsingComma() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 
 		parser.parse("SELECT Id + ',' + Name FROM sample");
 		assertEquals("+ + [ID] ',' [NAME]", parser.getExpression(0).toString());
 	}
 
-	public void testParsingQuotedFrom() throws Exception {
+	@Test
+	public void testParsingQuotedFrom() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 		Expression whereClause;
 
@@ -675,8 +745,10 @@ public class TestSqlParser extends TestCase {
 		assertNotNull("query has a WHERE clause", whereClause);
 		assertEquals("Incorrect WHERE", "= [SIGNATURE] 'sent from my iPhone'", whereClause.toString());
 	}
-	
-	public void testParsingQuotedWhere() throws Exception {
+
+	@Test
+	public void testParsingQuotedWhere() throws Exception
+	{
 		SqlParser parser = new SqlParser();
 		Expression whereClause;
 
@@ -686,7 +758,9 @@ public class TestSqlParser extends TestCase {
 		assertEquals("Incorrect WHERE", "L [TITLE] '%NOT WHERE I BELONG%'", whereClause.toString());
 	}
 
-	public void testParsingEndingWithSemiColon() throws Exception {
+	@Test
+	public void testParsingEndingWithSemiColon() throws Exception
+	{
 		SqlParser parser1 = new SqlParser();
 		parser1.parse("SELECT Id FROM sample;");
 		assertEquals("sample", parser1.getTableName());
@@ -696,7 +770,9 @@ public class TestSqlParser extends TestCase {
 		assertEquals("sample", parser2.getTableName());
 	}
 
-	public void testParsingComments() throws Exception {
+	@Test
+	public void testParsingComments() throws Exception
+	{
 		SqlParser parser1 = new SqlParser();
 		parser1.parse("-- Comment Before\n" +
 			"--\n" +

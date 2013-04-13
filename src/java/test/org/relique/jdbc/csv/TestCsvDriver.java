@@ -18,6 +18,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package test.org.relique.jdbc.csv;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -34,8 +40,8 @@ import java.text.SimpleDateFormat;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
-
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.relique.jdbc.csv.CsvResultSet;
 
 /**
@@ -45,35 +51,36 @@ import org.relique.jdbc.csv.CsvResultSet;
  * @author JD Evora
  * @author Chetan Gupta
  * @author Mario Frasca
- * @version $Id: TestCsvDriver.java,v 1.72 2011/11/01 10:53:42 simoc Exp $
  */
-public class TestCsvDriver extends TestCase {
-	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
-	private String filePath;
-	private DateFormat toUTC;
+public class TestCsvDriver
+{
+	private static String filePath;
+	private static DateFormat toUTC;
 
-	public TestCsvDriver(String name) {
-		super(name);
-	}
-
-	protected void setUp() {
-		filePath = System.getProperty(SAMPLE_FILES_LOCATION_PROPERTY);
-		if (filePath == null)
-			filePath = RunTests.DEFAULT_FILEPATH;
-		assertNotNull("Sample files location property not set !", filePath);
+	@BeforeClass
+	public static void setUp()
+	{
+		filePath = "../src/testdata";
+		if (!new File(filePath).canRead())
+			filePath = "src/testdata";
+		assertTrue("Sample files location property not set !", new File(filePath).canRead());
 
 		// load CSV driver
-		try {
+		try
+		{
 			Class.forName("org.relique.jdbc.csv.CsvDriver");
-		} catch (ClassNotFoundException e) {
+		}
+		catch (ClassNotFoundException e)
+		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
 		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));  
-
 	}
 
-	public void testWithDefaultValues() throws SQLException {
+	@Test
+	public void testWithDefaultValues() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -139,7 +146,9 @@ public class TestCsvDriver extends TestCase {
 	 * 
 	 * @throws SQLException
 	 */
-	public void testWhereSimple() throws SQLException {
+	@Test
+	public void testWhereSimple() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -150,10 +159,13 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(results.next());
 		assertEquals("The name is wrong", "Maria Cristina Lucero", results
 				.getString("Name"));
-		try {
+		try
+		{
 			results.getString("Job");
 			fail("Should not find the column 'Job'");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Column not found: Job", "" + e);
 		}
 		assertTrue(!results.next());
@@ -164,7 +176,9 @@ public class TestCsvDriver extends TestCase {
 	 * 
 	 * @throws SQLException
 	 */
-	public void testWhereShuffled() throws SQLException {
+	@Test
+	public void testWhereShuffled() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -180,7 +194,9 @@ public class TestCsvDriver extends TestCase {
 		assertTrue("more than one matching records", !results.next());
 	}
 
-	public void testWithProperties() throws SQLException {
+	@Test
+	public void testWithProperties() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", "");
 		props.put("separator", ";");
@@ -240,7 +256,9 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
-	public void testFindColumn() throws SQLException {
+	@Test
+	public void testFindColumn() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -252,10 +270,13 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("Incorrect Column", 2, results.findColumn("Name"));
 		assertEquals("Incorrect Column", 3, results.findColumn("EXTRA_FIELD"));
 
-		try {
+		try
+		{
 			results.findColumn("foo");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Column not found: foo", "" + e);
 		}
 
@@ -264,7 +285,9 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
-	public void testMetadata() throws SQLException {
+	@Test
+	public void testMetadata() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -293,7 +316,9 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
-	public void testMetadataWithSupressedHeaders() throws SQLException {
+	@Test
+	public void testMetadataWithSupressedHeaders() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("suppressHeaders", "true");
 
@@ -321,7 +346,9 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
-	public void testMetadataWithColumnType() throws SQLException {
+	@Test
+	public void testMetadataWithColumnType() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Timestamp");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -357,7 +384,9 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
-	public void testMetadataWithColumnSize() throws SQLException {
+	@Test
+	public void testMetadataWithColumnSize() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Timestamp");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -384,7 +413,9 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
-	public void testMetadataWithColumnTypeShuffled() throws SQLException {
+	@Test
+	public void testMetadataWithColumnTypeShuffled() throws SQLException
+	{
 		// TODO: this test fails!
 		Properties props = new Properties();
 		// header in file: ID,Name,Job,Start,timeoffset
@@ -414,7 +445,9 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
-	public void testMetadataWithOperations() throws SQLException {
+	@Test
+	public void testMetadataWithOperations() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date,Time");
 		props.put("timeFormat", "HHmm");
@@ -447,7 +480,9 @@ public class TestCsvDriver extends TestCase {
 				.getColumnType(8));
 	}
 
-	public void testMetadataWithTableAlias() throws SQLException {
+	@Test
+	public void testMetadataWithTableAlias() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -464,7 +499,9 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("Incorrect Column Name 2", "NAME", metadata.getColumnName(2));
 	}
 
-	public void testMetadataColumnLabels() throws SQLException {
+	@Test
+	public void testMetadataColumnLabels() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Timestamp");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -489,7 +526,9 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
-	public void testDatabaseMetadataTableTypes() throws SQLException {
+	@Test
+	public void testDatabaseMetadataTableTypes() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 		DatabaseMetaData metadata = conn.getMetaData();
@@ -499,7 +538,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testDatabaseMetadataSchemas() throws SQLException {
+	@Test
+	public void testDatabaseMetadataSchemas() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 		DatabaseMetaData metadata = conn.getMetaData();
@@ -509,7 +550,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testDatabaseMetadataProcedures() throws SQLException {
+	@Test
+	public void testDatabaseMetadataProcedures() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 		DatabaseMetaData metadata = conn.getMetaData();
@@ -517,7 +560,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testDatabaseMetadataUDTs() throws SQLException {
+	@Test
+	public void testDatabaseMetadataUDTs() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 		DatabaseMetaData metadata = conn.getMetaData();
@@ -525,7 +570,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testDatabaseMetadataPrimaryKeys() throws SQLException {
+	@Test
+	public void testDatabaseMetadataPrimaryKeys() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 		DatabaseMetaData metadata = conn.getMetaData();
@@ -533,7 +580,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testDatabaseMetadataCatalogs() throws SQLException {
+	@Test
+	public void testDatabaseMetadataCatalogs() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 		DatabaseMetaData metadata = conn.getMetaData();
@@ -541,7 +590,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testDatabaseMetadataTypeInfo() throws SQLException {
+	@Test
+	public void testDatabaseMetadataTypeInfo() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 		DatabaseMetaData metadata = conn.getMetaData();
@@ -552,8 +603,10 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("NULLABLE is wrong", DatabaseMetaData.typeNullable, results.getShort("NULLABLE"));
 	}
 
+	@Test
 	public void testColumnTypesUserSpecified() throws SQLException,
-			ParseException {
+			ParseException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date");
 
@@ -576,8 +629,10 @@ public class TestCsvDriver extends TestCase {
 				.getObject("name"));
 	}
 
+	@Test
 	public void testColumnTypesUserSpecifiedShuffled() throws SQLException,
-			ParseException {
+			ParseException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date");
 
@@ -600,8 +655,10 @@ public class TestCsvDriver extends TestCase {
 				.getObject("name"));
 	}
 
+	@Test
 	public void testColumnTypesUserSpecifiedTS() throws SQLException,
-			ParseException {
+			ParseException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Timestamp");
 
@@ -629,8 +686,10 @@ public class TestCsvDriver extends TestCase {
 	 * @throws SQLException
 	 * @throws ParseException
 	 */
+	@Test
 	public void testColumnTypesInferFromData() throws SQLException,
-			ParseException {
+			ParseException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "");
 
@@ -656,8 +715,10 @@ public class TestCsvDriver extends TestCase {
 	 * @throws SQLException
 	 * @throws ParseException
 	 */
+	@Test
 	public void testColumnTypesNumeric() throws SQLException,
-			ParseException {
+			ParseException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Byte,Short,Integer,Long,Float,Double,BigDecimal");
 
@@ -685,8 +746,10 @@ public class TestCsvDriver extends TestCase {
 				.getColumnType(7));
 	}
 
+	@Test
 	public void testColumnTypesDefaultBehaviour() throws SQLException,
-			ParseException {
+			ParseException
+	{
 		Properties props = new Properties();
 
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -703,11 +766,11 @@ public class TestCsvDriver extends TestCase {
 				.getObject("name"));
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testBadColumnTypesFails() throws SQLException {		
-		try {
+	@Test
+	public void testBadColumnTypesFails() throws SQLException
+	{		
+		try
+		{
 			Properties props = new Properties();
 			props.put("columnTypes", "Varchar,Varchar");
 			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -717,16 +780,18 @@ public class TestCsvDriver extends TestCase {
 
 			stmt.executeQuery("SELECT Id, Name FROM sample");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Invalid column type: Varchar", "" + e);
 		}
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testBadColumnNameFails() throws SQLException {		
-		try {
+	@Test
+	public void testBadColumnNameFails() throws SQLException
+	{		
+		try
+		{
 			Properties props = new Properties();
 			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 					+ filePath, props);
@@ -735,13 +800,18 @@ public class TestCsvDriver extends TestCase {
 
 			stmt.executeQuery("SELECT Id, XXXX FROM sample");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Invalid column name: XXXX", "" + e);
 		}
 	}
 
-	public void testEmptyColumnTypesFails() throws SQLException {		
-		try {
+	@Test
+	public void testEmptyColumnTypesFails() throws SQLException
+	{		
+		try
+		{
 			Properties props = new Properties();
 			props.put("columnTypes", ",");
 			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -751,13 +821,17 @@ public class TestCsvDriver extends TestCase {
 
 			stmt.executeQuery("SELECT * FROM sample");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Invalid column types: ,", "" + e);
 		}
 	}
 
+	@Test
 	public void testColumnTypesWithSelectStar() throws SQLException,
-			ParseException {
+			ParseException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Timestamp");
 
@@ -776,8 +850,10 @@ public class TestCsvDriver extends TestCase {
 				.getObject("name"));
 	}
 
+	@Test
 	public void testColumnTypesWithMultipleTables() throws SQLException,
-			ParseException {
+			ParseException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes.sample5", "Int,String,String,Timestamp");
 		props.put("columnTypes.sample", "String");
@@ -805,7 +881,9 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The numeric X is wrong", "X", results.getObject(2));
 	}
 
-	public void testWithSuppressedHeaders() throws SQLException {
+	@Test
+	public void testWithSuppressedHeaders() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("suppressHeaders", "true");
 
@@ -878,7 +956,9 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
-	public void testWithSuppressedHeadersMultiline() throws SQLException {
+	@Test
+	public void testWithSuppressedHeadersMultiline() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("suppressHeaders", "true");
 		props.put("fileExtension", ".txt");
@@ -897,7 +977,9 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(results.next());
 	}
 
-	public void testRelativePath() throws SQLException {
+	@Test
+	public void testRelativePath() throws SQLException
+	{
 		// break up file path to test relative paths
 		String parentPath = new File(filePath).getParent();
 		String subPath = new File(filePath).getName();
@@ -923,7 +1005,9 @@ public class TestCsvDriver extends TestCase {
 		conn.close();
 	}
 
-	public void testWhereMultipleResult() throws SQLException {
+	@Test
+	public void testWhereMultipleResult() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -940,7 +1024,9 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(!results.next());
 	}
 
-	public void testFieldAsAlias() throws SQLException {
+	@Test
+	public void testFieldAsAlias() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -964,7 +1050,9 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(!results.next());
 	}
 
-	public void testSelectStar() throws SQLException {
+	@Test
+	public void testSelectStar() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -991,7 +1079,9 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(!results.next());
 	}
 
-	public void testSelectNull() throws SQLException {
+	@Test
+	public void testSelectNull() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -1006,7 +1096,9 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The ID2 is wrong", null, results.getObject("id2"));
 	}
 
-	public void testLiteralAsAlias() throws SQLException {
+	@Test
+	public void testLiteralAsAlias() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -1024,7 +1116,9 @@ public class TestCsvDriver extends TestCase {
 				.getString("J"));
 	}
 
-	public void testColumnWithoutAlias() throws SQLException {
+	@Test
+	public void testColumnWithoutAlias() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -1047,7 +1141,9 @@ public class TestCsvDriver extends TestCase {
 	 * 
 	 * @throws SQLException
 	 */
-	public void testWhereNoResults() throws SQLException {
+	@Test
+	public void testWhereNoResults() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 		Statement stmt = conn.createStatement();
@@ -1056,11 +1152,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	/**
-	 * 
-	 * @throws SQLException
-	 */
-	public void testSelectStarWhereMultipleResult() throws SQLException {
+	@Test
+	public void testSelectStarWhereMultipleResult() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -1077,11 +1171,9 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(!results.next());
 	}
 
-	/**
-	 * 
-	 * @throws SQLException
-	 */
-	public void testSelectStarWithTableAlias() throws SQLException {
+	@Test
+	public void testSelectStarWithTableAlias() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -1094,10 +1186,9 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The Job is wrong", "Project Manager", results.getString(3));
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testWhereWithAndOperator() throws SQLException {
+	@Test
+	public void testWhereWithAndOperator() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -1110,10 +1201,9 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(!results.next());
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testWhereWithBetweenOperator() throws SQLException {
+	@Test
+	public void testWhereWithBetweenOperator() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -1129,10 +1219,9 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(!results.next());
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testWhereWithLikeOperatorPercent() throws SQLException {
+	@Test
+	public void testWhereWithLikeOperatorPercent() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -1148,10 +1237,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testWhereWithLikeOperatorUnderscore() throws SQLException {
+	@Test
+	public void testWhereWithLikeOperatorUnderscore() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -1167,10 +1255,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testWhereWithUnselectedColumn() throws SQLException {
+	@Test
+	public void testWhereWithUnselectedColumn() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -1179,10 +1266,13 @@ public class TestCsvDriver extends TestCase {
 		ResultSet results = stmt
 				.executeQuery("SELECT Name, Job FROM sample4 WHERE id = '04'");
 		assertTrue(results.next());
-		try {
+		try
+		{
 			results.getString("id");
 			fail("Should not find the column 'id'");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Column not found: id", "" + e);
 		}
 		assertEquals("The name is wrong", "Felipe Grajales", results
@@ -1190,11 +1280,11 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(!results.next());
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testWhereWithBadColumnName() throws SQLException {		
-		try {
+	@Test
+	public void testWhereWithBadColumnName() throws SQLException
+	{		
+		try
+		{
 			Properties props = new Properties();
 			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 					+ filePath, props);
@@ -1203,15 +1293,16 @@ public class TestCsvDriver extends TestCase {
 
 			stmt.executeQuery("SELECT Id FROM sample where XXXX='123'");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Invalid column name: XXXX", "" + e);
 		}
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testWhereWithExponentialNumbers() throws SQLException {
+	@Test
+	public void testWhereWithExponentialNumbers() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Double");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -1229,7 +1320,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testWhereWithDates() throws SQLException {
+	@Test
+	public void testWhereWithDates() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,Date,Time");
 		props.put("dateFormat", "yyyy-MM-dd");
@@ -1251,7 +1344,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testWhereWithIn() throws SQLException {
+	@Test
+	public void testWhereWithIn() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Integer,String,String,Timestamp,Time");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
@@ -1269,7 +1364,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testWhereWithInNoResults() throws SQLException {
+	@Test
+	public void testWhereWithInNoResults() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Integer,String,String,Timestamp,Time");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
@@ -1281,7 +1378,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testWhereWithNotIn() throws SQLException {
+	@Test
+	public void testWhereWithNotIn() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
 
 		Statement stmt = conn.createStatement();
@@ -1297,23 +1396,27 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testWhereWithInEmpty() throws SQLException {
+	@Test
+	public void testWhereWithInEmpty() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
 
 		Statement stmt = conn.createStatement();
 
-		try {
+		try
+		{
 			stmt.executeQuery("select * from sample where Name in ()");
 			fail("SQL Query should fail");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertTrue(e.getMessage().startsWith("Syntax Error"));
 		}
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void test1073375() throws SQLException {
+	@Test
+	public void test1073375() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("separator", "\t");
@@ -1324,10 +1427,13 @@ public class TestCsvDriver extends TestCase {
 
 		ResultSet results = stmt.executeQuery("SELECT * FROM jo");
 		assertTrue(results.next());
-		try {
+		try
+		{
 			results.getString("id");
 			fail("Should not find the column 'id'");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Column not found: id", "" + e);
 		}
 		assertEquals("The name is wrong", "3", results.getString("rc"));
@@ -1341,10 +1447,9 @@ public class TestCsvDriver extends TestCase {
 				.getString("full_name_nd"));
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void test0733215() throws SQLException {
+	@Test
+	public void test0733215() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -1366,10 +1471,9 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(!results.next());
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void test3091923() throws SQLException {
+	@Test
+	public void test3091923() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".csv");
 		props.put("separator", ";");
@@ -1385,16 +1489,20 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The name is wrong", "Rechtsform \nunbekannt", results.getString("F2"));
 		assertTrue(results.next());
 		assertEquals("The name is wrong", "Rechtsform unbekannt", results.getString("F2"));
-		try {
+		try
+		{
 			results.next();
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: EOF reached inside quoted mode", "" + e);
 		}
 	}
 
-	public void testColumnWithDot() throws SQLException {
-
+	@Test
+	public void testColumnWithDot() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -1418,8 +1526,9 @@ public class TestCsvDriver extends TestCase {
 	 * 
 	 * @throws SQLException
 	 */
-	public void testFromNonExistingIndexedTable() throws SQLException {
-
+	@Test
+	public void testFromNonExistingIndexedTable() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("fileTailPattern", "-([0-9]{3})-([0-9]{8})");
@@ -1436,8 +1545,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testFromIndexedTable() throws SQLException {
-
+	@Test
+	public void testFromIndexedTable() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("fileTailPattern", "-([0-9]{3})-([0-9]{8})");
@@ -1466,29 +1576,36 @@ public class TestCsvDriver extends TestCase {
 				"TIJD");
 
 		assertTrue(results.next());
-		for (int i = 1; i < 12; i++) {
+		for (int i = 1; i < 12; i++)
+		{
 			assertTrue(results.next());
 		}
-		for (int i = 0; i < 12; i++) {
+		for (int i = 0; i < 12; i++)
+		{
 			assertTrue(results.next());
 		}
-		for (int i = 0; i < 12; i++) {
+		for (int i = 0; i < 12; i++)
+		{
 			assertTrue(results.next());
 		}
-		for (int i = 0; i < 36; i++) {
+		for (int i = 0; i < 36; i++)
+		{
 			assertTrue(results.next());
 		}
-		for (int i = 0; i < 36; i++) {
+		for (int i = 0; i < 36; i++)
+		{
 			assertTrue(results.next());
 		}
-		for (int i = 0; i < 36; i++) {
+		for (int i = 0; i < 36; i++)
+		{
 			assertTrue(results.next());
 		}
 		assertFalse(results.next());
 	}
 
-	public void testFromIndexedTablePrepend() throws SQLException {
-
+	@Test
+	public void testFromIndexedTablePrepend() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("fileTailPattern", "-([0-9]{3})-([0-9]{8})");
@@ -1520,29 +1637,36 @@ public class TestCsvDriver extends TestCase {
 				"STATION");
 
 		assertTrue(results.next());
-		for (int i = 1; i < 12; i++) {
+		for (int i = 1; i < 12; i++)
+		{
 			assertTrue(results.next());
 		}
-		for (int i = 0; i < 12; i++) {
+		for (int i = 0; i < 12; i++)
+		{
 			assertTrue(results.next());
 		}
-		for (int i = 0; i < 12; i++) {
+		for (int i = 0; i < 12; i++)
+		{
 			assertTrue(results.next());
 		}
-		for (int i = 0; i < 36; i++) {
+		for (int i = 0; i < 36; i++)
+		{
 			assertTrue(results.next());
 		}
-		for (int i = 0; i < 36; i++) {
+		for (int i = 0; i < 36; i++)
+		{
 			assertTrue(results.next());
 		}
-		for (int i = 0; i < 36; i++) {
+		for (int i = 0; i < 36; i++)
+		{
 			assertTrue(results.next());
 		}
 		assertFalse(results.next());
 	}
 
-	public void testNoPatternGroupFromIndexedTable() throws SQLException {
-
+	@Test
+	public void testNoPatternGroupFromIndexedTable() throws SQLException
+	{
 		Properties props = new Properties();
         props.put("fileExtension", ".txt");
         props.put("commentChar", "#");
@@ -1562,10 +1686,9 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The BLZ is wrong", "10000000", results.getString("BLZ"));
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testAddingFields() throws SQLException {
+	@Test
+	public void testAddingFields() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -1588,7 +1711,9 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(!results.next());
 	}
 
-	public void testReadingTime() throws SQLException {
+	@Test
+	public void testReadingTime() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date,Time");
 		props.put("timeFormat", "HHmm");
@@ -1664,7 +1789,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testAddingDatePlusTime() throws SQLException {
+	@Test
+	public void testAddingDatePlusTime() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date,Time");
 		props.put("timeFormat", "HHmm");
@@ -1711,7 +1838,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testAddingTimestampPlusInteger() throws SQLException {
+	@Test
+	public void testAddingTimestampPlusInteger() throws SQLException
+	{
 		// misusing Date+Time to get a Timestamp, but here we are just
 		// interested in doing Timestamp +/- Integer
 		Properties props = new Properties();
@@ -1754,10 +1883,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testAddingAndMultiplyingFields() throws SQLException {
+	@Test
+	public void testAddingAndMultiplyingFields() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date,Time");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -1773,10 +1901,9 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("N3 is wrong", 52, results.getInt("N3"));
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testParentheses() throws SQLException {
+	@Test
+	public void testParentheses() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date,Time");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -1792,10 +1919,9 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("N3 is wrong", 3, results.getInt("N3"));
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testBadParenthesesFails() throws SQLException {
+	@Test
+	public void testBadParenthesesFails() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date,Time");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -1803,15 +1929,20 @@ public class TestCsvDriver extends TestCase {
 
 		Statement stmt = conn.createStatement();
 
-		try {
+		try
+		{
 			stmt.executeQuery("SELECT ((ID + 1) as N1 FROM sample5");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertTrue(e.getMessage().startsWith("Syntax Error"));	
 		}
 	}
 
-	public void testLowerFunction() throws SQLException {
+	@Test
+	public void testLowerFunction() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Integer,String,String,Date,Time");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
@@ -1832,7 +1963,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());		
 	}
 
-	public void testUpperFunction() throws SQLException {
+	@Test
+	public void testUpperFunction() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("headerline", "BLZ,BANK_NAME");
 		props.put("suppressHeaders", "true");
@@ -1855,7 +1988,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());		
 	}
 
-	public void testLengthFunction() throws SQLException {
+	@Test
+	public void testLengthFunction() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Integer,String,String,Date,Time");
 		props.put("charset", "UTF-8");
@@ -1871,7 +2006,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());		
 	}
 
-	public void testRoundFunction() throws SQLException {
+	@Test
+	public void testRoundFunction() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Byte,Short,Integer,Long,Float,Double,BigDecimal");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
@@ -1887,7 +2024,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testWithComments() throws SQLException {
+	@Test
+	public void testWithComments() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "String,Int,Float,String");
 		props.put("commentChar", "#");
@@ -1912,7 +2051,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testWithoutComments() throws SQLException {
+	@Test
+	public void testWithoutComments() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("commentChar", "");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -1949,7 +2090,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testSkippingLeadingLines() throws SQLException {
+	@Test
+	public void testSkippingLeadingLines() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "String,Int,Float,String");
 		props.put("skipLeadingLines", "3");
@@ -1974,7 +2117,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testNonParseableWithColumnTypes() throws SQLException {
+	@Test
+	public void testNonParseableWithColumnTypes() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "String,String,String,String,Int,Float");
 		props.put("ignoreNonParseableLines", "True");
@@ -1996,7 +2141,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testNonParseableWithHeaderline() throws SQLException {
+	@Test
+	public void testNonParseableWithHeaderline() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("headerline", "Date;Time;TimeZone;Unit;Quality;Value");
 		props.put("ignoreNonParseableLines", "True");
@@ -2018,7 +2165,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testNonParseable() throws SQLException {
+	@Test
+	public void testNonParseable() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("ignoreNonParseableLines", "True");
 		props.put("separator", ";");
@@ -2039,7 +2188,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testVariableColumnCount() throws SQLException {
+	@Test
+	public void testVariableColumnCount() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("indexedFiles", "True");
@@ -2102,7 +2253,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testTailPrepend() throws SQLException {
+	@Test
+	public void testTailPrepend() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("indexedFiles", "True");
@@ -2138,14 +2291,19 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("P001", metadata.getColumnName(6));
 	}
 
-	public void testNonExistingTable() throws SQLException {
+	@Test
+	public void testNonExistingTable() throws SQLException
+	{
 		Statement stmt = DriverManager.getConnection(
 				"jdbc:relique:csv:" + filePath).createStatement();
 
-		try {
+		try
+		{
 			stmt.executeQuery("SELECT * FROM not_there");
 			fail("Should not find the table 'not_there'");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Cannot open data file '"
 					+ filePath + "/not_there.csv'  !", "" + e);
 		}
@@ -2162,7 +2320,9 @@ public class TestCsvDriver extends TestCase {
 				.next());
 	}
 
-	public void testDuplicatedColumnNamesPlainFails() throws SQLException {
+	@Test
+	public void testDuplicatedColumnNamesPlainFails() throws SQLException
+	{
 		// no bug report, check discussion thread
 		// https://sourceforge.net/projects/csvjdbc/forums/forum/56965/topic/2608197
 		Properties props = new Properties();
@@ -2172,17 +2332,22 @@ public class TestCsvDriver extends TestCase {
 		Statement stmt = conn.createStatement();
 
 		// load CSV driver
-		try {
+		try
+		{
 			stmt.executeQuery("SELECT * FROM duplicate_headers");
 			fail("expected exception java.sql.SQLException: Table contains duplicate column names");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("wrong exception and/or exception text!",
 					"java.sql.SQLException: Table contains duplicate column names",
 					"" + e);
 		}
 	}
 
-	public void testDuplicatedColumnNamesSuppressHeader() throws SQLException {
+	@Test
+	public void testDuplicatedColumnNamesSuppressHeader() throws SQLException
+	{
 		// no bug report, check discussion thread
 		// https://sourceforge.net/projects/csvjdbc/forums/forum/56965/topic/2608197
 		Properties props = new Properties();
@@ -2217,7 +2382,9 @@ public class TestCsvDriver extends TestCase {
 	 * 
 	 * @throws SQLException
 	 */
-	public void testWithNonRepeatedQuotes() throws SQLException {
+	@Test
+	public void testWithNonRepeatedQuotes() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("separator", ";");
 		props.put("quotechar", "'");
@@ -2230,11 +2397,13 @@ public class TestCsvDriver extends TestCase {
 		ResultSet results = stmt.executeQuery("SELECT * FROM doublequoted");
 		assertTrue(results.next());
 		assertEquals(
-				"\"Rechtsform unbekannt\" entsteht durch die Simulation zTELKUS. Es werden Simulationsregeln angewandt.",
-				results.getString(10));
+			"\"Rechtsform unbekannt\" entsteht durch die Simulation zTELKUS. Es werden Simulationsregeln angewandt.",
+			results.getString(10));
 	}
 
-	public void testWithNonRepeatedQuotesExplicitSQLStyle() throws SQLException {
+	@Test
+	public void testWithNonRepeatedQuotesExplicitSQLStyle() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("separator", ";");
 		props.put("quotechar", "'");
@@ -2249,11 +2418,13 @@ public class TestCsvDriver extends TestCase {
 		ResultSet results = stmt.executeQuery("SELECT * FROM doublequoted");
 		assertTrue(results.next());
 		assertEquals(
-				"\"Rechtsform unbekannt\" entsteht durch die Simulation zTELKUS. Es werden Simulationsregeln angewandt.",
-				results.getString(10));
+			"\"Rechtsform unbekannt\" entsteht durch die Simulation zTELKUS. Es werden Simulationsregeln angewandt.",
+			results.getString(10));
 	}
 
-	public void testWithNonRepeatedQuotesExplicitCStyle() throws SQLException {
+	@Test
+	public void testWithNonRepeatedQuotesExplicitCStyle() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("separator", ";");
 		props.put("quotechar", "'");
@@ -2268,11 +2439,13 @@ public class TestCsvDriver extends TestCase {
 		// TODO: this should actually fail!  have a look at testEscapingQuotecharExplicitSQLStyle for the way to check an exception.
 		assertTrue(results.next());
 		assertEquals(
-				"\"Rechtsform unbekannt\" entsteht durch die Simulation zTELKUS. Es werden Simulationsregeln angewandt.",
-				results.getString(10));
+			"\"Rechtsform unbekannt\" entsteht durch die Simulation zTELKUS. Es werden Simulationsregeln angewandt.",
+			results.getString(10));
 	}
 
-	public void testEscapingQuotecharExplicitCStyle() throws SQLException {
+	@Test
+	public void testEscapingQuotecharExplicitCStyle() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("separator", ";");
 		props.put("quotechar", "'");
@@ -2291,7 +2464,9 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("escaping quotechar\"", results.getObject("F1"));
 	}
 
-	public void testEscapingQuotecharExplicitSQLStyle() throws SQLException {
+	@Test
+	public void testEscapingQuotecharExplicitSQLStyle() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("separator", ";");
 		props.put("quotechar", "'");
@@ -2308,28 +2483,38 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("doubling \\\"\\\"quotechar", results.getObject("F1"));
 		assertTrue(results.next());
 		assertTrue(results.next());
-		try {
+		try
+		{
 			results.next();
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: EOF reached inside quoted mode", "" + e);
 		}
 	}
 
-	public void testBadQuotechar() throws SQLException {
+	@Test
+	public void testBadQuotechar() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("quotechar", "()");
 
-		try {
+		try
+		{
 			DriverManager.getConnection("jdbc:relique:csv:"	+ filePath, props);
 			fail("expected exception java.sql.SQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("Wrong exception text",
 					"java.sql.SQLException: Invalid quotechar: ()", "" + e);
 		}
 	}
 
-	public void testWithNoData() throws SQLException {
+	@Test
+	public void testWithNoData() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("commentChar", "#");
 		props.put("fileExtension", ".txt");
@@ -2347,7 +2532,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testWithNoHeader() throws SQLException {
+	@Test
+	public void testWithNoHeader() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("commentChar", "#");
 		props.put("fileExtension", ".txt");
@@ -2358,7 +2545,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testConnectionName() throws SQLException {
+	@Test
+	public void testConnectionName() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 		String url = conn.getMetaData().getURL();
@@ -2366,7 +2555,9 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(url.endsWith("/testdata/"));
 	}
 
-	public void testConnectionClosed() throws SQLException {
+	@Test
+	public void testConnectionClosed() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 		assertFalse(conn.isClosed());
@@ -2377,16 +2568,21 @@ public class TestCsvDriver extends TestCase {
 		 * Second close is ignored.
 		 */
 		conn.close();
-		try {
+		try
+		{
 			conn.createStatement();
 			fail("expected exception java.sql.SQLException");			
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("wrong exception and/or exception text!",
 				"java.sql.SQLException: Connection is already closed", "" + e);
 		}
 	}
 
-	public void testStatementClosed() throws SQLException {
+	@Test
+	public void testStatementClosed() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 		Statement stmt = conn.createStatement();
@@ -2399,10 +2595,13 @@ public class TestCsvDriver extends TestCase {
 		 */
 		stmt.close();
 
-		try {
+		try
+		{
 			stmt.executeQuery("SELECT * FROM sample");
 			fail("expected exception java.sql.SQLException");			
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("wrong exception and/or exception text!",
 				"java.sql.SQLException: Statement is already closed", "" + e);
 		}
@@ -2414,7 +2613,9 @@ public class TestCsvDriver extends TestCase {
 	 * @throws SQLException
 	 * @throws ParseException
 	 */
-	public void testNumericDefectiveHeaders() throws SQLException, ParseException {
+	@Test
+	public void testNumericDefectiveHeaders() throws SQLException, ParseException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		//props.put("defectiveHeaders", "True");
@@ -2430,10 +2631,13 @@ public class TestCsvDriver extends TestCase {
 
 		assertTrue(results.next());
 		assertEquals("1 is wrong", "", results.getString(1));
-		try {
+		try
+		{
 			results.getString("");
 			fail("expected exception java.sql.SQLException: Can't access columns with empty name by name");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("wrong exception and/or exception text!",
 					"java.sql.SQLException: Can't access columns with empty name by name",
 					"" + e);
@@ -2447,8 +2651,10 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("2 is wrong", "21", results.getString(2));
 		assertEquals("3 is wrong", "20", results.getString(3));
 	}
-	
-	public void testWithDefectiveHeaders() throws SQLException, ParseException {
+
+	@Test
+	public void testWithDefectiveHeaders() throws SQLException, ParseException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("defectiveHeaders", "True");
@@ -2477,7 +2683,9 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("3 is wrong", "20", results.getObject(3));
 	}
 
-	public void testWithHeaderMissingColumns() throws SQLException, ParseException {
+	@Test
+	public void testWithHeaderMissingColumns() throws SQLException, ParseException
+	{
 		Properties props = new Properties();
 		props.put("defectiveHeaders", "True");
 		
@@ -2502,7 +2710,9 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("5 is wrong", "T", results.getString("COLUMN5"));
 	}
 
-	public void testSkipLeadingDataLines() throws SQLException, ParseException {
+	@Test
+	public void testSkipLeadingDataLines() throws SQLException, ParseException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("columnTypes", "Timestamp,Double");
@@ -2524,8 +2734,10 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("4 is wrong", new Double(24), results.getObject(4));
 
 	}
-	
-	public void testSkipLeadingDataFromIndexedFile() throws SQLException {
+
+	@Test
+	public void testSkipLeadingDataFromIndexedFile() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("indexedFiles", "True");
@@ -2552,7 +2764,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testIgnoreUnparseableInIndexedFile() throws SQLException {
+	@Test
+	public void testIgnoreUnparseableInIndexedFile() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("indexedFiles", "True");
@@ -2579,7 +2793,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testUnparseableInIndexedFileCausesSQLException() throws SQLException {
+	@Test
+	public void testUnparseableInIndexedFileCausesSQLException() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("indexedFiles", "True");
@@ -2602,16 +2818,21 @@ public class TestCsvDriver extends TestCase {
 		assertTrue(results.next());
 		assertEquals("007", results.getObject("Station"));
 		assertEquals("22.99", results.getObject("P001"));
-		try {
+		try
+		{
 			results.next();
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: data contains 6 columns, expected 8", "" + e);
 		}
 	}
 
+	@Test
 	public void testTimestampInTimeZoneRome() throws SQLException,
-			ParseException {
+			ParseException
+	{
 		Properties props = new Properties();
 		props.put("timeZoneName", "Europe/Rome");
 		props.put("columnTypes", "Int,String,String,Timestamp");
@@ -2637,8 +2858,10 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	@Test
 	public void testTimestampInTimeZoneSantiago() throws SQLException,
-			ParseException {
+			ParseException
+	{
 		Properties props = new Properties();
 		props.put("timeZoneName", "America/Santiago");
 		props.put("columnTypes", "Int,String,String,Timestamp");
@@ -2664,8 +2887,10 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	@Test
 	public void testTimestampInTimeZoneGMTPlus0400() throws SQLException,
-			ParseException {
+			ParseException
+	{
 		Properties props = new Properties();
 		props.put("timeZoneName", "GMT+04:00");
 		props.put("columnTypes", "Int,String,String,Timestamp");
@@ -2691,8 +2916,10 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	@Test
 	public void testTimestampInTimeZoneGMTMinus0400() throws SQLException,
-			ParseException {
+			ParseException
+	{
 		Properties props = new Properties();
 		props.put("timeZoneName", "GMT-04:00");
 		props.put("columnTypes", "Int,String,String,Timestamp");
@@ -2718,8 +2945,10 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	@Test
 	public void testAddingDateToTimeInTimeZoneAthens() throws SQLException,
-			ParseException {
+			ParseException
+	{
 		Properties props = new Properties();
 		props.put("timeZoneName", "Europe/Athens");
 		props.put("columnTypes", "Int,String,Date,Time");
@@ -2759,8 +2988,10 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
+	@Test
 	public void testAddingDateToTimeInTimeZoneGMTMinus0500() throws SQLException,
-			ParseException {
+			ParseException
+	{
 		Properties props = new Properties();
 		props.put("timeZoneName", "GMT-05:00");
 		props.put("columnTypes", "Int,String,Date,Time");
@@ -2800,7 +3031,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testValuesContainQuotes() throws SQLException {
+	@Test
+	public void testValuesContainQuotes() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("separator", ",");
 		props.put("quotechar", "'");
@@ -2827,7 +3060,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testWithDifferentDecimalSeparator() throws SQLException {
+	@Test
+	public void testWithDifferentDecimalSeparator() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", "");
 		props.put("separator", ";");
@@ -2850,10 +3085,11 @@ public class TestCsvDriver extends TestCase {
 		assertEquals(new Double(34.1), results.getObject(3));
 		assertTrue(results.next()); // Polly Peachum
 		assertEquals(new Double(30.5), results.getObject(3));
-		
 	}
 
-	public void testLiteral() throws SQLException {
+	@Test
+	public void testLiteral() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -2874,7 +3110,9 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("Incorrect ID Value", "Bananas", results.getString("T"));
 	}
 
-	public void testTableAlias() throws SQLException {
+	@Test
+	public void testTableAlias() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -2889,8 +3127,10 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("Incorrect ID Value", "Q123", results.getString(1));
 		assertEquals("Incorrect ID Value", "F", results.getString(2));
 	}
-	
-	public void testTableAliasWithWhere() throws SQLException {
+
+	@Test
+	public void testTableAliasWithWhere() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -2907,7 +3147,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testMaxRows() throws SQLException {
+	@Test
+	public void testMaxRows() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -2926,7 +3168,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse("Stopping after row 4 failed", results.next());
 	}
 
-	public void testFetchSize() throws SQLException {
+	@Test
+	public void testFetchSize() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -2940,7 +3184,9 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("getFetchSize() incorrect", 20, results.getFetchSize());
 	}
 
-	public void testFetchDirection() throws SQLException {
+	@Test
+	public void testFetchDirection() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -2954,7 +3200,9 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("getFetchDirection() incorrect", ResultSet.FETCH_FORWARD, results.getFetchDirection());
 	}
 
-	public void testResultSet() throws SQLException {
+	@Test
+	public void testResultSet() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -2973,7 +3221,9 @@ public class TestCsvDriver extends TestCase {
 		assertTrue("Result set was not closed", results1.isClosed());
 	}
 
-	public void testResultSetClosed() throws SQLException {
+	@Test
+	public void testResultSetClosed() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -2983,15 +3233,20 @@ public class TestCsvDriver extends TestCase {
 		ResultSet results2 = stmt.executeQuery("SELECT * FROM sample");
 		assertTrue("First result set is not closed", results1.isClosed());
 		assertFalse("Second result set is closed", results2.isClosed());
-		try {
+		try
+		{
 			results1.next();
 			fail("Closed result set should throw SQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
 		}
 	}
 
-	public void testHeaderlineWithMultipleTables() throws SQLException {
+	@Test
+	public void testHeaderlineWithMultipleTables() throws SQLException
+	{
 		Properties props = new Properties();
 		// Define different headerline values for table banks and table transactions. 
 		props.put("headerline.banks", "BLZ,BANK_NAME");
@@ -3018,7 +3273,9 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("AMOUNT wrong", "250.00", results.getString("AMOUNT"));
 	}
 
-	public void testWarnings() throws SQLException {
+	@Test
+	public void testWarnings() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -3031,7 +3288,9 @@ public class TestCsvDriver extends TestCase {
 		assertNull("Warnings should still be null", results.getWarnings());
 	}
 
-	public void testStringWasNull() throws SQLException {
+	@Test
+	public void testStringWasNull() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -3043,7 +3302,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.wasNull());
 	}
 
-	public void testObjectWasNull() throws SQLException {
+	@Test
+	public void testObjectWasNull() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -3055,7 +3316,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.wasNull());
 	}
 
-	public void testTableReader() throws SQLException {
+	@Test
+	public void testTableReader() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" +
 			TableReaderTester.class.getName());
 		Statement stmt = conn.createStatement();
@@ -3064,28 +3327,40 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("NAME wrong", "British Airways", results.getString("NAME"));
 	}
 
-	public void testTableReaderWithBadTable() throws SQLException {
+	@Test
+	public void testTableReaderWithBadTable() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" +
 			TableReaderTester.class.getName());
 		Statement stmt = conn.createStatement();
-		try {
+		try
+		{
 			stmt.executeQuery("SELECT * FROM X");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Table does not exist: X", "" + e);
 		}
 	}
 
-	public void testTableReaderWithBadReader() throws SQLException {
-		try {
+	@Test
+	public void testTableReaderWithBadReader() throws SQLException
+	{
+		try
+		{
 			DriverManager.getConnection("jdbc:relique:csv:class:" + TestCsvDriver.class.getName());
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Class does not implement interface org.relique.io.TableReader: " + TestCsvDriver.class.getName(), "" + e);
 		}
 	}
 
-	public void testTableReaderTables() throws SQLException {
+	@Test
+	public void testTableReaderTables() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" +
 			TableReaderTester.class.getName());
 		ResultSet results = conn.getMetaData().getTables(null, null, "*", null);
@@ -3095,14 +3370,18 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("TABLE_NAME wrong", "AIRPORT", results.getString("TABLE_NAME"));
 		assertFalse(results.next());
 	}
-	
-	public void testTableReaderMetadata() throws SQLException {
+
+	@Test
+	public void testTableReaderMetadata() throws SQLException
+	{
 		String url = "jdbc:relique:csv:class:" + TableReaderTester.class.getName();
 		Connection conn = DriverManager.getConnection(url);
 		assertEquals("URL is wrong", url, conn.getMetaData().getURL());
 	}
 
-	public void testPropertiesInURL() throws SQLException {		
+	@Test
+	public void testPropertiesInURL() throws SQLException
+	{		
 		Properties props = new Properties();
 		
 		/*
@@ -3122,8 +3401,10 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("The BLZ is wrong", "10000000", results.getString("BLZ"));
 		assertEquals("The NAME is wrong", "Bundesbank (Berlin)", results.getString("NAME"));
 	}
-	
-	public void testLiteralWithUnicode() throws SQLException {
+
+	@Test
+	public void testLiteralWithUnicode() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("charset", "UTF-8");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -3138,8 +3419,10 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("Incorrect ID Value", "08", results.getString(1));
 		assertFalse(results.next());
 	}
-	
-	public void testDistinct() throws SQLException {
+
+	@Test
+	public void testDistinct() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -3159,8 +3442,10 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("Incorrect distinct value 5", "Office Employee", results.getString(1));
 		assertFalse(results.next());
 	}
-	
-	public void testDistinctWithWhere() throws SQLException {
+
+	@Test
+	public void testDistinctWithWhere() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
 		props.put("suppressHeaders", "true");
@@ -3181,9 +3466,10 @@ public class TestCsvDriver extends TestCase {
 		assertEquals("Incorrect distinct TO_BLZ value 2", 10010010, results.getInt(2));
 		assertFalse(results.next());
 	}
-	
-	public void testNoTable() throws SQLException, ParseException {
 
+	@Test
+	public void testNoTable() throws SQLException, ParseException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
 		Statement stmt = conn.createStatement();
 		ResultSet results = stmt.executeQuery("SELECT 'Hello', 'World' as W, 5+7");
@@ -3202,7 +3488,9 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testExtraResultSetNext() throws SQLException {
+	@Test
+	public void testExtraResultSetNext() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Integer,String,String,Timestamp,Time");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -3218,9 +3506,10 @@ public class TestCsvDriver extends TestCase {
 		assertFalse(results.next());
 		assertFalse(results.next());
 	}
-	
-	public void testGetRow() throws SQLException {
 
+	@Test
+	public void testGetRow() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
 
 		Statement stmt = conn.createStatement();

@@ -18,6 +18,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package test.org.relique.jdbc.csv;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -28,41 +34,41 @@ import java.text.SimpleDateFormat;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Tests use of SQL ORDER BY clause.
  */
-public class TestOrderBy extends TestCase {
+public class TestOrderBy
+{
+	private static String filePath;
+	private static DateFormat toUTC;
 
-	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
-	private String filePath;
-	private DateFormat toUTC;
-
-	public TestOrderBy(String name) {
-		super(name);
-	}
-
-	protected void setUp() {
-		filePath = System.getProperty(SAMPLE_FILES_LOCATION_PROPERTY);
-		if (filePath == null)
-			filePath = RunTests.DEFAULT_FILEPATH;
-		assertNotNull("Sample files location property not set !", filePath);
+	@BeforeClass
+	public static void setUp()
+	{
+		filePath = "../src/testdata";
+		if (!new File(filePath).canRead())
+			filePath = "src/testdata";
+		assertTrue("Sample files location property not set !", new File(filePath).canRead());
 
 		// load CSV driver
-		try {
+		try
+		{
 			Class.forName("org.relique.jdbc.csv.CsvDriver");
-		} catch (ClassNotFoundException e) {
+		}
+		catch (ClassNotFoundException e)
+		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
 		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));  
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testOrderBySimple() throws SQLException {
+	@Test
+	public void testOrderBySimple() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("headerline", "BLZ,BANK_NAME");
 		props.put("suppressHeaders", "true");
@@ -109,7 +115,9 @@ public class TestOrderBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testOrderByColumnNumber() throws SQLException {
+	@Test
+	public void testOrderByColumnNumber() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Timestamp");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
@@ -141,7 +149,9 @@ public class TestOrderBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testOrderByColumnNumberExpression() throws SQLException {
+	@Test
+	public void testOrderByColumnNumberExpression() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Timestamp");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
@@ -157,7 +167,9 @@ public class TestOrderBy extends TestCase {
 		assertTrue(results.next());
 	}
 
-	public void testOrderByDesc() throws SQLException {
+	@Test
+	public void testOrderByDesc() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("headerline", "BLZ,BANK_NAME");
 		props.put("suppressHeaders", "true");
@@ -193,7 +205,9 @@ public class TestOrderBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testOrderByTwoColumns() throws SQLException {
+	@Test
+	public void testOrderByTwoColumns() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
 		props.put("suppressHeaders", "true");
@@ -236,7 +250,9 @@ public class TestOrderBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testOrderByWhere() throws SQLException {
+	@Test
+	public void testOrderByWhere() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
 		props.put("suppressHeaders", "true");
@@ -264,11 +280,14 @@ public class TestOrderBy extends TestCase {
 	/**
 	 * Compare two values for near equality, allowing for floating point round-off.
 	 */
-	private boolean fuzzyEquals(double a, double b) {
+	private boolean fuzzyEquals(double a, double b)
+	{
 		return (a == b || Math.round(a * 1000) == Math.round(b * 1000));
 	}
 
-	public void testOrderByColumnAlias() throws SQLException {
+	@Test
+	public void testOrderByColumnAlias() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
 		props.put("suppressHeaders", "true");
@@ -291,7 +310,9 @@ public class TestOrderBy extends TestCase {
 		assertTrue("The FEE is wrong", fuzzyEquals(21.23 * 0.01, fee));
 	}
 
-	public void testOrderByNumericExpression() throws SQLException {
+	@Test
+	public void testOrderByNumericExpression() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("fileTailPattern", "-([0-9]{3})-([0-9]{8})");
@@ -314,7 +335,9 @@ public class TestOrderBy extends TestCase {
 		assertTrue("The sort order is wrong", fuzzyEquals(26.54, a0 + a1));
 	}
 
-	public void testOrderByDateExpression() throws SQLException {
+	@Test
+	public void testOrderByDateExpression() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date,Time");
 		props.put("timeFormat", "HHmm");
@@ -348,11 +371,11 @@ public class TestOrderBy extends TestCase {
 		assertFalse(results.next());
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testOrderByWithBadColumnName() throws SQLException {		
-		try {
+	@Test
+	public void testOrderByWithBadColumnName() throws SQLException
+	{		
+		try
+		{
 			Properties props = new Properties();
 			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -360,16 +383,18 @@ public class TestOrderBy extends TestCase {
 
 			stmt.executeQuery("SELECT Id FROM sample order by XXXX");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Invalid column name: XXXX", "" + e);
 		}
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testOrderByWithBadColumnNumber() throws SQLException {		
-		try {
+	@Test
+	public void testOrderByWithBadColumnNumber() throws SQLException
+	{		
+		try
+		{
 			Properties props = new Properties();
 			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -377,16 +402,18 @@ public class TestOrderBy extends TestCase {
 
 			stmt.executeQuery("SELECT * FROM sample ORDER BY 99");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Invalid ORDER BY column: 99", "" + e);
 		}
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testOrderByWithFloatColumnNumber() throws SQLException {		
-		try {
+	@Test
+	public void testOrderByWithFloatColumnNumber() throws SQLException
+	{		
+		try
+		{
 			Properties props = new Properties();
 			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -394,16 +421,18 @@ public class TestOrderBy extends TestCase {
 
 			stmt.executeQuery("SELECT * FROM sample ORDER BY 3.14");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Invalid ORDER BY column: 3.14", "" + e);
 		}
 	}
 
-	/**
-	 * @throws SQLException
-	 */
-	public void testOrderByWithBadValue() throws SQLException {		
-		try {
+	@Test
+	public void testOrderByWithBadValue() throws SQLException
+	{		
+		try
+		{
 			Properties props = new Properties();
 			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
@@ -411,12 +440,16 @@ public class TestOrderBy extends TestCase {
 
 			stmt.executeQuery("SELECT * FROM sample ORDER BY 'X'");
 			fail("Should raise a java.sqlSQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: Invalid ORDER BY column: 'X'", "" + e);
 		}
 	}
 
-	public void testOrderByNoResults() throws SQLException {
+	@Test
+	public void testOrderByNoResults() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
 		Statement stmt = conn.createStatement();
 		ResultSet results = stmt

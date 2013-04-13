@@ -18,45 +18,53 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package test.org.relique.jdbc.csv;
 
-import java.sql.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import junit.framework.TestCase;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * This class is used to test the CsvJdbc Scrollable driver.
  * 
  * @author Chetan Gupta
- * @version $Id: TestScrollableDriver.java,v 1.11 2010/05/27 12:00:09 mfrasca Exp $
  */
-public class TestScrollableDriver extends TestCase {
-	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
-	private String filePath;
+public class TestScrollableDriver
+{
+	private static String filePath;
 
-	/**
-	 * Create a test that will execute the method named on the parameter. This
-	 * just wraps a call to the parent method.
-	 */
-	public TestScrollableDriver(String method) {
-		super(method);
-	}
-
-	protected void setUp() {
-		filePath = System.getProperty(SAMPLE_FILES_LOCATION_PROPERTY);
-		if (filePath == null)
-			filePath = RunTests.DEFAULT_FILEPATH;
-		assertNotNull("Sample files location property not set !", filePath);
+	@BeforeClass
+	public static void setUp()
+	{
+		filePath = "../src/testdata";
+		if (!new File(filePath).canRead())
+			filePath = "src/testdata";
+		assertTrue("Sample files location property not set !", new File(filePath).canRead());
 
 		// load CSV driver
-		try {
+		try
+		{
 			Class.forName("org.relique.jdbc.csv.CsvDriver");
-		} catch (ClassNotFoundException e) {
+		}
+		catch (ClassNotFoundException e)
+		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
-
 	}
 
-	public void testScroll() throws SQLException {
-
+	@Test
+	public void testScroll() throws SQLException
+	{
 		// create a connection. The first command line parameter is assumed to
 		// be the directory in which the .csv files are held
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -218,8 +226,9 @@ public class TestScrollableDriver extends TestCase {
 
 	}
 
-	public void testIsFirstIsLast() throws SQLException {
-
+	@Test
+	public void testIsFirstIsLast() throws SQLException
+	{
 		// create a connection. The first command line parameter is assumed to
 		// be the directory in which the .csv files are held
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -292,8 +301,10 @@ public class TestScrollableDriver extends TestCase {
 		conn.close();
 	}
 
+	@Test
 	public void testScrollWithMultiLineText() throws ClassNotFoundException,
-			SQLException {
+			SQLException
+	{
 		// load the driver into memory
 		Class.forName("org.relique.jdbc.csv.CsvDriver");
 
@@ -419,7 +430,9 @@ public class TestScrollableDriver extends TestCase {
 	 * 
 	 * @throws SQLException
 	 */
-	public void testWhereNoResults() throws SQLException {
+	@Test
+	public void testWhereNoResults() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 		// create a Statement object to execute the query with
@@ -452,7 +465,9 @@ public class TestScrollableDriver extends TestCase {
 	 * 
 	 * @throws SQLException
 	 */
-	public void testWhereSingleRecord() throws SQLException {
+	@Test
+	public void testWhereSingleRecord() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 		// create a Statement object to execute the query with
@@ -492,7 +507,9 @@ public class TestScrollableDriver extends TestCase {
 	 * 
 	 * @throws SQLException
 	 */
-	public void testWhereMultipleResult() throws SQLException {
+	@Test
+	public void testWhereMultipleResult() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -534,7 +551,9 @@ public class TestScrollableDriver extends TestCase {
 
 	}
 
-	public void testMaxRows() throws SQLException {
+	@Test
+	public void testMaxRows() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -555,7 +574,9 @@ public class TestScrollableDriver extends TestCase {
 		assertFalse("Stopping after row 4 failed", results.next());
 	}
 
-	public void testResultSetFirstClosed() throws SQLException {
+	@Test
+	public void testResultSetFirstClosed() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -564,10 +585,13 @@ public class TestScrollableDriver extends TestCase {
 		results.next();
 		results.next();
 		results.close();
-		try {
+		try
+		{
 			results.first();
 			fail("Closed result set should throw SQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
 		}
 
@@ -575,8 +599,10 @@ public class TestScrollableDriver extends TestCase {
 		stmt.close();
 		conn.close();
 	}
-	
-	public void testResultSetLastClosed() throws SQLException {
+
+	@Test
+	public void testResultSetLastClosed() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -585,10 +611,13 @@ public class TestScrollableDriver extends TestCase {
 		results.next();
 		results.next();
 		results.close();
-		try {
+		try
+		{
 			results.last();
 			fail("Closed result set should throw SQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
 		}
 
@@ -597,7 +626,9 @@ public class TestScrollableDriver extends TestCase {
 		conn.close();
 	}
 
-	public void testResultSetPreviousClosed() throws SQLException {
+	@Test
+	public void testResultSetPreviousClosed() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -606,10 +637,13 @@ public class TestScrollableDriver extends TestCase {
 		results.next();
 		results.next();
 		results.close();
-		try {
+		try
+		{
 			results.previous();
 			fail("Closed result set should throw SQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
 		}
 
@@ -618,7 +652,9 @@ public class TestScrollableDriver extends TestCase {
 		conn.close();
 	}
 
-	public void testResultSetAbsoluteClosed() throws SQLException {
+	@Test
+	public void testResultSetAbsoluteClosed() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -627,10 +663,13 @@ public class TestScrollableDriver extends TestCase {
 		results.next();
 		results.next();
 		results.close();
-		try {
+		try
+		{
 			results.absolute(2);
 			fail("Closed result set should throw SQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
 		}
 
@@ -638,8 +677,10 @@ public class TestScrollableDriver extends TestCase {
 		stmt.close();
 		conn.close();
 	}
-	
-	public void testResultSetRelativeClosed() throws SQLException {
+
+	@Test
+	public void testResultSetRelativeClosed() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -648,10 +689,13 @@ public class TestScrollableDriver extends TestCase {
 		results.next();
 		results.next();
 		results.close();
-		try {
+		try
+		{
 			results.relative(-1);
 			fail("Closed result set should throw SQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
 		}
 
@@ -659,8 +703,10 @@ public class TestScrollableDriver extends TestCase {
 		stmt.close();
 		conn.close();
 	}
-	
-	public void testResultSetAfterLastClosed() throws SQLException {
+
+	@Test
+	public void testResultSetAfterLastClosed() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -669,10 +715,13 @@ public class TestScrollableDriver extends TestCase {
 		results.next();
 		results.next();
 		results.close();
-		try {
+		try
+		{
 			results.afterLast();
 			fail("Closed result set should throw SQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
 		}
 
@@ -680,8 +729,10 @@ public class TestScrollableDriver extends TestCase {
 		stmt.close();
 		conn.close();
 	}
-	
-	public void testResultSetBeforeFirstClosed() throws SQLException {
+
+	@Test
+	public void testResultSetBeforeFirstClosed() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -690,10 +741,13 @@ public class TestScrollableDriver extends TestCase {
 		results.next();
 		results.next();
 		results.close();
-		try {
+		try
+		{
 			results.beforeFirst();
 			fail("Closed result set should throw SQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
 		}
 
@@ -702,7 +756,9 @@ public class TestScrollableDriver extends TestCase {
 		conn.close();
 	}
 
-	public void testResultSetIsAfterLastClosed() throws SQLException {
+	@Test
+	public void testResultSetIsAfterLastClosed() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -711,10 +767,13 @@ public class TestScrollableDriver extends TestCase {
 		results.next();
 		results.next();
 		results.close();
-		try {
+		try
+		{
 			results.isAfterLast();
 			fail("Closed result set should throw SQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
 		}
 
@@ -722,8 +781,10 @@ public class TestScrollableDriver extends TestCase {
 		stmt.close();
 		conn.close();
 	}
-	
-	public void testResultSetIsBeforeFirstClosed() throws SQLException {
+
+	@Test
+	public void testResultSetIsBeforeFirstClosed() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -732,10 +793,13 @@ public class TestScrollableDriver extends TestCase {
 		results.next();
 		results.next();
 		results.close();
-		try {
+		try
+		{
 			results.isBeforeFirst();
 			fail("Closed result set should throw SQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
 		}
 
@@ -743,8 +807,10 @@ public class TestScrollableDriver extends TestCase {
 		stmt.close();
 		conn.close();
 	}
-	
-	public void testResultSetIsFirstClosed() throws SQLException {
+
+	@Test
+	public void testResultSetIsFirstClosed() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -753,10 +819,13 @@ public class TestScrollableDriver extends TestCase {
 		results.next();
 		results.next();
 		results.close();
-		try {
+		try
+		{
 			results.isFirst();
 			fail("Closed result set should throw SQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
 		}
 
@@ -764,8 +833,10 @@ public class TestScrollableDriver extends TestCase {
 		stmt.close();
 		conn.close();
 	}
-	
-	public void testResultSetIsLastClosed() throws SQLException {
+
+	@Test
+	public void testResultSetIsLastClosed() throws SQLException
+	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
 
@@ -774,10 +845,13 @@ public class TestScrollableDriver extends TestCase {
 		results.next();
 		results.next();
 		results.close();
-		try {
+		try
+		{
 			results.isLast();
 			fail("Closed result set should throw SQLException");
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
 		}
 

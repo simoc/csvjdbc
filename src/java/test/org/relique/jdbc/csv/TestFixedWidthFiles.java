@@ -18,6 +18,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package test.org.relique.jdbc.csv;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -26,29 +31,35 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import junit.framework.TestCase;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-public class TestFixedWidthFiles extends TestCase {
+public class TestFixedWidthFiles
+{
+	private static String filePath;
 
-	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
-	private String filePath;
-
-	protected void setUp() {
-		filePath = System.getProperty(SAMPLE_FILES_LOCATION_PROPERTY);
-		if (filePath == null)
-			filePath = RunTests.DEFAULT_FILEPATH;
-		assertNotNull("Sample files location property not set !", filePath);
+	@BeforeClass
+	public static void setUp()
+	{
+		filePath = "../src/testdata";
+		if (!new File(filePath).canRead())
+			filePath = "src/testdata";
+		assertTrue("Sample files location property not set !", new File(filePath).canRead());
 
 		// load CSV driver
-		try {
+		try
+		{
 			Class.forName("org.relique.jdbc.csv.CsvDriver");
-		} catch (ClassNotFoundException e) {
+		}
+		catch (ClassNotFoundException e)
+		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
 	}
 
-	public void testFixedWidth() throws SQLException {
-		
+	@Test
+	public void testFixedWidth() throws SQLException
+	{	
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("fixedWidths", "1-16,17-24,25-27,35-42,43-50,51-58");
@@ -78,8 +89,9 @@ public class TestFixedWidthFiles extends TestCase {
 		assertTrue(rs1.next());
 	}
 
-	public void testHeaderline() throws SQLException {
-
+	@Test
+	public void testHeaderline() throws SQLException
+	{
 		/*
 		 * Test providing our own header with more readable names.
 		 */
@@ -132,8 +144,9 @@ public class TestFixedWidthFiles extends TestCase {
 		assertEquals("% Change rate is wrong", "-1.4E-5", rs4.getString("PTChange"));
 	}
 
-	public void testNumericColumns() throws SQLException {
-		
+	@Test
+	public void testNumericColumns() throws SQLException
+	{	
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("columnTypes", "String,String,String,Double,Double,Double");
@@ -159,8 +172,9 @@ public class TestFixedWidthFiles extends TestCase {
 		assertEquals("% Change is wrong", Math.round(0.002715 * multiplier), Math.round(rs1.getDouble("% Change") * multiplier));
 	}
 
-	public void testColumnSizes() throws SQLException {
-		
+	@Test
+	public void testColumnSizes() throws SQLException
+	{	
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("columnTypes", "String,String,String,Double,Double,Double");
@@ -178,8 +192,9 @@ public class TestFixedWidthFiles extends TestCase {
 		assertEquals("Incorrect Column Size", 3, meta.getColumnDisplaySize(3));
 	}
 
-	public void testWidthOrder() throws SQLException {
-		
+	@Test
+	public void testWidthOrder() throws SQLException
+	{	
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
 		props.put("columnTypes", "String,Integer,String");

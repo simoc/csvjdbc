@@ -18,6 +18,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package test.org.relique.jdbc.csv;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -33,38 +39,38 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * This class is used to test the CsvJdbc driver.
  * 
  * @author Mario Frasca
- * @version $Id: TestDbfDriver.java,v 1.5 2011/10/31 13:08:21 simoc Exp $
  */
-public class TestDbfDriver extends TestCase {
-	public static final String SAMPLE_FILES_LOCATION_PROPERTY = "sample.files.location";
-	private String filePath;
-	private DateFormat toUTC;
+public class TestDbfDriver
+{
+	private static String filePath;
+	private static DateFormat toUTC;
 
-	public TestDbfDriver(String name) {
-		super(name);
-	}
-
-	protected void setUp() {
-		filePath = System.getProperty(SAMPLE_FILES_LOCATION_PROPERTY);
-		if (filePath == null)
-			filePath = RunTests.DEFAULT_FILEPATH;
-		assertNotNull("Sample files location property not set !", filePath);
+	@BeforeClass
+	public static void setUp()
+	{
+		filePath = "../src/testdata";
+		if (!new File(filePath).canRead())
+			filePath = "src/testdata";
+		assertTrue("Sample files location property not set !", new File(filePath).canRead());
 
 		// load CSV driver
-		try {
+		try
+		{
 			Class.forName("org.relique.jdbc.csv.CsvDriver");
-		} catch (ClassNotFoundException e) {
+		}
+		catch (ClassNotFoundException e)
+		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
 		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));  
-
 	}
 
 	/**
@@ -72,7 +78,9 @@ public class TestDbfDriver extends TestCase {
 	 * 
 	 * @throws SQLException
 	 */
-	public void testGetAll() throws SQLException {
+	@Test
+	public void testGetAll() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".dbf");
 
@@ -101,7 +109,9 @@ public class TestDbfDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testWhereOp() throws SQLException {
+	@Test
+	public void testWhereOp() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".dbf");
 
@@ -130,7 +140,9 @@ public class TestDbfDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testWhereTodo() throws SQLException {
+	@Test
+	public void testWhereTodo() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".dbf");
 
@@ -154,7 +166,9 @@ public class TestDbfDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testWhereWithIsNull() throws SQLException {
+	@Test
+	public void testWhereWithIsNull() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".dbf");
 
@@ -168,7 +182,9 @@ public class TestDbfDriver extends TestCase {
 		assertFalse(results.next());
 	}
 
-	public void testTypedColumns() throws SQLException {
+	@Test
+	public void testTypedColumns() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".dbf");
 
@@ -190,7 +206,9 @@ public class TestDbfDriver extends TestCase {
 		assertEquals("Incorrect Column Type", Types.DOUBLE, metadata.getColumnType(3));
 	}
 
-	public void testColumnDisplaySizes() throws SQLException {
+	@Test
+	public void testColumnDisplaySizes() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".dbf");
 
@@ -209,7 +227,9 @@ public class TestDbfDriver extends TestCase {
 		assertEquals("Incorrect Column Size", 4, metadata.getColumnDisplaySize(3));
 	}
 
-	public void testDatabaseMetadataTables() throws SQLException {
+	@Test
+	public void testDatabaseMetadataTables() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".dbf");
 
@@ -217,21 +237,23 @@ public class TestDbfDriver extends TestCase {
 				+ filePath, props);
 		DatabaseMetaData metadata = conn.getMetaData();
 		ResultSet results = metadata.getTables(null, null, "*", null);
-    Set<String> target = new HashSet<String>();
-    target.add("sample");
-    target.add("fox_samp");
+		Set<String> target = new HashSet<String>();
+		target.add("sample");
+		target.add("fox_samp");
 
-    Set<String> current = new HashSet<String>();
+		Set<String> current = new HashSet<String>();
 		assertTrue(results.next());
-    current.add(results.getString("TABLE_NAME"));
+		current.add(results.getString("TABLE_NAME"));
 		assertTrue(results.next());
-    current.add(results.getString("TABLE_NAME"));
+		current.add(results.getString("TABLE_NAME"));
 		assertFalse(results.next());
 
 		assertEquals("Incorrect table names", target, current);
 	}
 
-	public void testDatabaseMetadataColumns() throws SQLException {
+	@Test
+	public void testDatabaseMetadataColumns() throws SQLException
+	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".dbf");
 

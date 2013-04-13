@@ -18,53 +18,34 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package test.org.relique.jdbc.csv;
 
-import junit.framework.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-/**This class is used to test the CsvJdbc driver.
-*
-* @author Jonathan Ackerman
-* @version $Id: RunTests.java,v 1.15 2011/10/12 11:12:22 mfrasca Exp $
-*/
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+	TestSqlParser.class,
+	TestCsvDriver.class,
+	TestDbfDriver.class,
+	TestScrollableDriver.class,
+	TestFileSetInputStream.class,
+	TestJoinedTables.class,
+	TestCryptoFilter.class,
+	TestPrepareStatement.class,
+	TestStringConverter.class,
+	TestZipFiles.class,
+	TestAggregateFunctions.class,
+	TestOrderBy.class,
+	TestGroupBy.class,
+	TestLimitOffset.class,
+	TestFixedWidthFiles.class,
+	TestDoubleQuoting.class
+})
+
+/**
+ * Junit4 test suite for the CsvJdbc driver.
+ *
+ * @author Jonathan Ackerman
+ */
 public class RunTests
 {
-  public static String DEFAULT_FILEPATH="../src/testdata";
-  // run the test from src directory 
-  
-  public static Test suite()
-  {
-    TestSuite suite= new TestSuite();
-    suite.addTestSuite(TestSqlParser.class);
-    suite.addTestSuite(TestCsvDriver.class);
-    suite.addTestSuite(TestDbfDriver.class);
-    suite.addTestSuite(TestScrollableDriver.class);
-    suite.addTestSuite(TestFileSetInputStream.class);
-    suite.addTestSuite(TestJoinedTables.class);
-    suite.addTestSuite(TestCryptoFilter.class);
-    suite.addTestSuite(TestPrepareStatement.class);
-    suite.addTestSuite(TestStringConverter.class);
-    suite.addTestSuite(TestZipFiles.class);
-    suite.addTestSuite(TestAggregateFunctions.class);
-    suite.addTestSuite(TestOrderBy.class);
-    suite.addTestSuite(TestGroupBy.class);
-    suite.addTestSuite(TestLimitOffset.class);
-    suite.addTestSuite(TestFixedWidthFiles.class);
-    suite.addTestSuite(TestDoubleQuoting.class);
-    return suite;
-  }
-
-  public static void main(String[] args)
-  {
-    String filePath = args[0];
-    if (filePath == null)
-    	filePath=DEFAULT_FILEPATH;
-    // set the file location as a property so that it is easy to pass around
-    System.setProperty(TestCsvDriver.SAMPLE_FILES_LOCATION_PROPERTY,filePath);
-
-    // get the driver manager to log to sysout
-    //DriverManager.setLogWriter( new PrintWriter(System.out));
-
-    // kick off the tests. Note call main() instead of run() so that error codes
-    // are returned so that they can be trapped by ant
-    junit.textui.TestRunner.main(new String[]{"test.org.relique.jdbc.csv.RunTests"});
-  }
 }
