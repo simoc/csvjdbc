@@ -61,7 +61,6 @@ import org.relique.io.ListDataReader;
  * @author	   Michael Maraya
  * @author	   Tomasz Skutnik
  * @author	   Chetan Gupta
- * @version	   $Id: CsvResultSet.java,v 1.56 2011/11/01 13:23:00 simoc Exp $
  */
 public class CsvResultSet implements ResultSet
 {

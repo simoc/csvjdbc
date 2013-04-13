@@ -33,7 +33,6 @@ import java.util.List;
  * @author Juan Pablo Morales
  * @author Mario Frasca
  * @created 25 November 2001
- * @version $Id: SqlParser.java,v 1.18 2011/10/30 16:44:08 simoc Exp $
  */
 public class SqlParser
 {

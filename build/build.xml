@@ -5,7 +5,6 @@
  Build file for CsvJdbc. Built using Ant 1.6.1
 
  Authors: Jonathan Ackerman, Michael Maraya
- Version: $Id: build.xml,v 1.21 2011/10/19 16:03:37 simoc Exp $
 
  CsvJdbc - a JDBC driver for CSV files
  Copyright (C) 2001  Jonathan Ackerman

@@ -42,7 +42,6 @@ import org.relique.io.DataReader;
  * @author Christoph Langer
  * @author Chetan Gupta
  * @created 25 November 2001
- * @version $Id: CsvRawReader.java,v 1.9 2011/10/25 17:24:38 simoc Exp $
  */
 
 public class CsvRawReader
