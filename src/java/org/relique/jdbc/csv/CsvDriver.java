@@ -224,13 +224,11 @@ public class CsvDriver implements Driver
 			File checkPath = new File(filePath);
 			if (!checkPath.exists())
 			{
-				throw new SQLException("Specified path '" + filePath
-						+ "' not found !");
+				throw new SQLException("Directory does not exist: " + filePath);
 			}
 			if (!checkPath.isDirectory())
 			{
-				throw new SQLException("Specified path '" + filePath
-						+ "' is  not a directory !");
+				throw new SQLException("Not a directory: " + filePath);
 			}
 
 			connection = new CsvConnection(filePath, info, urlProperties);
