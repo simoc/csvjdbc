@@ -2607,6 +2607,50 @@ public class TestCsvDriver
 		}
 	}
 
+	@Test
+	public void testTrimValues() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("trimHeaders", "true");
+		props.put("trimValues", "true");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM foodstuffs");
+
+		ResultSetMetaData metadata = results.getMetaData();
+		assertEquals("Column Count", 2, metadata.getColumnCount());
+		assertEquals("Column Name 1", "key", metadata.getColumnName(1));
+		assertEquals("Column Name 2", "value", metadata.getColumnName(2));
+		
+		assertTrue(results.next());
+		assertEquals("Row 1 key", "orange", results.getString(1));
+		assertEquals("Row 1 value", "fruit", results.getString(2));
+		
+		assertTrue(results.next());
+		assertEquals("Row 2 key", "apple", results.getString(1));
+		assertEquals("Row 2 value", "fruit", results.getString(2));
+		
+		assertTrue(results.next());
+		assertEquals("Row 3 key", "corn", results.getString(1));
+		assertEquals("Row 3 value", "vegetable", results.getString(2));
+		
+		assertTrue(results.next());
+		assertEquals("Row 4 key", "lemon", results.getString(1));
+		assertEquals("Row 4 value", "fruit", results.getString(2));
+		
+		assertTrue(results.next());
+		assertEquals("Row 5 key", "tomato", results.getString(1));
+		assertEquals("Row 5 value", "who knows?", results.getString(2));
+
+		assertTrue(results.next());
+		assertEquals("Row 6 key", " - ", results.getString(1));
+		assertEquals("Row 6 value", " - ", results.getString(2));
+
+		assertFalse(results.next());
+	}
+
 	/**
 	 * you can access columns that do not have a name by number
 	 * 

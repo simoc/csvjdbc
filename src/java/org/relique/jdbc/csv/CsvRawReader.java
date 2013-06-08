@@ -57,6 +57,7 @@ public class CsvRawReader
 	protected char quoteChar = '"';
 	protected String extension = CsvDriver.DEFAULT_EXTENSION;
 	protected boolean trimHeaders = true;
+	protected boolean trimValues = true;
 	protected char commentChar = 0;
 	private boolean ignoreUnparseableLines;
 	protected CryptoFilter filter;
@@ -89,7 +90,7 @@ public class CsvRawReader
 	 */
 	public CsvRawReader(BufferedReader in, String tableAlias, char separator,
 			boolean suppressHeaders, char quoteChar, char commentChar,
-			String headerLine, String extension, boolean trimHeaders, 
+			String headerLine, String extension, boolean trimHeaders, boolean trimValues,
 			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter, 
 			boolean defectiveHeaders, int skipLeadingDataLines, String quoteStyle,
 			ArrayList<int []> fixedWidthColumns)
@@ -103,6 +104,7 @@ public class CsvRawReader
 		this.headerLine = headerLine;
 		this.extension = extension;
 		this.trimHeaders = trimHeaders;
+		this.trimValues = trimValues;
 		this.input = in;
 		this.ignoreUnparseableLines = ignoreUnparseableLines;
 		this.filter = filter;
@@ -126,7 +128,7 @@ public class CsvRawReader
 				// No column names available. Read first data line and determine
 				// number of columns.
 				firstLineBuffer = getNextDataLine();
-				String[] data = parseLine(firstLineBuffer, false);
+				String[] data = parseLine(firstLineBuffer, trimValues);
 				this.columnNames = new String[data.length];
 				for (int i = 0; i < data.length; i++)
 				{
@@ -201,7 +203,7 @@ public class CsvRawReader
 			e.printStackTrace();
 			throw new SQLException(e.toString());
 		}
-		fieldValues = parseLine(dataLine, false);
+		fieldValues = parseLine(dataLine, trimValues);
 		return true;
 	}
 
@@ -352,6 +354,20 @@ public class CsvRawReader
 		return values;
 	}
 
+	private String rtrim(String s)
+	{
+		int origLen = s.length();
+		int len = origLen;
+		while (len > 0 && Character.isWhitespace(s.charAt(len - 1)))
+		{
+			len--;
+		}
+		if (len == origLen)
+			return s;
+		else
+			return s.substring(0, len);
+	}
+
 	/**
 	 * splits <b>line</b> into the String[] it contains.
 	 * Stuart Mottram added the code for handling line breaks in fields.
@@ -413,20 +429,23 @@ public class CsvRawReader
 					}
 					else
 					{
+						while (trimValues &&
+							nextChar != separator &&
+							Character.isWhitespace(nextChar) &&
+							currentPos + 2 < line.length())
+						{
+							// Skip trailing whitespace after quoted value before next separator
+							nextChar = line.charAt(currentPos + 2);
+							currentPos++;
+						}
 						if (nextChar != separator)
 						{
 							throw new SQLException("Expecting " + separator
 									+ " in position " + (currentPos + 1)
 									+ ". Line=" + orgLine);
 						}
-						if (trimValues)
-						{
-							values.add(value.toString().trim());
-						}
-						else
-						{
-							values.add(value.toString());
-						}
+
+						values.add(value.toString());
 						value.setLength(0);
 						inQuotedString = false;
 						currentPos++;
@@ -444,7 +463,7 @@ public class CsvRawReader
 						{
 							if (trimValues)
 							{
-								values.add(value.toString().trim());
+								values.add(rtrim(value.toString()));
 							}
 							else
 							{
@@ -452,6 +471,13 @@ public class CsvRawReader
 							}
 							value.setLength(0);
 						}
+					}
+					else if (trimValues &&
+						Character.isWhitespace(currentChar) &&
+						value.length() == 0 &&
+						inQuotedString == false)
+					{
+						// Skip leading whitespace in field
 					}
 					else
 					{

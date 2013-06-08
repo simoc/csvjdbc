@@ -390,6 +390,7 @@ public class CsvStatement implements Statement
 							connection.getCommentChar(), headerline,
 							connection.getExtension(),
 							connection.getTrimHeaders(),
+							connection.getTrimValues(),
 							connection.getSkipLeadingLines(),
 							connection.isIgnoreUnparseableLines(),
 							connection.getDecryptingCodec(),

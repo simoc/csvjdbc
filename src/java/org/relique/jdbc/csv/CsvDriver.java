@@ -37,6 +37,7 @@ public class CsvDriver implements Driver
 	public static final String DEFAULT_HEADERLINE = null;
 	public static final boolean DEFAULT_SUPPRESS = false;
 	public static final boolean DEFAULT_TRIM_HEADERS = true;
+	public static final boolean DEFAULT_TRIM_VALUES = false;
 	public static final String DEFAULT_COLUMN_TYPES = "String";
 	public static final boolean DEFAULT_INDEXED_FILES = false;
 	public static final String DEFAULT_TIMESTAMP_FORMAT = "YYYY-MM-DD HH:mm:ss";
@@ -55,6 +56,7 @@ public class CsvDriver implements Driver
 	public static final String HEADERLINE = "headerline";
 	public static final String SUPPRESS_HEADERS = "suppressHeaders";
 	public static final String TRIM_HEADERS = "trimHeaders";
+	public static final String TRIM_VALUES = "trimValues";
 	public static final String COLUMN_TYPES = "columnTypes";
 	public static final String INDEXED_FILES = "indexedFiles";
 	public static final String TIMESTAMP_FORMAT = "timestampFormat";

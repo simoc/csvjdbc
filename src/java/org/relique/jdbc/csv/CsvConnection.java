@@ -83,6 +83,9 @@ public class CsvConnection implements Connection
 	/** Should headers be trimmed */
 	private boolean trimHeaders = CsvDriver.DEFAULT_TRIM_HEADERS;
 
+	/** Should values be trimmed */
+	private boolean trimValues = CsvDriver.DEFAULT_TRIM_VALUES;
+
 	/** should files be grouped in one table - as if there was an index */
 	private boolean indexedFiles = CsvDriver.DEFAULT_INDEXED_FILES;
 
@@ -221,6 +224,13 @@ public class CsvConnection implements Connection
 		{
 			suppressHeaders = Boolean.valueOf(
 					info.getProperty(CsvDriver.SUPPRESS_HEADERS))
+					.booleanValue();
+		}
+		// set the trimValues flag
+		if (info.getProperty(CsvDriver.TRIM_VALUES) != null)
+		{
+			trimValues = Boolean.valueOf(
+					info.getProperty(CsvDriver.TRIM_VALUES))
 					.booleanValue();
 		}
 		// default charset
@@ -910,6 +920,11 @@ public class CsvConnection implements Connection
 	public boolean getTrimHeaders()
 	{
 		return trimHeaders;
+	}
+
+	public boolean getTrimValues()
+	{
+		return trimValues;
 	}
 
 	@Override
