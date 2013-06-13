@@ -54,6 +54,7 @@ public class FileSetInputStream extends InputStream
 	private int currentLineLength;
 	private CryptoFilter filter;
 	private int skipLeadingDataLines;
+	private boolean isClosed = false;
 
 	/**
 	 * 
@@ -150,6 +151,12 @@ public class FileSetInputStream extends InputStream
 	@Override
 	public void close() throws IOException
 	{
+		isClosed = true;
+		if (currentFile != null)
+		{
+			currentFile.close();
+			currentFile = null;
+		}
 	}
 
 	/**
@@ -171,6 +178,9 @@ public class FileSetInputStream extends InputStream
 	@Override
 	public int read() throws IOException
 	{
+		if (isClosed)
+			throw new IOException("Stream closed");
+
 		// run out of input on all subfiles
 		if (currentFile == null)
 			return -1;

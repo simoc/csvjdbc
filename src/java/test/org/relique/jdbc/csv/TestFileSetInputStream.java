@@ -4,13 +4,16 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.relique.io.FileSetInputStream;
@@ -145,5 +148,26 @@ public class TestFileSetInputStream
 		while (lineRef != null && lineTest != null);
 		assertTrue("refSet contains testSet", refSet.containsAll(testSet));
 		assertTrue("testSet contains refSet", testSet.containsAll(refSet));
+	}
+	
+	@Test
+	public void testFileSetInputStreamClose() throws IOException
+	{
+		FileSetInputStream in = new FileSetInputStream(filePath,
+					"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
+					"location", "file_date"}, ',', false, false, null, 0);
+
+		in.read();
+		in.read();
+		in.close();
+		try
+		{
+			in.read();
+			fail("expected exception java.io.IOException");
+		}
+		catch (IOException e)
+		{
+			assertTrue(("" + e).contains("IOException"));
+		}
 	}
 }
