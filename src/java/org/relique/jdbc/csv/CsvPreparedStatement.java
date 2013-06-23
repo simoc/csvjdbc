@@ -98,7 +98,7 @@ public class CsvPreparedStatement extends CsvStatement implements
 
 		checkOpen();
 
-		DriverManager.println("CsvJdbc - CsvStatement:executeQuery() - sql= "
+		CsvDriver.writeLog("CsvStatement:executeQuery() - sql= "
 				+ templateQuery);
 
 		/*

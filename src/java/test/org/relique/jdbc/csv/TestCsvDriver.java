@@ -25,6 +25,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -2186,6 +2188,35 @@ public class TestCsvDriver
 		assertTrue(results.next());
 		assertEquals("12:40", results.getObject(2));
 		assertFalse(results.next());
+	}
+
+	@Test
+	public void testNonParseableLogging() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("ignoreNonParseableLines", "True");
+		props.put("separator", ";");
+		props.put("fileExtension", ".txt");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		
+		StringWriter sw = new StringWriter();
+		PrintWriter logger = new PrintWriter(sw, true);
+		DriverManager.setLogWriter(logger);
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM with_leading_trash");
+		while (results.next())
+		{
+			
+		}
+		String logMessages = sw.getBuffer().toString();
+
+		/*
+		 * Check that non-parseables lines were logged.
+		 */
+		assertTrue(logMessages.contains("Databank=MSW"));
+		assertTrue(logMessages.contains("Locatie=DENH"));
 	}
 
 	@Test

@@ -21,6 +21,7 @@ import java.sql.*;
 import java.util.Properties;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
 
@@ -109,7 +110,7 @@ public class CsvDriver implements Driver
 	@Override
 	public Connection connect(String url, Properties info) throws SQLException
 	{
-		DriverManager.println("CsvJdbc - CsvDriver:connect() - url=" + url);
+		writeLog("CsvDriver:connect() - url=" + url);
 		// check for correct url
 		if (!url.startsWith(URL_PREFIX))
 		{
@@ -151,7 +152,7 @@ public class CsvDriver implements Driver
 		// get filepath from url
 		String filePath = url.substring(URL_PREFIX.length());
 
-		DriverManager.println("CsvJdbc - CsvDriver:connect() - filePath="
+		writeLog("CsvDriver:connect() - filePath="
 				+ filePath);
 
 		CsvConnection connection;
@@ -241,7 +242,7 @@ public class CsvDriver implements Driver
 	@Override
 	public boolean acceptsURL(String url) throws SQLException
 	{
-		DriverManager.println("CsvJdbc - CsvDriver:accept() - url=" + url);
+		writeLog("CsvDriver:accept() - url=" + url);
 		return url.startsWith(URL_PREFIX);
 	}
 
@@ -255,6 +256,13 @@ public class CsvDriver implements Driver
 	{
 		throw new SQLFeatureNotSupportedException(
 				"Driver.getParentLogger() not supported");
+	}
+
+	public static void writeLog(String message)
+	{
+		PrintWriter logWriter = DriverManager.getLogWriter();
+		if (logWriter != null)
+			logWriter.println("CsvJdbc: " + message);
 	}
 
 	// This static block inits the driver when the class is loaded by the JVM.

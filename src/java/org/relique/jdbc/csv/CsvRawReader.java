@@ -16,9 +16,9 @@
  */
 package org.relique.jdbc.csv;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ import org.relique.io.DataReader;
 
 public class CsvRawReader
 {
-	protected BufferedReader input;
+	protected LineNumberReader input;
 	protected String tableAlias;
 	protected String[] columnNames;
 	protected String[] fieldValues;
@@ -88,7 +88,7 @@ public class CsvRawReader
 	 * @throws UnsupportedEncodingException
 	 * @since
 	 */
-	public CsvRawReader(BufferedReader in, String tableAlias, char separator,
+	public CsvRawReader(LineNumberReader in, String tableAlias, char separator,
 			boolean suppressHeaders, char quoteChar, char commentChar,
 			String headerLine, String extension, boolean trimHeaders, boolean trimValues,
 			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter, 
@@ -253,6 +253,7 @@ public class CsvRawReader
 						break; // we are satisfied
 					if (columnNames == null && fieldsCount != 1)
 						break; // also good enough - hopefully
+					CsvDriver.writeLog("Ignoring row " + input.getLineNumber() + " Line=" + tmp);
 					tmp = input.readLine();
 				}
 				while (tmp != null);
@@ -440,9 +441,9 @@ public class CsvRawReader
 						}
 						if (nextChar != separator)
 						{
-							throw new SQLException("Expecting " + separator
-									+ " in position " + (currentPos + 1)
-									+ ". Line=" + orgLine);
+							throw new SQLException("Expected separator at row and position "
+								+ input.getLineNumber() + " " + (currentPos + 1)
+								+ " Line=" + orgLine);
 						}
 
 						values.add(value.toString());

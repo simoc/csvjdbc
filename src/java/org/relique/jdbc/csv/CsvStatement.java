@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -64,9 +65,9 @@ public class CsvStatement implements Statement
 	 */
 	protected CsvStatement(CsvConnection connection, int resultSetType)
 	{
-		DriverManager.println("CsvJdbc - CsvStatement() - connection="
+		CsvDriver.writeLog("CsvStatement() - connection="
 				+ connection);
-		DriverManager.println("CsvJdbc - CsvStatement() - Asked for "
+		CsvDriver.writeLog("CsvStatement() - Asked for "
 				+ (resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE ? "Scrollable"
 						: "Not Scrollable"));
 		this.connection = connection;
@@ -253,7 +254,7 @@ public class CsvStatement implements Statement
 	{
 		checkOpen();
 
-		DriverManager.println("CsvJdbc - CsvStatement:executeQuery() - sql= " + sql);
+		CsvDriver.writeLog("CsvStatement:executeQuery() - sql= " + sql);
 
 		/*
 		 * Close any previous ResultSet, as required by JDBC.
@@ -287,11 +288,11 @@ public class CsvStatement implements Statement
 		String path = connection.getPath();
 		TableReader tableReader = connection.getTableReader();
 		if (path != null)
-			DriverManager.println("Connection Path: " + path);
+			CsvDriver.writeLog("Connection Path: " + path);
 		else
-			DriverManager.println("Connection TableReader: " + tableReader.getClass().getName());
-		DriverManager.println("Parser Table Name: " + parser.getTableName());
-		DriverManager.println("Connection Extension: " + connection.getExtension());
+			CsvDriver.writeLog("Connection TableReader: " + tableReader.getClass().getName());
+		CsvDriver.writeLog("Parser Table Name: " + parser.getTableName());
+		CsvDriver.writeLog("Connection Extension: " + connection.getExtension());
 
 		DataReader reader = null;
 		String fileName = null;
@@ -313,7 +314,7 @@ public class CsvStatement implements Statement
 			{
 				fileName = path + tableName + connection.getExtension();
 
-				DriverManager.println("CSV file name: " + fileName);
+				CsvDriver.writeLog("CSV file name: " + fileName);
 
 				File checkFile = new File(fileName);
 
@@ -336,7 +337,7 @@ public class CsvStatement implements Statement
 				}
 				else
 				{
-					BufferedReader input;
+					LineNumberReader input;
 					if (tableReader == null)
 					{
 						InputStream in;
@@ -367,11 +368,11 @@ public class CsvStatement implements Statement
 						}
 						if (connection.getCharset() != null)
 						{
-							input = new BufferedReader(new InputStreamReader(in, connection.getCharset()));
+							input = new LineNumberReader(new InputStreamReader(in, connection.getCharset()));
 						}
 						else
 						{
-							input = new BufferedReader(new InputStreamReader(in));
+							input = new LineNumberReader(new InputStreamReader(in));
 						}
 					}
 					else
@@ -379,7 +380,7 @@ public class CsvStatement implements Statement
 						/*
 						 * Reader for table comes from user-provided class.
 						 */
-						input = new BufferedReader(tableReader.getReader(this, tableName));
+						input = new LineNumberReader(tableReader.getReader(this, tableName));
 					}
 
 					String headerline = connection.getHeaderline(tableName);
@@ -432,7 +433,7 @@ public class CsvStatement implements Statement
 		}
 		catch (ClassNotFoundException e)
 		{
-			DriverManager.println("" + e);
+			CsvDriver.writeLog("" + e);
 		}
 
 		return resultSet;
