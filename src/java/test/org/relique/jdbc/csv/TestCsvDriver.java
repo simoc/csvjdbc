@@ -24,9 +24,16 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -44,6 +51,7 @@ import java.util.TimeZone;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.relique.jdbc.csv.CsvDriver;
 import org.relique.jdbc.csv.CsvResultSet;
 
 /**
@@ -3664,5 +3672,41 @@ public class TestCsvDriver
 		results.close();
 		stmt.close();
 		conn.close();
+	}
+	
+	@Test
+	public void testWriteToCsv() throws SQLException, UnsupportedEncodingException, IOException
+	{
+		Properties props = new Properties();
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+		PrintStream printStream = new PrintStream(byteStream);
+
+		/*
+		 * Check that writing ResultSet to CSV file generates exactly the same CSV file
+		 * that the query was originally read from.
+		 */
+		CsvDriver.writeToCsv(results, printStream, true);
+
+		BufferedReader reader1 = new BufferedReader(new FileReader(filePath + File.separator + "sample.csv"));
+		BufferedReader reader2 = new BufferedReader(new StringReader(byteStream.toString("US-ASCII")));
+		String line1 = reader1.readLine();
+		String line2 = reader2.readLine();
+
+		while (line1 != null || line2 != null)
+		{
+			assertTrue("line1 is null", line1 != null);
+			assertTrue("line2 is null", line2 != null);
+			assertEquals("lines do not match", line1, line2);
+			line1 = reader1.readLine();
+			line2 = reader2.readLine();
+		}
+		results.close();
+		stmt.close();
+		conn.close();	
 	}
 }

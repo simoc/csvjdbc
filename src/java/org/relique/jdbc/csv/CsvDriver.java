@@ -21,6 +21,7 @@ import java.sql.*;
 import java.util.Properties;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
@@ -263,6 +264,89 @@ public class CsvDriver implements Driver
 		PrintWriter logWriter = DriverManager.getLogWriter();
 		if (logWriter != null)
 			logWriter.println("CsvJdbc: " + message);
+	}
+
+	/**
+	 * Convenience method to write a ResultSet to a CSV file.
+	 * @param resultSet JDBC ResultSet to write.
+	 * @param out open stream to write to.
+	 * @param writeHeaderLine if true, the column names are written as first line.
+	 * @throws SQLException
+	 */
+	public static void writeToCsv(ResultSet resultSet, PrintStream out, boolean writeHeaderLine)
+		throws SQLException
+	{
+		char separator = DEFAULT_SEPARATOR;
+		char quoteChar = DEFAULT_QUOTECHAR;
+		String quoteStyle = DEFAULT_QUOTE_STYLE;
+
+		if (resultSet instanceof CsvResultSet)
+		{
+			/*
+			 * Use same formatting options as the CSV file this ResultSet was read from.
+			 */
+			CsvResultSet csvResultSet = (CsvResultSet)resultSet;
+			CsvConnection csvConnection = (CsvConnection)csvResultSet.getStatement().getConnection();
+			separator = csvConnection.getSeparator();
+			quoteChar = csvConnection.getQuotechar();
+			quoteStyle = csvConnection.getQuoteStyle();
+		}
+
+		ResultSetMetaData meta = resultSet.getMetaData();
+		int columnCount = meta.getColumnCount();
+		if (writeHeaderLine)
+		{			
+			for (int i = 1; i <= columnCount; i++)
+			{
+				if (i > 1)
+					out.print(separator);
+				out.print(meta.getColumnName(i));
+			}
+			out.println();
+		}
+
+		/*
+		 * Write each row of ResultSet.
+		 */
+		while (resultSet.next())
+		{
+			for (int i = 1; i <= columnCount; i++)
+			{
+				if (i > 1)
+					out.print(separator);
+				String value = resultSet.getString(i);
+				value = addQuotes(value, separator, quoteChar, quoteStyle);
+				out.print(value);
+			}
+			out.println();
+		}
+		out.flush();
+	}
+
+	private static String addQuotes(String value, char separator, char quoteChar, String quoteStyle)
+	{
+		/*
+		 * Escape all quote chars embedded in the string.
+		 */
+		if (quoteStyle.equals("C"))
+		{
+			value = value.replace("\\", "\\\\");
+			value = value.replace("" + quoteChar, "\\" + quoteChar);
+		}
+		else
+		{
+			value = value.replace("" + quoteChar, "" + quoteChar + quoteChar);
+		}
+
+		/*
+		 * Surround value with quotes if it contains any special characters.
+		 */
+		if (value.indexOf(separator) >= 0 || value.indexOf(quoteChar) >= 0 ||
+			value.indexOf('\r') >= 0 || value.indexOf('\n') >= 0)
+		{
+			value = quoteChar + value + quoteChar;
+		}
+		return value;
 	}
 
 	// This static block inits the driver when the class is loaded by the JVM.
