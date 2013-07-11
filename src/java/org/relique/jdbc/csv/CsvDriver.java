@@ -268,6 +268,8 @@ public class CsvDriver implements Driver
 
 	/**
 	 * Convenience method to write a ResultSet to a CSV file.
+	 * Output CSV file has the same format as the CSV file that is
+	 * being queried, so that it can be used for later SQL queries.
 	 * @param resultSet JDBC ResultSet to write.
 	 * @param out open stream to write to.
 	 * @param writeHeaderLine if true, the column names are written as first line.
