@@ -36,7 +36,7 @@
   <!-- =================================================================== -->
   <property name="TALK" value="false" />
   <property name="name" value="csvjdbc"/>
-  <property name="rel" value="r0-10"/>
+  <property name="rel" value="1.0-15"/>
   <property name="rel.name" value="${name}-${rel}"/>
   <property name="build.dir" value="../build"/>
   <property name="src.dir" value="../src"/>
@@ -47,7 +47,7 @@
   <property name="javadoc.dir" value="../javadoc"/>
   <property name="rel.dir" value="../release"/>
   <property name="junit.dir" value="/usr/share/java"/>
-  <property name="jar.file" value="${rel.dir}/${name}.jar"/>
+  <property name="jar.file" value="${rel.dir}/${rel.name}.jar"/>
   <property name="test.reports" value="../reports" /> 
   <path id="classpath">
     <pathelement path="."/>
