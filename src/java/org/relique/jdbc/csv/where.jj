@@ -1149,9 +1149,21 @@ class BetweenExpression extends LogicalExpression
 		boolean result = true;
 		try
 		{
-			if (objValue.compareTo(leftValue)<0)
+			if (objValue instanceof Date)
+			{
+				Expression stringConverter = new ColumnName("@StringConverter");
+				StringConverter sc = (StringConverter) stringConverter.eval(env);
+				if (leftValue != null)
+					leftValue = sc.parseDate(leftValue.toString());
+				if (rightValue != null)
+					rightValue = sc.parseDate(rightValue.toString());
+			}
+
+			if (objValue == null || leftValue == null || rightValue == null)
 				result = false;
-			if (objValue.compareTo(rightValue)>0)
+			else if (objValue.compareTo(leftValue)<0)
+				result = false;
+			else if (objValue.compareTo(rightValue)>0)
 				result = false;
 		}
 		catch (ClassCastException e)
@@ -1735,7 +1747,7 @@ ParsedStatement selectStatement():
 	(<DISTINCT>{isDistinct = true;})?
 	expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*
 	(
-		<FROM>(t=<QUOTEDTABLENAME>|t=<TABLENAME>){tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?
+		<FROM>(t=<QUOTEDTABLENAME>|t=<TABLENAME>){tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?(<COMMA>(t=<QUOTEDTABLENAME>|t=<TABLENAME>){}((<AS>)?t=<NAME>{}))*
 		(<WHERE>whereClause = logicalExpression())?
 		(<GROUP><BY>entry = groupByEntry(){groupByEntries.add(entry);}(<COMMA>entry = groupByEntry(){groupByEntries.add(entry);})*(<HAVING>havingClause = logicalExpression())?)?
 		(<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?

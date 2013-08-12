@@ -1230,6 +1230,30 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testWhereWithBetweenDates() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,Int,Int,Date");
+		props.put("dateFormat", "M/D/YYYY");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM Purchase WHERE PurchaseDate BETWEEN '1/11/2013' AND '1/15/2013'");
+
+		assertTrue(results.next());
+		assertEquals("The AccountNo is wrong", 58375, results.getInt("AccountNo"));
+		assertTrue(results.next());
+		assertEquals("The AccountNo is wrong", 34625, results.getInt("AccountNo"));
+		assertTrue(results.next());
+		assertEquals("The AccountNo is wrong", 34771, results.getInt("AccountNo"));
+		assertTrue(!results.next());
+	}
+
+	@Test
 	public void testWhereWithLikeOperatorPercent() throws SQLException
 	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
