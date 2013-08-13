@@ -1272,6 +1272,17 @@ class InExpression extends LogicalExpression
 		for (Expression expr: inList)
 		{
 			Comparable exprValue = (Comparable)expr.eval(env);
+			if (objValue instanceof Date)
+			{
+				/*
+				 * Convert IN value to Date so we can correctly compare
+				 * it with the java.sql.Date value.
+				 */
+				Expression stringConverter = new ColumnName("@StringConverter");
+				StringConverter sc = (StringConverter) stringConverter.eval(env);
+				if (exprValue != null)
+					exprValue = sc.parseDate(exprValue.toString());
+			}
 			if (objValue.equals(exprValue))
 				return true;
 		}

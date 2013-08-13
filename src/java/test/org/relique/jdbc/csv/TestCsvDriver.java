@@ -1449,6 +1449,28 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testWhereWithInDates() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,Int,Int,Date");
+		props.put("dateFormat", "M/D/YYYY");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM Purchase WHERE PurchaseDate IN ('1/9/2013', '1/16/2013')");
+
+		assertTrue(results.next());
+		assertEquals("The AccountNo is wrong", 19685, results.getInt("AccountNo"));
+		assertTrue(results.next());
+		assertEquals("The AccountNo is wrong", 51002, results.getInt("AccountNo"));
+		assertTrue(!results.next());
+	}
+
+	@Test
 	public void test1073375() throws SQLException
 	{
 		Properties props = new Properties();
