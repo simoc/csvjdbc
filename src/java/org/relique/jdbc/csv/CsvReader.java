@@ -255,7 +255,7 @@ public class CsvReader extends DataReader
 	}
 
 	@Override
-	public String[] getColumnTypes()
+	public String[] getColumnTypes() throws SQLException
 	{
 		if (columnTypes == null)
 		{
@@ -264,8 +264,11 @@ public class CsvReader extends DataReader
 		return columnTypes;
 	}
 
-	private void inferColumnTypes()
+	private void inferColumnTypes() throws SQLException
 	{
+		if (fieldValues == null)
+			throw new SQLException("Cannot infer column types until first row is fetched");
+
 		columnTypes = new String[fieldValues.length];
 		for (int i = 0; i < fieldValues.length; i++)
 		{

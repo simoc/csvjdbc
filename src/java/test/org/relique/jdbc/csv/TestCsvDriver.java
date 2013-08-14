@@ -721,6 +721,29 @@ public class TestCsvDriver
 				.getColumnType(4));
 	}
 
+	@Test
+	public void testColumnTypesInferBeforeNext() throws SQLException,
+			ParseException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample5");
+
+		try
+		{
+			results.getMetaData();
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: Cannot infer column types until first row is fetched", "" + e);
+		}
+	}
+
 	/**
 	 * @throws SQLException
 	 * @throws ParseException

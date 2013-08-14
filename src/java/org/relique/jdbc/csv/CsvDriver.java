@@ -294,24 +294,30 @@ public class CsvDriver implements Driver
 			quoteStyle = csvConnection.getQuoteStyle();
 		}
 
-		ResultSetMetaData meta = resultSet.getMetaData();
-		int columnCount = meta.getColumnCount();
-		if (writeHeaderLine)
-		{			
-			for (int i = 1; i <= columnCount; i++)
-			{
-				if (i > 1)
-					out.print(separator);
-				out.print(meta.getColumnName(i));
-			}
-			out.println();
-		}
+		ResultSetMetaData meta = null;
+		int columnCount = 0;
 
 		/*
 		 * Write each row of ResultSet.
 		 */
 		while (resultSet.next())
 		{
+			if (meta == null)
+			{
+				meta = resultSet.getMetaData();
+				columnCount = meta.getColumnCount();
+				if (writeHeaderLine)
+				{			
+					for (int i = 1; i <= columnCount; i++)
+					{
+						if (i > 1)
+							out.print(separator);
+						out.print(meta.getColumnName(i));
+					}
+					out.println();
+				}
+			}
+
 			for (int i = 1; i <= columnCount; i++)
 			{
 				if (i > 1)
@@ -319,6 +325,19 @@ public class CsvDriver implements Driver
 				String value = resultSet.getString(i);
 				value = addQuotes(value, separator, quoteChar, quoteStyle);
 				out.print(value);
+			}
+			out.println();
+		}
+		if (meta == null && writeHeaderLine)
+		{
+			meta = resultSet.getMetaData();
+			columnCount = meta.getColumnCount();
+
+			for (int i = 1; i <= columnCount; i++)
+			{
+				if (i > 1)
+					out.print(separator);
+				out.print(meta.getColumnName(i));
 			}
 			out.println();
 		}
