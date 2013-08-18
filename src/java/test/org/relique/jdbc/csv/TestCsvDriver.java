@@ -1277,6 +1277,26 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testWhereWithBetweenTimes() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,Int,Int,Date,Time");
+		props.put("dateFormat", "M/D/YYYY");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM Purchase WHERE PurchaseTime BETWEEN '08:30:00' AND '10:00:00'");
+
+		assertTrue(results.next());
+		assertEquals("The AccountNo is wrong", 51002, results.getInt("AccountNo"));
+		assertFalse(results.next());
+	}
+
+	@Test
 	public void testWhereWithLikeOperatorPercent() throws SQLException
 	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -1402,6 +1422,26 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testWhereWithTimes() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,Int,Int,Date,Time");
+		props.put("dateFormat", "M/D/YYYY");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM Purchase WHERE PurchaseTime >= '12:00:00' and '12:59:59' >= PurchaseTime");
+
+		assertTrue(results.next());
+		assertEquals("The AccountNo is wrong", 34771, results.getInt("AccountNo"));
+		assertFalse(results.next());
+	}
+
+	@Test
 	public void testWhereWithIn() throws SQLException
 	{
 		Properties props = new Properties();
@@ -1491,6 +1531,26 @@ public class TestCsvDriver
 		assertTrue(results.next());
 		assertEquals("The AccountNo is wrong", 51002, results.getInt("AccountNo"));
 		assertTrue(!results.next());
+	}
+
+	@Test
+	public void testWhereWithInTimes() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,Int,Int,Date,Time");
+		props.put("dateFormat", "M/D/YYYY");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM Purchase WHERE PurchaseTime IN ('10:10:06', '11:10:06')");
+
+		assertTrue(results.next());
+		assertEquals("The AccountNo is wrong", 22021, results.getInt("AccountNo"));
+		assertFalse(results.next());
 	}
 
 	@Test

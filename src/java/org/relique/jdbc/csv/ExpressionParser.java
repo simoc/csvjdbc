@@ -1110,25 +1110,48 @@ class RelopExpression extends LogicalExpression
                 }
                 try
                 {
-                        if (leftComparedToRightObj == null && leftValue instanceof Date)
+                        if (leftComparedToRightObj == null)
                         {
-                                Expression stringConverter = new ColumnName("@StringConverter");
-                                StringConverter sc = (StringConverter) stringConverter.eval(env);
-                                Date date = sc.parseDate(rightValue.toString());
-                                leftComparedToRightObj = new Integer(leftValue.compareTo(date));
-                        }
-                        else if (leftComparedToRightObj == null && rightValue instanceof Date)
-                        {
-                                Expression stringConverter = new ColumnName("@StringConverter");
-                                StringConverter sc = (StringConverter) stringConverter.eval(env);
-                                Date date = sc.parseDate(leftValue.toString());
-                                leftComparedToRightObj = new Integer(date.compareTo((Date)rightValue));
-                        }
-                        else if (leftValue != null && rightValue != null)
-                        {
-                                Double leftDouble = new Double(((Number)leftValue).toString());
-                                Double rightDouble = new Double(((Number)rightValue).toString());
-                                leftComparedToRightObj = new Integer(leftDouble.compareTo(rightDouble));
+                                if (leftValue == null || rightValue == null)
+                                {
+                                        /*
+					 * Do nothing.  Anything compared with NULL is false.
+					 */
+                                }
+                                else if (leftValue instanceof Date)
+                                {
+                                        Expression stringConverter = new ColumnName("@StringConverter");
+                                        StringConverter sc = (StringConverter) stringConverter.eval(env);
+                                        Date date = sc.parseDate(rightValue.toString());
+                                        leftComparedToRightObj = new Integer(leftValue.compareTo(date));
+                                }
+                                else if (rightValue instanceof Date)
+                                {
+                                        Expression stringConverter = new ColumnName("@StringConverter");
+                                        StringConverter sc = (StringConverter) stringConverter.eval(env);
+                                        Date date = sc.parseDate(leftValue.toString());
+                                        leftComparedToRightObj = new Integer(date.compareTo((Date)rightValue));
+                                }
+                                else if (leftValue instanceof Time)
+                                {
+                                        Expression stringConverter = new ColumnName("@StringConverter");
+                                        StringConverter sc = (StringConverter) stringConverter.eval(env);
+                                        Time time = sc.parseTime(rightValue.toString());
+                                        leftComparedToRightObj = new Integer(leftValue.compareTo(time));
+                                }
+                                else if (rightValue instanceof Time)
+                                {
+                                        Expression stringConverter = new ColumnName("@StringConverter");
+                                        StringConverter sc = (StringConverter) stringConverter.eval(env);
+                                        Time time = sc.parseTime(leftValue.toString());
+                                        leftComparedToRightObj = new Integer(time.compareTo((Time)rightValue));
+                                }
+                                else
+                                {
+                                        Double leftDouble = new Double(((Number)leftValue).toString());
+                                        Double rightDouble = new Double(((Number)rightValue).toString());
+                                        leftComparedToRightObj = new Integer(leftDouble.compareTo(rightDouble));
+                                }
                         }
                 }
         catch (ClassCastException e)
