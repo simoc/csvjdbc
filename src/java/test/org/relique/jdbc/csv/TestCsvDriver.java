@@ -1256,7 +1256,7 @@ public class TestCsvDriver
 	public void testWhereWithBetweenDates() throws SQLException
 	{
 		Properties props = new Properties();
-		props.put("columnTypes", "Int,Int,Int,Date");
+		props.put("columnTypes", "Int,Int,Int,Date,Time");
 		props.put("dateFormat", "M/D/YYYY");
 
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -1475,7 +1475,7 @@ public class TestCsvDriver
 	public void testWhereWithInDates() throws SQLException
 	{
 		Properties props = new Properties();
-		props.put("columnTypes", "Int,Int,Int,Date");
+		props.put("columnTypes", "Int,Int,Int,Date,Time");
 		props.put("dateFormat", "M/D/YYYY");
 
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
