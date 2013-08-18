@@ -280,6 +280,47 @@ class SQLLengthFunction extends Expression
                 return result;
         }
 }
+class SQLNullIfFunction extends Expression
+{
+        Expression expression1;
+        Expression expression2;
+        public SQLNullIfFunction(Expression expression1, Expression expression2)
+        {
+                this.expression1 = expression1;
+                this.expression2 = expression2;
+        }
+        public Object eval(Map<String, Object> env)
+        {
+                Object retval;
+                Comparable value1 = (Comparable)expression1.eval(env);
+                Comparable value2 = (Comparable)expression2.eval(env);
+                Integer compared = RelopExpression.compare(value1, value2, env);
+
+                if (compared != null && compared.intValue() == 0)
+                        retval = null;
+                else
+                        retval = value1;
+                return retval;
+        }
+        public String toString()
+        {
+                return "NULLIF("+expression1+","+expression2+")";
+        }
+        public List<String> usedColumns()
+        {
+                List<String> result = new LinkedList<String>();
+                result.addAll(expression1.usedColumns());
+                result.addAll(expression2.usedColumns());
+                return result;
+        }
+        public List<AggregateFunction> aggregateFunctions()
+        {
+                List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+                result.addAll(expression1.aggregateFunctions());
+                result.addAll(expression2.aggregateFunctions());
+                return result;
+        }
+}
 abstract class AggregateFunction extends Expression
 {
         public abstract List<String> aggregateColumns();
@@ -1018,9 +1059,46 @@ class RelopExpression extends LogicalExpression
         }
         public boolean isTrue(Map<String, Object> env)
         {
+                boolean result = false;
                 Comparable leftValue = (Comparable)left.eval(env);
                 Comparable rightValue = (Comparable)right.eval(env);
-                boolean result = false;
+                Integer leftComparedToRightObj = compare(leftValue, rightValue,  env);
+                if (leftComparedToRightObj != null)
+                {
+                        int leftComparedToRight = leftComparedToRightObj.intValue();
+                        if (leftValue != null && rightValue != null)
+                        {
+                                if (op.equals("="))
+                                {
+                                        result = leftComparedToRight == 0;
+                                }
+                                else if (op.equals("<>") || op.equals("!="))
+                                {
+                                        result = leftComparedToRight != 0;
+                                }
+                                else if (op.equals(">"))
+                                {
+                                        result = leftComparedToRight>0;
+                                }
+                                else if (op.equals("<"))
+                                {
+                                        result = leftComparedToRight<0;
+                                }
+                                else if (op.equals("<=") || op.equals("=<"))
+                                {
+                                        result = leftComparedToRight <= 0;
+                                }
+                                else if (op.equals(">=") || op.equals("=>"))
+                                {
+                                        result = leftComparedToRight >= 0;
+                                }
+                        }
+                }
+                return result;
+        }
+        public static Integer compare(Comparable leftValue,
+                Comparable rightValue, Map<String, Object> env)
+        {
                 Integer leftComparedToRightObj = null;
                 try
                 {
@@ -1055,38 +1133,10 @@ class RelopExpression extends LogicalExpression
         catch (ClassCastException e)
                 {
                 }
-                catch (NumberFormatException e){}if (leftComparedToRightObj != null)
+                catch (NumberFormatException e)
                 {
-                        int leftComparedToRight = leftComparedToRightObj.intValue();
-                        if (leftValue != null && rightValue != null)
-                        {
-                                if (op.equals("="))
-                                {
-                                        result = leftComparedToRight == 0;
-                                }
-                                else if (op.equals("<>") || op.equals("!="))
-                                {
-                                        result = leftComparedToRight != 0;
-                                }
-                                else if (op.equals(">"))
-                                {
-                                        result = leftComparedToRight>0;
-                                }
-                                else if (op.equals("<"))
-                                {
-                                        result = leftComparedToRight<0;
-                                }
-                                else if (op.equals("<=") || op.equals("=<"))
-                                {
-                                        result = leftComparedToRight <= 0;
-                                }
-                                else if (op.equals(">=") || op.equals("=>"))
-                                {
-                                        result = leftComparedToRight >= 0;
-                                }
-                        }
                 }
-                return result;
+                return leftComparedToRightObj;
         }
         public String toString()
         {
@@ -1696,6 +1746,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     case ROUND:
     case UPPER:
     case LENGTH:
+    case NULLIF:
     case COUNT:
     case MAX:
     case MIN:
@@ -1713,6 +1764,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       case ROUND:
       case UPPER:
       case LENGTH:
+      case NULLIF:
       case COUNT:
       case MAX:
       case MIN:
@@ -1831,6 +1883,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     case ROUND:
     case UPPER:
     case LENGTH:
+    case NULLIF:
     case COUNT:
     case MAX:
     case MIN:
@@ -2014,6 +2067,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     case ROUND:
     case UPPER:
     case LENGTH:
+    case NULLIF:
     case COUNT:
     case MAX:
     case MIN:
@@ -2082,6 +2136,7 @@ public class ExpressionParser implements ExpressionParserConstants {
 
   final public Expression simpleExpression() throws ParseException {
         Expression arg;
+        Expression arg2;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case OPENPARENTHESIS:
       jj_consume_token(OPENPARENTHESIS);
@@ -2116,6 +2171,15 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLRoundFunction(arg);}
+      break;
+    case NULLIF:
+      jj_consume_token(NULLIF);
+      jj_consume_token(OPENPARENTHESIS);
+      arg = binaryOperation();
+      jj_consume_token(COMMA);
+      arg2 = binaryOperation();
+      jj_consume_token(CLOSEPARENTHESIS);
+                {if (true) return new SQLNullIfFunction(arg, arg2);}
       break;
     case COUNT:
       jj_consume_token(COUNT);
@@ -2286,6 +2350,9 @@ public class ExpressionParser implements ExpressionParserConstants {
     case LENGTH:
       t = jj_consume_token(LENGTH);
       break;
+    case NULLIF:
+      t = jj_consume_token(NULLIF);
+      break;
     case AVG:
       t = jj_consume_token(AVG);
       break;
@@ -2330,7 +2397,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_la1_0 = new int[] {0x6000000,0x6000000,0x80,0x100,0x0,0x100000,0x100000,0x100,0x0,0x100000,0x0,0x100,0x0,0x0,0x100,0x0,0x0,0x0,0x0,0x0,0x100000,0xf8100000,0x0,0xf900c600,0x20000,0x10000,0xf904c600,0x40000,0x100,0xe00000,0x40000,0xec0000,0x0,0x0,0xf900c600,0x0,0x0,0xf900c600,0x0,0x600,0x0,0xf8000000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x18000000,0x0,0x1000,0x0,0x18000000,0x0,0x20,0x0,0x200,0x40,0x0,0x80,0x800,0x400,0x10,0x400000,0x0,0x100f,0x18000,0x13b00f,0x0,0x0,0x12300f,0x0,0x0,0x0,0x0,0x4000,0x60000,0x88000,0x12b00f,0x60000,0x88000,0x12300f,0x20000,0x0,0x2000,0x100f,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x30000000,0x0,0x2000,0x0,0x30000000,0x0,0x40,0x0,0x400,0x80,0x0,0x100,0x1000,0x800,0x20,0x800000,0x0,0x201f,0x30000,0x27601f,0x0,0x0,0x24601f,0x0,0x0,0x0,0x0,0x8000,0xc0000,0x110000,0x25601f,0xc0000,0x110000,0x24601f,0x40000,0x0,0x4000,0x201f,};
    }
 
   /** Constructor with InputStream. */
@@ -2447,7 +2514,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[62];
+    boolean[] la1tokens = new boolean[63];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -2464,7 +2531,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 62; i++) {
+    for (int i = 0; i < 63; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

@@ -2104,6 +2104,30 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testNullIfFunction() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("trimHeaders", "true");
+		props.put("trimValues", "true");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select nullif(key, ' - ') as k2 from foodstuffs");
+		assertTrue(results.next());
+		assertEquals("K2 is wrong", "orange", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("K2 is wrong", "apple", results.getString(1));
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertTrue(results.next());
+		assertEquals("K2 is wrong", null, results.getString(1));
+		assertTrue(results.wasNull());
+		assertFalse(results.next());
+	}
+
+	@Test
 	public void testWithComments() throws SQLException
 	{
 		Properties props = new Properties();

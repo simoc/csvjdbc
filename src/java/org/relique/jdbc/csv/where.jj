@@ -305,6 +305,47 @@ class SQLLengthFunction extends Expression
 		return result;
 	}
 }
+class SQLNullIfFunction extends Expression
+{
+	Expression expression1;
+	Expression expression2;
+	public SQLNullIfFunction(Expression expression1, Expression expression2)
+	{
+		this.expression1 = expression1;
+		this.expression2 = expression2;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		Object retval;
+		Comparable value1 = (Comparable)expression1.eval(env);
+		Comparable value2 = (Comparable)expression2.eval(env);
+		Integer compared = RelopExpression.compare(value1, value2, env);
+
+		if (compared != null && compared.intValue() == 0)
+			retval = null;
+		else
+			retval = value1;
+		return retval;
+	}
+	public String toString()
+	{
+		return "NULLIF("+expression1+","+expression2+")";
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(expression1.usedColumns());
+		result.addAll(expression2.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.addAll(expression1.aggregateFunctions());
+		result.addAll(expression2.aggregateFunctions());
+		return result;
+	}
+}
 abstract class AggregateFunction extends Expression
 {
 	public abstract List<String> aggregateColumns();
@@ -1043,9 +1084,46 @@ class RelopExpression extends LogicalExpression
 	}
 	public boolean isTrue(Map<String, Object> env)
 	{
+		boolean result = false;
 		Comparable leftValue = (Comparable)left.eval(env);
 		Comparable rightValue = (Comparable)right.eval(env);
-		boolean result = false;
+		Integer leftComparedToRightObj = compare(leftValue, rightValue,  env);
+		if (leftComparedToRightObj != null)
+		{
+			int leftComparedToRight = leftComparedToRightObj.intValue();
+			if (leftValue != null && rightValue != null)
+			{
+				if (op.equals("="))
+				{
+					result = leftComparedToRight == 0;
+				}
+				else if (op.equals("<>") || op.equals("!="))
+				{
+					result = leftComparedToRight != 0;
+				}
+				else if (op.equals(">"))
+				{
+					result = leftComparedToRight>0;
+				}
+				else if (op.equals("<"))
+				{
+					result = leftComparedToRight<0;
+				}
+				else if (op.equals("<=") || op.equals("=<"))
+				{
+					result = leftComparedToRight <= 0;
+				}
+				else if (op.equals(">=") || op.equals("=>"))
+				{
+					result = leftComparedToRight >= 0;
+				}
+			}
+		}
+		return result;
+	}
+	public static Integer compare(Comparable leftValue,
+		Comparable rightValue, Map<String, Object> env)
+	{
 		Integer leftComparedToRightObj = null;
 		try
 		{
@@ -1080,38 +1158,10 @@ class RelopExpression extends LogicalExpression
     	catch (ClassCastException e)
 		{
 		}
-		catch (NumberFormatException e){}if (leftComparedToRightObj != null)
+		catch (NumberFormatException e)
 		{
-			int leftComparedToRight = leftComparedToRightObj.intValue();
-			if (leftValue != null && rightValue != null)
-			{
-				if (op.equals("="))
-				{
-					result = leftComparedToRight == 0;
-				}
-				else if (op.equals("<>") || op.equals("!="))
-				{
-					result = leftComparedToRight != 0;
-				}
-				else if (op.equals(">"))
-				{
-					result = leftComparedToRight>0;
-				}
-				else if (op.equals("<"))
-				{
-					result = leftComparedToRight<0;
-				}
-				else if (op.equals("<=") || op.equals("=<"))
-				{
-					result = leftComparedToRight <= 0;
-				}
-				else if (op.equals(">=") || op.equals("=>"))
-				{
-					result = leftComparedToRight >= 0;
-				}
-			}
 		}
-		return result;
+		return leftComparedToRightObj;
 	}
 	public String toString()
 	{
@@ -1563,6 +1613,10 @@ TOKEN:
 }
 TOKEN:
 {
+	<NULLIF:"NULLIF">
+}
+TOKEN:
+{
 	<COUNT:"COUNT">
 }
 TOKEN:
@@ -1968,6 +2022,7 @@ Expression multiplyOperation():
 Expression simpleExpression():
 {
 	Expression arg;
+	Expression arg2;
 }
 {
 	<OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
@@ -1989,6 +2044,11 @@ Expression simpleExpression():
 	| <ROUND> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
 	{
 		return new SQLRoundFunction(arg);
+	}
+	| <NULLIF> <OPENPARENTHESIS> arg = binaryOperation() <COMMA>
+		arg2 = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLNullIfFunction(arg, arg2);
 	}
 	| <COUNT> <OPENPARENTHESIS> arg = countOperation() <CLOSEPARENTHESIS>
 	{
@@ -2106,7 +2166,7 @@ Expression columnAlias():
 	Token t;
 }
 {
-	(t=<NAME>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<LENGTH>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>)
+	(t=<NAME>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<LENGTH>|t=<NULLIF>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>)
 	{
 		return new ColumnName(t.image);
 	}

@@ -63,59 +63,61 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int LENGTH = 30;
   /** RegularExpression Id. */
-  int COUNT = 31;
+  int NULLIF = 31;
   /** RegularExpression Id. */
-  int MAX = 32;
+  int COUNT = 32;
   /** RegularExpression Id. */
-  int MIN = 33;
+  int MAX = 33;
   /** RegularExpression Id. */
-  int SUM = 34;
+  int MIN = 34;
   /** RegularExpression Id. */
-  int AVG = 35;
+  int SUM = 35;
   /** RegularExpression Id. */
-  int FROM = 36;
+  int AVG = 36;
   /** RegularExpression Id. */
-  int WHERE = 37;
+  int FROM = 37;
   /** RegularExpression Id. */
-  int GROUP = 38;
+  int WHERE = 38;
   /** RegularExpression Id. */
-  int ORDER = 39;
+  int GROUP = 39;
   /** RegularExpression Id. */
-  int BY = 40;
+  int ORDER = 40;
   /** RegularExpression Id. */
-  int HAVING = 41;
+  int BY = 41;
   /** RegularExpression Id. */
-  int LIMIT = 42;
+  int HAVING = 42;
   /** RegularExpression Id. */
-  int OFFSET = 43;
+  int LIMIT = 43;
   /** RegularExpression Id. */
-  int NAME = 44;
+  int OFFSET = 44;
   /** RegularExpression Id. */
-  int STRING = 45;
+  int NAME = 45;
   /** RegularExpression Id. */
-  int RELOP = 46;
+  int STRING = 46;
   /** RegularExpression Id. */
-  int ASTERISK = 47;
+  int RELOP = 47;
   /** RegularExpression Id. */
-  int NAMEASTERISK = 48;
+  int ASTERISK = 48;
   /** RegularExpression Id. */
-  int MINUS = 49;
+  int NAMEASTERISK = 49;
   /** RegularExpression Id. */
-  int PLUS = 50;
+  int MINUS = 50;
   /** RegularExpression Id. */
-  int DIVIDE = 51;
+  int PLUS = 51;
   /** RegularExpression Id. */
-  int OPENPARENTHESIS = 52;
+  int DIVIDE = 52;
   /** RegularExpression Id. */
-  int CLOSEPARENTHESIS = 53;
+  int OPENPARENTHESIS = 53;
   /** RegularExpression Id. */
-  int SEMICOLON = 54;
+  int CLOSEPARENTHESIS = 54;
   /** RegularExpression Id. */
-  int TABLENAME = 59;
+  int SEMICOLON = 55;
   /** RegularExpression Id. */
-  int QUOTEDTABLENAME = 60;
+  int TABLENAME = 60;
   /** RegularExpression Id. */
-  int UNEXPECTED_CHAR = 61;
+  int QUOTEDTABLENAME = 61;
+  /** RegularExpression Id. */
+  int UNEXPECTED_CHAR = 62;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -155,6 +157,7 @@ public interface ExpressionParserConstants {
     "\"ROUND\"",
     "\"UPPER\"",
     "\"LENGTH\"",
+    "\"NULLIF\"",
     "\"COUNT\"",
     "\"MAX\"",
     "\"MIN\"",
