@@ -1102,7 +1102,8 @@ class RelopExpression extends LogicalExpression
                 Integer leftComparedToRightObj = null;
                 try
                 {
-                        leftComparedToRightObj = new Integer(leftValue.compareTo(rightValue));
+                        if (leftValue != null && rightValue != null)
+                                leftComparedToRightObj = new Integer(leftValue.compareTo(rightValue));
                 }
                 catch (ClassCastException e)
                 {
@@ -1123,7 +1124,7 @@ class RelopExpression extends LogicalExpression
                                 Date date = sc.parseDate(leftValue.toString());
                                 leftComparedToRightObj = new Integer(date.compareTo((Date)rightValue));
                         }
-                        else
+                        else if (leftValue != null && rightValue != null)
                         {
                                 Double leftDouble = new Double(((Number)leftValue).toString());
                                 Double rightDouble = new Double(((Number)rightValue).toString());
@@ -1171,28 +1172,15 @@ class BetweenExpression extends LogicalExpression
                 Comparable leftValue = (Comparable)left.eval(env);
                 Comparable rightValue = (Comparable)right.eval(env);
                 Comparable objValue = (Comparable)obj.eval(env);
-                boolean result = true;
-                try
+                Integer comparedLeft = RelopExpression.compare(leftValue, objValue, env);
+                boolean result = false;
+                if (comparedLeft != null && comparedLeft.intValue() <= 0)
                 {
-                        if (objValue instanceof Date)
+                        Integer comparedRight = RelopExpression.compare(rightValue, objValue, env);
+                        if (comparedRight != null && comparedRight.intValue() >= 0)
                         {
-                                Expression stringConverter = new ColumnName("@StringConverter");
-                                StringConverter sc = (StringConverter) stringConverter.eval(env);
-                                if (leftValue != null)
-                                        leftValue = sc.parseDate(leftValue.toString());
-                                if (rightValue != null)
-                                        rightValue = sc.parseDate(rightValue.toString());
+                                result = true;
                         }
-
-                        if (objValue == null || leftValue == null || rightValue == null)
-                                result = false;
-                        else if (objValue.compareTo(leftValue)<0)
-                                result = false;
-                        else if (objValue.compareTo(rightValue)>0)
-                                result = false;
-                }
-                catch (ClassCastException e)
-                {
                 }
                 return result;
         }
@@ -1293,22 +1281,12 @@ class InExpression extends LogicalExpression
         }
         public boolean isTrue(Map<String, Object> env)
         {
-                Object objValue = obj.eval(env);
+                Comparable objValue = (Comparable)obj.eval(env);
                 for (Expression expr: inList)
                 {
                         Comparable exprValue = (Comparable)expr.eval(env);
-                        if (objValue instanceof Date)
-                        {
-                                /*
-				 * Convert IN value to Date so we can correctly compare
-				 * it with the java.sql.Date value.
-				 */
-                                Expression stringConverter = new ColumnName("@StringConverter");
-                                StringConverter sc = (StringConverter) stringConverter.eval(env);
-                                if (exprValue != null)
-                                        exprValue = sc.parseDate(exprValue.toString());
-                        }
-                        if (objValue.equals(exprValue))
+                        Integer compared = RelopExpression.compare(objValue, exprValue, env);
+                        if (compared != null && compared.intValue() == 0)
                                 return true;
                 }
                 return false;
