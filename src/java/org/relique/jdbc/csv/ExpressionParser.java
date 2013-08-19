@@ -1123,28 +1123,48 @@ class RelopExpression extends LogicalExpression
                                         Expression stringConverter = new ColumnName("@StringConverter");
                                         StringConverter sc = (StringConverter) stringConverter.eval(env);
                                         Date date = sc.parseDate(rightValue.toString());
-                                        leftComparedToRightObj = new Integer(leftValue.compareTo(date));
+                                        if (date != null)
+                                                leftComparedToRightObj = new Integer(leftValue.compareTo(date));
                                 }
                                 else if (rightValue instanceof Date)
                                 {
                                         Expression stringConverter = new ColumnName("@StringConverter");
                                         StringConverter sc = (StringConverter) stringConverter.eval(env);
                                         Date date = sc.parseDate(leftValue.toString());
-                                        leftComparedToRightObj = new Integer(date.compareTo((Date)rightValue));
+                                        if (date != null)
+                                                leftComparedToRightObj = new Integer(date.compareTo((Date)rightValue));
                                 }
                                 else if (leftValue instanceof Time)
                                 {
                                         Expression stringConverter = new ColumnName("@StringConverter");
                                         StringConverter sc = (StringConverter) stringConverter.eval(env);
                                         Time time = sc.parseTime(rightValue.toString());
-                                        leftComparedToRightObj = new Integer(leftValue.compareTo(time));
+                                        if (time != null)
+                                                leftComparedToRightObj = new Integer(leftValue.compareTo(time));
                                 }
                                 else if (rightValue instanceof Time)
                                 {
                                         Expression stringConverter = new ColumnName("@StringConverter");
                                         StringConverter sc = (StringConverter) stringConverter.eval(env);
                                         Time time = sc.parseTime(leftValue.toString());
-                                        leftComparedToRightObj = new Integer(time.compareTo((Time)rightValue));
+                                        if (time != null)
+                                                leftComparedToRightObj = new Integer(time.compareTo((Time)rightValue));
+                                }
+                                else if (leftValue instanceof Timestamp)
+                                {
+                                        Expression stringConverter = new ColumnName("@StringConverter");
+                                        StringConverter sc = (StringConverter) stringConverter.eval(env);
+                                        Timestamp timestamp = sc.parseTimestamp(rightValue.toString());
+                                        if (timestamp != null)
+                                                leftComparedToRightObj = new Integer(leftValue.compareTo(timestamp));
+                                }
+                                else if (rightValue instanceof Timestamp)
+                                {
+                                        Expression stringConverter = new ColumnName("@StringConverter");
+                                        StringConverter sc = (StringConverter) stringConverter.eval(env);
+                                        Timestamp timestamp = sc.parseTimestamp(leftValue.toString());
+                                        if (timestamp != null)
+                                                leftComparedToRightObj = new Integer(timestamp.compareTo((Timestamp)rightValue));
                                 }
                                 else
                                 {

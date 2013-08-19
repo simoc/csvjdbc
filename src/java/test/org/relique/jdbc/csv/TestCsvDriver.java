@@ -1297,6 +1297,26 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testWhereWithBetweenTimestamps() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,String,Timestamp,Time");
+		props.put("charset", "UTF-8");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM sample5 WHERE Start BETWEEN '2003-03-01 08:30:00' AND '2003-03-02 17:30:00'");
+
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", 3, results.getInt("ID"));
+		assertFalse(results.next());
+	}
+
+	@Test
 	public void testWhereWithLikeOperatorPercent() throws SQLException
 	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -1442,6 +1462,28 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testWhereWithTimestamps() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,String,Timestamp,Time");
+		props.put("charset", "UTF-8");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM sample5 WHERE Start >= '2002-01-01 00:00:00' and '2003-12-31 23:59:59' >= Start");
+
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", 2, results.getInt("ID"));
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", 3, results.getInt("ID"));
+		assertFalse(results.next());
+	}
+
+	@Test
 	public void testWhereWithIn() throws SQLException
 	{
 		Properties props = new Properties();
@@ -1550,6 +1592,28 @@ public class TestCsvDriver
 
 		assertTrue(results.next());
 		assertEquals("The AccountNo is wrong", 22021, results.getInt("AccountNo"));
+		assertFalse(results.next());
+	}
+
+	@Test
+	public void testWhereWithInTimestamps() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,String,Timestamp,Time");
+		props.put("charset", "UTF-8");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		// Note that final Timestamp is wrong format.
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM sample5 " +
+					"WHERE Start IN ('2002-02-02 12:30:00', '2004-04-02 12:00:00', '2004-04-02')");
+
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", 2, results.getInt("ID"));
 		assertFalse(results.next());
 	}
 
