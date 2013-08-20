@@ -424,6 +424,42 @@ public class TestScrollableDriver
 		conn.close();
 	}
 
+	@Test
+	public void testNoCurrentRow() throws SQLException
+	{
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+			ResultSet.CONCUR_READ_ONLY);
+
+		// Select the ID and NAME columns from sample.csv
+		ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample");
+
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", "Q123", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", "A123", results.getString(1));
+		// Move back to first row
+		assertTrue(results.first());
+		// Move before first row
+		assertFalse(results.previous());
+
+		try
+		{
+			results.getString(1);
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row", "" + e);
+		}
+		
+		// clean up
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+
 	/**
 	 * This checks for the scenario when due to where clause no rows are
 	 * returned.

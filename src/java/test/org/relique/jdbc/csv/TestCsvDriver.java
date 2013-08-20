@@ -3892,6 +3892,32 @@ public class TestCsvDriver
 	}
 	
 	@Test
+	public void testNoCurrentRow() throws SQLException
+	{
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+
+		Statement stmt = conn.createStatement();
+
+		// Select the ID and NAME columns from sample.csv
+		ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample");
+
+		try
+		{
+			results.getString(1);
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row", "" + e);
+		}
+		
+		// clean up
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+
+	@Test
 	public void testWriteToCsv() throws SQLException, UnsupportedEncodingException, IOException
 	{
 		Properties props = new Properties();
