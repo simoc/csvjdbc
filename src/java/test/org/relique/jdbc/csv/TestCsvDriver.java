@@ -3908,7 +3908,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row", "" + e);
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
 		}
 		
 		// clean up

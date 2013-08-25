@@ -2154,6 +2154,11 @@ public class CsvResultSet implements ResultSet
 		{
 			throw new SQLException("Column not found: invalid index: "+columnIndex);
 		}
+		if (this.currentRow == 0)
+		{
+			// Cursor is still before first row.
+			throw new SQLException("No current row, perhaps you need to call next");
+		}
 	}
 
 	@Override

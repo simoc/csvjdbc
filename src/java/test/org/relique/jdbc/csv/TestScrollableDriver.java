@@ -102,10 +102,26 @@ public class TestScrollableDriver
 				.getString("NAME"));
 		assertEquals("incorrect row #", 1, results.getRow());
 
-		results.previous();
+		assertFalse(results.previous());
 		assertEquals("incorrect row #", 0, results.getRow());
-		assertNull(results.getString("ID"));
-		assertNull(results.getString("NAME"));
+		try
+		{
+			results.getString("ID");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
+		try
+		{
+			results.getString("NAME");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
 
 		results.next();
 		assertEquals("incorrect row #", 1, results.getRow());
@@ -180,15 +196,32 @@ public class TestScrollableDriver
 				"Peter \"peg leg\", Jimmy & Samantha \"Sam\"", results
 						.getString("NAME"));
 
-		results.relative(100);
+		assertFalse(results.relative(100));
 		assertEquals("incorrect row #", 7, results.getRow());
 		assertNull(results.getString("ID"));
 		assertNull(results.getString("NAME"));
 
-		results.relative(-100);
+		assertFalse(results.relative(-100));
 		assertEquals("incorrect row #", 0, results.getRow());
-		assertNull(results.getString("ID"));
-		assertNull(results.getString("NAME"));
+		try
+		{
+			results.getString("ID");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
+
+		try
+		{
+			results.getString("NAME");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
 
 		results.relative(2);
 		assertEquals("incorrect row #", 2, results.getRow());
@@ -201,23 +234,74 @@ public class TestScrollableDriver
 		assertNull(results.getString("ID"));
 		assertNull(results.getString("NAME"));
 
-		results.absolute(-10);
+		assertFalse(results.absolute(-10));
 		assertEquals("incorrect row #", 0, results.getRow());
-		assertNull(results.getString("ID"));
-		assertNull(results.getString("NAME"));
+		try
+		{
+			results.getString("ID");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
+
+		try
+		{
+			results.getString("NAME");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
 
 		results.absolute(2);
 		assertEquals("Incorrect ID Value", results.getString("ID"), "A123");
 		assertEquals("Incorrect NAME Value", results.getString("NAME"),
 				"Jonathan Ackerman");
 
-		results.absolute(0);
-		assertNull(results.getString("ID"));
-		assertNull(results.getString("NAME"));
+		assertFalse(results.absolute(0));
+		try
+		{
+			results.getString("ID");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
 
-		results.relative(0);
-		assertNull(results.getString("ID"));
-		assertNull(results.getString("NAME"));
+		try
+		{
+			results.getString("NAME");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
+
+		assertFalse(results.relative(0));
+		try
+		{
+			results.getString("ID");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
+
+		try
+		{
+			results.getString("NAME");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
 
 		// clean up
 		results.close();
@@ -333,9 +417,25 @@ public class TestScrollableDriver
 		assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
 		assertEquals("Incorrect NAME Value", "Aman", results.getString("NAME"));
 
-		results.previous();
-		assertNull(results.getString("ID"));
-		assertNull(results.getString("NAME"));
+		assertFalse(results.previous());
+		try
+		{
+			results.getString("ID");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
+		try
+		{
+			results.getString("NAME");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
 
 		results.next();
 		assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
@@ -390,9 +490,25 @@ public class TestScrollableDriver
 		assertNull(results.getString("ID"));
 		assertNull(results.getString("NAME"));
 
-		results.relative(-100);
-		assertNull(results.getString("ID"));
-		assertNull(results.getString("NAME"));
+		assertFalse(results.relative(-100));
+		try
+		{
+			results.getString("ID");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
+		try
+		{
+			results.getString("NAME");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
 
 		results.relative(2);
 		assertEquals("Incorrect ID Value", "B223", results.getString("ID"));
@@ -402,58 +518,70 @@ public class TestScrollableDriver
 		assertNull(results.getString("ID"));
 		assertNull(results.getString("NAME"));
 
-		results.absolute(-10);
-		assertNull(results.getString("ID"));
-		assertNull(results.getString("NAME"));
+		assertFalse(results.absolute(-10));
+		try
+		{
+			results.getString("ID");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
+		try
+		{
+			results.getString("NAME");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
 
 		results.absolute(2);
 		assertEquals("Incorrect ID Value", "B223", results.getString("ID"));
 		assertEquals("Incorrect NAME Value", "Binoy", results.getString("NAME"));
 
-		results.absolute(0);
-		assertNull(results.getString("ID"));
-		assertNull(results.getString("NAME"));
-
-		results.relative(0);
-		assertNull(results.getString("ID"));
-		assertNull(results.getString("NAME"));
-
-		// clean up
-		results.close();
-		stmt.close();
-		conn.close();
-	}
-
-	@Test
-	public void testNoCurrentRow() throws SQLException
-	{
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
-
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-			ResultSet.CONCUR_READ_ONLY);
-
-		// Select the ID and NAME columns from sample.csv
-		ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample");
-
-		assertTrue(results.next());
-		assertEquals("The ID is wrong", "Q123", results.getString(1));
-		assertTrue(results.next());
-		assertEquals("The ID is wrong", "A123", results.getString(1));
-		// Move back to first row
-		assertTrue(results.first());
-		// Move before first row
-		assertFalse(results.previous());
-
+		assertFalse(results.absolute(0));
 		try
 		{
-			results.getString(1);
+			results.getString("ID");
 			fail("Should raise a java.sqlSQLException");
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row", "" + e);
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
 		}
-		
+		try
+		{
+			results.getString("NAME");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
+
+		assertFalse(results.relative(0));
+		try
+		{
+			results.getString("ID");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
+		try
+		{
+			results.getString("NAME");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
+
 		// clean up
 		results.close();
 		stmt.close();
@@ -478,15 +606,47 @@ public class TestScrollableDriver
 		ResultSet results = stmt
 				.executeQuery("SELECT ID,Name FROM sample4 WHERE ID='05'");
 		assertFalse("There are some junk records found", results.next());
-		results.last();
-		assertNull("Invalid Id", results.getString("ID"));
-		assertNull("Invalid Name", results.getString("NAME"));
+		assertFalse(results.last());
+		try
+		{
+			results.getString("ID");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
+		try
+		{
+			results.getString("NAME");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
 		assertTrue("Is not last", results.isLast());
-		results.absolute(0);
-		assertNull("Invalid Id", results.getString("ID"));
-		assertNull("Invalid Name", results.getString("NAME"));
+		assertFalse(results.absolute(0));
+		try
+		{
+			results.getString("ID");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
+		try
+		{
+			results.getString("NAME");
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+		}
 		assertTrue("Is not last", results.isLast());
-		results.absolute(0);
+		assertFalse(results.absolute(0));
 		assertTrue("Is not before first", results.isBeforeFirst());
 		results.previous();
 		assertTrue("Is not before first", results.isBeforeFirst());
