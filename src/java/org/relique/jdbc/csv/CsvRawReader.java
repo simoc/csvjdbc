@@ -384,6 +384,7 @@ public class CsvRawReader
 		// TODO: quoteChar should be recognized ONLY when close to separator. 
 		Vector<String> values = new Vector<String>();
 		boolean inQuotedString = false;
+		int quotedLineNumber = 0;
 		StringBuffer value = new StringBuffer(32);
 		String orgLine = line;
 		int currentPos = 0;
@@ -401,6 +402,7 @@ public class CsvRawReader
 				{
 					// acknowledge quoteChar only at beginning of value.
 					inQuotedString = true;
+					quotedLineNumber = input.getLineNumber();
 				}
 				else if (currentChar == '\\' && "C".equals(quoteStyle))
 				{
@@ -497,8 +499,11 @@ public class CsvRawReader
 				try
 				{
 					String additionalLine = input.readLine();
-					if (additionalLine == null) 
-						throw new SQLException("EOF reached inside quoted mode");
+					if (additionalLine == null)
+					{
+						throw new SQLException("EOF reached inside quotes starting at row: " +
+							quotedLineNumber);
+					}
 					line = "\n" + additionalLine;
 					if (orgLine == firstLineBuffer)
 					{

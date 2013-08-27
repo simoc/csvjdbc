@@ -1498,7 +1498,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: EOF reached inside quoted mode", "" + e);
+			assertEquals("java.sql.SQLException: EOF reached inside quotes starting at row: 6", "" + e);
 		}
 	}
 
@@ -2521,7 +2521,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: EOF reached inside quoted mode", "" + e);
+			assertEquals("java.sql.SQLException: EOF reached inside quotes starting at row: 6", "" + e);
 		}
 	}
 
