@@ -33,6 +33,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
 class NumericConstant extends Expression
@@ -353,14 +354,18 @@ abstract class AggregateFunction extends Expression
 }
 class SQLCountFunction extends AggregateFunction
 {
+	HashSet<Object> distinctValues;
 	Expression expression;
 	int counter = 0;
-	public SQLCountFunction(Expression expression)
+	public SQLCountFunction(boolean isDistinct, Expression expression)
 	{
+		if (isDistinct)
+			this.distinctValues = new HashSet<Object>();
 		this.expression = expression;
 	}
 	public Object eval(Map<String, Object> env)
 	{
+		Integer retval;
 		Object o = env.get("@GROUPROWS");
 		if (o != null)
 		{
@@ -369,13 +374,39 @@ class SQLCountFunction extends AggregateFunction
 			 * by the GROUP BY clause.
 			 */
 			List groupRows = (List)o;
-			return Integer.valueOf(groupRows.size());
+			if (this.distinctValues != null)
+			{
+				HashSet<Object> unique = new HashSet<Object>();
+				for (int i = 0; i < groupRows.size(); i++)
+				{
+					o = expression.eval((Map)groupRows.get(i));
+					if (o != null)
+						unique.add(o);
+				}
+				retval = Integer.valueOf(unique.size());
+			}
+			else
+			{
+				retval = Integer.valueOf(groupRows.size());
+			}
 		}
-		return Integer.valueOf(counter);
+		else
+		{
+			if (this.distinctValues != null)
+				retval = Integer.valueOf(this.distinctValues.size());
+			else
+				retval = Integer.valueOf(counter);
+		}
+		return retval;
 	}
 	public String toString()
 	{
-		return "COUNT("+expression+")";
+		StringBuffer sb = new StringBuffer("COUNT(");
+		if (distinctValues != null)
+			sb.append("DISTINCT ");
+		sb.append(expression);
+		sb.append(")");
+		return sb.toString();
 	}
 	public List<String> usedColumns()
 	{
@@ -407,16 +438,28 @@ class SQLCountFunction extends AggregateFunction
 			 */
 			Object o = expression.eval(env);
 			if (o != null)
+			{
 				counter++;
+				if (distinctValues != null)
+				{
+					/*
+					 * We want a count of DISTINCT values, so we have
+					 * to keep a list of unique values.
+					 */
+					distinctValues.add(o);
+				}
+			}
 		}
 	}
 }
 class SQLMaxFunction extends AggregateFunction
 {
+	boolean isDistinct;
 	Expression expression;
 	Object max = null;
-	public SQLMaxFunction(Expression expression)
+	public SQLMaxFunction(boolean isDistinct, Expression expression)
 	{
+		this.isDistinct = isDistinct;
 		this.expression = expression;
 	}
 	public Object eval(Map<String, Object> env)
@@ -445,7 +488,12 @@ class SQLMaxFunction extends AggregateFunction
 	}
 	public String toString()
 	{
-		return "MAX("+expression+")";
+		StringBuffer sb = new StringBuffer("MAX(");
+		if (isDistinct)
+			sb.append("DISTINCT ");
+		sb.append(expression);
+		sb.append(")");
+		return sb.toString();
 	}
 	public List<String> usedColumns()
 	{
@@ -478,10 +526,12 @@ class SQLMaxFunction extends AggregateFunction
 }
 class SQLMinFunction extends AggregateFunction
 {
+	boolean isDistinct;
 	Expression expression;
 	Object min = null;
-	public SQLMinFunction(Expression expression)
+	public SQLMinFunction(boolean isDistinct, Expression expression)
 	{
+		this.isDistinct = isDistinct;
 		this.expression = expression;
 	}
 	public Object eval(Map<String, Object> env)
@@ -510,7 +560,12 @@ class SQLMinFunction extends AggregateFunction
 	}
 	public String toString()
 	{
-		return "MIN("+expression+")";
+		StringBuffer sb = new StringBuffer("MIN(");
+		if (isDistinct)
+			sb.append("DISTINCT ");
+		sb.append(expression);
+		sb.append(")");
+		return sb.toString();
 	}
 	public List<String> usedColumns()
 	{
@@ -543,11 +598,14 @@ class SQLMinFunction extends AggregateFunction
 }
 class SQLSumFunction extends AggregateFunction
 {
+	HashSet<Object> distinctValues;
 	Expression expression;
 	BigDecimal sum = null;
 	int counter = 0;
-	public SQLSumFunction(Expression expression)
+	public SQLSumFunction(boolean isDistinct, Expression expression)
 	{
+		if (isDistinct)
+			this.distinctValues = new HashSet<Object>();
 		this.expression = expression;
 	}
 	public Object eval(Map<String, Object> env)
@@ -563,21 +621,42 @@ class SQLSumFunction extends AggregateFunction
 			List groupRows = (List)o;
 			BigDecimal groupSum = null;
 			counter = 0;
-			for (int i = 0; i < groupRows.size(); i++)
+			if (this.distinctValues != null)
 			{
-				o = expression.eval((Map)groupRows.get(i));
-				if (o != null)
+				HashSet<Object> unique = new HashSet<Object>();
+				for (int i = 0; i < groupRows.size(); i++)
 				{
-					try
+					o = expression.eval((Map)groupRows.get(i));
+					if (o != null)
+						unique.add(o);
+				}
+				for (Object obj: unique)
+				{
+					if (groupSum == null)
+						groupSum = new BigDecimal(obj.toString());
+					else
+						groupSum = groupSum.add(new BigDecimal(obj.toString()));
+					counter++;
+				}
+			}
+			else
+			{
+				for (int i = 0; i < groupRows.size(); i++)
+				{
+					o = expression.eval((Map)groupRows.get(i));
+					if (o != null)
 					{
-						if (groupSum == null)
-							groupSum = new BigDecimal(o.toString());
-						else
-							groupSum = groupSum.add(new BigDecimal(o.toString()));
-						counter++;
-					}
-					catch (NumberFormatException e)
-					{
+						try
+						{
+							if (groupSum == null)
+								groupSum = new BigDecimal(o.toString());
+							else
+								groupSum = groupSum.add(new BigDecimal(o.toString()));
+							counter++;
+						}
+						catch (NumberFormatException e)
+						{
+						}
 					}
 				}
 			}
@@ -595,8 +674,32 @@ class SQLSumFunction extends AggregateFunction
 
 		try
 		{
-			if (sum != null)
-				retval = Long.valueOf(sum.longValueExact());
+			if (this.distinctValues != null)
+			{
+				BigDecimal groupSum = null;
+				for (Object obj: this.distinctValues)
+				{
+					if (groupSum == null)
+						groupSum = new BigDecimal(obj.toString());
+					else
+						groupSum = groupSum.add(new BigDecimal(obj.toString()));
+				}
+				counter = this.distinctValues.size();
+				try
+				{
+					if (groupSum != null)
+						retval = Long.valueOf(groupSum.longValueExact());
+				}
+				catch (ArithmeticException e)
+				{
+					retval = groupSum.doubleValue();
+				}
+			}
+			else
+			{
+				if (sum != null)
+					retval = Long.valueOf(sum.longValueExact());
+			}
 		}
 		catch (ArithmeticException e)
 		{
@@ -606,7 +709,12 @@ class SQLSumFunction extends AggregateFunction
 	}
 	public String toString()
 	{
-		return "SUM("+expression+")";
+		StringBuffer sb = new StringBuffer("SUM(");
+		if (distinctValues != null)
+			sb.append("DISTINCT ");
+		sb.append(expression);
+		sb.append(")");
+		return sb.toString();
 	}
 	public List<String> usedColumns()
 	{
@@ -643,14 +751,22 @@ class SQLSumFunction extends AggregateFunction
 			catch (NumberFormatException e)
 			{
 			}
+			if (distinctValues != null)
+			{
+				/*
+				 * We want the sum of DISTINCT values, so we have
+				 * to keep a list of unique values.
+				 */
+				distinctValues.add(o);
+			}
 		}
 	}
 }
 class SQLAvgFunction extends SQLSumFunction
 {
-	public SQLAvgFunction(Expression expression)
+	public SQLAvgFunction(boolean isDistinct, Expression expression)
 	{
-		super(expression);
+		super(isDistinct, expression);
 	}
 	public Object eval(Map<String, Object> env)
 	{
@@ -664,7 +780,12 @@ class SQLAvgFunction extends SQLSumFunction
 	}
 	public String toString()
 	{
-		return "AVG("+expression+")";
+		StringBuffer sb = new StringBuffer("AVG(");
+		if (distinctValues != null)
+			sb.append("DISTINCT ");
+		sb.append(expression);
+		sb.append(")");
+		return sb.toString();
 	}
 }
 class QueryEnvEntry extends Expression
@@ -2044,6 +2165,7 @@ Expression simpleExpression():
 {
 	Expression arg;
 	Expression arg2;
+	boolean isDistinct;
 }
 {
 	<OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
@@ -2071,25 +2193,35 @@ Expression simpleExpression():
 	{
 		return new SQLNullIfFunction(arg, arg2);
 	}
-	| <COUNT> <OPENPARENTHESIS> arg = countOperation() <CLOSEPARENTHESIS>
+	| <COUNT> <OPENPARENTHESIS>{isDistinct = false;}
+		(<DISTINCT>{isDistinct = true;})?
+		arg = countOperation() <CLOSEPARENTHESIS>
 	{
-		return new SQLCountFunction(arg);
+		return new SQLCountFunction(isDistinct, arg);
 	}
-	| <MAX> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	| <MAX> <OPENPARENTHESIS>{isDistinct = false;}
+		(<DISTINCT>{isDistinct = true;})?
+		arg = binaryOperation() <CLOSEPARENTHESIS>
 	{
-		return new SQLMaxFunction(arg);
+		return new SQLMaxFunction(isDistinct, arg);
 	}
-	| <MIN> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	| <MIN> <OPENPARENTHESIS>{isDistinct = false;}
+		(<DISTINCT>{isDistinct = true;})?
+		arg = binaryOperation() <CLOSEPARENTHESIS>
 	{
-		return new SQLMinFunction(arg);
+		return new SQLMinFunction(isDistinct, arg);
 	}
-	| <SUM> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	| <SUM> <OPENPARENTHESIS>{isDistinct = false;}
+		(<DISTINCT>{isDistinct = true;})?
+		arg = binaryOperation() <CLOSEPARENTHESIS>
 	{
-		return new SQLSumFunction(arg);
+		return new SQLSumFunction(isDistinct, arg);
 	}
-	| <AVG> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	| <AVG> <OPENPARENTHESIS>{isDistinct = false;}
+		(<DISTINCT>{isDistinct = true;})?
+		arg = binaryOperation() <CLOSEPARENTHESIS>
 	{
-		return new SQLAvgFunction(arg);
+		return new SQLAvgFunction(isDistinct, arg);
 	}
 	| arg = columnName()
 	{

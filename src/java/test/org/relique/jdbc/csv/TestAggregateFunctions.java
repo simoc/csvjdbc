@@ -474,4 +474,49 @@ public class TestAggregateFunctions
 		stmt.close();
 		conn.close();
 	}
+	
+	@Test
+	public void testCountDistinct() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
+		props.put("suppressHeaders", "true");
+		props.put("fileExtension", ".txt");
+		props.put("commentChar", "#");
+		props.put("columnTypes", "Date,Integer,Integer,Integer,Integer,Double");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select count(distinct FROM_ACCT), count(distinct FROM_BLZ) from transactions");
+		assertTrue(results.next());
+		assertEquals("Incorrect count FROM_ACCT", 4, results.getInt(1));
+		assertEquals("Incorrect count FROM_BLZ", 3, results.getInt(2));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+	
+	@Test
+	public void testSumAvgDistinct() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,Int,Int,Date,Time");
+		props.put("dateFormat", "M/D/YYYY");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select sum(distinct PurchaseCt), round(avg(distinct PurchaseCt)) from Purchase");
+		assertTrue(results.next());
+		assertEquals("Incorrect sum", 1 + 3 + 4 + 11, results.getInt(1));
+		assertEquals("Incorrect avg", Math.round((1 + 3 + 4 + 11) / 4.0), results.getInt(2));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
 }

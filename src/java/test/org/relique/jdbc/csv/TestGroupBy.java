@@ -522,4 +522,64 @@ public class TestGroupBy
 			assertEquals("java.sql.SQLException: Invalid HAVING column: NAME", "" + e);
 		}
 	}
+	
+	@Test
+	public void testGroupByCountDistinct() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
+		props.put("suppressHeaders", "true");
+		props.put("fileExtension", ".txt");
+		props.put("commentChar", "#");
+		props.put("columnTypes", "Date,Integer,Integer,Integer,Integer,Double");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select FROM_BLZ, count(distinct FROM_ACCT) from transactions group by FROM_BLZ order by FROM_BLZ");
+		assertTrue(results.next());
+		assertEquals("Incorrect FROM_BLZ", "10010010", results.getString(1));
+		assertEquals("Incorrect count FROM_ACCT", 2, results.getInt(2));
+		assertTrue(results.next());
+		assertEquals("Incorrect FROM_BLZ", "10020200", results.getString(1));
+		assertEquals("Incorrect count FROM_ACCT", 1, results.getInt(2));
+		assertTrue(results.next());
+		assertEquals("Incorrect FROM_BLZ", "10020500", results.getString(1));
+		assertEquals("Incorrect count FROM_ACCT", 1, results.getInt(2));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
+	
+	@Test
+	public void testGroupBySumAvgDistinct() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,Int,Int,Date,Time");
+		props.put("dateFormat", "M/D/YYYY");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select CampaignNo, sum(distinct PurchaseCt), round(avg(distinct PurchaseCt)*10) from Purchase group by CampaignNo order by CampaignNo");
+		assertTrue(results.next());
+		assertEquals("Incorrect CampaignNo", 1, results.getInt(1));
+		assertEquals("Incorrect sum PurchaseCt", 4 + 1 + 11, results.getInt(2));
+		assertEquals("Incorrect avg PurchaseCt", Math.round((4 + 1 + 11) / 3.0 * 10), results.getInt(3));
+		assertTrue(results.next());
+		assertEquals("Incorrect CampaignNo", 21, results.getInt(1));
+		assertEquals("Incorrect sum PurchaseCt", 1 + 3, results.getInt(2));
+		assertEquals("Incorrect avg PurchaseCt", Math.round((1 + 3) / 2.0 * 10), results.getInt(3));
+		assertTrue(results.next());
+		assertEquals("Incorrect CampaignNo", 61, results.getInt(1));
+		assertEquals("Incorrect sum PurchaseCt", 4, results.getInt(2));
+		assertEquals("Incorrect avg PurchaseCt", 4 * 10, results.getInt(3));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
 }

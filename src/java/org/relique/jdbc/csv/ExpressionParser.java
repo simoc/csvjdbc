@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
 class NumericConstant extends Expression
@@ -328,14 +329,18 @@ abstract class AggregateFunction extends Expression
 }
 class SQLCountFunction extends AggregateFunction
 {
+        HashSet<Object> distinctValues;
         Expression expression;
         int counter = 0;
-        public SQLCountFunction(Expression expression)
+        public SQLCountFunction(boolean isDistinct, Expression expression)
         {
+                if (isDistinct)
+                        this.distinctValues = new HashSet<Object>();
                 this.expression = expression;
         }
         public Object eval(Map<String, Object> env)
         {
+                Integer retval;
                 Object o = env.get("@GROUPROWS");
                 if (o != null)
                 {
@@ -344,13 +349,39 @@ class SQLCountFunction extends AggregateFunction
 			 * by the GROUP BY clause.
 			 */
                         List groupRows = (List)o;
-                        return Integer.valueOf(groupRows.size());
+                        if (this.distinctValues != null)
+                        {
+                                HashSet<Object> unique = new HashSet<Object>();
+                                for (int i = 0; i < groupRows.size(); i++)
+                                {
+                                        o = expression.eval((Map)groupRows.get(i));
+                                        if (o != null)
+                                                unique.add(o);
+                                }
+                                retval = Integer.valueOf(unique.size());
+                        }
+                        else
+                        {
+                                retval = Integer.valueOf(groupRows.size());
+                        }
                 }
-                return Integer.valueOf(counter);
+                else
+                {
+                        if (this.distinctValues != null)
+                                retval = Integer.valueOf(this.distinctValues.size());
+                        else
+                                retval = Integer.valueOf(counter);
+                }
+                return retval;
         }
         public String toString()
         {
-                return "COUNT("+expression+")";
+                StringBuffer sb = new StringBuffer("COUNT(");
+                if (distinctValues != null)
+                        sb.append("DISTINCT ");
+                sb.append(expression);
+                sb.append(")");
+                return sb.toString();
         }
         public List<String> usedColumns()
         {
@@ -382,16 +413,28 @@ class SQLCountFunction extends AggregateFunction
 			 */
                         Object o = expression.eval(env);
                         if (o != null)
+                        {
                                 counter++;
+                                if (distinctValues != null)
+                                {
+                                        /*
+					 * We want a count of DISTINCT values, so we have
+					 * to keep a list of unique values.
+					 */
+                                        distinctValues.add(o);
+                                }
+                        }
                 }
         }
 }
 class SQLMaxFunction extends AggregateFunction
 {
+        boolean isDistinct;
         Expression expression;
         Object max = null;
-        public SQLMaxFunction(Expression expression)
+        public SQLMaxFunction(boolean isDistinct, Expression expression)
         {
+                this.isDistinct = isDistinct;
                 this.expression = expression;
         }
         public Object eval(Map<String, Object> env)
@@ -420,7 +463,12 @@ class SQLMaxFunction extends AggregateFunction
         }
         public String toString()
         {
-                return "MAX("+expression+")";
+                StringBuffer sb = new StringBuffer("MAX(");
+                if (isDistinct)
+                        sb.append("DISTINCT ");
+                sb.append(expression);
+                sb.append(")");
+                return sb.toString();
         }
         public List<String> usedColumns()
         {
@@ -453,10 +501,12 @@ class SQLMaxFunction extends AggregateFunction
 }
 class SQLMinFunction extends AggregateFunction
 {
+        boolean isDistinct;
         Expression expression;
         Object min = null;
-        public SQLMinFunction(Expression expression)
+        public SQLMinFunction(boolean isDistinct, Expression expression)
         {
+                this.isDistinct = isDistinct;
                 this.expression = expression;
         }
         public Object eval(Map<String, Object> env)
@@ -485,7 +535,12 @@ class SQLMinFunction extends AggregateFunction
         }
         public String toString()
         {
-                return "MIN("+expression+")";
+                StringBuffer sb = new StringBuffer("MIN(");
+                if (isDistinct)
+                        sb.append("DISTINCT ");
+                sb.append(expression);
+                sb.append(")");
+                return sb.toString();
         }
         public List<String> usedColumns()
         {
@@ -518,11 +573,14 @@ class SQLMinFunction extends AggregateFunction
 }
 class SQLSumFunction extends AggregateFunction
 {
+        HashSet<Object> distinctValues;
         Expression expression;
         BigDecimal sum = null;
         int counter = 0;
-        public SQLSumFunction(Expression expression)
+        public SQLSumFunction(boolean isDistinct, Expression expression)
         {
+                if (isDistinct)
+                        this.distinctValues = new HashSet<Object>();
                 this.expression = expression;
         }
         public Object eval(Map<String, Object> env)
@@ -538,21 +596,42 @@ class SQLSumFunction extends AggregateFunction
                         List groupRows = (List)o;
                         BigDecimal groupSum = null;
                         counter = 0;
-                        for (int i = 0; i < groupRows.size(); i++)
+                        if (this.distinctValues != null)
                         {
-                                o = expression.eval((Map)groupRows.get(i));
-                                if (o != null)
+                                HashSet<Object> unique = new HashSet<Object>();
+                                for (int i = 0; i < groupRows.size(); i++)
                                 {
-                                        try
+                                        o = expression.eval((Map)groupRows.get(i));
+                                        if (o != null)
+                                                unique.add(o);
+                                }
+                                for (Object obj: unique)
+                                {
+                                        if (groupSum == null)
+                                                groupSum = new BigDecimal(obj.toString());
+                                        else
+                                                groupSum = groupSum.add(new BigDecimal(obj.toString()));
+                                        counter++;
+                                }
+                        }
+                        else
+                        {
+                                for (int i = 0; i < groupRows.size(); i++)
+                                {
+                                        o = expression.eval((Map)groupRows.get(i));
+                                        if (o != null)
                                         {
-                                                if (groupSum == null)
-                                                        groupSum = new BigDecimal(o.toString());
-                                                else
-                                                        groupSum = groupSum.add(new BigDecimal(o.toString()));
-                                                counter++;
-                                        }
-                                        catch (NumberFormatException e)
-                                        {
+                                                try
+                                                {
+                                                        if (groupSum == null)
+                                                                groupSum = new BigDecimal(o.toString());
+                                                        else
+                                                                groupSum = groupSum.add(new BigDecimal(o.toString()));
+                                                        counter++;
+                                                }
+                                                catch (NumberFormatException e)
+                                                {
+                                                }
                                         }
                                 }
                         }
@@ -570,8 +649,32 @@ class SQLSumFunction extends AggregateFunction
 
                 try
                 {
-                        if (sum != null)
-                                retval = Long.valueOf(sum.longValueExact());
+                        if (this.distinctValues != null)
+                        {
+                                BigDecimal groupSum = null;
+                                for (Object obj: this.distinctValues)
+                                {
+                                        if (groupSum == null)
+                                                groupSum = new BigDecimal(obj.toString());
+                                        else
+                                                groupSum = groupSum.add(new BigDecimal(obj.toString()));
+                                }
+                                counter = this.distinctValues.size();
+                                try
+                                {
+                                        if (groupSum != null)
+                                                retval = Long.valueOf(groupSum.longValueExact());
+                                }
+                                catch (ArithmeticException e)
+                                {
+                                        retval = groupSum.doubleValue();
+                                }
+                        }
+                        else
+                        {
+                                if (sum != null)
+                                        retval = Long.valueOf(sum.longValueExact());
+                        }
                 }
                 catch (ArithmeticException e)
                 {
@@ -581,7 +684,12 @@ class SQLSumFunction extends AggregateFunction
         }
         public String toString()
         {
-                return "SUM("+expression+")";
+                StringBuffer sb = new StringBuffer("SUM(");
+                if (distinctValues != null)
+                        sb.append("DISTINCT ");
+                sb.append(expression);
+                sb.append(")");
+                return sb.toString();
         }
         public List<String> usedColumns()
         {
@@ -618,14 +726,22 @@ class SQLSumFunction extends AggregateFunction
                         catch (NumberFormatException e)
                         {
                         }
+                        if (distinctValues != null)
+                        {
+                                /*
+				 * We want the sum of DISTINCT values, so we have
+				 * to keep a list of unique values.
+				 */
+                                distinctValues.add(o);
+                        }
                 }
         }
 }
 class SQLAvgFunction extends SQLSumFunction
 {
-        public SQLAvgFunction(Expression expression)
+        public SQLAvgFunction(boolean isDistinct, Expression expression)
         {
-                super(expression);
+                super(isDistinct, expression);
         }
         public Object eval(Map<String, Object> env)
         {
@@ -639,7 +755,12 @@ class SQLAvgFunction extends SQLSumFunction
         }
         public String toString()
         {
-                return "AVG("+expression+")";
+                StringBuffer sb = new StringBuffer("AVG(");
+                if (distinctValues != null)
+                        sb.append("DISTINCT ");
+                sb.append(expression);
+                sb.append(")");
+                return sb.toString();
         }
 }
 class QueryEnvEntry extends Expression
@@ -2158,6 +2279,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   final public Expression simpleExpression() throws ParseException {
         Expression arg;
         Expression arg2;
+        boolean isDistinct;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case OPENPARENTHESIS:
       jj_consume_token(OPENPARENTHESIS);
@@ -2205,37 +2327,87 @@ public class ExpressionParser implements ExpressionParserConstants {
     case COUNT:
       jj_consume_token(COUNT);
       jj_consume_token(OPENPARENTHESIS);
+                                    isDistinct = false;
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case DISTINCT:
+        jj_consume_token(DISTINCT);
+                            isDistinct = true;
+        break;
+      default:
+        jj_la1[37] = jj_gen;
+        ;
+      }
       arg = countOperation();
       jj_consume_token(CLOSEPARENTHESIS);
-                {if (true) return new SQLCountFunction(arg);}
+                {if (true) return new SQLCountFunction(isDistinct, arg);}
       break;
     case MAX:
       jj_consume_token(MAX);
       jj_consume_token(OPENPARENTHESIS);
+                                  isDistinct = false;
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case DISTINCT:
+        jj_consume_token(DISTINCT);
+                            isDistinct = true;
+        break;
+      default:
+        jj_la1[38] = jj_gen;
+        ;
+      }
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
-                {if (true) return new SQLMaxFunction(arg);}
+                {if (true) return new SQLMaxFunction(isDistinct, arg);}
       break;
     case MIN:
       jj_consume_token(MIN);
       jj_consume_token(OPENPARENTHESIS);
+                                  isDistinct = false;
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case DISTINCT:
+        jj_consume_token(DISTINCT);
+                            isDistinct = true;
+        break;
+      default:
+        jj_la1[39] = jj_gen;
+        ;
+      }
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
-                {if (true) return new SQLMinFunction(arg);}
+                {if (true) return new SQLMinFunction(isDistinct, arg);}
       break;
     case SUM:
       jj_consume_token(SUM);
       jj_consume_token(OPENPARENTHESIS);
+                                  isDistinct = false;
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case DISTINCT:
+        jj_consume_token(DISTINCT);
+                            isDistinct = true;
+        break;
+      default:
+        jj_la1[40] = jj_gen;
+        ;
+      }
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
-                {if (true) return new SQLSumFunction(arg);}
+                {if (true) return new SQLSumFunction(isDistinct, arg);}
       break;
     case AVG:
       jj_consume_token(AVG);
       jj_consume_token(OPENPARENTHESIS);
+                                  isDistinct = false;
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case DISTINCT:
+        jj_consume_token(DISTINCT);
+                            isDistinct = true;
+        break;
+      default:
+        jj_la1[41] = jj_gen;
+        ;
+      }
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
-                {if (true) return new SQLAvgFunction(arg);}
+                {if (true) return new SQLAvgFunction(isDistinct, arg);}
       break;
     case NAME:
       arg = columnName();
@@ -2264,7 +2436,7 @@ public class ExpressionParser implements ExpressionParserConstants {
                 {if (true) return new Placeholder();}
       break;
     default:
-      jj_la1[37] = jj_gen;
+      jj_la1[42] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2289,7 +2461,7 @@ public class ExpressionParser implements ExpressionParserConstants {
                    sign=t.image;
       break;
     default:
-      jj_la1[38] = jj_gen;
+      jj_la1[43] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2300,7 +2472,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       t = jj_consume_token(UNSIGNEDINT);
       break;
     default:
-      jj_la1[39] = jj_gen;
+      jj_la1[44] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2336,7 +2508,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         ;
         break;
       default:
-        jj_la1[40] = jj_gen;
+        jj_la1[45] = jj_gen;
         break label_10;
       }
       right = stringConstantAtom();
@@ -2390,7 +2562,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       t = jj_consume_token(SUM);
       break;
     default:
-      jj_la1[41] = jj_gen;
+      jj_la1[46] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2407,7 +2579,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[42];
+  final private int[] jj_la1 = new int[47];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -2415,10 +2587,10 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x6000000,0x6000000,0x80,0x100,0x0,0x100000,0x100000,0x100,0x0,0x100000,0x0,0x100,0x0,0x0,0x100,0x0,0x0,0x0,0x0,0x0,0x100000,0xf8100000,0x0,0xf900c600,0x20000,0x10000,0xf904c600,0x40000,0x100,0xe00000,0x40000,0xec0000,0x0,0x0,0xf900c600,0x0,0x0,0xf900c600,0x0,0x600,0x0,0xf8000000,};
+      jj_la1_0 = new int[] {0x6000000,0x6000000,0x80,0x100,0x0,0x100000,0x100000,0x100,0x0,0x100000,0x0,0x100,0x0,0x0,0x100,0x0,0x0,0x0,0x0,0x0,0x100000,0xf8100000,0x0,0xf900c600,0x20000,0x10000,0xf904c600,0x40000,0x100,0xe00000,0x40000,0xec0000,0x0,0x0,0xf900c600,0x0,0x0,0x80,0x80,0x80,0x80,0x80,0xf900c600,0x0,0x600,0x0,0xf8000000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x30000000,0x0,0x2000,0x0,0x30000000,0x0,0x40,0x0,0x400,0x80,0x0,0x100,0x1000,0x800,0x20,0x800000,0x0,0x201f,0x30000,0x27601f,0x0,0x0,0x24601f,0x0,0x0,0x0,0x0,0x8000,0xc0000,0x110000,0x25601f,0xc0000,0x110000,0x24601f,0x40000,0x0,0x4000,0x201f,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x30000000,0x0,0x2000,0x0,0x30000000,0x0,0x40,0x0,0x400,0x80,0x0,0x100,0x1000,0x800,0x20,0x800000,0x0,0x201f,0x30000,0x27601f,0x0,0x0,0x24601f,0x0,0x0,0x0,0x0,0x8000,0xc0000,0x110000,0x25601f,0xc0000,0x110000,0x0,0x0,0x0,0x0,0x0,0x24601f,0x40000,0x0,0x4000,0x201f,};
    }
 
   /** Constructor with InputStream. */
@@ -2432,7 +2604,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 42; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 47; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -2446,7 +2618,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 42; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 47; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -2456,7 +2628,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 42; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 47; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -2466,7 +2638,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 42; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 47; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -2475,7 +2647,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 42; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 47; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -2484,7 +2656,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 42; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 47; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -2540,7 +2712,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 42; i++) {
+    for (int i = 0; i < 47; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
