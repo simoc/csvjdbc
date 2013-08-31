@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 
 import java.io.StringReader;
 import java.sql.Date;
+import java.sql.Time;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -685,6 +686,18 @@ public class TestSqlParser
 		env.put("ENDDATE", Date.valueOf("2011-11-24"));
 		o = cs.eval(env);
 		assertEquals(o, new Integer(3));
+	}
+
+	@Test
+	public void testEvaluateTimeOperations() throws Exception
+	{
+		ExpressionParser cs;
+		cs = new ExpressionParser(new StringReader("CURRENT_TIME AS T1"));
+		cs.parseQueryEnvEntry();
+		Map<String, Object> env = new HashMap<String, Object>();
+		Time t1 = (Time)cs.eval(env);
+		assertNotNull(t1);
+		// Avoid comparison with current time because it is changing as unit test runs 
 	}
 
 	@Test

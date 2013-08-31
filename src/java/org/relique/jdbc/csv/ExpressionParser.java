@@ -86,6 +86,26 @@ class CurrentDateConstant extends Expression
                 return new LinkedList<String>();
         }
 }
+class CurrentTimeConstant extends Expression
+{
+        ExpressionParser parent;
+        public CurrentTimeConstant(ExpressionParser parent)
+        {
+                this.parent = parent;
+        }
+        public Object eval(Map<String, Object> env)
+        {
+                return parent.getCurrentTime();
+        }
+        public String toString()
+        {
+                return "CURRENT_TIME";
+        }
+        public List<String> usedColumns()
+        {
+                return new LinkedList<String>();
+        }
+}
 class Placeholder extends Expression
 {
         public static int nextIndex = 1;
@@ -1555,6 +1575,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         int limit;
         int offset;
         Date currentDate;
+        Time currentTime;
         public void parseLogicalExpression()throws ParseException
         {
                 content = logicalExpression();
@@ -1599,11 +1620,25 @@ public class ExpressionParser implements ExpressionParserConstants {
         {
                 if (currentDate == null)
                 {
-                        currentDate = new Date(System.currentTimeMillis());
+                        long l = System.currentTimeMillis();
+                        currentDate = new Date(l);
+                        currentTime = new Time(l);
                         /* Remove any time component from the date */
                         currentDate = Date.valueOf(currentDate.toString());
                 }
                 return currentDate;
+        }
+        public Time getCurrentTime()
+        {
+                if (currentTime == null)
+                {
+                        long l = System.currentTimeMillis();
+                        currentDate = new Date(l);
+                        currentTime = new Time(l);
+                        /* Remove any time component from the date */
+                        currentDate = Date.valueOf(currentDate.toString());
+                }
+                return currentTime;
         }
 
   final public ParsedExpression logicalExpression() throws ParseException {
@@ -1883,6 +1918,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     case UNSIGNEDNUMBER:
     case NULL:
     case CURRENT_DATE:
+    case CURRENT_TIME:
     case PLACEHOLDER:
     case LOWER:
     case ROUND:
@@ -2020,6 +2056,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     case UNSIGNEDNUMBER:
     case NULL:
     case CURRENT_DATE:
+    case CURRENT_TIME:
     case PLACEHOLDER:
     case LOWER:
     case ROUND:
@@ -2204,6 +2241,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     case UNSIGNEDNUMBER:
     case NULL:
     case CURRENT_DATE:
+    case CURRENT_TIME:
     case PLACEHOLDER:
     case LOWER:
     case ROUND:
@@ -2431,6 +2469,10 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_consume_token(CURRENT_DATE);
                 {if (true) return new CurrentDateConstant(this);}
       break;
+    case CURRENT_TIME:
+      jj_consume_token(CURRENT_TIME);
+                {if (true) return new CurrentTimeConstant(this);}
+      break;
     case PLACEHOLDER:
       jj_consume_token(PLACEHOLDER);
                 {if (true) return new Placeholder();}
@@ -2587,10 +2629,10 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x6000000,0x6000000,0x80,0x100,0x0,0x100000,0x100000,0x100,0x0,0x100000,0x0,0x100,0x0,0x0,0x100,0x0,0x0,0x0,0x0,0x0,0x100000,0xf8100000,0x0,0xf900c600,0x20000,0x10000,0xf904c600,0x40000,0x100,0xe00000,0x40000,0xec0000,0x0,0x0,0xf900c600,0x0,0x0,0x80,0x80,0x80,0x80,0x80,0xf900c600,0x0,0x600,0x0,0xf8000000,};
+      jj_la1_0 = new int[] {0xc000000,0xc000000,0x80,0x100,0x0,0x200000,0x200000,0x100,0x0,0x200000,0x0,0x100,0x0,0x0,0x100,0x0,0x0,0x0,0x0,0x0,0x200000,0xf0200000,0x0,0xf201c600,0x40000,0x20000,0xf209c600,0x80000,0x100,0x1c00000,0x80000,0x1d80000,0x0,0x0,0xf201c600,0x0,0x0,0x80,0x80,0x80,0x80,0x80,0xf201c600,0x0,0x600,0x0,0xf0000000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x30000000,0x0,0x2000,0x0,0x30000000,0x0,0x40,0x0,0x400,0x80,0x0,0x100,0x1000,0x800,0x20,0x800000,0x0,0x201f,0x30000,0x27601f,0x0,0x0,0x24601f,0x0,0x0,0x0,0x0,0x8000,0xc0000,0x110000,0x25601f,0xc0000,0x110000,0x0,0x0,0x0,0x0,0x0,0x24601f,0x40000,0x0,0x4000,0x201f,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x60000000,0x0,0x4000,0x0,0x60000000,0x0,0x80,0x0,0x800,0x100,0x0,0x200,0x2000,0x1000,0x40,0x1000000,0x0,0x403f,0x60000,0x4ec03f,0x0,0x0,0x48c03f,0x0,0x0,0x0,0x0,0x10000,0x180000,0x220000,0x4ac03f,0x180000,0x220000,0x0,0x0,0x0,0x0,0x0,0x48c03f,0x80000,0x0,0x8000,0x403f,};
    }
 
   /** Constructor with InputStream. */
@@ -2707,7 +2749,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[63];
+    boolean[] la1tokens = new boolean[64];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -2724,7 +2766,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 63; i++) {
+    for (int i = 0; i < 64; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

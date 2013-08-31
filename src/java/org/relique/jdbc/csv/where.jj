@@ -111,6 +111,26 @@ class CurrentDateConstant extends Expression
 		return new LinkedList<String>();
 	}
 }
+class CurrentTimeConstant extends Expression
+{
+	ExpressionParser parent;
+	public CurrentTimeConstant(ExpressionParser parent)
+	{
+		this.parent = parent;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		return parent.getCurrentTime();
+	}
+	public String toString()
+	{
+		return "CURRENT_TIME";
+	}
+	public List<String> usedColumns()
+	{
+		return new LinkedList<String>();
+	}
+}
 class Placeholder extends Expression
 {
 	public static int nextIndex = 1;
@@ -1581,6 +1601,7 @@ public class ExpressionParser
 	int limit;
 	int offset;
 	Date currentDate;
+	Time currentTime;
 	public void parseLogicalExpression()throws ParseException
 	{
 		content = logicalExpression();
@@ -1625,11 +1646,25 @@ public class ExpressionParser
 	{
 		if (currentDate == null)
 		{
-			currentDate = new Date(System.currentTimeMillis());
+			long l = System.currentTimeMillis();
+			currentDate = new Date(l);
+			currentTime = new Time(l);
 			/* Remove any time component from the date */
 			currentDate = Date.valueOf(currentDate.toString());
 		}
 		return currentDate;
+	}
+	public Time getCurrentTime()
+	{
+		if (currentTime == null)
+		{
+			long l = System.currentTimeMillis();
+			currentDate = new Date(l);
+			currentTime = new Time(l);
+			/* Remove any time component from the date */
+			currentDate = Date.valueOf(currentDate.toString());
+		}
+		return currentTime;
 	}
 }
 PARSER_END(ExpressionParser)
@@ -1692,6 +1727,10 @@ TOKEN:
 TOKEN:
 {
 	<CURRENT_DATE:"CURRENT_DATE">
+}
+TOKEN:
+{
+	<CURRENT_TIME:"CURRENT_TIME">
 }
 TOKEN:
 {
@@ -2242,6 +2281,10 @@ Expression simpleExpression():
 	| <CURRENT_DATE>
 	{
 		return new CurrentDateConstant(this);
+	}
+	| <CURRENT_TIME>
+	{
+		return new CurrentTimeConstant(this);
 	}
 	| <PLACEHOLDER>
 	{
