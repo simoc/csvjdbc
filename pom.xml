@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.sourceforge.csvjdbc</groupId>
   <artifactId>csvjdbc</artifactId>
-  <version>1.0.15</version>
+  <version>1.0.16</version>
   <packaging>jar</packaging>
   <name>CsvJdbc</name>
   <description>a Java JDBC driver for reading comma-separated-value files</description>
