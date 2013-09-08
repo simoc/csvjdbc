@@ -62,7 +62,14 @@ public class StringConverter
 
 	public Boolean parseBoolean(String str)
 	{
-		return Boolean.valueOf(str);
+		boolean retval;
+		if (str != null && str.equals("1"))
+			retval = true;
+		else if (str != null && str.equals("0"))
+			retval = false;
+		else
+			retval = Boolean.valueOf(str);
+		return retval;
 	}
 
 	public Byte parseByte(String str)

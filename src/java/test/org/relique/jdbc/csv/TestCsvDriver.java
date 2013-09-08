@@ -3950,6 +3950,34 @@ public class TestCsvDriver
 		}
 		results.close();
 		stmt.close();
-		conn.close();	
+		conn.close();
+	}
+	
+	@Test
+	public void testBooleanConversion() throws SQLException,
+			ParseException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,Boolean");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM bool");
+
+		assertTrue(results.next());
+		assertEquals("incorrect I", false, results.getBoolean(1));
+		assertEquals("incorrect J", true, results.getBoolean(2));
+		assertEquals("incorrect K", false, results.getBoolean(3));
+		assertEquals("incorrect L", true, results.getBoolean(4));
+		assertTrue(results.next());
+		assertEquals("incorrect I", true, results.getBoolean("I"));
+		assertEquals("incorrect J", false, results.getBoolean("J"));
+		assertEquals("incorrect K", false, results.getBoolean("K"));
+		assertEquals("incorrect L", false, results.getBoolean("L"));
+
+		results.close();
+		stmt.close();
+		conn.close();
 	}
 }
