@@ -33,6 +33,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.relique.jdbc.csv.Expression;
 import org.relique.jdbc.csv.ExpressionParser;
+import org.relique.jdbc.csv.MultipleSqlParser;
 import org.relique.jdbc.csv.ParseException;
 import org.relique.jdbc.csv.SqlParser;
 import org.relique.jdbc.csv.StringConverter;
@@ -812,5 +813,22 @@ public class TestSqlParser
 			cols[0].equalsIgnoreCase("MONTH"));
 		assertTrue("Column Name Col 1 '" + cols[1] + "' is not equal TEMP",
 			cols[1].equalsIgnoreCase("TEMP"));
+	}
+	
+	@Test
+	public void testParsingMultipleStatements() throws Exception
+	{
+		MultipleSqlParser parser = new MultipleSqlParser();
+		List<SqlParser> parsers = parser.parse("SELECT A FROM test1 ; SELECT B FROM test2 ; SELECT C FROM test3");
+		assertEquals("SQL statement count", 3, parsers.size());
+		
+		assertEquals("[A]", parsers.get(0).getExpression(0).toString());
+		assertEquals("Incorrect table name", parsers.get(0).getTableName(), "test1");
+
+		assertEquals("[B]", parsers.get(1).getExpression(0).toString());
+		assertEquals("Incorrect table name", parsers.get(1).getTableName(), "test2");
+
+		assertEquals("[C]", parsers.get(2).getExpression(0).toString());
+		assertEquals("Incorrect table name", parsers.get(2).getTableName(), "test3");
 	}
 }

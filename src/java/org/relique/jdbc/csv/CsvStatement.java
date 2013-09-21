@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.relique.io.CryptoFilter;
 import org.relique.io.DataReader;
@@ -45,6 +46,7 @@ public class CsvStatement implements Statement
 {
 	private CsvConnection connection;
 	protected ResultSet lastResultSet = null;
+	protected List<SqlParser> multipleParsers = null;
 	private int maxRows = 0;
 	private int fetchSize = 1;
 	private int fetchDirection = ResultSet.FETCH_FORWARD;
@@ -204,7 +206,20 @@ public class CsvStatement implements Statement
 		{
 			lastResultSet = null;
 		}
-		return false;
+		boolean retval;
+		if (multipleParsers != null && multipleParsers.size() > 0)
+		{
+			/*
+			 * There are multiple SELECT statements being executed.  Go to the next one.
+			 */
+			lastResultSet = executeParsedQuery(multipleParsers.remove(0));
+			retval = true;
+		}
+		else
+		{
+			retval = false;
+		}
+		return retval;
 	}
 
 	@Override
@@ -265,6 +280,7 @@ public class CsvStatement implements Statement
 		finally
 		{
 			lastResultSet = null;
+			multipleParsers = null;
 		}
 
 		SqlParser parser = new SqlParser();
@@ -454,6 +470,7 @@ public class CsvStatement implements Statement
 		finally
 		{
 			lastResultSet = null;
+			multipleParsers = null;
 			closed = true;
 		}
 		connection.removeStatement(this);
@@ -474,17 +491,39 @@ public class CsvStatement implements Statement
 	@Override
 	public boolean execute(String sql) throws SQLException
 	{
-		checkOpen();
+		CsvDriver.writeLog("CsvStatement:execute() - sql= " + sql);
 
+		/*
+		 * Close any previous ResultSet, as required by JDBC.
+		 */
 		try
 		{
-			executeQuery(sql);
-			return true;
+			if (lastResultSet != null)
+				lastResultSet.close();
+		}
+		finally
+		{
+			lastResultSet = null;
+			multipleParsers = null;
+		}
+
+		/*
+		 * Execute one or more SQL statements.
+		 * The method getMoreResults() will be used to step through the results.
+		 */
+		MultipleSqlParser parser = new MultipleSqlParser();
+		try
+		{
+			List<SqlParser> parsers = parser.parse(sql);
+			lastResultSet = executeParsedQuery(parsers.remove(0));
+			multipleParsers = parsers;
 		}
 		catch (Exception e)
 		{
-			throw new SQLException("execute(String \"" + sql + "\") not Supported !");
+			throw new SQLException("Syntax Error. " + e.getMessage());
 		}
+
+		return true;
 	}
 
 	@Override

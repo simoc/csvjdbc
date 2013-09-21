@@ -20,6 +20,7 @@ package test.org.relique.jdbc.csv;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -3977,6 +3978,54 @@ public class TestCsvDriver
 		assertEquals("incorrect L", false, results.getBoolean("L"));
 
 		results.close();
+		stmt.close();
+		conn.close();
+	}
+
+	@Test
+	public void testExecuteSingleStatement() throws SQLException
+	{
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		boolean hasResults = stmt.execute("SELECT * FROM sample");
+		assertTrue("execute hasResults", hasResults);
+		ResultSet results = stmt.getResultSet();
+		assertNotNull(results);
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", "Q123", results.getString(1));
+		assertFalse("getMoreResults", stmt.getMoreResults());
+
+		stmt.close();
+		conn.close();
+	}
+
+	@Test
+	public void testExecuteMultipleStatements() throws SQLException
+	{
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		boolean hasResults = stmt.execute("SELECT ID FROM sample;\nSELECT Name FROM sample2;");
+		assertTrue("execute hasResults", hasResults);
+		ResultSet results1 = stmt.getResultSet();
+		assertNotNull(results1);
+		assertTrue(results1.next());
+		assertEquals("The ID is wrong", "Q123", results1.getString(1));
+
+		assertTrue("getMoreResults", stmt.getMoreResults());
+		ResultSet results2 = stmt.getResultSet();
+		assertNotNull(results2);
+		assertTrue(results1.isClosed());
+		assertTrue(results2.next());
+		assertEquals("The Name is wrong", "Aman", results2.getString(1));
+		assertFalse("getMoreResults", stmt.getMoreResults());
+		assertTrue(results2.isClosed());
+
 		stmt.close();
 		conn.close();
 	}

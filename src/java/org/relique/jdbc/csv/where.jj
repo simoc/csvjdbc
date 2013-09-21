@@ -1591,15 +1591,15 @@ class ParsedStatement
 public class ExpressionParser
 {
 	ParsedExpression content;
-	List<ParsedExpression> queryEntries;
-	boolean isDistinct;
-	String tableName;
-	String tableAlias;
-	List<ParsedExpression> groupByEntries;
-	ParsedExpression havingClause;
-	List<ParsedExpression> orderByEntries;
-	int limit;
-	int offset;
+	private List<ParsedExpression> queryEntries;
+	private boolean isDistinct;
+	private String tableName;
+	private String tableAlias;
+	private List<ParsedExpression> groupByEntries;
+	private ParsedExpression havingClause;
+	private List<ParsedExpression> orderByEntries;
+	private int limit;
+	private int offset;
 	Date currentDate;
 	Time currentTime;
 	public void parseLogicalExpression()throws ParseException
@@ -1618,11 +1618,11 @@ public class ExpressionParser
 	{
 		content = queryEnvEntry();
 	}
-	public void parseSelectStatement()throws ParseException
+	public ParsedStatement parseSingleStatement()throws ParseException
 	{
 		/* Reset prepared statement place-holder counter */
 		Placeholder.nextIndex = 1;
-		ParsedStatement parsedStatement = selectStatement();
+		ParsedStatement parsedStatement = singleStatement();
 		queryEntries = parsedStatement.queryEntries;
 		isDistinct = parsedStatement.isDistinct;
 		tableName = parsedStatement.tableName;
@@ -1633,6 +1633,14 @@ public class ExpressionParser
 		orderByEntries = parsedStatement.orderByEntries;
 		limit = parsedStatement.limit;
 		offset = parsedStatement.offset;
+		return parsedStatement;
+	}
+	public List<ParsedStatement> parseMultipleStatements()throws ParseException
+	{
+		/* Reset prepared statement place-holder counter */
+		Placeholder.nextIndex = 1;
+		List<ParsedStatement> statements = multipleStatements();
+		return statements;
 	}
 	public Object eval(Map<String, Object> env)
 	{
@@ -1962,6 +1970,29 @@ ParsedExpression orderByEntry():
 		return new ParsedExpression(new OrderByEntry(left, order));
 	}
 }
+List<ParsedStatement> multipleStatements():
+{
+	List<ParsedStatement> statements;
+	ParsedStatement parsedStatement;
+}
+{
+	{statements = new LinkedList<ParsedStatement>();}
+	parsedStatement = selectStatement(){statements.add(parsedStatement);}
+	(<SEMICOLON>(parsedStatement = selectStatement(){statements.add(parsedStatement);})?)*<EOF>
+	{
+		return statements;
+	}
+}
+ParsedStatement singleStatement():
+{
+	ParsedStatement parsedStatement;
+}
+{
+	parsedStatement = selectStatement()(<SEMICOLON>)?<EOF>
+	{
+		return parsedStatement;
+	}
+}
 ParsedStatement selectStatement():
 {
 	List<ParsedExpression> result;
@@ -1999,8 +2030,6 @@ ParsedStatement selectStatement():
 		(<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?
 		(<LIMIT>t=<UNSIGNEDINT>{limit = Integer.parseInt(t.image);}(<OFFSET>t=<UNSIGNEDINT>{offset = Integer.parseInt(t.image);})?)?
 	)?
-	(<SEMICOLON>)?
-	<EOF>
 	{
 		return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, groupByEntries, havingClause, orderByEntries, limit, offset);
 	}
