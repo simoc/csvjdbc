@@ -3546,6 +3546,29 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testResultSetGetFromClosed() throws SQLException
+	{
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT ID FROM sample");
+		assertTrue(results.next());
+		assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
+		results.close();
+		try
+		{
+			results.getString("ID");
+			fail("Closed result set should throw SQLException");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+		}
+	}
+
+	@Test
 	public void testHeaderlineWithMultipleTables() throws SQLException
 	{
 		Properties props = new Properties();

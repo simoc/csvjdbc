@@ -2150,6 +2150,8 @@ public class CsvResultSet implements ResultSet
 		// set last read column index for wasNull()
 		lastIndexRead = columnIndex;
 
+		checkOpen();
+
 		if (columnIndex < 1 || columnIndex > this.queryEnvironment.size())
 		{
 			throw new SQLException("Column not found: invalid index: "+columnIndex);
