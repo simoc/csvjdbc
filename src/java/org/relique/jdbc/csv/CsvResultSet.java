@@ -51,7 +51,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.relique.io.DataReader;
-import org.relique.io.ListDataReader;
 
 /**
  * This class implements the java.sql.ResultSet JDBC interface for the
@@ -229,20 +228,19 @@ public class CsvResultSet implements ResultSet
 			this.orderByColumns = null;
 		if (isDistinct)
 			this.distinctValues = new HashSet<ArrayList<Object>>();
-		if(reader instanceof CsvReader || reader instanceof ListDataReader)
+
+		// timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
+		timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
+		dateFormat = ((CsvConnection)statement.getConnection()).getDateFormat();
+		timeZone = ((CsvConnection)statement.getConnection()).getTimeZoneName();
+		this.converter = new StringConverter(dateFormat, timeFormat, timeZone);
+		if (reader instanceof CsvReader)
 		{
-			// timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
-			timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
-			dateFormat = ((CsvConnection)statement.getConnection()).getDateFormat();
-			timeZone = ((CsvConnection)statement.getConnection()).getTimeZoneName();
-			this.converter = new StringConverter(dateFormat, timeFormat, timeZone);
-			if (reader instanceof CsvReader)
-			{
-				((CsvReader) reader).setConverter(converter);
-				if(!"".equals(columnTypes))
-					((CsvReader) reader).setColumnTypes(columnTypes);
-			}
+			((CsvReader) reader).setConverter(converter);
+			if(!"".equals(columnTypes))
+				((CsvReader) reader).setColumnTypes(columnTypes);
 		}
+
 		if (whereClause!= null)
 			this.usedColumns = new LinkedList<String>(whereClause.usedColumns());
 		else

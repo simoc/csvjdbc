@@ -283,10 +283,12 @@ public class TestDbfDriver
 
 		ResultSet results = stmt.executeQuery("SELECT * FROM fox_samp");
 		assertTrue(results.next());
-		assertEquals("The NTAXYEAR is wrong", 0, results.getInt("NTAXYEAR"));
-		assertEquals("The NCOUNTYCOD is wrong", 0, results.getShort("NCOUNTYCOD"));
-		assertEquals("The NNOTFCV is wrong", 0, results.getLong("NNOTFCV"));	
-		assertEquals("The NNOTASSRAT is wrong", 0, Math.round(results.getDouble("NNOTASSRAT") * 1000000));		
+		assertEquals("The NCOUNTYCOD is wrong", 33, results.getByte("NCOUNTYCOD"));
+		assertEquals("The NCOUNTYCOD is wrong", 33, results.getShort("NCOUNTYCOD"));
+		assertEquals("The NTAXYEAR is wrong", 2011, results.getInt("NTAXYEAR"));
+		assertEquals("The NNOTFCV is wrong", 0, results.getLong("NNOTFCV"));
+		assertEquals("The NASSASSRAT is wrong", 7250, Math.round(results.getFloat("NASSASSRAT") * 1000));
+		assertEquals("The NASSASSRAT is wrong", 7250, Math.round(results.getDouble("NASSASSRAT") * 1000));		
 		assertFalse(results.next());
 	}
 }
