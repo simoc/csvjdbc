@@ -270,4 +270,23 @@ public class TestDbfDriver
 		assertTrue(results.next());
 		assertEquals("Incorrect column name", "KEY", results.getString(4));
 	}
+	
+	@Test
+	public void testGetNumeric() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM fox_samp");
+		assertTrue(results.next());
+		assertEquals("The NTAXYEAR is wrong", 0, results.getInt("NTAXYEAR"));
+		assertEquals("The NCOUNTYCOD is wrong", 0, results.getShort("NCOUNTYCOD"));
+		assertEquals("The NNOTFCV is wrong", 0, results.getLong("NNOTFCV"));	
+		assertEquals("The NNOTASSRAT is wrong", 0, Math.round(results.getDouble("NNOTASSRAT") * 1000000));		
+		assertFalse(results.next());
+	}
 }
