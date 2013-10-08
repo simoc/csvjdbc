@@ -104,8 +104,12 @@
   <!-- =================================================================== -->
   <target name="jar" depends="compile"
           description="Creates the jar file for the system">
-    <jar jarfile="${jar.file}">
+    <manifest file="manifest">
+      <attribute name="Main-Class" value="org.relique.jdbc.csv.CsvMain"/>
+    </manifest>
+    <jar jarfile="${jar.file}" manifest="manifest">
       <fileset dir="${class.dir}" includes="org/**/*.class"/>
+      <!-- For running CsvJdbc as a utility program -->
       <!-- For java.sql.DriverManager Service Provider mechanism -->
       <service type="java.sql.Driver" provider="org.relique.jdbc.csv.CsvDriver"/>
     </jar>
@@ -136,6 +140,7 @@
     <delete dir="${class.dir}"/>
     <delete dir="${javadoc.dir}"/>
     <delete dir="${rel.dir}"/>
+    <delete file="manifest"/>
   </target>
 
   <!-- =================================================================== -->
