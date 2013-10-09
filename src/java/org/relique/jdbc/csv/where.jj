@@ -2130,9 +2130,9 @@ LogicalExpression relationalExpression():
 			expr = new NotExpression(expr);
 		return expr;
 	}
-	| <LIKE>t = <STRING>
+	| <LIKE>arg2 = binaryOperation()
 	{
-		expr = new LikeExpression(arg1, new StringConstant(t.image.substring(1, t.image.length()-1)));
+		expr = new LikeExpression(arg1, arg2);
 		if (negate)
 			expr = new NotExpression(expr);
 		return expr;

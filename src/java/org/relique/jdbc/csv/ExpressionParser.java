@@ -2171,8 +2171,8 @@ public class ExpressionParser implements ExpressionParserConstants {
         break;
       case LIKE:
         jj_consume_token(LIKE);
-        t = jj_consume_token(STRING);
-                expr = new LikeExpression(arg1, new StringConstant(t.image.substring(1, t.image.length()-1)));
+        arg2 = binaryOperation();
+                expr = new LikeExpression(arg1, arg2);
                 if (negate)
                         expr = new NotExpression(expr);
                 {if (true) return expr;}

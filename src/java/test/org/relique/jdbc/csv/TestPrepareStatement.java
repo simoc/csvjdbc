@@ -90,8 +90,7 @@ public class TestPrepareStatement
 		Properties props = new Properties();
 		props.put("extension", ".csv");
 		props.put("columnTypes", "Int,String,String,Timestamp,String");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath, props);
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 		String queryString = "SELECT * FROM sample5 WHERE id BETWEEN ? AND ?";
 		PreparedStatement prepstmt = conn.prepareStatement(queryString);
 
@@ -100,14 +99,11 @@ public class TestPrepareStatement
 		ResultSet results = prepstmt.executeQuery();
 
 		assertTrue(results.next());
-		assertEquals("Integer column ID is wrong", new Integer(1), results
-				.getObject("id"));
+		assertEquals("Integer column ID is wrong", new Integer(1), results.getObject("id"));
 		assertTrue(results.next());
-		assertEquals("Integer column ID is wrong", new Integer(2), results
-				.getObject("id"));
+		assertEquals("Integer column ID is wrong", new Integer(2), results.getObject("id"));
 		assertTrue(results.next());
-		assertEquals("Integer column ID is wrong", new Integer(3), results
-				.getObject("id"));
+		assertEquals("Integer column ID is wrong", new Integer(3), results.getObject("id"));
 		assertFalse(results.next());
 	}
 
@@ -134,8 +130,7 @@ public class TestPrepareStatement
 		Properties props = new Properties();
 		props.put("extension", ".csv");
 		props.put("columnTypes", "Short,String,String");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath, props);
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 		String queryString = "SELECT * FROM sample4 WHERE id = ?";
 		PreparedStatement prepstmt = conn.prepareStatement(queryString);
 
@@ -175,8 +170,7 @@ public class TestPrepareStatement
 	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Byte,Short,Integer,Long,Float,Double,BigDecimal");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath, props);
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 		String queryString = "SELECT * FROM numeric WHERE C5 < ?";
 		PreparedStatement prepstmt = conn.prepareStatement(queryString);
 
@@ -193,8 +187,7 @@ public class TestPrepareStatement
 	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Byte,Short,Integer,Long,Float,Double,BigDecimal");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath, props);
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 		String queryString = "SELECT * FROM numeric WHERE C6 < ?";
 		PreparedStatement prepstmt = conn.prepareStatement(queryString);
 
@@ -211,8 +204,7 @@ public class TestPrepareStatement
 	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Timestamp,String");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath, props);
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 		String queryString = "SELECT * FROM sample5 WHERE Name LIKE ?";
 		PreparedStatement prepstmt = conn.prepareStatement(queryString);
 
@@ -230,8 +222,7 @@ public class TestPrepareStatement
 		Properties props = new Properties();
 		props.put("extension", ".csv");
 		props.put("columnTypes", "Int,String,String,Timestamp,String");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath, props);
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 		String queryString = "SELECT * FROM sample5 WHERE id BETWEEN ? AND ?";
 		PreparedStatement prepstmt = conn.prepareStatement(queryString);
 
@@ -250,8 +241,7 @@ public class TestPrepareStatement
 
 		assertTrue(results1.isClosed());
 		assertTrue(results2.next());
-		assertEquals("Integer column ID is wrong", new Integer(41), results2
-				.getObject("id"));
+		assertEquals("Integer column ID is wrong", new Integer(41), results2.getObject("id"));
 		assertFalse(results2.next());
 	}
 
@@ -261,8 +251,7 @@ public class TestPrepareStatement
 		Properties props = new Properties();
 		props.put("extension", ".csv");
 		props.put("columnTypes", "Int,String,String,Timestamp,String");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath, props);
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 		String queryString = "SELECT * FROM sample5 WHERE job = ?";
 		PreparedStatement prepstmt = conn.prepareStatement(queryString);
 
@@ -270,31 +259,24 @@ public class TestPrepareStatement
 		ResultSet results = prepstmt.executeQuery();
 		
 		assertTrue(results.next());
-		assertEquals("Integer column ID is wrong", new Integer(1), results
-				.getObject("id"));
+		assertEquals("Integer column ID is wrong", new Integer(1), results.getObject("id"));
 		assertTrue(results.next());
-		assertEquals("Integer column ID is wrong", new Integer(3), results
-				.getObject("id"));
+		assertEquals("Integer column ID is wrong", new Integer(3), results.getObject("id"));
 		assertTrue(results.next());
-		assertEquals("Integer column ID is wrong", new Integer(4), results
-				.getObject("id"));
+		assertEquals("Integer column ID is wrong", new Integer(4), results.getObject("id"));
 		assertFalse(results.next());
 		
 		prepstmt.setString(1, "Office Employee");
 		results = prepstmt.executeQuery();
 		
 		assertTrue(results.next());
-		assertEquals("Integer column ID is wrong", new Integer(6), results
-				.getObject("id"));
+		assertEquals("Integer column ID is wrong", new Integer(6), results.getObject("id"));
 		assertTrue(results.next());
-		assertEquals("Integer column ID is wrong", new Integer(7), results
-				.getObject("id"));
+		assertEquals("Integer column ID is wrong", new Integer(7), results.getObject("id"));
 		assertTrue(results.next());
-		assertEquals("Integer column ID is wrong", new Integer(8), results
-				.getObject("id"));
+		assertEquals("Integer column ID is wrong", new Integer(8), results.getObject("id"));
 		assertTrue(results.next());
-		assertEquals("Integer column ID is wrong", new Integer(9), results
-				.getObject("id"));
+		assertEquals("Integer column ID is wrong", new Integer(9), results.getObject("id"));
 		assertFalse(results.next());
 	}
 
@@ -303,8 +285,7 @@ public class TestPrepareStatement
 	{
 		Properties props = new Properties();
 		props.put("extension", ".csv");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath, props);
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
 		String queryString = "SELECT * FROM sample5";
 		try
@@ -336,8 +317,7 @@ public class TestPrepareStatement
 		Properties props = new Properties();
 		props.put("extension", ".csv");
 		props.put("columnTypes", "Int,String,String,Timestamp,String");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
-				+ filePath, props);
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 		String queryString = "SELECT * FROM sample5 where id > ? order by id";
 		PreparedStatement prepstmt = conn.prepareStatement(queryString);
 
