@@ -323,8 +323,11 @@ public class CsvDriver implements Driver
 				if (i > 1)
 					out.print(separator);
 				String value = resultSet.getString(i);
-				value = addQuotes(value, separator, quoteChar, quoteStyle);
-				out.print(value);
+				if (value != null)
+				{
+					value = addQuotes(value, separator, quoteChar, quoteStyle);
+					out.print(value);
+				}
 			}
 			out.println();
 		}
