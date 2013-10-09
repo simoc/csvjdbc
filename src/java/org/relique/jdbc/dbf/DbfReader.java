@@ -138,6 +138,8 @@ public class DbfReader extends DataReader
 			Object result = recordGetTypedValueMethod.invoke(record, new Object[] {fieldName});
 			if(result instanceof String)
 				result = ((String) result).trim();
+			else if (result instanceof java.util.Date)
+				result = new java.sql.Date(((java.util.Date)result).getTime());
 			return result;
 		}
 		catch (Exception e)
