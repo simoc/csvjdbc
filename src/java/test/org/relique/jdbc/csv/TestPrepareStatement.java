@@ -207,6 +207,24 @@ public class TestPrepareStatement
 	}
 
 	@Test
+	public void testLike() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Timestamp,String");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		String queryString = "SELECT * FROM sample5 WHERE Name LIKE ?";
+		PreparedStatement prepstmt = conn.prepareStatement(queryString);
+
+		prepstmt.setString(1, "%Lucero%");
+		ResultSet results = prepstmt.executeQuery();
+
+		assertTrue(results.next());
+		assertEquals("Column ID is wrong", 3, results.getInt("ID"));
+		assertFalse(results.next());
+	}
+
+	@Test
 	public void testCanReuseAPreparedStatement() throws SQLException
 	{
 		Properties props = new Properties();
