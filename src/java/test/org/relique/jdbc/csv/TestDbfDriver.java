@@ -32,6 +32,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -306,5 +307,21 @@ public class TestDbfDriver
 		ResultSet results = stmt.executeQuery("SELECT DASSDATE FROM fox_samp");
 		assertTrue(results.next());
 		assertEquals("The DASSDATE is wrong", Date.valueOf("2012-12-25"), results.getDate(1));
+	}
+	
+	@Test
+	public void testGetTimestamp() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT DASSDATE FROM fox_samp");
+		assertTrue(results.next());
+		assertEquals("The DASSDATE is wrong", Timestamp.valueOf("2012-12-25 00:00:00"),
+			results.getTimestamp(1));
 	}
 }
