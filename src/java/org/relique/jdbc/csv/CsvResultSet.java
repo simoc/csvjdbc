@@ -1073,7 +1073,10 @@ public class CsvResultSet implements ResultSet
 	@Override
 	public Timestamp getTimestamp(int columnIndex) throws SQLException
 	{
-		return (Timestamp) getObject(columnIndex);
+		Object o = getObject(columnIndex);
+		if (o instanceof Date)
+			o = new Timestamp(((Date)o).getTime());
+		return (Timestamp) o;
 	}
 
 	@Override
