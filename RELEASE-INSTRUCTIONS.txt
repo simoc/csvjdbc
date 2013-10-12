@@ -1,0 +1,77 @@
+Instructions for creating a CsvJdbc release build/RELEASE-INSTRUCTIONS.txt
+
+1. Check environment
+
+java -version (must be 1.6)
+
+2. Checkout (replace simoc with your SourceForge username)
+
+git clone ssh://simoc@git.code.sf.net/p/csvjdbc/code csvjdbc-code
+git clone ssh://simoc@git.code.sf.net/p/csvjdbc/website csvjdbc-website
+
+3.  Check that XML <property name="rel"> tag in file
+csvjdbc-code/build/build.xml is the version number we are creating.
+If not, update it and commit.
+
+4. Compile
+
+cd csvjdbc-code/build
+ant jar test
+
+5. Check that the ant test step above does not report failing unit tests
+
+6. Build source code archives
+
+cd ..
+./pack-sources.sh
+
+7. Upload to Sourceforge web site (replace simoc and 1.0-16 with values
+for this release).
+
+sftp simoc,csvjdbc@frs.sourceforge.net
+cd /home/frs/project/c/cs/csvjdbc/CsvJdbc
+mkdir 1.0-16
+cd 1.0-16
+put release/csvjdbc-1.0-16.jar
+put dist/csvjdbc-sources.tar.gz csvjdbc-sources-1.0.16.tar.gz
+put dist/csvjdbc-sources-full.tar.gz csvjdbc-sources-full-1.0-16.tar.gz
+
+8.  Check that XML <project><version> tag in file pom.xml is the
+version number we are creating. If not, update it and commit.
+
+9. Check that you have a $HOME/.m2/settings.xml file like (replace
+simoc with your Sourceforge username):
+
+<settings>
+ <servers>
+  <server>
+   <id>csvjdbc.sourceforge.net</id>
+    <username>simoc,csvjdbc</username>
+    <filePermissions>775</filePermissions>
+    <directoryPermissions>775</directoryPermissions>
+  </server>
+ </servers>
+</settings>
+
+10. Maven deploy to SourceForge
+
+mvn deploy (you are prompted your SourceForge login password)
+
+11. Tag release (replace 1.0-16 with the value for this release)
+
+git tag -a -m 'CsvJdbc version 1.0-16' v1.0-16
+git push origin v1.0-16
+
+12. Update Tracker tickets from 'Pending' to 'Closed' with a comment
+that they are included in release 1.0-16.
+
+13. Create a README.txt file listing the changed Tracker tickets and
+upload to 1.0-16 directory, as in Step 7.
+
+14. Upload new index.html if it has changed since last release.
+
+cd csvjdbc-website/www
+sftp simoc@web.sourceforge.net
+cd /home/project-web/c/cs/csvjdbc/htdocs
+put index.html
+
