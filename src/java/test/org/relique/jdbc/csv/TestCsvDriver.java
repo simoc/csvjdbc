@@ -2229,6 +2229,97 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testDayOfMonthFunction() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,Date,Time");
+		props.put("timeZoneName", TimeZone.getDefault().getID());
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select dayofmonth(d) as dom, " +
+				"dayofmonth('2013-10-13') as today from sample8");
+		assertTrue(results.next());
+		assertEquals("dom is wrong", 2, results.getInt(1));
+		assertEquals("today is wrong", 13, results.getInt(2));
+		assertTrue(results.next());
+		assertEquals("dom is wrong", 2, results.getInt(1));
+		assertTrue(results.next());
+		assertEquals("dom is wrong", 28, results.getInt(1));
+	}
+
+	@Test
+	public void testMonthFunction() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select month(d) as month, " +
+				"month('2013-10-13') as today from sample8");
+		assertTrue(results.next());
+		assertEquals("month is wrong", 1, results.getInt(1));
+		assertEquals("today is wrong", 10, results.getInt(2));
+		assertTrue(results.next());
+		assertEquals("dom is wrong", 2, results.getInt(1));
+		assertTrue(results.next());
+		assertEquals("dom is wrong", 3, results.getInt(1));
+	}
+
+	@Test
+	public void testYearFunction() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,Date,Time");
+		props.put("timeZoneName", TimeZone.getDefault().getID());
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select year(d) as year, " +
+				"year('2013-10-13') as today from sample8");
+		assertTrue(results.next());
+		assertEquals("month is wrong", 2010, results.getInt(1));
+		assertEquals("today is wrong", 2013, results.getInt(2));
+		assertTrue(results.next());
+		assertEquals("dom is wrong", 2010, results.getInt(1));
+		assertTrue(results.next());
+		assertEquals("dom is wrong", 2010, results.getInt(1));
+		assertTrue(results.next());
+		assertEquals("dom is wrong", 2010, results.getInt(1));
+		assertTrue(results.next());
+		assertEquals("dom is wrong", 2009, results.getInt(1));
+	}
+
+	@Test
+	public void testDateFunctionsWithTimestamp() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,String,String,Timestamp");
+		props.put("timeZoneName", TimeZone.getDefault().getID());
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select dayofmonth(Start), month(Start), year(Start) from sample5");
+		assertTrue(results.next());
+		assertEquals("dayofmonth is wrong", 2, results.getInt(1));
+		assertEquals("month is wrong", 4, results.getInt(2));
+		assertEquals("year is wrong", 2001, results.getInt(3));
+
+		String timestamp = "2013-10-13 14:33:55";
+		results = stmt.executeQuery("select dayofmonth('" + timestamp + "')," +
+			"month('" + timestamp + "'), year('" + timestamp + "') from sample5");
+		assertTrue(results.next());
+		assertEquals("dayofmonth is wrong", 13, results.getInt(1));
+		assertEquals("month is wrong", 10, results.getInt(2));
+		assertEquals("year is wrong", 2013, results.getInt(3));
+	}
+
+	@Test
 	public void testNullIfFunction() throws SQLException
 	{
 		Properties props = new Properties();
