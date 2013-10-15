@@ -265,160 +265,123 @@ class SQLRoundFunction extends Expression
 		return result;
 	}
 }
-class SQLDayOfMonthFunction extends Expression
+class SQLCalendarFunction extends Expression
 {
+	String functionName;
+	int calendarField;
 	Expression expression;
+	public SQLCalendarFunction(String functionName, int calendarField,
+		Expression expression)
+	{
+		this.functionName = functionName;
+		this.calendarField = calendarField;
+		this.expression = expression;
+	}
+	public Object eval(Map<String, Object> env)
+	{
+		Object retval = null;
+		Object o = expression.eval(env);
+		if (o != null)
+		{
+			/*
+			 * Accept either java.sql.Date, java.sql.Time or java.sql.Timestamp.
+			 */
+			java.util.Date date = null;
+			if (o instanceof java.util.Date)
+			{
+				date = (java.util.Date)o;
+			}
+			else
+			{
+				/*
+				 * Try and convert from String to a Timestamp or Date/Time.
+				 */
+				Expression stringConverter = new ColumnName("@StringConverter");
+				StringConverter sc = (StringConverter) stringConverter.eval(env);
+				date = sc.parseTimestamp(o.toString());
+				if (date == null)
+				{
+					if (calendarField == Calendar.DAY_OF_MONTH ||
+						calendarField == Calendar.MONTH ||
+						calendarField == Calendar.YEAR)
+					{
+						date = sc.parseDate(o.toString());
+					}
+					else
+					{
+						date = sc.parseTime(o.toString());
+					}
+				}
+			}
+			if (date != null)
+			{
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(date);
+				int fieldValue = cal.get(calendarField);
+				if (calendarField == Calendar.MONTH)
+					fieldValue++;
+				retval = Integer.valueOf(fieldValue);
+			}
+		}
+		return retval;
+	}
+	public String toString()
+	{
+		return functionName+"("+expression+")";
+	}
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		result.addAll(expression.usedColumns());
+		return result;
+	}
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		result.addAll(expression.aggregateFunctions());
+		return result;
+	}
+}
+class SQLDayOfMonthFunction extends SQLCalendarFunction
+{
 	public SQLDayOfMonthFunction(Expression expression)
 	{
-		this.expression = expression;
-	}
-	public Object eval(Map<String, Object> env)
-	{
-		Object retval = null;
-		Object o = expression.eval(env);
-		if (o != null)
-		{
-			/*
-			 * Accept either java.sql.Date or java.sql.Timestamp.
-			 */
-			if (!(o instanceof java.util.Date))
-			{
-				/*
-				 * Not already a Date so try and convert it from a String.
-				 */
-				Expression stringConverter = new ColumnName("@StringConverter");
-				StringConverter sc = (StringConverter) stringConverter.eval(env);
-				o = sc.parseDate(o.toString());
-			}
-			if (o != null)
-			{
-				Calendar cal = Calendar.getInstance();
-				cal.setTime((java.util.Date)o);
-				int day = cal.get(Calendar.DAY_OF_MONTH);
-				retval = Integer.valueOf(day);
-			}
-		}
-		return retval;
-	}
-	public String toString()
-	{
-		return "DAYOFMONTH("+expression+")";
-	}
-	public List<String> usedColumns()
-	{
-		List<String> result = new LinkedList<String>();
-		result.addAll(expression.usedColumns());
-		return result;
-	}
-	public List<AggregateFunction> aggregateFunctions()
-	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-		result.addAll(expression.aggregateFunctions());
-		return result;
+		super("DAYOFMONTH", Calendar.DAY_OF_MONTH, expression);
 	}
 }
-class SQLMonthFunction extends Expression
+class SQLMonthFunction extends SQLCalendarFunction
 {
-	Expression expression;
 	public SQLMonthFunction(Expression expression)
 	{
-		this.expression = expression;
-	}
-	public Object eval(Map<String, Object> env)
-	{
-		Object retval = null;
-		Object o = expression.eval(env);
-		if (o != null)
-		{
-			/*
-			 * Accept either java.sql.Date or java.sql.Timestamp.
-			 */
-			if (!(o instanceof java.util.Date))
-			{
-				/*
-				 * Not already a Date so try and convert it from a String.
-				 */
-				Expression stringConverter = new ColumnName("@StringConverter");
-				StringConverter sc = (StringConverter) stringConverter.eval(env);
-				o = sc.parseDate(o.toString());
-			}
-			if (o != null)
-			{
-				Calendar cal = Calendar.getInstance();
-				cal.setTime((java.util.Date)o);
-				int month = cal.get(Calendar.MONTH) + 1;
-				retval = Integer.valueOf(month);
-			}
-		}
-		return retval;
-	}
-	public String toString()
-	{
-		return "MONTH("+expression+")";
-	}
-	public List<String> usedColumns()
-	{
-		List<String> result = new LinkedList<String>();
-		result.addAll(expression.usedColumns());
-		return result;
-	}
-	public List<AggregateFunction> aggregateFunctions()
-	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-		result.addAll(expression.aggregateFunctions());
-		return result;
+		super("MONTH", Calendar.MONTH, expression);
 	}
 }
-class SQLYearFunction extends Expression
+class SQLYearFunction extends SQLCalendarFunction
 {
-	Expression expression;
 	public SQLYearFunction(Expression expression)
 	{
-		this.expression = expression;
+		super("YEAR", Calendar.YEAR, expression);
 	}
-	public Object eval(Map<String, Object> env)
+}
+class SQLHourOfDayFunction extends SQLCalendarFunction
+{
+	public SQLHourOfDayFunction(Expression expression)
 	{
-		Object retval = null;
-		Object o = expression.eval(env);
-		if (o != null)
-		{
-			/*
-			 * Accept either java.sql.Date or java.sql.Timestamp.
-			 */
-			if (!(o instanceof java.util.Date))
-			{
-				/*
-				 * Not already a Date so try and convert it from a String.
-				 */
-				Expression stringConverter = new ColumnName("@StringConverter");
-				StringConverter sc = (StringConverter) stringConverter.eval(env);
-				o = sc.parseDate(o.toString());
-			}
-			if (o != null)
-			{
-				Calendar cal = Calendar.getInstance();
-				cal.setTime((java.util.Date)o);
-				int year = cal.get(Calendar.YEAR);
-				retval = Integer.valueOf(year);
-			}
-		}
-		return retval;
+		super("HOUROFDAY", Calendar.HOUR_OF_DAY, expression);
 	}
-	public String toString()
+}
+class SQLMinuteFunction extends SQLCalendarFunction
+{
+	public SQLMinuteFunction(Expression expression)
 	{
-		return "YEAR("+expression+")";
+		super("MINUTE", Calendar.MINUTE, expression);
 	}
-	public List<String> usedColumns()
+}
+class SQLSecondFunction extends SQLCalendarFunction
+{
+	public SQLSecondFunction(Expression expression)
 	{
-		List<String> result = new LinkedList<String>();
-		result.addAll(expression.usedColumns());
-		return result;
-	}
-	public List<AggregateFunction> aggregateFunctions()
-	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-		result.addAll(expression.aggregateFunctions());
-		return result;
+		super("SECOND", Calendar.SECOND, expression);
 	}
 }
 class SQLUpperFunction extends Expression
@@ -1955,6 +1918,18 @@ TOKEN:
 }
 TOKEN:
 {
+	<HOUROFDAY:"HOUROFDAY">
+}
+TOKEN:
+{
+	<MINUTE:"MINUTE">
+}
+TOKEN:
+{
+	<SECOND:"SECOND">
+}
+TOKEN:
+{
 	<LOWER:"LOWER">
 }
 TOKEN:
@@ -2437,6 +2412,18 @@ Expression simpleExpression():
 	{
 		return new SQLYearFunction(arg);
 	}
+	| <HOUROFDAY> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLHourOfDayFunction(arg);
+	}
+	| <MINUTE> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLMinuteFunction(arg);
+	}
+	| <SECOND> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLSecondFunction(arg);
+	}
 	| <NULLIF> <OPENPARENTHESIS> arg = binaryOperation() <COMMA>
 		arg2 = binaryOperation() <CLOSEPARENTHESIS>
 	{
@@ -2506,7 +2493,7 @@ Expression columnName():
 	Token t;
 }
 {
-	(t = <NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>)
+	(t = <NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>)
 	{
 		return new ColumnName(t.image);
 	}
@@ -2572,7 +2559,7 @@ Expression columnAlias():
 	Token t;
 }
 {
-	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<LENGTH>|t=<NULLIF>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>)
+	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<LENGTH>|t=<NULLIF>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>)
 	{
 		return new ColumnName(t.image);
 	}

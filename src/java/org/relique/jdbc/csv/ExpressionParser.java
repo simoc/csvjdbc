@@ -240,160 +240,123 @@ class SQLRoundFunction extends Expression
                 return result;
         }
 }
-class SQLDayOfMonthFunction extends Expression
+class SQLCalendarFunction extends Expression
 {
+        String functionName;
+        int calendarField;
         Expression expression;
+        public SQLCalendarFunction(String functionName, int calendarField,
+                Expression expression)
+        {
+                this.functionName = functionName;
+                this.calendarField = calendarField;
+                this.expression = expression;
+        }
+        public Object eval(Map<String, Object> env)
+        {
+                Object retval = null;
+                Object o = expression.eval(env);
+                if (o != null)
+                {
+                        /*
+			 * Accept either java.sql.Date, java.sql.Time or java.sql.Timestamp.
+			 */
+                        java.util.Date date = null;
+                        if (o instanceof java.util.Date)
+                        {
+                                date = (java.util.Date)o;
+                        }
+                        else
+                        {
+                                /*
+				 * Try and convert from String to a Timestamp or Date/Time.
+				 */
+                                Expression stringConverter = new ColumnName("@StringConverter");
+                                StringConverter sc = (StringConverter) stringConverter.eval(env);
+                                date = sc.parseTimestamp(o.toString());
+                                if (date == null)
+                                {
+                                        if (calendarField == Calendar.DAY_OF_MONTH ||
+                                                calendarField == Calendar.MONTH ||
+                                                calendarField == Calendar.YEAR)
+                                        {
+                                                date = sc.parseDate(o.toString());
+                                        }
+                                        else
+                                        {
+                                                date = sc.parseTime(o.toString());
+                                        }
+                                }
+                        }
+                        if (date != null)
+                        {
+                                Calendar cal = Calendar.getInstance();
+                                cal.setTime(date);
+                                int fieldValue = cal.get(calendarField);
+                                if (calendarField == Calendar.MONTH)
+                                        fieldValue++;
+                                retval = Integer.valueOf(fieldValue);
+                        }
+                }
+                return retval;
+        }
+        public String toString()
+        {
+                return functionName+"("+expression+")";
+        }
+        public List<String> usedColumns()
+        {
+                List<String> result = new LinkedList<String>();
+                result.addAll(expression.usedColumns());
+                return result;
+        }
+        public List<AggregateFunction> aggregateFunctions()
+        {
+                List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+                result.addAll(expression.aggregateFunctions());
+                return result;
+        }
+}
+class SQLDayOfMonthFunction extends SQLCalendarFunction
+{
         public SQLDayOfMonthFunction(Expression expression)
         {
-                this.expression = expression;
-        }
-        public Object eval(Map<String, Object> env)
-        {
-                Object retval = null;
-                Object o = expression.eval(env);
-                if (o != null)
-                {
-                        /*
-			 * Accept either java.sql.Date or java.sql.Timestamp.
-			 */
-                        if (!(o instanceof java.util.Date))
-                        {
-                                /*
-				 * Not already a Date so try and convert it from a String.
-				 */
-                                Expression stringConverter = new ColumnName("@StringConverter");
-                                StringConverter sc = (StringConverter) stringConverter.eval(env);
-                                o = sc.parseDate(o.toString());
-                        }
-                        if (o != null)
-                        {
-                                Calendar cal = Calendar.getInstance();
-                                cal.setTime((java.util.Date)o);
-                                int day = cal.get(Calendar.DAY_OF_MONTH);
-                                retval = Integer.valueOf(day);
-                        }
-                }
-                return retval;
-        }
-        public String toString()
-        {
-                return "DAYOFMONTH("+expression+")";
-        }
-        public List<String> usedColumns()
-        {
-                List<String> result = new LinkedList<String>();
-                result.addAll(expression.usedColumns());
-                return result;
-        }
-        public List<AggregateFunction> aggregateFunctions()
-        {
-                List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-                result.addAll(expression.aggregateFunctions());
-                return result;
+                super("DAYOFMONTH", Calendar.DAY_OF_MONTH, expression);
         }
 }
-class SQLMonthFunction extends Expression
+class SQLMonthFunction extends SQLCalendarFunction
 {
-        Expression expression;
         public SQLMonthFunction(Expression expression)
         {
-                this.expression = expression;
-        }
-        public Object eval(Map<String, Object> env)
-        {
-                Object retval = null;
-                Object o = expression.eval(env);
-                if (o != null)
-                {
-                        /*
-			 * Accept either java.sql.Date or java.sql.Timestamp.
-			 */
-                        if (!(o instanceof java.util.Date))
-                        {
-                                /*
-				 * Not already a Date so try and convert it from a String.
-				 */
-                                Expression stringConverter = new ColumnName("@StringConverter");
-                                StringConverter sc = (StringConverter) stringConverter.eval(env);
-                                o = sc.parseDate(o.toString());
-                        }
-                        if (o != null)
-                        {
-                                Calendar cal = Calendar.getInstance();
-                                cal.setTime((java.util.Date)o);
-                                int month = cal.get(Calendar.MONTH) + 1;
-                                retval = Integer.valueOf(month);
-                        }
-                }
-                return retval;
-        }
-        public String toString()
-        {
-                return "MONTH("+expression+")";
-        }
-        public List<String> usedColumns()
-        {
-                List<String> result = new LinkedList<String>();
-                result.addAll(expression.usedColumns());
-                return result;
-        }
-        public List<AggregateFunction> aggregateFunctions()
-        {
-                List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-                result.addAll(expression.aggregateFunctions());
-                return result;
+                super("MONTH", Calendar.MONTH, expression);
         }
 }
-class SQLYearFunction extends Expression
+class SQLYearFunction extends SQLCalendarFunction
 {
-        Expression expression;
         public SQLYearFunction(Expression expression)
         {
-                this.expression = expression;
+                super("YEAR", Calendar.YEAR, expression);
         }
-        public Object eval(Map<String, Object> env)
+}
+class SQLHourOfDayFunction extends SQLCalendarFunction
+{
+        public SQLHourOfDayFunction(Expression expression)
         {
-                Object retval = null;
-                Object o = expression.eval(env);
-                if (o != null)
-                {
-                        /*
-			 * Accept either java.sql.Date or java.sql.Timestamp.
-			 */
-                        if (!(o instanceof java.util.Date))
-                        {
-                                /*
-				 * Not already a Date so try and convert it from a String.
-				 */
-                                Expression stringConverter = new ColumnName("@StringConverter");
-                                StringConverter sc = (StringConverter) stringConverter.eval(env);
-                                o = sc.parseDate(o.toString());
-                        }
-                        if (o != null)
-                        {
-                                Calendar cal = Calendar.getInstance();
-                                cal.setTime((java.util.Date)o);
-                                int year = cal.get(Calendar.YEAR);
-                                retval = Integer.valueOf(year);
-                        }
-                }
-                return retval;
+                super("HOUROFDAY", Calendar.HOUR_OF_DAY, expression);
         }
-        public String toString()
+}
+class SQLMinuteFunction extends SQLCalendarFunction
+{
+        public SQLMinuteFunction(Expression expression)
         {
-                return "YEAR("+expression+")";
+                super("MINUTE", Calendar.MINUTE, expression);
         }
-        public List<String> usedColumns()
+}
+class SQLSecondFunction extends SQLCalendarFunction
+{
+        public SQLSecondFunction(Expression expression)
         {
-                List<String> result = new LinkedList<String>();
-                result.addAll(expression.usedColumns());
-                return result;
-        }
-        public List<AggregateFunction> aggregateFunctions()
-        {
-                List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-                result.addAll(expression.aggregateFunctions());
-                return result;
+                super("SECOND", Calendar.SECOND, expression);
         }
 }
 class SQLUpperFunction extends Expression
@@ -2364,6 +2327,24 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLYearFunction(arg);}
     } else if (jj_2_67(2)) {
+      jj_consume_token(HOUROFDAY);
+      jj_consume_token(OPENPARENTHESIS);
+      arg = binaryOperation();
+      jj_consume_token(CLOSEPARENTHESIS);
+                {if (true) return new SQLHourOfDayFunction(arg);}
+    } else if (jj_2_68(2)) {
+      jj_consume_token(MINUTE);
+      jj_consume_token(OPENPARENTHESIS);
+      arg = binaryOperation();
+      jj_consume_token(CLOSEPARENTHESIS);
+                {if (true) return new SQLMinuteFunction(arg);}
+    } else if (jj_2_69(2)) {
+      jj_consume_token(SECOND);
+      jj_consume_token(OPENPARENTHESIS);
+      arg = binaryOperation();
+      jj_consume_token(CLOSEPARENTHESIS);
+                {if (true) return new SQLSecondFunction(arg);}
+    } else if (jj_2_70(2)) {
       jj_consume_token(NULLIF);
       jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
@@ -2371,7 +2352,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg2 = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLNullIfFunction(arg, arg2);}
-    } else if (jj_2_68(2)) {
+    } else if (jj_2_71(2)) {
       jj_consume_token(COUNT);
       jj_consume_token(OPENPARENTHESIS);
                                     isDistinct = false;
@@ -2384,7 +2365,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = countOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLCountFunction(isDistinct, arg);}
-    } else if (jj_2_69(2)) {
+    } else if (jj_2_72(2)) {
       jj_consume_token(MAX);
       jj_consume_token(OPENPARENTHESIS);
                                   isDistinct = false;
@@ -2397,7 +2378,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLMaxFunction(isDistinct, arg);}
-    } else if (jj_2_70(2)) {
+    } else if (jj_2_73(2)) {
       jj_consume_token(MIN);
       jj_consume_token(OPENPARENTHESIS);
                                   isDistinct = false;
@@ -2410,7 +2391,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLMinFunction(isDistinct, arg);}
-    } else if (jj_2_71(2)) {
+    } else if (jj_2_74(2)) {
       jj_consume_token(SUM);
       jj_consume_token(OPENPARENTHESIS);
                                   isDistinct = false;
@@ -2423,7 +2404,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLSumFunction(isDistinct, arg);}
-    } else if (jj_2_72(2)) {
+    } else if (jj_2_75(2)) {
       jj_consume_token(AVG);
       jj_consume_token(OPENPARENTHESIS);
                                   isDistinct = false;
@@ -2436,25 +2417,25 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLAvgFunction(isDistinct, arg);}
-    } else if (jj_2_73(2)) {
+    } else if (jj_2_76(2)) {
       arg = columnName();
                 {if (true) return arg;}
-    } else if (jj_2_74(2)) {
+    } else if (jj_2_77(2)) {
       arg = numericConstant();
                 {if (true) return arg;}
-    } else if (jj_2_75(2)) {
+    } else if (jj_2_78(2)) {
       arg = stringConstant();
                 {if (true) return arg;}
-    } else if (jj_2_76(2)) {
+    } else if (jj_2_79(2)) {
       jj_consume_token(NULL);
                 {if (true) return new NullConstant();}
-    } else if (jj_2_77(2)) {
+    } else if (jj_2_80(2)) {
       jj_consume_token(CURRENT_DATE);
                 {if (true) return new CurrentDateConstant(this);}
-    } else if (jj_2_78(2)) {
+    } else if (jj_2_81(2)) {
       jj_consume_token(CURRENT_TIME);
                 {if (true) return new CurrentTimeConstant(this);}
-    } else if (jj_2_79(2)) {
+    } else if (jj_2_82(2)) {
       jj_consume_token(PLACEHOLDER);
                 {if (true) return new Placeholder();}
     } else {
@@ -2466,14 +2447,20 @@ public class ExpressionParser implements ExpressionParserConstants {
 
   final public Expression columnName() throws ParseException {
         Token t;
-    if (jj_2_80(2)) {
+    if (jj_2_83(2)) {
       t = jj_consume_token(NAME);
-    } else if (jj_2_81(2)) {
+    } else if (jj_2_84(2)) {
       t = jj_consume_token(DAYOFMONTH);
-    } else if (jj_2_82(2)) {
+    } else if (jj_2_85(2)) {
       t = jj_consume_token(MONTH);
-    } else if (jj_2_83(2)) {
+    } else if (jj_2_86(2)) {
       t = jj_consume_token(YEAR);
+    } else if (jj_2_87(2)) {
+      t = jj_consume_token(HOUROFDAY);
+    } else if (jj_2_88(2)) {
+      t = jj_consume_token(MINUTE);
+    } else if (jj_2_89(2)) {
+      t = jj_consume_token(SECOND);
     } else {
       jj_consume_token(-1);
       throw new ParseException();
@@ -2487,15 +2474,15 @@ public class ExpressionParser implements ExpressionParserConstants {
         String sign, digits;
         boolean isLong;
          sign="";
-    if (jj_2_84(2)) {
+    if (jj_2_90(2)) {
       t = jj_consume_token(MINUS);
                    sign=t.image;
     } else {
       ;
     }
-    if (jj_2_85(2)) {
+    if (jj_2_91(2)) {
       t = jj_consume_token(UNSIGNEDNUMBER);
-    } else if (jj_2_86(2)) {
+    } else if (jj_2_92(2)) {
       t = jj_consume_token(UNSIGNEDINT);
     } else {
       jj_consume_token(-1);
@@ -2528,7 +2515,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     left = stringConstantAtom();
     label_11:
     while (true) {
-      if (jj_2_87(2)) {
+      if (jj_2_93(2)) {
         ;
       } else {
         break label_11;
@@ -2549,33 +2536,39 @@ public class ExpressionParser implements ExpressionParserConstants {
 
   final public Expression columnAlias() throws ParseException {
         Token t;
-    if (jj_2_88(2)) {
+    if (jj_2_94(2)) {
       t = jj_consume_token(NAME);
-    } else if (jj_2_89(2)) {
-      t = jj_consume_token(DAYOFMONTH);
-    } else if (jj_2_90(2)) {
-      t = jj_consume_token(MONTH);
-    } else if (jj_2_91(2)) {
-      t = jj_consume_token(YEAR);
-    } else if (jj_2_92(2)) {
-      t = jj_consume_token(LOWER);
-    } else if (jj_2_93(2)) {
-      t = jj_consume_token(ROUND);
-    } else if (jj_2_94(2)) {
-      t = jj_consume_token(UPPER);
     } else if (jj_2_95(2)) {
-      t = jj_consume_token(LENGTH);
+      t = jj_consume_token(DAYOFMONTH);
     } else if (jj_2_96(2)) {
-      t = jj_consume_token(NULLIF);
+      t = jj_consume_token(MONTH);
     } else if (jj_2_97(2)) {
-      t = jj_consume_token(AVG);
+      t = jj_consume_token(YEAR);
     } else if (jj_2_98(2)) {
-      t = jj_consume_token(COUNT);
+      t = jj_consume_token(HOUROFDAY);
     } else if (jj_2_99(2)) {
-      t = jj_consume_token(MAX);
+      t = jj_consume_token(MINUTE);
     } else if (jj_2_100(2)) {
-      t = jj_consume_token(MIN);
+      t = jj_consume_token(SECOND);
     } else if (jj_2_101(2)) {
+      t = jj_consume_token(LOWER);
+    } else if (jj_2_102(2)) {
+      t = jj_consume_token(ROUND);
+    } else if (jj_2_103(2)) {
+      t = jj_consume_token(UPPER);
+    } else if (jj_2_104(2)) {
+      t = jj_consume_token(LENGTH);
+    } else if (jj_2_105(2)) {
+      t = jj_consume_token(NULLIF);
+    } else if (jj_2_106(2)) {
+      t = jj_consume_token(AVG);
+    } else if (jj_2_107(2)) {
+      t = jj_consume_token(COUNT);
+    } else if (jj_2_108(2)) {
+      t = jj_consume_token(MAX);
+    } else if (jj_2_109(2)) {
+      t = jj_consume_token(MIN);
+    } else if (jj_2_110(2)) {
       t = jj_consume_token(SUM);
     } else {
       jj_consume_token(-1);
@@ -3292,19 +3285,157 @@ public class ExpressionParser implements ExpressionParserConstants {
     finally { jj_save(100, xla); }
   }
 
+  private boolean jj_2_102(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_102(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(101, xla); }
+  }
+
+  private boolean jj_2_103(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_103(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(102, xla); }
+  }
+
+  private boolean jj_2_104(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_104(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(103, xla); }
+  }
+
+  private boolean jj_2_105(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_105(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(104, xla); }
+  }
+
+  private boolean jj_2_106(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_106(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(105, xla); }
+  }
+
+  private boolean jj_2_107(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_107(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(106, xla); }
+  }
+
+  private boolean jj_2_108(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_108(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(107, xla); }
+  }
+
+  private boolean jj_2_109(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_109(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(108, xla); }
+  }
+
+  private boolean jj_2_110(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_110(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(109, xla); }
+  }
+
+  private boolean jj_3_78() {
+    if (jj_3R_30()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_14() {
+    if (jj_3R_21()) return true;
+    return false;
+  }
+
+  private boolean jj_3_103() {
+    if (jj_scan_token(UPPER)) return true;
+    return false;
+  }
+
+  private boolean jj_3_40() {
+    if (jj_scan_token(LIKE)) return true;
+    if (jj_3R_18()) return true;
+    return false;
+  }
+
+  private boolean jj_3_77() {
+    if (jj_3R_29()) return true;
+    return false;
+  }
+
+  private boolean jj_3_58() {
+    if (jj_scan_token(DISTINCT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_11() {
+    if (jj_scan_token(AS)) return true;
+    return false;
+  }
+
+  private boolean jj_3_76() {
+    if (jj_3R_28()) return true;
+    return false;
+  }
+
+  private boolean jj_3_12() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_11()) jj_scanpos = xsp;
+    if (jj_scan_token(NAME)) return true;
+    return false;
+  }
+
+  private boolean jj_3_37() {
+    if (jj_scan_token(NOT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_44() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_37()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3_39()) {
+    jj_scanpos = xsp;
+    if (jj_3_40()) {
+    jj_scanpos = xsp;
+    if (jj_3_41()) return true;
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3_102() {
+    if (jj_scan_token(ROUND)) return true;
+    return false;
+  }
+
   private boolean jj_3_57() {
     if (jj_scan_token(DISTINCT)) return true;
     return false;
   }
 
-  private boolean jj_3_72() {
+  private boolean jj_3_75() {
     if (jj_scan_token(AVG)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
   }
 
-  private boolean jj_3_96() {
-    if (jj_scan_token(NULLIF)) return true;
+  private boolean jj_3_33() {
+    if (jj_scan_token(AND)) return true;
+    if (jj_3R_20()) return true;
     return false;
   }
 
@@ -3313,19 +3444,60 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_36() {
-    if (jj_3R_22()) return true;
+  private boolean jj_3R_22() {
+    if (jj_3R_18()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_43()) {
+    jj_scanpos = xsp;
+    if (jj_3_44()) {
+    jj_scanpos = xsp;
+    if (jj_3_45()) return true;
+    }
+    }
     return false;
   }
 
-  private boolean jj_3_71() {
+  private boolean jj_3_74() {
     if (jj_scan_token(SUM)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
   }
 
+  private boolean jj_3_101() {
+    if (jj_scan_token(LOWER)) return true;
+    return false;
+  }
+
   private boolean jj_3_55() {
     if (jj_scan_token(DISTINCT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_73() {
+    if (jj_scan_token(MIN)) return true;
+    if (jj_scan_token(OPENPARENTHESIS)) return true;
+    return false;
+  }
+
+  private boolean jj_3_54() {
+    if (jj_scan_token(DISTINCT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_100() {
+    if (jj_scan_token(SECOND)) return true;
+    return false;
+  }
+
+  private boolean jj_3_72() {
+    if (jj_scan_token(MAX)) return true;
+    if (jj_scan_token(OPENPARENTHESIS)) return true;
+    return false;
+  }
+
+  private boolean jj_3_36() {
+    if (jj_3R_22()) return true;
     return false;
   }
 
@@ -3353,14 +3525,9 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_70() {
-    if (jj_scan_token(MIN)) return true;
+  private boolean jj_3_71() {
+    if (jj_scan_token(COUNT)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
-    return false;
-  }
-
-  private boolean jj_3_95() {
-    if (jj_scan_token(LENGTH)) return true;
     return false;
   }
 
@@ -3389,13 +3556,13 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_54() {
-    if (jj_scan_token(DISTINCT)) return true;
+  private boolean jj_3_99() {
+    if (jj_scan_token(MINUTE)) return true;
     return false;
   }
 
-  private boolean jj_3_69() {
-    if (jj_scan_token(MAX)) return true;
+  private boolean jj_3_70() {
+    if (jj_scan_token(NULLIF)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
   }
@@ -3405,30 +3572,31 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_94() {
-    if (jj_scan_token(UPPER)) return true;
+  private boolean jj_3_69() {
+    if (jj_scan_token(SECOND)) return true;
+    if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
   }
 
   private boolean jj_3_68() {
-    if (jj_scan_token(COUNT)) return true;
+    if (jj_scan_token(MINUTE)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
   }
 
   private boolean jj_3_67() {
-    if (jj_scan_token(NULLIF)) return true;
+    if (jj_scan_token(HOUROFDAY)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
+    return false;
+  }
+
+  private boolean jj_3_98() {
+    if (jj_scan_token(HOUROFDAY)) return true;
     return false;
   }
 
   private boolean jj_3_26() {
     if (jj_scan_token(AS)) return true;
-    return false;
-  }
-
-  private boolean jj_3_93() {
-    if (jj_scan_token(ROUND)) return true;
     return false;
   }
 
@@ -3457,6 +3625,11 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
+  private boolean jj_3_97() {
+    if (jj_scan_token(YEAR)) return true;
+    return false;
+  }
+
   private boolean jj_3_64() {
     if (jj_scan_token(DAYOFMONTH)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
@@ -3465,11 +3638,6 @@ public class ExpressionParser implements ExpressionParserConstants {
 
   private boolean jj_3R_21() {
     if (jj_3R_19()) return true;
-    return false;
-  }
-
-  private boolean jj_3_92() {
-    if (jj_scan_token(LOWER)) return true;
     return false;
   }
 
@@ -3496,13 +3664,13 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_28() {
-    if (jj_scan_token(ASTERISK)) return true;
+  private boolean jj_3_96() {
+    if (jj_scan_token(MONTH)) return true;
     return false;
   }
 
-  private boolean jj_3_91() {
-    if (jj_scan_token(YEAR)) return true;
+  private boolean jj_3_28() {
+    if (jj_scan_token(ASTERISK)) return true;
     return false;
   }
 
@@ -3531,11 +3699,6 @@ public class ExpressionParser implements ExpressionParserConstants {
   private boolean jj_3_60() {
     if (jj_scan_token(UPPER)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
-    return false;
-  }
-
-  private boolean jj_3_90() {
-    if (jj_scan_token(MONTH)) return true;
     return false;
   }
 
@@ -3582,7 +3745,16 @@ public class ExpressionParser implements ExpressionParserConstants {
     jj_scanpos = xsp;
     if (jj_3_78()) {
     jj_scanpos = xsp;
-    if (jj_3_79()) return true;
+    if (jj_3_79()) {
+    jj_scanpos = xsp;
+    if (jj_3_80()) {
+    jj_scanpos = xsp;
+    if (jj_3_81()) {
+    jj_scanpos = xsp;
+    if (jj_3_82()) return true;
+    }
+    }
+    }
     }
     }
     }
@@ -3609,6 +3781,11 @@ public class ExpressionParser implements ExpressionParserConstants {
   private boolean jj_3_59() {
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     if (jj_3R_18()) return true;
+    return false;
+  }
+
+  private boolean jj_3_95() {
+    if (jj_scan_token(DAYOFMONTH)) return true;
     return false;
   }
 
@@ -3641,6 +3818,16 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
+  private boolean jj_3_89() {
+    if (jj_scan_token(SECOND)) return true;
+    return false;
+  }
+
+  private boolean jj_3_93() {
+    if (jj_3R_31()) return true;
+    return false;
+  }
+
   private boolean jj_3_24() {
     if (jj_scan_token(LIMIT)) return true;
     if (jj_scan_token(UNSIGNEDINT)) return true;
@@ -3664,73 +3851,20 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
+  private boolean jj_3_94() {
+    if (jj_scan_token(NAME)) return true;
+    return false;
+  }
+
   private boolean jj_3_17() {
     if (jj_scan_token(WHERE)) return true;
     if (jj_3R_14()) return true;
     return false;
   }
 
-  private boolean jj_3_25() {
-    if (jj_scan_token(FROM)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_9()) {
-    jj_scanpos = xsp;
-    if (jj_3_10()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3_89() {
-    if (jj_scan_token(DAYOFMONTH)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_25() {
-    if (jj_3R_27()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_53()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3_87() {
-    if (jj_3R_31()) return true;
-    return false;
-  }
-
-  private boolean jj_3_6() {
-    if (jj_scan_token(SEMICOLON)) return true;
-    return false;
-  }
-
-  private boolean jj_3_88() {
-    if (jj_scan_token(NAME)) return true;
-    return false;
-  }
-
-  private boolean jj_3_7() {
-    if (jj_scan_token(DISTINCT)) return true;
-    return false;
-  }
-
   private boolean jj_3R_17() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_88()) {
-    jj_scanpos = xsp;
-    if (jj_3_89()) {
-    jj_scanpos = xsp;
-    if (jj_3_90()) {
-    jj_scanpos = xsp;
-    if (jj_3_91()) {
-    jj_scanpos = xsp;
-    if (jj_3_92()) {
-    jj_scanpos = xsp;
-    if (jj_3_93()) {
-    jj_scanpos = xsp;
     if (jj_3_94()) {
     jj_scanpos = xsp;
     if (jj_3_95()) {
@@ -3745,7 +3879,25 @@ public class ExpressionParser implements ExpressionParserConstants {
     jj_scanpos = xsp;
     if (jj_3_100()) {
     jj_scanpos = xsp;
-    if (jj_3_101()) return true;
+    if (jj_3_101()) {
+    jj_scanpos = xsp;
+    if (jj_3_102()) {
+    jj_scanpos = xsp;
+    if (jj_3_103()) {
+    jj_scanpos = xsp;
+    if (jj_3_104()) {
+    jj_scanpos = xsp;
+    if (jj_3_105()) {
+    jj_scanpos = xsp;
+    if (jj_3_106()) {
+    jj_scanpos = xsp;
+    if (jj_3_107()) {
+    jj_scanpos = xsp;
+    if (jj_3_108()) {
+    jj_scanpos = xsp;
+    if (jj_3_109()) {
+    jj_scanpos = xsp;
+    if (jj_3_110()) return true;
     }
     }
     }
@@ -3759,6 +3911,50 @@ public class ExpressionParser implements ExpressionParserConstants {
     }
     }
     }
+    }
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3_25() {
+    if (jj_scan_token(FROM)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_9()) {
+    jj_scanpos = xsp;
+    if (jj_3_10()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_25() {
+    if (jj_3R_27()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_53()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3_88() {
+    if (jj_scan_token(MINUTE)) return true;
+    return false;
+  }
+
+  private boolean jj_3_6() {
+    if (jj_scan_token(SEMICOLON)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_31() {
+    if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
+  private boolean jj_3_7() {
+    if (jj_scan_token(DISTINCT)) return true;
     return false;
   }
 
@@ -3788,8 +3984,18 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3R_31() {
-    if (jj_scan_token(STRING)) return true;
+  private boolean jj_3_87() {
+    if (jj_scan_token(HOUROFDAY)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_30() {
+    if (jj_3R_31()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_93()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 
@@ -3802,13 +4008,33 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
+  private boolean jj_3_110() {
+    if (jj_scan_token(SUM)) return true;
+    return false;
+  }
+
   private boolean jj_3_51() {
     if (jj_3R_18()) return true;
     return false;
   }
 
+  private boolean jj_3_86() {
+    if (jj_scan_token(YEAR)) return true;
+    return false;
+  }
+
   private boolean jj_3_49() {
     if (jj_scan_token(DIVIDE)) return true;
+    return false;
+  }
+
+  private boolean jj_3_92() {
+    if (jj_scan_token(UNSIGNEDINT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_109() {
+    if (jj_scan_token(MIN)) return true;
     return false;
   }
 
@@ -3822,23 +4048,13 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3R_30() {
-    if (jj_3R_31()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_87()) { jj_scanpos = xsp; break; }
-    }
+  private boolean jj_3_85() {
+    if (jj_scan_token(MONTH)) return true;
     return false;
   }
 
-  private boolean jj_3_83() {
-    if (jj_scan_token(YEAR)) return true;
-    return false;
-  }
-
-  private boolean jj_3_86() {
-    if (jj_scan_token(UNSIGNEDINT)) return true;
+  private boolean jj_3_108() {
+    if (jj_scan_token(MAX)) return true;
     return false;
   }
 
@@ -3893,8 +4109,35 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_82() {
-    if (jj_scan_token(MONTH)) return true;
+  private boolean jj_3_107() {
+    if (jj_scan_token(COUNT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_91() {
+    if (jj_scan_token(UNSIGNEDNUMBER)) return true;
+    return false;
+  }
+
+  private boolean jj_3_90() {
+    if (jj_scan_token(MINUS)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_29() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_90()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3_91()) {
+    jj_scanpos = xsp;
+    if (jj_3_92()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3_84() {
+    if (jj_scan_token(DAYOFMONTH)) return true;
     return false;
   }
 
@@ -3921,13 +4164,8 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_85() {
-    if (jj_scan_token(UNSIGNEDNUMBER)) return true;
-    return false;
-  }
-
-  private boolean jj_3_84() {
-    if (jj_scan_token(MINUS)) return true;
+  private boolean jj_3_106() {
+    if (jj_scan_token(AVG)) return true;
     return false;
   }
 
@@ -3936,20 +4174,33 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3R_29() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_84()) jj_scanpos = xsp;
-    xsp = jj_scanpos;
-    if (jj_3_85()) {
-    jj_scanpos = xsp;
-    if (jj_3_86()) return true;
-    }
+  private boolean jj_3_83() {
+    if (jj_scan_token(NAME)) return true;
     return false;
   }
 
-  private boolean jj_3_81() {
-    if (jj_scan_token(DAYOFMONTH)) return true;
+  private boolean jj_3R_28() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_83()) {
+    jj_scanpos = xsp;
+    if (jj_3_84()) {
+    jj_scanpos = xsp;
+    if (jj_3_85()) {
+    jj_scanpos = xsp;
+    if (jj_3_86()) {
+    jj_scanpos = xsp;
+    if (jj_3_87()) {
+    jj_scanpos = xsp;
+    if (jj_3_88()) {
+    jj_scanpos = xsp;
+    if (jj_3_89()) return true;
+    }
+    }
+    }
+    }
+    }
+    }
     return false;
   }
 
@@ -3964,24 +4215,24 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
+  private boolean jj_3_105() {
+    if (jj_scan_token(NULLIF)) return true;
+    return false;
+  }
+
   private boolean jj_3_42() {
     if (jj_scan_token(NOT)) return true;
     return false;
   }
 
-  private boolean jj_3_101() {
-    if (jj_scan_token(SUM)) return true;
+  private boolean jj_3_82() {
+    if (jj_scan_token(PLACEHOLDER)) return true;
     return false;
   }
 
   private boolean jj_3_39() {
     if (jj_scan_token(BETWEEN)) return true;
     if (jj_3R_18()) return true;
-    return false;
-  }
-
-  private boolean jj_3_80() {
-    if (jj_scan_token(NAME)) return true;
     return false;
   }
 
@@ -3994,19 +4245,8 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3R_28() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_80()) {
-    jj_scanpos = xsp;
-    if (jj_3_81()) {
-    jj_scanpos = xsp;
-    if (jj_3_82()) {
-    jj_scanpos = xsp;
-    if (jj_3_83()) return true;
-    }
-    }
-    }
+  private boolean jj_3_81() {
+    if (jj_scan_token(CURRENT_TIME)) return true;
     return false;
   }
 
@@ -4021,8 +4261,13 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_100() {
-    if (jj_scan_token(MIN)) return true;
+  private boolean jj_3_104() {
+    if (jj_scan_token(LENGTH)) return true;
+    return false;
+  }
+
+  private boolean jj_3_80() {
+    if (jj_scan_token(CURRENT_DATE)) return true;
     return false;
   }
 
@@ -4033,121 +4278,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   }
 
   private boolean jj_3_79() {
-    if (jj_scan_token(PLACEHOLDER)) return true;
-    return false;
-  }
-
-  private boolean jj_3_99() {
-    if (jj_scan_token(MAX)) return true;
-    return false;
-  }
-
-  private boolean jj_3_78() {
-    if (jj_scan_token(CURRENT_TIME)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_14() {
-    if (jj_3R_21()) return true;
-    return false;
-  }
-
-  private boolean jj_3_40() {
-    if (jj_scan_token(LIKE)) return true;
-    if (jj_3R_18()) return true;
-    return false;
-  }
-
-  private boolean jj_3_77() {
-    if (jj_scan_token(CURRENT_DATE)) return true;
-    return false;
-  }
-
-  private boolean jj_3_11() {
-    if (jj_scan_token(AS)) return true;
-    return false;
-  }
-
-  private boolean jj_3_76() {
     if (jj_scan_token(NULL)) return true;
-    return false;
-  }
-
-  private boolean jj_3_12() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_11()) jj_scanpos = xsp;
-    if (jj_scan_token(NAME)) return true;
-    return false;
-  }
-
-  private boolean jj_3_37() {
-    if (jj_scan_token(NOT)) return true;
-    return false;
-  }
-
-  private boolean jj_3_98() {
-    if (jj_scan_token(COUNT)) return true;
-    return false;
-  }
-
-  private boolean jj_3_44() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_37()) jj_scanpos = xsp;
-    xsp = jj_scanpos;
-    if (jj_3_39()) {
-    jj_scanpos = xsp;
-    if (jj_3_40()) {
-    jj_scanpos = xsp;
-    if (jj_3_41()) return true;
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3_75() {
-    if (jj_3R_30()) return true;
-    return false;
-  }
-
-  private boolean jj_3_33() {
-    if (jj_scan_token(AND)) return true;
-    if (jj_3R_20()) return true;
-    return false;
-  }
-
-  private boolean jj_3_74() {
-    if (jj_3R_29()) return true;
-    return false;
-  }
-
-  private boolean jj_3_97() {
-    if (jj_scan_token(AVG)) return true;
-    return false;
-  }
-
-  private boolean jj_3_58() {
-    if (jj_scan_token(DISTINCT)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_22() {
-    if (jj_3R_18()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_43()) {
-    jj_scanpos = xsp;
-    if (jj_3_44()) {
-    jj_scanpos = xsp;
-    if (jj_3_45()) return true;
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3_73() {
-    if (jj_3R_28()) return true;
     return false;
   }
 
@@ -4180,7 +4311,7 @@ public class ExpressionParser implements ExpressionParserConstants {
    private static void jj_la1_init_2() {
       jj_la1_2 = new int[] {};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[101];
+  final private JJCalls[] jj_2_rtns = new JJCalls[110];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -4364,7 +4495,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[67];
+    boolean[] la1tokens = new boolean[70];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -4384,7 +4515,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 67; i++) {
+    for (int i = 0; i < 70; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
@@ -4411,7 +4542,7 @@ public class ExpressionParser implements ExpressionParserConstants {
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 101; i++) {
+    for (int i = 0; i < 110; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -4519,6 +4650,15 @@ public class ExpressionParser implements ExpressionParserConstants {
             case 98: jj_3_99(); break;
             case 99: jj_3_100(); break;
             case 100: jj_3_101(); break;
+            case 101: jj_3_102(); break;
+            case 102: jj_3_103(); break;
+            case 103: jj_3_104(); break;
+            case 104: jj_3_105(); break;
+            case 105: jj_3_106(); break;
+            case 106: jj_3_107(); break;
+            case 107: jj_3_108(); break;
+            case 108: jj_3_109(); break;
+            case 109: jj_3_110(); break;
           }
         }
         p = p.next;

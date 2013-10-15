@@ -2295,6 +2295,44 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testHourOfDayFunction() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select hourofday(t) as hour, " +
+				"hourofday('23:41:17') as h from sample8");
+		assertTrue(results.next());
+		assertEquals("hour is wrong", 1, results.getInt(1));
+		assertEquals("h is wrong", 23, results.getInt(2));
+		assertTrue(results.next());
+		assertEquals("hour is wrong", 1, results.getInt(1));
+		assertTrue(results.next());
+		assertEquals("hour is wrong", 1, results.getInt(1));
+		assertTrue(results.next());
+		assertEquals("hour is wrong", 5, results.getInt(1));
+	}
+
+	@Test
+	public void testMinuteFunction() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select minute(t) as minute, " +
+				"minute('23:41:17') as m from sample8");
+		assertTrue(results.next());
+		assertEquals("minute is wrong", 30, results.getInt(1));
+		assertEquals("m is wrong", 41, results.getInt(2));
+	}
+
+	@Test
 	public void testDateFunctionsWithTimestamp() throws SQLException
 	{
 		Properties props = new Properties();
@@ -2304,19 +2342,28 @@ public class TestCsvDriver
 
 		Statement stmt = conn.createStatement();
 
-		ResultSet results = stmt.executeQuery("select dayofmonth(Start), month(Start), year(Start) from sample5");
+		ResultSet results = stmt.executeQuery("select dayofmonth(Start), month(Start), year(Start), " +
+				"hourofday(Start), minute(Start), second(Start) from sample5");
 		assertTrue(results.next());
 		assertEquals("dayofmonth is wrong", 2, results.getInt(1));
 		assertEquals("month is wrong", 4, results.getInt(2));
 		assertEquals("year is wrong", 2001, results.getInt(3));
+		assertEquals("hourofday is wrong", 12, results.getInt(4));
+		assertEquals("minute is wrong", 30, results.getInt(5));
+		assertEquals("second is wrong", 0, results.getInt(6));
 
 		String timestamp = "2013-10-13 14:33:55";
 		results = stmt.executeQuery("select dayofmonth('" + timestamp + "')," +
-			"month('" + timestamp + "'), year('" + timestamp + "') from sample5");
+			"month('" + timestamp + "'), year('" + timestamp + "'), " +
+			"hourofday('" + timestamp + "'), minute('" + timestamp + "'), " +
+			"second('" + timestamp + "') from sample5");
 		assertTrue(results.next());
 		assertEquals("dayofmonth is wrong", 13, results.getInt(1));
 		assertEquals("month is wrong", 10, results.getInt(2));
 		assertEquals("year is wrong", 2013, results.getInt(3));
+		assertEquals("hourofday is wrong", 14, results.getInt(4));
+		assertEquals("minute is wrong", 33, results.getInt(5));
+		assertEquals("second is wrong", 55, results.getInt(6));
 	}
 
 	@Test
