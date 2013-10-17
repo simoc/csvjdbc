@@ -347,7 +347,7 @@ public class CsvStatement implements Statement
 			{
 				if (connection.getExtension().equalsIgnoreCase(".dbf"))
 				{
-					reader = new DbfReader(fileName, parser.getTableAlias());
+					reader = new DbfReader(fileName, parser.getTableAlias(), connection.getCharset());
 				}
 				else
 				{

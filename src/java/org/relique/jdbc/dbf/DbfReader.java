@@ -45,7 +45,7 @@ public class DbfReader extends DataReader
 	private Map<String, String> dbfTypeToSQLType;
 	private String tableAlias;
 
-	public DbfReader(String path, String tableAlias) throws SQLException
+	public DbfReader(String path, String tableAlias, String charset) throws SQLException
 	{
 		super();
 		try
@@ -75,8 +75,17 @@ public class DbfReader extends DataReader
 		}
 		try
 		{
-			Constructor<?> tableConstructor = tableClass.getConstructor(new Class[] {File.class});
-			table = tableConstructor.newInstance(new Object[] { new File(path) });
+			Constructor<?> tableConstructor;
+			if (charset != null)
+			{
+				tableConstructor = tableClass.getConstructor(new Class[] {File.class, String.class});
+				table = tableConstructor.newInstance(new Object[] { new File(path), charset });
+			}
+			else
+			{
+				tableConstructor = tableClass.getConstructor(new Class[] {File.class});
+				table = tableConstructor.newInstance(new Object[] { new File(path) });
+			}
 			tableOpenMethod.invoke(table, new Object[] {});
 			fields = (List) tableGetFieldsMethod.invoke(table, new Object[] {});
 			record = null;

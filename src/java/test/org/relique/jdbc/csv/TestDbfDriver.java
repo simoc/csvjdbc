@@ -242,8 +242,11 @@ public class TestDbfDriver
 		Set<String> target = new HashSet<String>();
 		target.add("sample");
 		target.add("fox_samp");
+		target.add("hotel");
 
 		Set<String> current = new HashSet<String>();
+		assertTrue(results.next());
+		current.add(results.getString("TABLE_NAME"));
 		assertTrue(results.next());
 		current.add(results.getString("TABLE_NAME"));
 		assertTrue(results.next());
@@ -323,5 +326,28 @@ public class TestDbfDriver
 		assertTrue(results.next());
 		assertEquals("The DASSDATE is wrong", Timestamp.valueOf("2012-12-25 00:00:00"),
 			results.getTimestamp(1));
+	}
+	
+	@Test
+	public void testCharset() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
+		props.put("charset", "ISO-8859-1");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT HOTELNAME FROM hotel");
+		assertTrue(results.next());
+		assertEquals("The HOTELNAME is wrong", "M\u00DCNCHEN HOTEL", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("The HOTELNAME is wrong", "MALM\u00D6 INN", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("The HOTELNAME is wrong", "K\u00D8BENHAVN HOTEL", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("The HOTELNAME is wrong", "C\u00F3rdoba Hotel", results.getString(1));
+		assertFalse(results.next());
 	}
 }
