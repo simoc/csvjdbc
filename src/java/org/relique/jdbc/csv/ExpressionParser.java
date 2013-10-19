@@ -3348,27 +3348,6 @@ public class ExpressionParser implements ExpressionParserConstants {
     finally { jj_save(109, xla); }
   }
 
-  private boolean jj_3_78() {
-    if (jj_3R_30()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_14() {
-    if (jj_3R_21()) return true;
-    return false;
-  }
-
-  private boolean jj_3_103() {
-    if (jj_scan_token(UPPER)) return true;
-    return false;
-  }
-
-  private boolean jj_3_40() {
-    if (jj_scan_token(LIKE)) return true;
-    if (jj_3R_18()) return true;
-    return false;
-  }
-
   private boolean jj_3_77() {
     if (jj_3R_29()) return true;
     return false;
@@ -4282,6 +4261,27 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
+  private boolean jj_3_78() {
+    if (jj_3R_30()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_14() {
+    if (jj_3R_21()) return true;
+    return false;
+  }
+
+  private boolean jj_3_103() {
+    if (jj_scan_token(UPPER)) return true;
+    return false;
+  }
+
+  private boolean jj_3_40() {
+    if (jj_scan_token(LIKE)) return true;
+    if (jj_3R_18()) return true;
+    return false;
+  }
+
   /** Generated Token Manager. */
   public ExpressionParserTokenManager token_source;
   SimpleCharStream jj_input_stream;
@@ -4495,7 +4495,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[70];
+    boolean[] la1tokens = new boolean[71];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -4515,7 +4515,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 70; i++) {
+    for (int i = 0; i < 71; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
