@@ -651,9 +651,6 @@ public class StringConverter
 
 	public static String removeQuotes(String string)
 	{
-		if (string.startsWith("\"") && string.length() > 1 && string.endsWith("\""))
-			return string.substring(1, string.length() - 1);
-		else
-			return string;
+		return string.replace("\"", "");
 	}
 }

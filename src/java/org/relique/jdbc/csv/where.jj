@@ -20,6 +20,7 @@ options
 {
 	STATIC = false;
 	LOOKAHEAD = 2;
+	FORCE_LA_CHECK = true;
 	IGNORE_CASE = true;
 	JDK_VERSION = "1.5";
 }
@@ -2009,7 +2010,13 @@ TOKEN:
 }
 TOKEN:
 {
-	<NAME:(["0"-"9", "A"-"Z", "a"-"z", "_", "."])+>
+	/*
+	 * Allow double quoted names and double quoted "tableName"."columnName"
+	 * or "tableName".columnName
+	 */
+	<NAME:(["0"-"9", "A"-"Z", "a"-"z", "_", "."])+
+		| "\""(~["\""])*"\"" (<DOT> "\""(~["\""])*"\"")?
+		| "\""(~["\""])*"\"" (<DOT> (["0"-"9", "A"-"Z", "a"-"z", "_", "."])+)? >
 }
 TOKEN:
 {
@@ -2172,7 +2179,7 @@ ParsedStatement selectStatement():
 	(<DISTINCT>{isDistinct = true;})?
 	expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*
 	(
-		<FROM>(t=<QUOTEDTABLENAME>|t=<TABLENAME>){tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = t.image.toUpperCase();})?(<COMMA>(t=<QUOTEDTABLENAME>|t=<TABLENAME>){}((<AS>)?t=<NAME>{}))*
+		<FROM>(t=<QUOTEDTABLENAME>|t=<TABLENAME>){tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?(<COMMA>(t=<QUOTEDTABLENAME>|t=<TABLENAME>){}((<AS>)?t=<NAME>{}))*
 		(<WHERE>whereClause = logicalExpression())?
 		(<GROUP><BY>entry = groupByEntry(){groupByEntries.add(entry);}(<COMMA>entry = groupByEntry(){groupByEntries.add(entry);})*(<HAVING>havingClause = logicalExpression())?)?
 		(<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?
@@ -2499,7 +2506,7 @@ Expression columnName():
 {
 	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<LENGTH>|t=<NULLIF>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>)
 	{
-		return new ColumnName(t.image);
+		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}
 }
 Expression numericConstant():
@@ -2565,7 +2572,6 @@ Expression columnAlias():
 {
 	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<LENGTH>|t=<NULLIF>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>)
 	{
-		return new ColumnName(t.image);
+		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}
 }
-
