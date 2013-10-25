@@ -16,6 +16,7 @@
 package org.relique.jdbc.csv;
 
 import java.io.StringReader;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -92,7 +93,7 @@ public class SqlParser
 	/**
 	 * Parses SQL statement
 	 */
-	public void parse(String sql) throws Exception
+	public void parse(String sql) throws SQLException, ParseException
 	{
 		tableName = null;
 		tableAlias = null;
@@ -108,7 +109,7 @@ public class SqlParser
 		setParsedStatement(parsedStatement);
 	}
 
-	public void setParsedStatement(ParsedStatement parsedStatement) throws Exception
+	public void setParsedStatement(ParsedStatement parsedStatement) throws SQLException
 	{
 		this.isDistinct = parsedStatement.isDistinct;
 		this.tableName = parsedStatement.tableName;
@@ -129,13 +130,12 @@ public class SqlParser
 				String key = cc.key;
 				if (tableAlias != null && key.startsWith(tableAlias + "."))
 					key = key.substring(tableAlias.length() + 1);
-				environment.add(new Object[]
-				{ key, cc.expression });
+				environment.add(new Object[]{ key, cc.expression });
 			}
 		}
 
 		if (environment.isEmpty())
-			throw new Exception("Malformed SQL. No columns");
+			throw new SQLException("Malformed SQL. No columns");
 
 		Iterator<ParsedExpression> it2 = parsedStatement.groupByEntries.iterator();
 		if (it2.hasNext())
