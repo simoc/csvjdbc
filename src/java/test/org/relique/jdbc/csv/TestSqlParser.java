@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 
 import java.io.StringReader;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +47,7 @@ import org.relique.jdbc.csv.StringConverter;
 public class TestSqlParser
 {
 	@Test
-	public void testParserSimple() throws Exception
+	public void testParserSimple() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 
@@ -108,7 +109,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testParser() throws Exception
+	public void testParser() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 
@@ -125,7 +126,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testLiteralAsAlias() throws Exception
+	public void testLiteralAsAlias() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 
@@ -142,7 +143,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testFieldAsAlias() throws Exception
+	public void testFieldAsAlias() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 
@@ -160,11 +161,9 @@ public class TestSqlParser
 
 	/**
 	 * this case is only partially decoded by the parser...
-	 * 
-	 * @throws Exception
 	 */
 	@Test
-	public void testAllColumns() throws Exception
+	public void testAllColumns() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 
@@ -177,11 +176,9 @@ public class TestSqlParser
 
 	/**
 	 * Test that where conditions are handled correctly
-	 * 
-	 * @throws Exception
 	 */
 	@Test
-	public void testWhereCorrect() throws Exception
+	public void testWhereCorrect() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 		parser.parse("SELECT FLD_A, FLD_B FROM test WHERE FLD_A = 20");
@@ -202,11 +199,9 @@ public class TestSqlParser
 
 	/**
 	 * Test that where conditions with AND operator are parsed correctly
-	 * 
-	 * @throws Exception
 	 */
 	@Test
-	public void testWhereParsing() throws Exception
+	public void testWhereParsing() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 		Expression whereClause;
@@ -238,7 +233,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testWhereMoreParsing() throws Exception
+	public void testWhereMoreParsing() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 		String query;
@@ -330,11 +325,9 @@ public class TestSqlParser
 
 	/**
 	 * Test that where conditions with AND operator are parsed correctly
-	 * 
-	 * @throws Exception
 	 */
 	@Test
-	public void testWhereEvaluating() throws Exception
+	public void testWhereEvaluating() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 		Map<String, Object> env = new HashMap<String, Object>();
@@ -374,11 +367,9 @@ public class TestSqlParser
 
 	/**
 	 * Test that where conditions with AND operator are parsed correctly
-	 * 
-	 * @throws Exception
 	 */
 	@Test
-	public void testWhereComparisons() throws Exception
+	public void testWhereComparisons() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 		Map<String, Object> env = new HashMap<String, Object>();
@@ -401,7 +392,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testParsingWhereEmptyString() throws Exception
+	public void testParsingWhereEmptyString() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 		Map<String, Object> env = new HashMap<String, Object>();
@@ -412,7 +403,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testParsingWhereSingleQuoteString() throws Exception
+	public void testParsingWhereSingleQuoteString() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 		Map<String, Object> env = new HashMap<String, Object>();
@@ -423,7 +414,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testWhereEvaluatingIndistinguishedNumbers() throws Exception
+	public void testWhereEvaluatingIndistinguishedNumbers() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 		Map<String, Object> env = new HashMap<String, Object>();
@@ -439,7 +430,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testWhereEvaluatingIndistinguishedNegativeNumbers() throws Exception
+	public void testWhereEvaluatingIndistinguishedNegativeNumbers() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 		Map<String, Object> env = new HashMap<String, Object>();
@@ -455,7 +446,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testParsingQueryEnvironmentEntries() throws Exception
+	public void testParsingQueryEnvironmentEntries() throws ParseException, SQLException
 	{
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("*"));
@@ -510,7 +501,7 @@ public class TestSqlParser
 
 	@Test
 	public void testParsingQueryEnvironmentWithoutExpressions()
-			throws Exception
+			throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 		parser.parse("SELECT A FROM test");
@@ -522,7 +513,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testParsingQueryEnvironmentWithExpressions() throws Exception
+	public void testParsingQueryEnvironmentWithExpressions() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 		parser.parse("SELECT A+B AS SUM FROM test");
@@ -535,7 +526,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testEvaluateBinaryOperationsSum() throws Exception
+	public void testEvaluateBinaryOperationsSum() throws ParseException, SQLException
 	{
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("A+b AS result"));
@@ -552,7 +543,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testEvaluateBinaryOperationsOtherThanSum() throws Exception
+	public void testEvaluateBinaryOperationsOtherThanSum() throws ParseException, SQLException
 	{
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("a-b AS result"));
@@ -582,7 +573,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testEvaluateShortOperations() throws Exception
+	public void testEvaluateShortOperations() throws ParseException, SQLException
 	{
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("A+1 AS result"));
@@ -607,7 +598,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testEvaluateLongOperations() throws Exception
+	public void testEvaluateLongOperations() throws ParseException, SQLException
 	{
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("A+5678678678 AS result"));
@@ -643,7 +634,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testEvaluateDateOperations() throws Exception
+	public void testEvaluateDateOperations() throws ParseException, SQLException
 	{
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("CURRENT_DATE AS now"));
@@ -690,7 +681,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testEvaluateTimeOperations() throws Exception
+	public void testEvaluateTimeOperations() throws ParseException, SQLException
 	{
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("CURRENT_TIME AS T1"));
@@ -702,7 +693,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testParsingIgnoresCase() throws Exception
+	public void testParsingIgnoresCase() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 		parser.parse("SELECT A+B AS SUM FROM test");
@@ -716,7 +707,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testParsingTableAlias() throws Exception
+	public void testParsingTableAlias() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 
@@ -725,7 +716,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testParsingWithNewlines() throws Exception
+	public void testParsingWithNewlines() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 
@@ -740,7 +731,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testParsingComma() throws Exception
+	public void testParsingComma() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 
@@ -749,7 +740,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testParsingQuotedFrom() throws Exception
+	public void testParsingQuotedFrom() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 		Expression whereClause;
@@ -761,7 +752,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testParsingQuotedWhere() throws Exception
+	public void testParsingQuotedWhere() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 		Expression whereClause;
@@ -773,7 +764,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testParsingEndingWithSemiColon() throws Exception
+	public void testParsingEndingWithSemiColon() throws ParseException, SQLException
 	{
 		SqlParser parser1 = new SqlParser();
 		parser1.parse("SELECT Id FROM sample;");
@@ -785,7 +776,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testParsingComments() throws Exception
+	public void testParsingComments() throws ParseException, SQLException
 	{
 		SqlParser parser1 = new SqlParser();
 		parser1.parse("-- Comment Before\n" +
@@ -816,7 +807,7 @@ public class TestSqlParser
 	}
 	
 	@Test
-	public void testParsingMultipleStatements() throws Exception
+	public void testParsingMultipleStatements() throws ParseException, SQLException
 	{
 		MultipleSqlParser parser = new MultipleSqlParser();
 		List<SqlParser> parsers = parser.parse("SELECT A FROM test1 ; SELECT B FROM test2 ; SELECT C FROM test3");

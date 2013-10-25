@@ -16,6 +16,7 @@
 package org.relique.jdbc.csv;
 
 import java.io.StringReader;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ import java.util.List;
  */
 public class MultipleSqlParser
 {
-	public List<SqlParser> parse(String sql) throws Exception
+	public List<SqlParser> parse(String sql) throws ParseException, SQLException
 	{
 		// Ensure last line of SQL statement ends with newline so we can
 		// correctly skip single-line comments.
