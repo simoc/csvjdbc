@@ -16,9 +16,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git://csvjdbc.git.sourceforge.net/gitroot/csvjdbc/csvjdbc</connection>
+    <connection>scm:git://git.code.sf.net/p/csvjdbc/code</connection>
     <tag>HEAD</tag>
-    <url>http://csvjdbc.git.sourceforge.net/git/gitweb-index.cgi</url>
+    <url>http://sourceforge.net/p/csvjdbc/_list/git</url>
   </scm>
 
   <developers>
