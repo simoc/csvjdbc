@@ -58,7 +58,7 @@ class SQLMaxFunction extends AggregateFunction
 	}
 	public String toString()
 	{
-		StringBuffer sb = new StringBuffer("MAX(");
+		StringBuilder sb = new StringBuilder("MAX(");
 		if (isDistinct)
 			sb.append("DISTINCT ");
 		sb.append(expression);

@@ -385,7 +385,7 @@ public class CsvRawReader
 		Vector<String> values = new Vector<String>();
 		boolean inQuotedString = false;
 		int quotedLineNumber = 0;
-		StringBuffer value = new StringBuffer(32);
+		StringBuilder value = new StringBuilder(32);
 		String orgLine = line;
 		int currentPos = 0;
 		int fullLine = 0;
@@ -495,7 +495,7 @@ public class CsvRawReader
 				// Line ended while looking for matching quoteChar. This means
 				// we are inside of a field (not yet fullLine).
 				// Remove extra separator added at start.
-				value = new StringBuffer(value.substring(0, value.length() - 1));
+				value = new StringBuilder(value.substring(0, value.length() - 1));
 				try
 				{
 					String additionalLine = input.readLine();

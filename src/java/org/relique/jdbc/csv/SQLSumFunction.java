@@ -137,7 +137,7 @@ class SQLSumFunction extends AggregateFunction
 	}
 	public String toString()
 	{
-		StringBuffer sb = new StringBuffer("SUM(");
+		StringBuilder sb = new StringBuilder("SUM(");
 		if (distinctValues != null)
 			sb.append("DISTINCT ");
 		sb.append(expression);

@@ -50,7 +50,7 @@ public class LikePattern {
 				/*
 				 * First convert LIKE pattern to a regular expression.
 				 */
-				StringBuffer regex = new StringBuffer();
+				StringBuilder regex = new StringBuilder();
 				StringTokenizer tokenizer = new StringTokenizer(likePattern, "%_", true);
 				while (tokenizer.hasMoreTokens()) {
 					String token = tokenizer.nextToken();

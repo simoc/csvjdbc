@@ -45,7 +45,7 @@ class InExpression extends LogicalExpression
 	}
 	public String toString()
 	{
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("IN ");
 		sb.append(obj.toString());
 		sb.append(" (");

@@ -38,7 +38,7 @@ class SQLAvgFunction extends SQLSumFunction
 	}
 	public String toString()
 	{
-		StringBuffer sb = new StringBuffer("AVG(");
+		StringBuilder sb = new StringBuilder("AVG(");
 		if (distinctValues != null)
 			sb.append("DISTINCT ");
 		sb.append(expression);

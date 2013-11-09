@@ -115,7 +115,7 @@ public class CsvMain
 				do
 				{
 					String line;
-					StringBuffer sb = new StringBuffer();
+					StringBuilder sb = new StringBuilder();
 					while ((line = reader.readLine()) != null)
 					{
 						sb.append(line);

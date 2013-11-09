@@ -58,7 +58,7 @@ class SQLMinFunction extends AggregateFunction
 	}
 	public String toString()
 	{
-		StringBuffer sb = new StringBuffer("MIN(");
+		StringBuilder sb = new StringBuilder("MIN(");
 		if (isDistinct)
 			sb.append("DISTINCT ");
 		sb.append(expression);

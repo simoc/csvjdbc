@@ -72,7 +72,7 @@ class SQLCountFunction extends AggregateFunction
 	}
 	public String toString()
 	{
-		StringBuffer sb = new StringBuffer("COUNT(");
+		StringBuilder sb = new StringBuilder("COUNT(");
 		if (distinctValues != null)
 			sb.append("DISTINCT ");
 		sb.append(expression);
