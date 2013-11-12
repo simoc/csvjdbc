@@ -41,9 +41,11 @@
   <property name="build.dir" value="../build"/>
   <property name="src.dir" value="../src"/>
   <property name="java.dir" value="${src.dir}/java"/>
+  <property name="test.java.dir" value="${src.dir}/test/java"/>
   <property name="doc.dir" value="${src.dir}/doc"/>
   <property name="lib.dir" value="../lib"/>
   <property name="class.dir" value="../classes"/>
+  <property name="test.class.dir" value="../target/test-classes"/>
   <property name="javadoc.dir" value="../javadoc"/>
   <property name="rel.dir" value="../release"/>
   <property name="junit.dir" value="/usr/share/java"/>
@@ -61,13 +63,15 @@
     <fileset dir="${junit.dir}" erroronmissingdir="false">
       <include name="junit*.jar"/>
     </fileset>
-    <pathelement path="../classes"/>
+    <pathelement path="${class.dir}"/>
+    <pathelement path="${test.class.dir}"/>
   </path>
 
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
   <target name="init">
+    <mkdir dir="${test.class.dir}"/>
     <mkdir dir="${class.dir}"/>
     <mkdir dir="${javadoc.dir}"/>
     <mkdir dir="${rel.dir}"/>
@@ -105,11 +109,11 @@
   <target name="jar" depends="compile"
           description="Creates the jar file for the system">
     <manifest file="manifest">
+      <!-- For running CsvJdbc as a utility program -->
       <attribute name="Main-Class" value="org.relique.jdbc.csv.CsvMain"/>
     </manifest>
     <jar jarfile="${jar.file}" manifest="manifest">
       <fileset dir="${class.dir}" includes="org/**/*.class"/>
-      <!-- For running CsvJdbc as a utility program -->
       <!-- For java.sql.DriverManager Service Provider mechanism -->
       <service type="java.sql.Driver" provider="org.relique.jdbc.csv.CsvDriver"/>
     </jar>
@@ -120,7 +124,7 @@
   <!-- =================================================================== -->
   <target name="javadoc" depends="init"
           description="Builds the javadoc for the system">
-    <javadoc packagenames="test.*,org.*"
+    <javadoc packagenames="org.*"
              sourcepath="${java.dir}"
              destdir="${javadoc.dir}"
              author="true"
@@ -137,6 +141,7 @@
   <!-- Clean target                                                        -->
   <!-- =================================================================== -->
   <target name="clean" description="Cleans project for fresh build">
+    <delete dir="${test.class.dir}"/>
     <delete dir="${class.dir}"/>
     <delete dir="${javadoc.dir}"/>
     <delete dir="${rel.dir}"/>
@@ -149,15 +154,15 @@
   <target name="test" depends="compile"
           description="Creates and runs the test programs. See lib\readme.txt">
     <mkdir dir="${test.reports}"/>
-    <javac srcdir="${java.dir}" destdir="${class.dir}">
+    <javac srcdir="${test.java.dir}" destdir="${test.class.dir}">
       <classpath refid="test.classpath" />
-      <include name="test/**/*.java" />
+      <include name="**/*.java" />
     </javac>
     <junit fork="yes" printsummary="no" haltonfailure="no">
       <formatter type="xml" />
       <classpath refid="test.classpath" />
       <batchtest fork="yes" todir="${test.reports}" >
-        <fileset dir="../classes/">
+        <fileset dir="${test.class.dir}">
           <include name="**/Test*.class" />
         </fileset>
       </batchtest>

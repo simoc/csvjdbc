@@ -60,7 +60,6 @@
 
   <build>
     <sourceDirectory>src/java/org</sourceDirectory>
-    <testSourceDirectory>src/java/test</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -76,7 +75,6 @@
         <version>2.7</version>
         <configuration>
           <sourcepath>src/java</sourcepath>
-          <excludePackageNames>test.org.relique.jdbc.csv</excludePackageNames>
         </configuration>
       </plugin>
       <plugin>

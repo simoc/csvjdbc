@@ -1,4 +1,4 @@
-package test.org.relique.jdbc.csv;
+package org.relique.jdbc.csv;
 
 import java.io.Reader;
 import java.io.StringReader;

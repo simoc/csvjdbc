@@ -1,4 +1,4 @@
-package test.org.relique.jdbc.csv;
+package org.relique.jdbc.csv;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
