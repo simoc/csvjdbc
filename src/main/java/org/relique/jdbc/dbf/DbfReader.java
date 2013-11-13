@@ -17,6 +17,7 @@ package org.relique.jdbc.dbf;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ public class DbfReader extends DataReader
 {
 	private Object table = null;
 	private List fields;
+	private Integer recordCount;
 	private Object record;
 	private int rowNo;
 	private Class<?> fieldClass;
@@ -38,6 +40,7 @@ public class DbfReader extends DataReader
 	private Method tableGetFieldsMethod;
 	private Method tableCloseMethod;
 	private Method fieldGetNameMethod;
+	private Method tableGetRecordCountMethod;
 	private Method tableGetRecordAtMethod;
 	private Method recordGetTypedValueMethod;
 	private Method fieldGetTypeMethod;
@@ -64,6 +67,7 @@ public class DbfReader extends DataReader
 			tableCloseMethod = tableClass.getMethod("close", new Class[] {});
 			tableGetFieldsMethod = tableClass.getMethod("getFields", new Class[] {});
 			fieldGetNameMethod = fieldClass.getMethod("getName", new Class[] {});
+			tableGetRecordCountMethod = tableClass.getMethod("getRecordCount", new Class[] {});
 			tableGetRecordAtMethod = tableClass.getMethod("getRecordAt", new Class[] {Integer.TYPE}); 
 			recordGetTypedValueMethod = recordClass.getMethod("getTypedValue", new Class[] {String.class});
 			fieldGetTypeMethod = fieldClass.getMethod("getType", new Class[] {});
@@ -88,6 +92,7 @@ public class DbfReader extends DataReader
 			}
 			tableOpenMethod.invoke(table, new Object[] {});
 			fields = (List) tableGetFieldsMethod.invoke(table, new Object[] {});
+			recordCount = (Integer)tableGetRecordCountMethod.invoke(table, new Object[] {});
 			record = null;
 			rowNo = -1;
 			this.tableAlias = tableAlias;
@@ -101,6 +106,7 @@ public class DbfReader extends DataReader
 		dbfTypeToSQLType.put("NUMBER", "Double");
 		dbfTypeToSQLType.put("LOGICAL", "Boolean");
 		dbfTypeToSQLType.put("DATE", "Date");
+		dbfTypeToSQLType.put("MEMO", "String");
 	}
 
 	public void close() throws SQLException
@@ -160,14 +166,25 @@ public class DbfReader extends DataReader
 	public boolean next() throws SQLException
 	{
 		rowNo++;
+
+		if (rowNo >= recordCount.intValue())
+			return false;
+
 		try
 		{
 			record = tableGetRecordAtMethod.invoke(table, new Object[]{Integer.valueOf(rowNo)});
 		}
+		catch (InvocationTargetException e)
+		{
+			/*
+			 * Re-throw the exception from inside the dans library.
+			 */
+			throw new SQLException(e.getCause());
+		}
 		catch (Exception e)
 		{
 			return false;
-		} 
+		}
 		return true;
 	}
 
@@ -176,15 +193,18 @@ public class DbfReader extends DataReader
 		String[] result = new String[fields.size()];
 		for(int i=0; i<fields.size(); i++)
 		{
+			String dbfType = "";
 			try
 			{
-				String dbfType = fieldGetTypeMethod.invoke(fields.get(i), new Object[] {}).toString();
-				result[i] = dbfTypeToSQLType.get(dbfType);
+				dbfType = fieldGetTypeMethod.invoke(fields.get(i), new Object[] {}).toString();
 			}
 			catch (Exception e)
 			{
 				throw new SQLException("Error while being smart:" + e);
 			}
+			result[i] = dbfTypeToSQLType.get(dbfType);
+			if (result[i] == null)
+				throw new SQLException("DBF Data Type not supported: " + dbfType);
 		}
 		return result;
 	}
