@@ -40,14 +40,14 @@
   <property name="rel.name" value="${name}-${rel}"/>
   <property name="build.dir" value="../build"/>
   <property name="src.dir" value="../src"/>
-  <property name="java.dir" value="${src.dir}/java"/>
+  <property name="java.dir" value="${src.dir}/main/java"/>
   <property name="test.java.dir" value="${src.dir}/test/java"/>
   <property name="doc.dir" value="${src.dir}/doc"/>
   <property name="lib.dir" value="../lib"/>
-  <property name="class.dir" value="../classes"/>
+  <property name="class.dir" value="../target/classes"/>
   <property name="test.class.dir" value="../target/test-classes"/>
   <property name="javadoc.dir" value="../javadoc"/>
-  <property name="rel.dir" value="../release"/>
+  <property name="rel.dir" value="../target"/>
   <property name="junit.dir" value="/usr/share/java"/>
   <property name="jar.file" value="${rel.dir}/${rel.name}.jar"/>
   <property name="test.reports" value="../reports" /> 
