@@ -209,6 +209,26 @@ public class TestDbfDriver
 	}
 
 	@Test
+	public void testMemoColumn() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT NOTE FROM xbase");
+		assertTrue(results.next());
+		assertEquals("The NOTE is wrong", "This is a memo fore record no one", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("The NOTE is wrong", "This is memo for record 2", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("The NOTE is wrong", "This is memo 3", results.getString(1));
+		assertFalse(results.next());
+	}
+
+	@Test
 	public void testColumnDisplaySizes() throws SQLException
 	{
 		Properties props = new Properties();
@@ -243,8 +263,11 @@ public class TestDbfDriver
 		target.add("sample");
 		target.add("fox_samp");
 		target.add("hotel");
+		target.add("xbase");
 
 		Set<String> current = new HashSet<String>();
+		assertTrue(results.next());
+		current.add(results.getString("TABLE_NAME"));
 		assertTrue(results.next());
 		current.add(results.getString("TABLE_NAME"));
 		assertTrue(results.next());
