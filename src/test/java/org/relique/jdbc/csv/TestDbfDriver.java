@@ -229,6 +229,23 @@ public class TestDbfDriver
 	}
 
 	@Test
+	public void testFloatColumn() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM d");
+		assertTrue(results.next());
+		long l = Math.round(7.63 * 1000);
+		assertEquals("The floatfield is wrong", l, Math.round(results.getDouble(1) * 1000));
+		assertFalse(results.next());
+	}
+
+	@Test
 	public void testColumnDisplaySizes() throws SQLException
 	{
 		Properties props = new Properties();
@@ -264,8 +281,11 @@ public class TestDbfDriver
 		target.add("fox_samp");
 		target.add("hotel");
 		target.add("xbase");
+		target.add("d");
 
 		Set<String> current = new HashSet<String>();
+		assertTrue(results.next());
+		current.add(results.getString("TABLE_NAME"));
 		assertTrue(results.next());
 		current.add(results.getString("TABLE_NAME"));
 		assertTrue(results.next());

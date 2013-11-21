@@ -107,6 +107,7 @@ public class DbfReader extends DataReader
 		dbfTypeToSQLType.put("LOGICAL", "Boolean");
 		dbfTypeToSQLType.put("DATE", "Date");
 		dbfTypeToSQLType.put("MEMO", "String");
+		dbfTypeToSQLType.put("FLOAT", "Double");
 	}
 
 	public void close() throws SQLException
@@ -237,6 +238,12 @@ public class DbfReader extends DataReader
 			{
 				String fieldName = (String) fieldGetNameMethod.invoke(field, new Object[] {});
 				Object o = getField(i + 1);
+
+				/*
+				 * Convert column names to upper case because
+				 * that is what query environment uses.
+				 */
+				fieldName = fieldName.toUpperCase();
 				result.put(fieldName, o);
 				if (tableAlias != null)
 				{
