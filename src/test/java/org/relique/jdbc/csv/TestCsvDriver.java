@@ -3825,7 +3825,7 @@ public class TestCsvDriver
 	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" +
 			TableReaderTester.class.getName());
-		ResultSet results = conn.getMetaData().getTables(null, null, "*", null);
+		ResultSet results = conn.getMetaData().getTables(null, null, "%", null);
 		assertTrue(results.next());
 		assertEquals("TABLE_NAME wrong", "AIRLINE", results.getString("TABLE_NAME"));
 		assertTrue(results.next());

@@ -108,7 +108,7 @@ public class TestZipFiles
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
 			+ filePath + File.separator + TEST_ZIP_FILENAME_1);
 
-		ResultSet results = conn.getMetaData().getTables(null, null, "*", null);
+		ResultSet results = conn.getMetaData().getTables(null, null, "%", null);
 		assertTrue(results.next());
 		assertEquals("The TABLE_NAME is wrong", "medals2004", results.getString("TABLE_NAME"));
 		assertTrue(results.next());

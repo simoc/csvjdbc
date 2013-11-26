@@ -275,7 +275,7 @@ public class TestDbfDriver
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 		DatabaseMetaData metadata = conn.getMetaData();
-		ResultSet results = metadata.getTables(null, null, "*", null);
+		ResultSet results = metadata.getTables(null, null, "%", null);
 		Set<String> target = new HashSet<String>();
 		target.add("sample");
 		target.add("fox_samp");
@@ -297,6 +297,23 @@ public class TestDbfDriver
 		assertFalse(results.next());
 
 		assertEquals("Incorrect table names", target, current);
+	}
+	
+	@Test
+	public void testDatabaseMetadataTablesPattern() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		DatabaseMetaData metadata = conn.getMetaData();
+		// Get tables matching only this pattern
+		ResultSet results = metadata.getTables(null, null, "x%", new String[]{"TABLE"});
+
+		assertTrue(results.next());
+		assertEquals("Incorrect table name", "xbase", results.getString("TABLE_NAME"));
+		assertFalse(results.next());
 	}
 
 	@Test

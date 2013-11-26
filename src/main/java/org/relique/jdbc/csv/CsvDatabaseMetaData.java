@@ -555,21 +555,37 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 			String tableNamePattern, String[] types) throws SQLException
 	{
 		String columnNames = "TABLE_CAT,TABLE_SCHEM,TABLE_NAME,TABLE_TYPE,"
-				+ "REMARKS,TYPE_CAT,TYPE_SCHEM,TYPE_NAME,SELF_REFERENCING_COL_NAME,REF_GENERATION";
+			+ "REMARKS,TYPE_CAT,TYPE_SCHEM,TYPE_NAME,SELF_REFERENCING_COL_NAME,REF_GENERATION";
 		String columnTypes = "String,String,String,String,String,String,String,String,String,String";
-		List<String> tableNames = ((CsvConnection) createdByConnection)
-				.getTableNames();
-		ArrayList<Object[]> columnValues = new ArrayList<Object[]>(
-				tableNames.size());
+		List<String> tableNames = ((CsvConnection) createdByConnection).getTableNames();
+		ArrayList<Object[]> columnValues = new ArrayList<Object[]>(tableNames.size());
+
+		boolean typesMatch = false;
+
+		if (types == null)
+		{
+			typesMatch = true;
+		}
+		else
+		{
+			for (int i = 0; i < types.length; i++)
+			{
+				if (types[i].equals("TABLE"))
+					typesMatch = true;
+			}
+		}
+
 		for (int i = 0; i < tableNames.size(); i++)
 		{
-			Object[] data = new Object[]
-			{ null, SCHEMA_NAME, tableNames.get(i), "TABLE", "", null, null,
-					null, null, null };
-			columnValues.add(data);
+			String tableName = tableNames.get(i);
+			if (typesMatch && (tableNamePattern == null || LikePattern.matches(tableNamePattern, tableName)))
+			{
+				Object[] data = new Object[]{null, SCHEMA_NAME, tableName, "TABLE", "",
+					null, null, null, null, null};
+				columnValues.add(data);
+			}
 		}
-		ResultSet retval = createResultSet(columnNames, columnTypes,
-				columnValues);
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
 		return retval;
 	}
 
