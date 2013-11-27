@@ -325,7 +325,7 @@ public class TestDbfDriver
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
 		DatabaseMetaData metadata = conn.getMetaData();
-		ResultSet results = metadata.getColumns(null, null, "sample", "*");
+		ResultSet results = metadata.getColumns(null, null, "sample", "%");
 		assertTrue(results.next());
 		assertEquals("Incorrect table name", "sample", results.getString("TABLE_NAME"));
 		assertEquals("Incorrect column name", "NAME", results.getString("COLUMN_NAME"));
@@ -335,7 +335,26 @@ public class TestDbfDriver
 		assertTrue(results.next());
 		assertEquals("Incorrect column name", "KEY", results.getString(4));
 	}
-	
+
+	@Test
+	public void testDatabaseMetadataColumnsPattern() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		DatabaseMetaData metadata = conn.getMetaData();
+		ResultSet results = metadata.getColumns(null, null, "x%", "M%");
+		assertTrue(results.next());
+		assertEquals("Incorrect table name", "xbase", results.getString("TABLE_NAME"));
+		assertEquals("Incorrect column name", "MSG", results.getString("COLUMN_NAME"));
+		assertEquals("Incorrect column type", Types.VARCHAR, results.getInt("DATA_TYPE"));
+		assertEquals("Incorrect column type", "String", results.getString("TYPE_NAME"));
+		assertEquals("Incorrect ordinal position", 2, results.getInt("ORDINAL_POSITION"));
+		assertFalse(results.next());
+	}
+
 	@Test
 	public void testGetNumeric() throws SQLException
 	{

@@ -125,55 +125,73 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 
 	@Override
 	public ResultSet getColumns(String catalog, String schemaPattern,
-			String tableNamePattern, String columnNamePattern)
-			throws SQLException
+		String tableNamePattern, String columnNamePattern) throws SQLException
 	{
 		String columnNames = "TABLE_CAT,TABLE_SCHEM,TABLE_NAME,COLUMN_NAME,DATA_TYPE,TYPE_NAME,COLUMN_SIZE,BUFFER_LENGTH,"
-				+ "DECIMAL_DIGITS,NUM_PREC_RADIX,NULLABLE,REMARKS,COLUMN_DEF,SQL_DATA_TYPE,SQL_DATETIME_SUB,CHAR_OCTET_LENGTH,"
-				+ "ORDINAL_POSITION,IS_NULLABLE,SCOPE_CATLOG,SCOPE_SCHEMA,SCOPE_TABLE,SOURCE_DATA_TYPE,IS_AUTOINCREMENT";
+			+ "DECIMAL_DIGITS,NUM_PREC_RADIX,NULLABLE,REMARKS,COLUMN_DEF,SQL_DATA_TYPE,SQL_DATETIME_SUB,CHAR_OCTET_LENGTH,"
+			+ "ORDINAL_POSITION,IS_NULLABLE,SCOPE_CATLOG,SCOPE_SCHEMA,SCOPE_TABLE,SOURCE_DATA_TYPE,IS_AUTOINCREMENT";
 		String columnTypes = "String,String,String,String,Integer,String,Integer,Integer,Integer,Integer,Integer,"
-				+ "String,String,Integer,Integer,Integer,Integer,String,String,String,String,Short,String";
+			+ "String,String,Integer,Integer,Integer,Integer,String,String,String,String,Short,String";
 		ArrayList<Object[]> columnValues = new ArrayList<Object[]>();
 		ResultSet resultSet = null;
+		ResultSet resultSet2 = null;
 		try
-		{
+		{			
 			if (internalStatement == null)
-				internalStatement = (CsvStatement) createdByConnection
-						.createStatement();
-			resultSet = internalStatement.executeQuery("SELECT * FROM "
-					+ tableNamePattern);
-			ResultSetMetaData metadata = resultSet.getMetaData();
-			int nColumns = metadata.getColumnCount();
-			Integer columnSize = Integer.valueOf(Short.MAX_VALUE);
-			Integer decimalDigits = Integer.valueOf(Short.MAX_VALUE);
-			Integer zero = Integer.valueOf(0);
-			Integer radix = Integer.valueOf(10);
-			Integer nullable = Integer.valueOf(columnNullable);
-			String remarks = null;
-			String defaultValue = null;
+				internalStatement = (CsvStatement) createdByConnection.createStatement();
 
-			for (int i = 0; i < nColumns; i++)
-			{
-				String columnName = metadata.getColumnName(i + 1);
-				int columnType = metadata.getColumnType(i + 1);
-				String columnTypeName = metadata.getColumnTypeName(i + 1);
-				Object data[] =
-				{ null, SCHEMA_NAME, tableNamePattern, columnName,
-						Integer.valueOf(columnType), columnTypeName,
-						columnSize, zero, decimalDigits, radix, nullable,
-						remarks, defaultValue, zero, zero, columnSize,
-						Integer.valueOf(i + 1), "YES", null, null, null, null,
-						"NO" };
-				columnValues.add(data);
+			/*
+			 * Find tables matching the pattern.
+			 */
+			resultSet = getTables(catalog, schemaPattern, tableNamePattern, null);
+			while (resultSet.next())
+			{				
+				String tableName = resultSet.getString(3);
+
+				resultSet2 = internalStatement.executeQuery("SELECT * FROM " + tableName);
+				ResultSetMetaData metadata = resultSet2.getMetaData();
+				int nColumns = metadata.getColumnCount();
+				Integer columnSize = Integer.valueOf(Short.MAX_VALUE);
+				Integer decimalDigits = Integer.valueOf(Short.MAX_VALUE);
+				Integer zero = Integer.valueOf(0);
+				Integer radix = Integer.valueOf(10);
+				Integer nullable = Integer.valueOf(columnNullable);
+				String remarks = null;
+				String defaultValue = null;
+	
+				for (int i = 0; i < nColumns; i++)
+				{
+					String columnName = metadata.getColumnName(i + 1);
+
+					/*
+					 * Only add columns matching the column pattern.
+					 */
+					if (columnNamePattern == null ||
+						LikePattern.matches(columnNamePattern, columnName))
+					{
+						int columnType = metadata.getColumnType(i + 1);
+						String columnTypeName = metadata.getColumnTypeName(i + 1);
+						Object data[] = { null, SCHEMA_NAME, tableName, columnName,
+							Integer.valueOf(columnType), columnTypeName,
+							columnSize, zero, decimalDigits, radix, nullable,
+							remarks, defaultValue, zero, zero, columnSize,
+							Integer.valueOf(i + 1), "YES", null, null, null, null,
+							"NO" };
+						columnValues.add(data);
+					}
+				}
+				resultSet2.close();
+				resultSet2 = null;
 			}
 		}
 		finally
 		{
+			if (resultSet2 != null)
+				resultSet2.close();
 			if (resultSet != null)
 				resultSet.close();
 		}
-		ResultSet retval = createResultSet(columnNames, columnTypes,
-				columnValues);
+		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
 		return retval;
 	}
 
