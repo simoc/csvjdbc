@@ -807,4 +807,23 @@ public class TestSqlParser
 		assertEquals("[C]", parsers.get(2).getExpression(0).toString());
 		assertEquals("Incorrect table name", parsers.get(2).getTableName(), "test3");
 	}
+	
+	@Test
+	public void testWhereDiacritics() throws SQLException, ParseException
+	{
+		SqlParser parser = new SqlParser();
+		Map<String, Object> env = new HashMap<String, Object>();
+		env.put("C", new String(
+				"\u011B\u0161\u010D\u0159\u017E\u00FD\u00E1\u00ED\u00E9\u00FA\u016F\u010F\u0165\u0148\u011A\u0160\u010C\u0158\u017D\u00DD\u00C1\u00CD\u00C9\u00DA\u016E\u010E\u0164\u0147"));
+
+		/*
+		 *  Test with Unicode characters with code points greater than 255.
+		 *  \u0165 is LATIN SMALL LETTER T WITH CARON
+		 *  \u0148 is LATIN SMALL LETTER N WITH CARON
+		 *  \u011A is LATIN CAPITAL LETTER E WITH CARON
+		 */
+		parser.parse("SELECT * FROM test WHERE c LIKE '%\u0165\u0148\u011A%'");
+
+		assertEquals(true, parser.getWhereClause().isTrue(env));
+	}
 }

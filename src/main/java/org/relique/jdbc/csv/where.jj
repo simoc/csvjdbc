@@ -23,6 +23,7 @@ options
 	FORCE_LA_CHECK = true;
 	IGNORE_CASE = true;
 	JDK_VERSION = "1.5";
+	UNICODE_INPUT = true;
 }
 PARSER_BEGIN(ExpressionParser)
 package org.relique.jdbc.csv;
