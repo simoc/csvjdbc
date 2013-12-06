@@ -42,7 +42,7 @@ public class CsvDriver implements Driver
 	public static final boolean DEFAULT_TRIM_VALUES = false;
 	public static final String DEFAULT_COLUMN_TYPES = "String";
 	public static final boolean DEFAULT_INDEXED_FILES = false;
-	public static final String DEFAULT_TIMESTAMP_FORMAT = "YYYY-MM-DD HH:mm:ss";
+	public static final String DEFAULT_TIMESTAMP_FORMAT = null;
 	public static final String DEFAULT_DATE_FORMAT = "YYYY-MM-DD";
 	public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
 	public static final String DEFAULT_COMMENT_CHAR = null;

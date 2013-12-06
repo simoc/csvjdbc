@@ -26,6 +26,8 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -42,8 +44,9 @@ public class StringConverter
 	private String timeFormat;
 	private GregorianCalendar calendar;
 	private Pattern timestampPattern;
+	private SimpleDateFormat timestampFormat;
 
-	public StringConverter(String dateformat, String timeformat, String timeZoneName)
+	public StringConverter(String dateformat, String timeformat, String timestampformat, String timeZoneName)
 	{
 		dateFormat = dateformat;
 		timeFormat = timeformat;
@@ -51,8 +54,21 @@ public class StringConverter
 		calendar = new GregorianCalendar();
 		calendar.clear();
 		calendar.setTimeZone(timeZone);
-		timestampPattern = Pattern
+		if (timestampformat != null && timestampformat.length() > 0)
+		{
+			/*
+			 * Use Java API for parsing dates and times.
+			 */
+			timestampFormat = new SimpleDateFormat(timestampformat);
+		}
+		else
+		{
+			/*
+			 * Parse timestamps using a fixed regular expression.
+			 */
+			timestampPattern = Pattern
 				.compile("([0-9][0-9][0-9][0-9])-([0-9]?[0-9])-([0-9]?[0-9])[ T]([0-9]?[0-9]):([0-9]?[0-9]):([0-9]?[0-9]).*");
+		}
 	}
 
 	public String parseString(String str)
@@ -338,21 +354,32 @@ public class StringConverter
 		Timestamp result = null;
 		try
 		{
-			Matcher matcher = timestampPattern.matcher(str);
-			if (matcher.matches())
+			if (timestampFormat != null)
 			{
-				int year = Integer.parseInt(matcher.group(1));
-				int month = Integer.parseInt(matcher.group(2)) - 1;
-				int date = Integer.parseInt(matcher.group(3));
-				int hours = Integer.parseInt(matcher.group(4));
-				int minutes = Integer.parseInt(matcher.group(5));
-				int seconds = Integer.parseInt(matcher.group(6));
-				calendar.set(year, month, date, hours, minutes, seconds);
+				java.util.Date date = timestampFormat.parse(str);
+				calendar.setTime(date);
 				result = new Timestamp(calendar.getTimeInMillis());
-				return result;
+			}
+			else
+			{
+				Matcher matcher = timestampPattern.matcher(str);
+				if (matcher.matches())
+				{
+					int year = Integer.parseInt(matcher.group(1));
+					int month = Integer.parseInt(matcher.group(2)) - 1;
+					int date = Integer.parseInt(matcher.group(3));
+					int hours = Integer.parseInt(matcher.group(4));
+					int minutes = Integer.parseInt(matcher.group(5));
+					int seconds = Integer.parseInt(matcher.group(6));
+					calendar.set(year, month, date, hours, minutes, seconds);
+					result = new Timestamp(calendar.getTimeInMillis());
+				}
 			}
 		}
 		catch (RuntimeException e)
+		{
+		}
+		catch (ParseException e)
 		{
 		}
 		return result;

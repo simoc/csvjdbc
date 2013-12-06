@@ -273,7 +273,7 @@ public class CsvConnection implements Connection
 						"cryptoFilterParameterTypes", "String").split(",");
 				String[] parameterStrings = info.getProperty(
 						"cryptoFilterParameters", "").split(",");
-				StringConverter converter = new StringConverter("", "", "");
+				StringConverter converter = new StringConverter("", "", "", "");
 				Class<?>[] parameterClasses = new Class[parameterStrings.length];
 				Object[] parameterValues = new Object[parameterStrings.length];
 				for (int i = 0; i < parameterStrings.length; i++)

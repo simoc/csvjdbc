@@ -104,6 +104,8 @@ public class CsvResultSet implements ResultSet
 
 	private String dateFormat;
 
+	private String timestampFormat;
+
 	private String timeZone;
 
 	private StringConverter converter;
@@ -229,11 +231,11 @@ public class CsvResultSet implements ResultSet
 		if (isDistinct)
 			this.distinctValues = new HashSet<ArrayList<Object>>();
 
-		// timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
 		timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
 		dateFormat = ((CsvConnection)statement.getConnection()).getDateFormat();
+		timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
 		timeZone = ((CsvConnection)statement.getConnection()).getTimeZoneName();
-		this.converter = new StringConverter(dateFormat, timeFormat, timeZone);
+		this.converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZone);
 		if (reader instanceof CsvReader)
 		{
 			((CsvReader) reader).setConverter(converter);

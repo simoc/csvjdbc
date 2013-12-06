@@ -3269,6 +3269,29 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testTimestampFormat() throws SQLException,
+			ParseException
+	{
+		Properties props = new Properties();
+		props.put("timeZoneName", "UTC");
+		props.put("timestampFormat", "dd-MMM-yy HH:mm:ss.SSS aa");
+		props.put("columnTypes", "Int,Timestamp");
+		
+		ResultSet results = null;
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+
+		results = stmt.executeQuery("SELECT T FROM yogesh");
+		assertTrue(results.next());
+		Timestamp got = results.getTimestamp(1);
+		assertEquals("2013-11-25 13:29:07", toUTC.format(got));
+		assertTrue(results.next());
+		assertEquals("2013-12-06 11:52:21", toUTC.format(got));
+	}
+
+	@Test
 	public void testTimestampInTimeZoneRome() throws SQLException,
 			ParseException
 	{

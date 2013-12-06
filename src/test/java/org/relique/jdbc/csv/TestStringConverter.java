@@ -50,7 +50,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateFixedSize()
 	{
-		StringConverter sc = new StringConverter("dd-mm-yyyy", "", "");
+		StringConverter sc = new StringConverter("dd-mm-yyyy", "", "", "");
 		
 		Date got, expect;
 
@@ -66,7 +66,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateVariableSize()
 	{
-		StringConverter sc = new StringConverter("m-d-yyyy", "", "");
+		StringConverter sc = new StringConverter("m-d-yyyy", "", "", "");
 
 		Date got, expect;
 
@@ -82,7 +82,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateVariableSizeYMD()
 	{
-		StringConverter sc = new StringConverter("yyyy-m-d", "", "");
+		StringConverter sc = new StringConverter("yyyy-m-d", "", "", "");
 
 		Date got, expect;
 
@@ -98,7 +98,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateVariableSizeMYD()
 	{
-		StringConverter sc = new StringConverter("m-yyyy-d", "", "");
+		StringConverter sc = new StringConverter("m-yyyy-d", "", "", "");
 
 		Date got, expect;
 
@@ -115,7 +115,7 @@ public class TestStringConverter
 	public void testParseTimestampWithTimeZoneGuadeloupe()
 	{
 		// Guadeloupe lies 4 hours behind UTC, no daylight savings
-		StringConverter sc = new StringConverter("", "", "America/Guadeloupe");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "America/Guadeloupe");
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -129,7 +129,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneYakutsk()
 	{
 		// in January Yakutsk lies 9 hours ahead of UTC
-		StringConverter sc = new StringConverter("", "", "Asia/Yakutsk");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "Asia/Yakutsk");
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -144,7 +144,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneSantiago()
 	{
 		// in January Santiago lies 3 hours behind of UTC
-		StringConverter sc = new StringConverter("", "", "America/Santiago");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "America/Santiago");
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -159,7 +159,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneAthens()
 	{
 		// in January Athens lies 2 hours ahead of UTC
-		StringConverter sc = new StringConverter("", "", "Europe/Athens");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "Europe/Athens");
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -174,7 +174,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneDefaultJanuary()
 	{
 		// defaulting to UTC
-		StringConverter sc = new StringConverter("", "", "");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "");
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -185,7 +185,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneDefaultJuly()
 	{
 		// defaulting to UTC
-		StringConverter sc = new StringConverter("", "", "");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "");
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-07-01 12:00:00");
@@ -196,7 +196,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneUTCJanuary()
 	{
 		// explicit UTC
-		StringConverter sc = new StringConverter("", "", "UTC");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "UTC");
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -207,10 +207,21 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneUTCJuly()
 	{
 		// explicit UTC
-		StringConverter sc = new StringConverter("", "", "UTC");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "UTC");
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-07-01 12:00:00");
 		assertEquals("2010-07-01 12:00:00", toUTC.format(got));
+	}
+	
+	@Test
+	public void testParseTimestampWithFormat()
+	{
+		// explicit UTC
+		StringConverter sc = new StringConverter("", "", "dd-MMM-yy hh.mm.ss.000000 aa", "UTC");
+		Timestamp got;
+
+		got = sc.parseTimestamp("25-NOV-13 01.29.07.000000 PM");
+		assertEquals("2013-11-25 13:29:07", toUTC.format(got));
 	}
 }
