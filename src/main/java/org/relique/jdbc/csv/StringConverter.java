@@ -60,6 +60,7 @@ public class StringConverter
 			 * Use Java API for parsing dates and times.
 			 */
 			timestampFormat = new SimpleDateFormat(timestampformat);
+			timestampFormat.setTimeZone(timeZone);
 		}
 		else
 		{
@@ -357,8 +358,7 @@ public class StringConverter
 			if (timestampFormat != null)
 			{
 				java.util.Date date = timestampFormat.parse(str);
-				calendar.setTime(date);
-				result = new Timestamp(calendar.getTimeInMillis());
+				result = new Timestamp(date.getTime());
 			}
 			else
 			{
