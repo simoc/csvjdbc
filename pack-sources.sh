@@ -1,7 +1,7 @@
 #!/bin/bash
 
 JAR=../LizardConverter/dist/csvjdbc.jar
-find src/java/org/relique/ -iname "*.java" > sources.txt
+find src/main/java/org/relique/ -iname "*.java" > sources.txt
 cat sources.txt > sources-full.txt
 /bin/ls src/java/test/org/relique/jdbc/csv/*.java >> sources-full.txt
 find src/testdata -maxdepth 1 -type f -not -name "*~" >> sources-full.txt
