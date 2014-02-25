@@ -101,14 +101,6 @@ public class CsvResultSet implements ResultSet
 
 	private List<String> usedColumns;
 
-	private String timeFormat;
-
-	private String dateFormat;
-
-	private String timestampFormat;
-
-	private String timeZone;
-
 	private StringConverter converter;
 
 	private ArrayList<Map<String, Object>> bufferedRecordEnvironments = null;
@@ -232,10 +224,10 @@ public class CsvResultSet implements ResultSet
 		if (isDistinct)
 			this.distinctValues = new HashSet<ArrayList<Object>>();
 
-		timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
-		dateFormat = ((CsvConnection)statement.getConnection()).getDateFormat();
-		timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
-		timeZone = ((CsvConnection)statement.getConnection()).getTimeZoneName();
+		String timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
+		String dateFormat = ((CsvConnection)statement.getConnection()).getDateFormat();
+		String timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
+		String timeZone = ((CsvConnection)statement.getConnection()).getTimeZoneName();
 		Locale locale = ((CsvConnection)statement.getConnection()).getLocale();
 		this.converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZone, locale);
 		if (reader instanceof CsvReader)
