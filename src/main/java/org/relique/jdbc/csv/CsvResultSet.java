@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -235,7 +236,8 @@ public class CsvResultSet implements ResultSet
 		dateFormat = ((CsvConnection)statement.getConnection()).getDateFormat();
 		timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
 		timeZone = ((CsvConnection)statement.getConnection()).getTimeZoneName();
-		this.converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZone);
+		Locale locale = ((CsvConnection)statement.getConnection()).getLocale();
+		this.converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZone, locale);
 		if (reader instanceof CsvReader)
 		{
 			((CsvReader) reader).setConverter(converter);

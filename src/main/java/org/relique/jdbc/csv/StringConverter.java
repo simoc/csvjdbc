@@ -26,12 +26,14 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -39,14 +41,26 @@ import java.util.regex.Pattern;
 
 public class StringConverter
 {
-
 	private String dateFormat;
 	private String timeFormat;
 	private GregorianCalendar calendar;
 	private Pattern timestampPattern;
 	private SimpleDateFormat timestampFormat;
 
-	public StringConverter(String dateformat, String timeformat, String timestampformat, String timeZoneName)
+	public StringConverter(String dateformat, String timeformat, String timestampformat,
+		String timeZoneName)
+	{
+		init(dateformat, timeformat, timestampformat, timeZoneName, null);
+	}
+
+	public StringConverter(String dateformat, String timeformat, String timestampformat,
+		String timeZoneName, Locale locale)
+	{
+		init(dateformat, timeformat, timestampformat, timeZoneName, locale);
+	}
+
+	private void init(String dateformat, String timeformat, String timestampformat,
+		String timeZoneName, Locale locale)
 	{
 		dateFormat = dateformat;
 		timeFormat = timeformat;
@@ -59,7 +73,15 @@ public class StringConverter
 			/*
 			 * Use Java API for parsing dates and times.
 			 */
-			timestampFormat = new SimpleDateFormat(timestampformat);
+			if (locale != null)
+			{
+				DateFormatSymbols symbols = DateFormatSymbols.getInstance(locale);
+				timestampFormat = new SimpleDateFormat(timestampformat, symbols);
+			}
+			else
+			{
+				timestampFormat = new SimpleDateFormat(timestampformat);
+			}
 			timestampFormat.setTimeZone(timeZone);
 		}
 		else

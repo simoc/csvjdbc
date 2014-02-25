@@ -47,6 +47,7 @@ import java.sql.Types;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.TimeZone;
 
@@ -3276,7 +3277,14 @@ public class TestCsvDriver
 		props.put("timeZoneName", "UTC");
 		props.put("timestampFormat", "dd-MMM-yy hh:mm:ss.SSS aa");
 		props.put("columnTypes", "Int,Timestamp");
-		
+		if (!Locale.getDefault().equals(Locale.US))
+		{
+			/*
+			 * Ensure that test passes when running on non-English language computers.
+			 */
+			props.put("locale", Locale.US.toString());
+		}
+
 		ResultSet results = null;
 
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
@@ -3287,6 +3295,30 @@ public class TestCsvDriver
 		assertTrue(results.next());
 		Timestamp got = results.getTimestamp(1);
 		assertEquals("2013-11-25 13:29:07", toUTC.format(got));
+		assertTrue(results.next());
+		got = results.getTimestamp(1);
+		assertEquals("2013-12-06 11:52:21", toUTC.format(got));
+	}
+
+	@Test
+	public void testTimestampFormatGermany() throws SQLException, ParseException
+	{
+		Properties props = new Properties();
+		props.put("timeZoneName", "UTC");
+		props.put("timestampFormat", "dd-MMM-yy hh:mm:ss.SSS aa");
+		props.put("columnTypes", "Int,Timestamp");
+		props.put("locale", Locale.GERMANY.toString());
+
+		ResultSet results = null;
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+
+		results = stmt.executeQuery("SELECT T FROM yogesh_de");
+		assertTrue(results.next());
+		Timestamp got = results.getTimestamp(1);
+		assertEquals("2013-10-25 13:29:07", toUTC.format(got));
 		assertTrue(results.next());
 		got = results.getTimestamp(1);
 		assertEquals("2013-12-06 11:52:21", toUTC.format(got));

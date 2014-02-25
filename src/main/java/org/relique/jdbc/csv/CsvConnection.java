@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
@@ -107,6 +108,7 @@ public class CsvConnection implements Connection
 	private String dateFormat;
 	private String timeFormat;
 	private String timeZoneName;
+	private Locale locale = null;
 	private Character commentChar;
 
 	private int skipLeadingLines = 0;
@@ -192,6 +194,8 @@ public class CsvConnection implements Connection
 
 	private void setProperties(Properties info) throws SQLException
 	{
+		String prop;
+
 		// set the file extension to be used
 		if (info.getProperty(CsvDriver.FILE_EXTENSION) != null)
 		{
@@ -203,7 +207,7 @@ public class CsvConnection implements Connection
 			separator = info.getProperty(CsvDriver.SEPARATOR).charAt(0);
 		}
 		// set the quotechar character to be used
-		String prop = info.getProperty(CsvDriver.QUOTECHAR);
+		prop = info.getProperty(CsvDriver.QUOTECHAR);
 		if (prop != null)
 		{
 			if (prop.length() != 1)
@@ -273,7 +277,7 @@ public class CsvConnection implements Connection
 						"cryptoFilterParameterTypes", "String").split(",");
 				String[] parameterStrings = info.getProperty(
 						"cryptoFilterParameters", "").split(",");
-				StringConverter converter = new StringConverter("", "", "", "");
+				StringConverter converter = new StringConverter("", "", "", "", null);
 				Class<?>[] parameterClasses = new Class[parameterStrings.length];
 				Object[] parameterValues = new Object[parameterStrings.length];
 				for (int i = 0; i < parameterStrings.length; i++)
@@ -371,6 +375,19 @@ public class CsvConnection implements Connection
 				CsvDriver.DEFAULT_TIME_FORMAT));
 		setTimeZoneName(info.getProperty(CsvDriver.TIME_ZONE_NAME,
 				CsvDriver.DEFAULT_TIME_ZONE_NAME));
+		if (info.getProperty(CsvDriver.LOCALE) != null)
+		{
+			prop = info.getProperty(CsvDriver.LOCALE);
+			Locale []availableLocales = Locale.getAvailableLocales();
+			for (int i = 0; i < availableLocales.length && locale == null; i++)
+			{
+				String localeString = availableLocales[i].toString();
+				if (localeString.equals(prop))
+					locale = availableLocales[i];
+			}
+			if (locale == null)
+				throw new SQLException("Locale not available: " + prop);
+		}
 		setCommentChar(info.getProperty(CsvDriver.COMMENT_CHAR,
 				CsvDriver.DEFAULT_COMMENT_CHAR));
 		setDefectiveHeaders(info.getProperty(CsvDriver.DEFECTIVE_HEADERS,
@@ -463,6 +480,11 @@ public class CsvConnection implements Connection
 	public String getTimeZoneName()
 	{
 		return timeZoneName;
+	}
+
+	public Locale getLocale()
+	{
+		return locale;
 	}
 
     private void checkOpen() throws SQLException

@@ -64,6 +64,7 @@ public class CsvDriver implements Driver
 	public static final String TIMESTAMP_FORMAT = "timestampFormat";
 	public static final String DATE_FORMAT = "dateFormat";
 	public static final String TIME_FORMAT = "timeFormat";
+	public static final String LOCALE = "locale";
 	public static final String COMMENT_CHAR = "commentChar";
 	public static final String SKIP_LEADING_LINES = "skipLeadingLines";
 	public static final String IGNORE_UNPARSEABLE_LINES = "ignoreNonParseableLines";
