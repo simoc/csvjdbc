@@ -155,8 +155,7 @@ public class CsvConnection implements Connection
 		// validate argument(s)
 		if (path == null || path.length() == 0)
 		{
-			throw new IllegalArgumentException(
-					"'path' argument may not be empty or null");
+			throw new IllegalArgumentException("'path' argument may not be empty or null");
 		}
 		this.path = path;
 		this.urlProperties = "";
@@ -173,7 +172,7 @@ public class CsvConnection implements Connection
 	 * @return matching properties, with key values having prefix removed.
 	 */
 	private Map<String, String> getMatchingProperties(Properties info,
-			String prefix)
+		String prefix)
 	{
 		HashMap<String, String> retval = new HashMap<String, String>();
 		for (Object o : info.keySet())
@@ -211,8 +210,7 @@ public class CsvConnection implements Connection
 		if (prop != null)
 		{
 			if (prop.length() != 1)
-				throw new SQLException("Invalid " + CsvDriver.QUOTECHAR + ": "
-						+ prop);
+				throw new SQLException("Invalid " + CsvDriver.QUOTECHAR + ": " + prop);
 			quotechar = prop.charAt(0);
 		}
 		// set the global headerline and headerline.tablename values.
@@ -220,22 +218,17 @@ public class CsvConnection implements Connection
 		{
 			headerlines.put(null, info.getProperty(CsvDriver.HEADERLINE));
 		}
-		headerlines.putAll(getMatchingProperties(info, CsvDriver.HEADERLINE
-				+ "."));
+		headerlines.putAll(getMatchingProperties(info, CsvDriver.HEADERLINE + "."));
 
 		// set the header suppression flag
 		if (info.getProperty(CsvDriver.SUPPRESS_HEADERS) != null)
 		{
-			suppressHeaders = Boolean.valueOf(
-					info.getProperty(CsvDriver.SUPPRESS_HEADERS))
-					.booleanValue();
+			suppressHeaders = Boolean.valueOf(info.getProperty(CsvDriver.SUPPRESS_HEADERS)).booleanValue();
 		}
 		// set the trimValues flag
 		if (info.getProperty(CsvDriver.TRIM_VALUES) != null)
 		{
-			trimValues = Boolean.valueOf(
-					info.getProperty(CsvDriver.TRIM_VALUES))
-					.booleanValue();
+			trimValues = Boolean.valueOf(info.getProperty(CsvDriver.TRIM_VALUES)).booleanValue();
 		}
 		// default charset
 		if (info.getProperty(CsvDriver.CHARSET) != null)
@@ -247,50 +240,44 @@ public class CsvConnection implements Connection
 		{
 			columnTypes.put(null, info.getProperty(CsvDriver.COLUMN_TYPES));
 		}
-		columnTypes.putAll(getMatchingProperties(info, CsvDriver.COLUMN_TYPES
-				+ "."));
+		columnTypes.putAll(getMatchingProperties(info, CsvDriver.COLUMN_TYPES + "."));
 
 		// are files indexed? ()
 		if (info.getProperty(CsvDriver.INDEXED_FILES) != null)
 		{
-			indexedFiles = Boolean.valueOf(
-					info.getProperty(CsvDriver.INDEXED_FILES)).booleanValue();
+			indexedFiles = Boolean.valueOf(info.getProperty(CsvDriver.INDEXED_FILES)).booleanValue();
 			fileNamePattern = info.getProperty("fileTailPattern");
 			String fileTailParts = info.getProperty("fileTailParts", "");
 			if (!fileTailParts.isEmpty())
 				nameParts = fileTailParts.split(",");
 			setFileTailPrepend(Boolean.parseBoolean(info.getProperty(
-					CsvDriver.FILE_TAIL_PREPEND,
-					CsvDriver.DEFAULT_FILE_TAIL_PREPEND)));
+				CsvDriver.FILE_TAIL_PREPEND,
+				CsvDriver.DEFAULT_FILE_TAIL_PREPEND)));
 		}
 		// is the stream to be decrypted? ()
 		// per default: no, it's unencrypted and will not be decrypted
 		decryptingFilter = null;
 		if (info.getProperty(CsvDriver.CRYPTO_FILTER_CLASS_NAME) != null)
 		{
-			String className = info
-					.getProperty(CsvDriver.CRYPTO_FILTER_CLASS_NAME);
+			String className = info.getProperty(CsvDriver.CRYPTO_FILTER_CLASS_NAME);
 			try
 			{
 				Class<?> encrypterClass = Class.forName(className);
-				String[] parameterTypes = info.getProperty(
-						"cryptoFilterParameterTypes", "String").split(",");
-				String[] parameterStrings = info.getProperty(
-						"cryptoFilterParameters", "").split(",");
+				String[] parameterTypes = info.getProperty("cryptoFilterParameterTypes",
+					"String").split(",");
+				String[] parameterStrings = info.getProperty("cryptoFilterParameters",
+					"").split(",");
 				StringConverter converter = new StringConverter("", "", "", "", null);
 				Class<?>[] parameterClasses = new Class[parameterStrings.length];
 				Object[] parameterValues = new Object[parameterStrings.length];
 				for (int i = 0; i < parameterStrings.length; i++)
 				{
-					parameterClasses[i] = converter
-							.forSQLName(parameterTypes[i]);
+					parameterClasses[i] = converter.forSQLName(parameterTypes[i]);
 					parameterValues[i] = converter.convert(parameterTypes[i],
-							parameterStrings[i]);
+						parameterStrings[i]);
 				}
-				Constructor<?> constructor = encrypterClass
-						.getConstructor(parameterClasses);
-				decryptingFilter = (CryptoFilter) constructor
-						.newInstance(parameterValues);
+				Constructor<?> constructor = encrypterClass.getConstructor(parameterClasses);
+				decryptingFilter = (CryptoFilter) constructor.newInstance(parameterValues);
 				// ignore all possible exceptions: just leave the stream
 				// undecrypted.
 			}
@@ -316,8 +303,7 @@ public class CsvConnection implements Connection
 			}
 			catch (ClassNotFoundException e)
 			{
-				throw new SQLException("could not find codec class "
-						+ className);
+				throw new SQLException("could not find codec class " + className);
 			}
 			if (decryptingFilter == null)
 			{
@@ -342,39 +328,36 @@ public class CsvConnection implements Connection
 				int dashIndex = columnRanges[i].indexOf('-');
 				if (dashIndex < 0)
 				{
-					beginColumn = endColumn = Integer.parseInt(columnRanges[i]
-							.trim());
+					beginColumn = endColumn = Integer.parseInt(columnRanges[i].trim());
 				}
 				else
 				{
 					beginColumn = Integer.parseInt(columnRanges[i].substring(0,
-							dashIndex).trim());
-					endColumn = Integer.parseInt(columnRanges[i].substring(
-							dashIndex + 1).trim());
+						dashIndex).trim());
+					endColumn = Integer.parseInt(columnRanges[i].substring(dashIndex + 1).trim());
 				}
 
 				/*
 				 * Store string indexes zero-based as we will be extracting them
 				 * with String.substring().
 				 */
-				fixedWidthColumns.add(new int[]
-				{ beginColumn - 1, endColumn - 1 });
+				fixedWidthColumns.add(new int[]{beginColumn - 1, endColumn - 1});
 			}
 		}
 
 		setTransposedLines(Integer.parseInt(info.getProperty(
-				CsvDriver.TRANSPOSED_LINES, "0")));
+			CsvDriver.TRANSPOSED_LINES, "0")));
 		setTransposedFieldsToSkip(Integer.parseInt(info.getProperty(
-				CsvDriver.TRANSPOSED_FIELDS_TO_SKIP, "0")));
+			CsvDriver.TRANSPOSED_FIELDS_TO_SKIP, "0")));
 
 		setTimestampFormat(info.getProperty(CsvDriver.TIMESTAMP_FORMAT,
-				CsvDriver.DEFAULT_TIMESTAMP_FORMAT));
+			CsvDriver.DEFAULT_TIMESTAMP_FORMAT));
 		setDateFormat(info.getProperty(CsvDriver.DATE_FORMAT,
-				CsvDriver.DEFAULT_DATE_FORMAT));
+			CsvDriver.DEFAULT_DATE_FORMAT));
 		setTimeFormat(info.getProperty(CsvDriver.TIME_FORMAT,
-				CsvDriver.DEFAULT_TIME_FORMAT));
+			CsvDriver.DEFAULT_TIME_FORMAT));
 		setTimeZoneName(info.getProperty(CsvDriver.TIME_ZONE_NAME,
-				CsvDriver.DEFAULT_TIME_ZONE_NAME));
+			CsvDriver.DEFAULT_TIME_ZONE_NAME));
 		if (info.getProperty(CsvDriver.LOCALE) != null)
 		{
 			prop = info.getProperty(CsvDriver.LOCALE);
@@ -389,19 +372,19 @@ public class CsvConnection implements Connection
 				throw new SQLException("Locale not available: " + prop);
 		}
 		setCommentChar(info.getProperty(CsvDriver.COMMENT_CHAR,
-				CsvDriver.DEFAULT_COMMENT_CHAR));
+			CsvDriver.DEFAULT_COMMENT_CHAR));
 		setDefectiveHeaders(info.getProperty(CsvDriver.DEFECTIVE_HEADERS,
-				CsvDriver.DEFAULT_DEFECTIVE_HEADERS));
+			CsvDriver.DEFAULT_DEFECTIVE_HEADERS));
 		setSkipLeadingDataLines(info.getProperty(
-				CsvDriver.SKIP_LEADING_DATA_LINES,
-				CsvDriver.DEFAULT_SKIP_LEADING_DATA_LINES));
+			CsvDriver.SKIP_LEADING_DATA_LINES,
+			CsvDriver.DEFAULT_SKIP_LEADING_DATA_LINES));
 		setSkipLeadingLines(info.getProperty(CsvDriver.SKIP_LEADING_LINES,
-				CsvDriver.DEFAULT_SKIP_LEADING_LINES));
+			CsvDriver.DEFAULT_SKIP_LEADING_LINES));
 		setQuoteStyle(info.getProperty(CsvDriver.QUOTE_STYLE,
-				CsvDriver.DEFAULT_QUOTE_STYLE));
+			CsvDriver.DEFAULT_QUOTE_STYLE));
 		setIgnoreUnparseableLines(Boolean.parseBoolean(info.getProperty(
-				CsvDriver.IGNORE_UNPARSEABLE_LINES,
-				CsvDriver.DEFAULT_IGNORE_UNPARSEABLE_LINES)));
+			CsvDriver.IGNORE_UNPARSEABLE_LINES,
+			CsvDriver.DEFAULT_IGNORE_UNPARSEABLE_LINES)));
 	}
 
 	/**
@@ -416,15 +399,14 @@ public class CsvConnection implements Connection
 	 * @throws SQLException
 	 */
 	protected CsvConnection(String path, Properties info, String urlProperties)
-			throws SQLException
+		throws SQLException
 	{
 		init();
 
 		// validate argument(s)
 		if (path == null || path.length() == 0)
 		{
-			throw new IllegalArgumentException(
-					"'path' argument may not be empty or null");
+			throw new IllegalArgumentException("'path' argument may not be empty or null");
 		}
 		this.path = path;
 		this.urlProperties = urlProperties;
@@ -448,7 +430,7 @@ public class CsvConnection implements Connection
 	 * @throws SQLException
 	 */
 	protected CsvConnection(TableReader tableReader, Properties info,
-			String urlProperties) throws SQLException
+		String urlProperties) throws SQLException
 	{
 		init();
 		this.tableReader = tableReader;
@@ -516,15 +498,13 @@ public class CsvConnection implements Connection
 	@Override
 	public CallableStatement prepareCall(String sql) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.prepareCall(String) unsupported");
+		throw new UnsupportedOperationException("Connection.prepareCall(String) unsupported");
 	}
 
 	@Override
 	public String nativeSQL(String sql) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.nativeSQL(String) unsupported");
+		throw new UnsupportedOperationException("Connection.nativeSQL(String) unsupported");
 	}
 
 	@Override
@@ -633,8 +613,7 @@ public class CsvConnection implements Connection
 	{
 		checkOpen();
 
-		throw new UnsupportedOperationException(
-				"Connection.setTransactionIsolation(int) unsupported");
+		throw new UnsupportedOperationException("Connection.setTransactionIsolation(int) unsupported");
 	}
 
 	@Override
@@ -663,7 +642,7 @@ public class CsvConnection implements Connection
 
 	@Override
 	public Statement createStatement(int resultSetType, int resultSetConcurrency)
-			throws SQLException
+		throws SQLException
 	{
 		checkOpen();
 
@@ -674,7 +653,7 @@ public class CsvConnection implements Connection
 
 	@Override
 	public PreparedStatement prepareStatement(String sql, int resultSetType,
-			int resultSetConcurrency) throws SQLException
+		int resultSetConcurrency) throws SQLException
 	{
 		checkOpen();
 
@@ -685,24 +664,21 @@ public class CsvConnection implements Connection
 
 	@Override
 	public CallableStatement prepareCall(String sql, int resultSetType,
-			int resultSetConcurrency) throws SQLException
+		int resultSetConcurrency) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.prepareCall(String, int, int) unsupported");
+		throw new UnsupportedOperationException("Connection.prepareCall(String, int, int) unsupported");
 	}
 
 	@Override
 	public Map<String, Class<?>> getTypeMap() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.getTypeMap() unsupported");
+		throw new UnsupportedOperationException("Connection.getTypeMap() unsupported");
 	}
 
 	@Override
 	public void setTypeMap(Map<String, Class<?>> map) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.setTypeMap(Map) unsupported");
+		throw new UnsupportedOperationException("Connection.setTypeMap(Map) unsupported");
 	}
 
 	// --------------------------JDBC 3.0-----------------------------
@@ -725,8 +701,8 @@ public class CsvConnection implements Connection
 
 	@Override
 	public Statement createStatement(int resultSetType,
-			int resultSetConcurrency, int resultSetHoldability)
-			throws SQLException
+		int resultSetConcurrency, int resultSetHoldability)
+		throws SQLException
 	{
 		checkOpen();
 
@@ -737,8 +713,8 @@ public class CsvConnection implements Connection
 
 	@Override
 	public PreparedStatement prepareStatement(String sql, int resultSetType,
-			int resultSetConcurrency, int resultSetHoldability)
-			throws SQLException
+		int resultSetConcurrency, int resultSetHoldability)
+		throws SQLException
 	{
 		checkOpen();
 
@@ -749,63 +725,55 @@ public class CsvConnection implements Connection
 
 	@Override
 	public CallableStatement prepareCall(String sql, int resultSetType,
-			int resultSetConcurrency, int resultSetHoldability)
-			throws SQLException
+		int resultSetConcurrency, int resultSetHoldability)
+		throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.prepareCall(String,int,int,int) unsupported");
+		throw new UnsupportedOperationException("Connection.prepareCall(String,int,int,int) unsupported");
 	}
 
 	@Override
 	public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys)
-			throws SQLException
+		throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.prepareStatement(String,int) unsupported");
+		throw new UnsupportedOperationException("Connection.prepareStatement(String,int) unsupported");
 	}
 
 	@Override
 	public PreparedStatement prepareStatement(String sql, int[] columnIndexes)
-			throws SQLException
+		throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.prepareStatement(String,int[]) unsupported");
+		throw new UnsupportedOperationException("Connection.prepareStatement(String,int[]) unsupported");
 	}
 
 	@Override
 	public PreparedStatement prepareStatement(String sql, String[] columnNames)
-			throws SQLException
+		throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.prepareStatement(String,String[]) unsupported");
+		throw new UnsupportedOperationException("Connection.prepareStatement(String,String[]) unsupported");
 	}
 
 	@Override
 	public void releaseSavepoint(Savepoint savePoint) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.releaseSavepoint(Savepoint) unsupported");
+		throw new UnsupportedOperationException("Connection.releaseSavepoint(Savepoint) unsupported");
 	}
 
 	@Override
 	public void rollback(Savepoint savePoint) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.rollback(Savepoint) unsupported");
+		throw new UnsupportedOperationException("Connection.rollback(Savepoint) unsupported");
 	}
 
 	@Override
 	public Savepoint setSavepoint() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.setSavepoint() unsupported");
+		throw new UnsupportedOperationException("Connection.setSavepoint() unsupported");
 	}
 
 	@Override
 	public Savepoint setSavepoint(String str) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.setSavepoint(String) unsupported");
+		throw new UnsupportedOperationException("Connection.setSavepoint(String) unsupported");
 	}
 
 	// ---------------------------------------------------------------------
@@ -831,13 +799,19 @@ public class CsvConnection implements Connection
 	{
 		String url;
 		if (path != null)
+		{
 			url = CsvDriver.URL_PREFIX + path;
+		}
 		else if (tableReader instanceof ZipFileTableReader)
-			url = CsvDriver.URL_PREFIX + CsvDriver.ZIP_FILE_PREFIX
-					+ ((ZipFileTableReader) tableReader).getZipFilename();
+		{
+			url = CsvDriver.URL_PREFIX + CsvDriver.ZIP_FILE_PREFIX +
+				((ZipFileTableReader) tableReader).getZipFilename();
+		}
 		else
-			url = CsvDriver.URL_PREFIX + CsvDriver.READER_CLASS_PREFIX
-					+ tableReader.getClass().getName();
+		{
+			url = CsvDriver.URL_PREFIX + CsvDriver.READER_CLASS_PREFIX +
+				tableReader.getClass().getName();
+		}
 		return url + urlProperties;
 	}
 
@@ -950,8 +924,7 @@ public class CsvConnection implements Connection
 	}
 
 	@Override
-	public Array createArrayOf(String typeName, Object[] elements)
-			throws SQLException
+	public Array createArrayOf(String typeName, Object[] elements) throws SQLException
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -1211,7 +1184,7 @@ public class CsvConnection implements Connection
 
 	@Override
 	public void setClientInfo(String arg0, String arg1)
-			throws SQLClientInfoException
+		throws SQLClientInfoException
 	{
 		// TODO Auto-generated method stub
 	}
@@ -1224,18 +1197,16 @@ public class CsvConnection implements Connection
 	}
 
 	public void setNetworkTimeout(Executor executor, int milliseconds)
-			throws SQLException
+		throws SQLException
 	{
 		checkOpen();
 
-		throw new SQLFeatureNotSupportedException(
-				"Connection.setNetworkTimeout(Executor,int) not supported");
+		throw new SQLFeatureNotSupportedException("Connection.setNetworkTimeout(Executor,int) not supported");
 	}
 
 	public void abort(Executor executor) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Connection.abort(Executor) not supported");
+		throw new UnsupportedOperationException("Connection.abort(Executor) not supported");
 	}
 
 	public String getSchema() throws SQLException
@@ -1281,22 +1252,19 @@ public class CsvConnection implements Connection
 		List<String> tableNames = new ArrayList<String>();
 		if (path != null)
 		{
-			File[] matchingFiles = new File(path)
-					.listFiles(new FilenameFilter()
-					{
-
-						public boolean accept(File dir, String name)
-						{
-							return name.endsWith(extension);
-						}
-					});
+			File[] matchingFiles = new File(path).listFiles(new FilenameFilter() {
+				public boolean accept(File dir, String name)
+				{
+					return name.endsWith(extension);
+				}
+			});
 			for (int i = 0; i < matchingFiles.length; i++)
 			{
 				if (matchingFiles[i].isFile() && matchingFiles[i].canRead())
 				{
 					String filename = matchingFiles[i].getName();
-					String tableName = filename.substring(0, filename.length()
-							- extension.length());
+					String tableName = filename.substring(0,
+						filename.length() - extension.length());
 					tableNames.add(tableName);
 				}
 			}
