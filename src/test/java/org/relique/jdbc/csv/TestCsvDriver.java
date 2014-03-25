@@ -178,7 +178,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: Column not found: Job", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidColumnName") + ": Job", "" + e);
 		}
 		assertTrue(!results.next());
 	}
@@ -289,7 +289,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: Column not found: foo", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidColumnName") + ": foo", "" + e);
 		}
 
 		results.close();
@@ -742,7 +742,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: Cannot infer column types until first row is fetched", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("cannotInferColumns"), "" + e);
 		}
 	}
 
@@ -818,7 +818,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: Invalid column type: Varchar", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidColumnType") + ": Varchar", "" + e);
 		}
 	}
 
@@ -838,7 +838,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: Invalid column name: XXXX", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidColumnName") + ": XXXX", "" + e);
 		}
 	}
 
@@ -859,7 +859,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: Invalid column types: ,", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidColumnType") + ": ,", "" + e);
 		}
 	}
 
@@ -1372,7 +1372,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: Column not found: id", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidColumnName") + ": id", "" + e);
 		}
 		assertEquals("The name is wrong", "Felipe Grajales", results
 				.getString("name"));
@@ -1395,7 +1395,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: Invalid column name: XXXX", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidColumnName") + ": XXXX", "" + e);
 		}
 	}
 
@@ -1551,7 +1551,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertTrue(e.getMessage().startsWith("Syntax Error"));
+			assertTrue(e.getMessage().startsWith(CsvResources.getString("syntaxError")));
 		}
 	}
 
@@ -1639,7 +1639,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: Column not found: id", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidColumnName") + ": id", "" + e);
 		}
 		assertEquals("The name is wrong", "3", results.getString("rc"));
 		// would like to test the full_name_nd, but can't insert the Arabic
@@ -1701,7 +1701,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: EOF reached inside quotes starting at row: 6", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("eofInQuotes") + ": 6", "" + e);
 		}
 	}
 
@@ -2141,7 +2141,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertTrue(e.getMessage().startsWith("Syntax Error"));	
+			assertTrue(e.getMessage().startsWith(CsvResources.getString("syntaxError")));	
 		}
 	}
 
@@ -2700,8 +2700,8 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: Cannot open data file '"
-					+ filePath + File.separator + "not_there.csv'  !", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("fileNotFound") + ": "
+				+ filePath + File.separator + "not_there.csv", "" + e);
 		}
 
 		Properties props = new Properties();
@@ -2731,13 +2731,13 @@ public class TestCsvDriver
 		try
 		{
 			stmt.executeQuery("SELECT * FROM duplicate_headers");
-			fail("expected exception java.sql.SQLException: Table contains duplicate column names");
+			fail("expected exception java.sql.SQLException: " + CsvResources.getString("duplicateColumns"));
 		}
 		catch (SQLException e)
 		{
 			assertEquals("wrong exception and/or exception text!",
-					"java.sql.SQLException: Table contains duplicate column names",
-					"" + e);
+				"java.sql.SQLException: " + CsvResources.getString("duplicateColumns"),
+				"" + e);
 		}
 	}
 
@@ -2886,7 +2886,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: EOF reached inside quotes starting at row: 6", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("eofInQuotes") + ": 6", "" + e);
 		}
 	}
 
@@ -2904,7 +2904,7 @@ public class TestCsvDriver
 		catch (SQLException e)
 		{
 			assertEquals("Wrong exception text",
-					"java.sql.SQLException: Invalid quotechar: ()", "" + e);
+				"java.sql.SQLException: " + CsvResources.getString("invalid") + " quotechar: ()", "" + e);
 		}
 	}
 
@@ -2972,7 +2972,7 @@ public class TestCsvDriver
 		catch (SQLException e)
 		{
 			assertEquals("wrong exception and/or exception text!",
-				"java.sql.SQLException: Connection is already closed", "" + e);
+				"java.sql.SQLException: " + CsvResources.getString("closedConnection"), "" + e);
 		}
 	}
 
@@ -2999,7 +2999,7 @@ public class TestCsvDriver
 		catch (SQLException e)
 		{
 			assertEquals("wrong exception and/or exception text!",
-				"java.sql.SQLException: Statement is already closed", "" + e);
+				"java.sql.SQLException: " + CsvResources.getString("statementClosed"), "" + e);
 		}
 	}
 
@@ -3079,7 +3079,7 @@ public class TestCsvDriver
 		catch (SQLException e)
 		{
 			assertEquals("wrong exception and/or exception text!",
-					"java.sql.SQLException: Can't access columns with empty name by name",
+					"java.sql.SQLException: " + CsvResources.getString("invalidColumnName") + ": ",
 					"" + e);
 		}
 
@@ -3265,7 +3265,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: data contains 6 columns, expected 8", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("wrongColumnCount") + ": 6 8", "" + e);
 		}
 	}
 
@@ -3735,7 +3735,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("closedResultSet"), "" + e);
 		}
 	}
 
@@ -3758,7 +3758,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("closedResultSet"), "" + e);
 		}
 	}
 
@@ -3872,7 +3872,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: Class does not implement interface org.relique.io.TableReader: " + TestCsvDriver.class.getName(), "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("interfaceNotImplemented") + ": org.relique.io.TableReader: " + TestCsvDriver.class.getName(), "" + e);
 		}
 	}
 
@@ -4126,7 +4126,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 		
 		// clean up

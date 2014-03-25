@@ -132,7 +132,7 @@ public class TestZipFiles
 		catch (SQLException e)
 		{
 			String message = "" + e;
-			assertTrue(message.startsWith("java.sql.SQLException: Table not found:"));
+			assertTrue(message.startsWith("java.sql.SQLException: " + CsvResources.getString("tableNotFound") + ":"));
 		}
 	}
 
@@ -148,7 +148,7 @@ public class TestZipFiles
 		catch (SQLException e)
 		{
 			String message = "" + e;
-			assertTrue(message.startsWith("java.sql.SQLException: Failed opening ZIP file:"));
+			assertTrue(message.startsWith("java.sql.SQLException: " + CsvResources.getString("zipOpenError")));
 		}
 	}
 

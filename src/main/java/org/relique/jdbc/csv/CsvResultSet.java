@@ -257,7 +257,7 @@ public class CsvResultSet implements ResultSet
 		if (!(this.resultSetType == TYPE_FORWARD_ONLY || this.resultSetType == TYPE_SCROLL_INSENSITIVE ||
 			this.resultSetType == TYPE_SCROLL_SENSITIVE))
 		{
-			throw new SQLException("ResultSet type invalid: " + this.resultSetType);
+			throw new SQLException(CsvResources.getString("invalidResultSetType") + ": " + this.resultSetType);
 		}
 
 		/*
@@ -275,7 +275,7 @@ public class CsvResultSet implements ResultSet
 				 */
 				String asterisk = asteriskExpression.toString();
 				if (!(asterisk.equals("*") || (tableAlias != null && asterisk.equalsIgnoreCase(tableAlias + ".*"))))
-					throw new SQLException("Invalid column name: " + asterisk);
+					throw new SQLException(CsvResources.getString("invalidColumnName") + ": " + asterisk);
 				this.queryEnvironment.remove(i);
 				for (int j = 0; j < columnNames.length; j++)
 				{
@@ -296,7 +296,7 @@ public class CsvResultSet implements ResultSet
 				{
 					NumericConstant n = (NumericConstant)expression;
 					if (!(n.value instanceof Integer))
-						throw new SQLException("Invalid GROUP BY column: " + n);
+						throw new SQLException(CsvResources.getString("invalidGroupBy") + ": " + n);
 					int index = n.value.intValue();
 
 					/*
@@ -306,7 +306,7 @@ public class CsvResultSet implements ResultSet
 
 					if (index < 0 || index >= this.queryEnvironment.size())
 					{
-						throw new SQLException("Invalid GROUP BY column: " + (index + 1));
+						throw new SQLException(CsvResources.getString("invalidGroupBy") + ": " + (index + 1));
 					}
 					Object[] q = this.queryEnvironment.get(index);
 					this.groupByColumns.set(i, (Expression)q[1]);
@@ -336,7 +336,7 @@ public class CsvResultSet implements ResultSet
 				{
 					NumericConstant n = (NumericConstant)expression;
 					if (!(n.value instanceof Integer))
-						throw new SQLException("Invalid ORDER BY column: " + n);
+						throw new SQLException(CsvResources.getString("invalidOrderBy") + ": " + n);
 					int index = n.value.intValue();
 					
 					/*
@@ -346,7 +346,7 @@ public class CsvResultSet implements ResultSet
 
 					if (index < 0 || index >= this.queryEnvironment.size())
 					{
-						throw new SQLException("Invalid ORDER BY column: " + (index + 1));
+						throw new SQLException(CsvResources.getString("invalidOrderBy") + ": " + (index + 1));
 					}
 					Object[] q = this.queryEnvironment.get(index);
 					o[1] = q[1];
@@ -393,10 +393,10 @@ public class CsvResultSet implements ResultSet
 				}
 			}
 			if (allUsedColumns.size() > 0 && aggregateFunctions.size() > 0)
-				throw new SQLException("Query columns cannot be combined with aggregate functions");
+				throw new SQLException(CsvResources.getString("columnsWithAggregateFunctions"));
 		}
 		if (whereClause != null && whereClause.aggregateFunctions().size() > 0)
-			throw new SQLException("Aggregate functions not allowed in WHERE clause");
+			throw new SQLException(CsvResources.getString("noAggregateFunctions"));
 
 		if (!((CsvConnection)statement.getConnection()).isIndexedFiles())
 		{
@@ -414,7 +414,7 @@ public class CsvResultSet implements ResultSet
 					for (Object usedColumn : exprUsedColumns)
 					{
 						if (!allReaderColumns.contains(usedColumn))
-							throw new SQLException("Invalid column name: " + usedColumn);
+							throw new SQLException(CsvResources.getString("invalidColumnName") + ": " + usedColumn);
 					}
 				}
 				//TODO selected column aliases are allowed in WHERE clause (although this is invalid SQL) and unit tested in TestCsvDriver.testFieldAsAlias so add all aliases to list too.
@@ -431,7 +431,7 @@ public class CsvResultSet implements ResultSet
 			for (Object usedColumn : this.usedColumns)
 			{
 				if (!allReaderColumns.contains(usedColumn))
-					throw new SQLException("Invalid column name: " + usedColumn);
+					throw new SQLException(CsvResources.getString("invalidColumnName") + ": " + usedColumn);
 			}
 
 			checkGroupBy();
@@ -451,7 +451,7 @@ public class CsvResultSet implements ResultSet
 						/*
 						 * Must order by something that contains at least one column, not 'foo' or 1+1.
 						 */
-						throw new SQLException("Invalid ORDER BY column: " + expr.toString());
+						throw new SQLException(CsvResources.getString("invalidOrderBy") + ": " + expr.toString());
 					}
 				}
 			}
@@ -661,7 +661,7 @@ public class CsvResultSet implements ResultSet
 					/*
 					 * Must group by something that contains at least one column, not 'foo' or 1+1.
 					 */
-					throw new SQLException("Invalid GROUP BY column: " + expr.toString());
+					throw new SQLException(CsvResources.getString("invalidGroupBy") + ": " + expr.toString());
 				}
 			}
 			ArrayList<String> groupingColumns = new ArrayList<String>();
@@ -702,7 +702,7 @@ public class CsvResultSet implements ResultSet
 									/*
 									 * GROUP BY must include all queried columns.
 									 */
-									throw new SQLException("Column not included in GROUP BY: " + columnName);
+									throw new SQLException(CsvResources.getString("columnNotInGroupBy") + ": " + columnName);
 								}
 							}
 						}
@@ -715,7 +715,7 @@ public class CsvResultSet implements ResultSet
 				{
 					if (!queryEnvironmentColumns.contains(columnName))
 					{
-						throw new SQLException("Invalid HAVING column: " + columnName);
+						throw new SQLException(CsvResources.getString("invalidHaving") + ": " + columnName);
 					}
 				}
 			}
@@ -727,7 +727,7 @@ public class CsvResultSet implements ResultSet
 					for (Object o2 : expr.usedColumns())
 					{
 						if (!queryEnvironmentColumns.contains(o2.toString()))
-							throw new SQLException("ORDER BY column not included in GROUP BY: " + o2);
+							throw new SQLException(CsvResources.getString("orderByNotInGroupBy") + ": " + o2);
 					}
 				}
 			}
@@ -775,7 +775,7 @@ public class CsvResultSet implements ResultSet
 	private void checkOpen() throws SQLException
 	{
 		if (isClosed)
-			throw new SQLException("ResultSet is already closed");
+			throw new SQLException(CsvResources.getString("closedResultSet"));
 	}
 
 	@Override
@@ -972,7 +972,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new SQLException("No previous getter method called");
+			throw new SQLException(CsvResources.getString("noGetMethod"));
 		}
 	}
 
@@ -1219,8 +1219,8 @@ public class CsvResultSet implements ResultSet
 	{
 		checkOpen();
 
-		throw new SQLFeatureNotSupportedException(
-			"ResultSet.getCursorName() unsupported");
+		throw new SQLFeatureNotSupportedException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getCursorName()");
 	}
 
 	@Override
@@ -1355,8 +1355,8 @@ public class CsvResultSet implements ResultSet
 			}
 			catch (NumberFormatException e)
 			{
-				throw new SQLException("Could not convert '" + str + "' to " +
-									   "a java.math.BigDecimal object");
+				throw new SQLException(CsvResources.getString("cannotConvertToBigDecimal") +
+					": " + str);
 			}
 		}
 		return retval;
@@ -1383,7 +1383,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new SQLException("ResultSet.isBeforeFirst() not possible for result set type TYPE_FORWARD_ONLY");
+			throw new SQLException(CsvResources.getString("wrongResultSetType") + ": ResultSet.isBeforeFirst()");
 		}
 	}
 
@@ -1416,7 +1416,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new SQLException("ResultSet.isFirst() not possible for result set type TYPE_FORWARD_ONLY");
+			throw new SQLException(CsvResources.getString("wrongResultSetType") + ": ResultSet.isFirst()");
 		}
 	}
 
@@ -1436,7 +1436,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new SQLException("ResultSet.isLast() not possible for result set type TYPE_FORWARD_ONLY");
+			throw new SQLException(CsvResources.getString("wrongResultSetType") + ": ResultSet.isLast()");
 		}
 	}
 
@@ -1452,7 +1452,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new SQLException("ResultSet.beforeFirst() not possible for result set type TYPE_FORWARD_ONLY");
+			throw new SQLException(CsvResources.getString("wrongResultSetType") + ": ResultSet.beforeFirst()");
 		}
 	}
 
@@ -1467,7 +1467,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new SQLException("ResultSet.afterLast() not possible for result set type TYPE_FORWARD_ONLY");
+			throw new SQLException(CsvResources.getString("wrongResultSetType") + ": ResultSet.afterLast()");
 		}
 	}
 
@@ -1485,7 +1485,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new SQLException("ResultSet.first() not possible for result set type TYPE_FORWARD_ONLY");
+			throw new SQLException(CsvResources.getString("wrongResultSetType") + ": ResultSet.first()");
 		}
 	}
 
@@ -1502,7 +1502,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new UnsupportedOperationException("ResultSet.last() unsupported");
+			throw new SQLException(CsvResources.getString("wrongResultSetType") + ": ResultSet.last()");
 		}
 	}
 
@@ -1556,7 +1556,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new SQLException("ResultSet.absolute() not possible for result set type TYPE_FORWARD_ONLY");
+			throw new SQLException(CsvResources.getString("wrongResultSetType") + ": ResultSet.absolute()");
 		}
 	}
 
@@ -1575,7 +1575,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new SQLException("ResultSet.relative() not possible for result set type TYPE_FORWARD_ONLY");
+			throw new SQLException(CsvResources.getString("wrongResultSetType") + ": ResultSet.relative()");
 		}
 	}
 
@@ -1603,7 +1603,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new SQLException("ResultSet.previous() not possible for result set type TYPE_FORWARD_ONLY");
+			throw new SQLException(CsvResources.getString("wrongResultSetType") + ": ResultSet.previous()");
 		}
 	}
 
@@ -1624,7 +1624,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			throw new SQLException("setFetchDirection: direction not supported: " + direction);
+			throw new SQLException(CsvResources.getString("unsupportedDirection") + ": " + direction);
 		}
 	}
 
@@ -1667,350 +1667,350 @@ public class CsvResultSet implements ResultSet
 	@Override
 	public boolean rowUpdated() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.rowUpdated() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.rowUpdated()");
 	}
 
 	@Override
 	public boolean rowInserted() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.rowInserted() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.rowInserted()");
 	}
 
 	@Override
 	public boolean rowDeleted() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.rowDeleted() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.rowDeleted()");
 	}
 
 	@Override
 	public void updateNull(int columnIndex) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateNull() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateNull(int)");
 	}
 
 	@Override
 	public void updateBoolean(int columnIndex, boolean x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateBoolean() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateBoolean(int, boolean)");
 	}
 
 	@Override
 	public void updateByte(int columnIndex, byte x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateByte() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateByte(int, byte)");
 	}
 
 	@Override
 	public void updateShort(int columnIndex, short x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateShort() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateShort(int, short)");
 	}
 
 	@Override
 	public void updateInt(int columnIndex, int x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateInt() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateInt(int, int)");
 	}
 
 	@Override
 	public void updateLong(int columnIndex, long x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateLong(int, long) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateLong(int, long)");
 	}
 
 	@Override
 	public void updateFloat(int columnIndex, float x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateFloat(int, float) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateFloat(int, float)");
 	}
 
 	@Override
 	public void updateDouble(int columnIndex, double x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateDouble(int, double) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateDouble(int, double)");
 	}
 
 	@Override
 	public void updateBigDecimal(int columnIndex, BigDecimal x)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateBigDecimal(int, BigDecimal) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateBigDecimal(int, BigDecimal)");
 	}
 
 	@Override
 	public void updateString(int columnIndex, String x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateString(int, String) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateString(int, String)");
 	}
 
 	@Override
 	public void updateBytes(int columnIndex, byte[] x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateBytes(int, byte[]) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateBytes(int, byte[])");
 	}
 
 	@Override
 	public void updateDate(int columnIndex, Date x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateDate(int, Date) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateDate(int, Date)");
 	}
 
 	@Override
 	public void updateTime(int columnIndex, Time x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateTime(int, Time) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateTime(int, Time)");
 	}
 
 	@Override
 	public void updateTimestamp(int columnIndex, Timestamp x)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateTimestamp(int, Timestamp) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateTimestamp(int, Timestamp)");
 	}
 
 	@Override
 	public void updateAsciiStream(int columnIndex, InputStream x, int length)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.updateAsciiStream " +
-				"(int, InputStream, int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateAsciiStream(int, InputStream, int)");
 	}
 
 	@Override
 	public void updateBinaryStream(int columnIndex, InputStream x, int length)
 		   throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.updateBinaryStream" +
-				"(int, InputStream, int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateBinaryStreamint, InputStream, int)");
 	}
 
 	@Override
 	public void updateCharacterStream(int columnIndex, Reader x, int length)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.updateCharacterStr" +
-				"eam(int, Reader, int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateCharacterStream(int, Reader, int)");
 	}
 
 	@Override
 	public void updateObject(int columnIndex, Object x, int scale)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.udpateObject(int, Object) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.udpateObject(int, Object)");
 	}
 
 	@Override
 	public void updateObject(int columnIndex, Object x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateObject(int, Object, int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateObject(int, Object, int)");
 	}
 
 	@Override
 	public void updateNull(String columnName) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateNull(String) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateNull(String)");
 	}
 
 	@Override
 	public void updateBoolean(String columnName, boolean x)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateBoolean(String, boolean) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateBoolean(String, boolean)");
 	}
 
 	@Override
 	public void updateByte(String columnName, byte x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateByte(String, byte) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateByte(String, byte)");
 	}
 
 	@Override
 	public void updateShort(String columnName, short x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateShort(String, short) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateShort(String, short)");
 	}
 
 	@Override
 	public void updateInt(String columnName, int x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateInt(String, int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateInt(String, int)");
 	}
 
 	@Override
 	public void updateLong(String columnName, long x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateLong(String, long) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateLong(String, long)");
 	}
 
 	@Override
 	public void updateFloat(String columnName, float x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateFloat(String, float) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateFloat(String, float)");
 	}
 
 	@Override
 	public void updateDouble(String columnName, double x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateDouble(String, double) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateDouble(String, double)");
 	}
 
 	@Override
 	public void updateBigDecimal(String columnName, BigDecimal x)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateBigDecimal(String, BigDecimal) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateBigDecimal(String, BigDecimal)");
 	}
 
 	@Override
 	public void updateString(String columnName, String x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateString(String, String) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateString(String, String)");
 	}
 
 	@Override
 	public void updateBytes(String columnName, byte[] x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateBytes(String, byte[]) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateBytes(String, byte[])");
 	}
 
 	@Override
 	public void updateDate(String columnName, Date x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateDate(String, Date) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateDate(String, Date)");
 	}
 
 	@Override
 	public void updateTime(String columnName, Time x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateTime(String, Time) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateTime(String, Time)");
 	}
 
 	@Override
 	public void updateTimestamp(String columnName, Timestamp x)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateTimestamp(String, Timestamp) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateTimestamp(String, Timestamp)");
 	}
 
 	@Override
 	public void updateAsciiStream(String columnName, InputStream x, int length)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.updateAsciiStream" +
-				"(String, InputStream, int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateAsciiStream(String, InputStream, int)");
 	}
 
 	@Override
 	public void updateBinaryStream(String columnName, InputStream x, int length)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.updateBinaryStream" +
-				"(String, InputStream, int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateBinaryStream(String, InputStream, int)");
 	}
 
 	@Override
 	public void updateCharacterStream(String columnName, Reader reader,
 			int length) throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.updateCharacterStr" +
-				"eam(String, Reader, int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateCharacterStream(String, Reader, int)");
 	}
 
 	@Override
 	public void updateObject(String columnName, Object x, int scale)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateObject(String, Object, int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateObject(String, Object, int)");
 	}
 
 	@Override
 	public void updateObject(String columnName, Object x) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateObject(String, Object) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateObject(String, Object)");
 	}
 
 	@Override
 	public void insertRow() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.insertRow() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.insertRow()");
 	}
 
 	@Override
 	public void updateRow() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.updateRow() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.updateRow()");
 	}
 
 	@Override
 	public void deleteRow() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.deleteRow() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.deleteRow()");
 	}
 
 	@Override
 	public void refreshRow() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.refreshRow() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.refreshRow()");
 	}
 
 	@Override
 	public void cancelRowUpdates() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.cancelRowUpdates() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.cancelRowUpdates()");
 	}
 
 	@Override
 	public void moveToInsertRow() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.moveToInsertRow() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.moveToInsertRow()");
 	}
 
 	@Override
 	public void moveToCurrentRow() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.moveToeCurrentRow() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.moveToeCurrentRow()");
 	}
 
 	@Override
@@ -2022,115 +2022,115 @@ public class CsvResultSet implements ResultSet
 	@Override
 	public Object getObject(int i, Map<String,Class<?>> map) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getObject(int, Map) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getObject(int, Map)");
 	}
 
 	@Override
 	public Ref getRef(int i) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getRef(int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getRef(int)");
 	}
 
 	@Override
 	public Blob getBlob(int i) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getBlob(int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getBlob(int)");
 	}
 
 	@Override
 	public Clob getClob(int i) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getClob(int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getClob(int)");
 	}
 
 	@Override
 	public Array getArray(int i) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getArray(int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getArray(int)");
 	}
 
 	@Override
 	public Object getObject(String colName, Map<String,Class<?>> map) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getObject(String, Map) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getObject(String, Map)");
 	}
 
 	@Override
 	public Ref getRef(String colName) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getRef(String) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getRef(String)");
 	}
 
 	@Override
 	public Blob getBlob(String colName) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getBlob(String) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getBlob(String)");
 	}
 
 	@Override
 	public Clob getClob(String colName) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getClob(String) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getClob(String)");
 	}
 
 	@Override
 	public Array getArray(String colName) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getArray(String) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getArray(String)");
 	}
 
 	@Override
 	public Date getDate(int columnIndex, Calendar cal) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getDate(int, Calendar) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getDate(int, Calendar)");
 	}
 
 	@Override
 	public Date getDate(String columnName, Calendar cal) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getDate(String, Calendar) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getDate(String, Calendar)");
 	}
 
 	@Override
 	public Time getTime(int columnIndex, Calendar cal) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getTime(int, Calendar) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getTime(int, Calendar)");
 	}
 
 	@Override
 	public Time getTime(String columnName, Calendar cal) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getTime(String, Calendar) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getTime(String, Calendar)");
 	}
 
 	@Override
 	public Timestamp getTimestamp(int columnIndex, Calendar cal)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getTimestamp(int, Calendar) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getTimestamp(int, Calendar)");
 	}
 
 	@Override
 	public Timestamp getTimestamp(String columnName, Calendar cal)
 		   throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"ResultSet.getTimestamp(String, Calendar) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getTimestamp(String, Calendar)");
 	}
 
 	//---------------------------------------------------------------------
@@ -2151,73 +2151,73 @@ public class CsvResultSet implements ResultSet
 
 		if (columnIndex < 1 || columnIndex > this.queryEnvironment.size())
 		{
-			throw new SQLException("Column not found: invalid index: "+columnIndex);
+			throw new SQLException(CsvResources.getString("invalidColumnIndex") + ": "+columnIndex);
 		}
 		if (this.currentRow == 0)
 		{
 			// Cursor is still before first row.
-			throw new SQLException("No current row, perhaps you need to call next");
+			throw new SQLException(CsvResources.getString("noCurrentRow"));
 		}
 	}
 
 	@Override
 	public URL getURL(int columnIndex) throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.getURL(int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": ResultSet.getURL(int)");
 	}
 
 	@Override
 	public URL getURL(String columnName) throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.getURL(String) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": ResultSet.getURL(String)");
 	}
 
 	@Override
 	public void updateRef(int columnIndex, Ref x) throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.updateRef(int,java.sql.Ref) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": ResultSet.updateRef(int,java.sql.Ref)");
 	}
 
 	@Override
 	public void updateRef(String columnName, Ref x) throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.updateRef(String,java.sql.Ref) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": ResultSet.updateRef(String,java.sql.Ref)");
 	}
 
 	@Override
 	public void updateBlob(int columnIndex, Blob x) throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.updateBlob(int,java.sql.Blob) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": ResultSet.updateBlob(int,java.sql.Blob)");
 	}
 
 	@Override
 	public void updateBlob(String columnName, Blob x) throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.updateBlob(String,java.sql.Blob) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": ResultSet.updateBlob(String,java.sql.Blob)");
 	}
 
 	@Override
 	public void updateClob(int columnIndex, Clob x) throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.updateClob(int,java.sql.Clob) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": ResultSet.updateClob(int,java.sql.Clob)");
 	}
 
 	@Override
 	public void updateClob(String columnName, Clob x) throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.updateClob(String,java.sql.Clob) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": ResultSet.updateClob(String,java.sql.Clob)");
 	}
 
 	@Override
 	public void updateArray(int columnIndex, Array x) throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.updateArray(int,java.sql.Array) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": ResultSet.updateArray(int,java.sql.Array)");
 	}
 
 	@Override
 	public void updateArray(String columnName, Array x) throws SQLException
 	{
-		throw new UnsupportedOperationException("ResultSet.updateArray(String,java.sql.Array) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": ResultSet.updateArray(String,java.sql.Array)");
 	}
 	
 	@Override
@@ -2489,14 +2489,14 @@ public class CsvResultSet implements ResultSet
 		checkOpen();
 
 		if (columnLabel.equals(""))
-			throw new SQLException("Can't access columns with empty name by name");
+			throw new SQLException(CsvResources.getString("invalidColumnName") + ": " + columnLabel);
 		for (int i = 0; i < this.queryEnvironment.size(); i++)
 		{
 			Object[] queryEnvEntry = this.queryEnvironment.get(i);
 			if(((String)queryEnvEntry[0]).equalsIgnoreCase(columnLabel))
 				return i+1;
 		}
-		throw new SQLException("Column not found: " + columnLabel);
+		throw new SQLException(CsvResources.getString("invalidColumnName") + ": " + columnLabel);
 	}
 
 	@Override
@@ -2579,14 +2579,14 @@ public class CsvResultSet implements ResultSet
 
 	public <T> T getObject(String columnLabel, Class<T> type) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-					"ResultSet.getObject(String, Class<T>) not supported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getObject(String, Class<T>)");
 	}
 
 	public <T> T getObject(int columnIndex, Class<T> type) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-					"ResultSet.getObject(int, Class<T>) not supported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": ResultSet.getObject(int, Class<T>)");
 	}
 }
 

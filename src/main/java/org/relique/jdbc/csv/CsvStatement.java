@@ -77,14 +77,13 @@ public class CsvStatement implements Statement
     protected void checkOpen() throws SQLException
     {
     	if (closed)
-    		throw new SQLException("Statement is already closed");
+    		throw new SQLException(CsvResources.getString("statementClosed"));
     }
 
 	@Override
 	public void setMaxFieldSize(int p0) throws SQLException
 	{
-		throw new SQLException("setMaxFieldSize(int " + p0
-				+ ") not Supported !");
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setMaxFieldSize(int)");
 	}
 
 	@Override
@@ -98,21 +97,19 @@ public class CsvStatement implements Statement
 	@Override
 	public void setEscapeProcessing(boolean enable) throws SQLException
 	{
-		throw new SQLException("setEscapeProcessing(boolean " + enable
-				+ ") not Supported !");
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setEscapeProcessing(boolean)");
 	}
 
 	@Override
 	public void setQueryTimeout(int seconds) throws SQLException
 	{
-		throw new SQLException("setQueryTimeout(int " + seconds + ") not Supported !");
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setQueryTimeout(int)");
 	}
 
 	@Override
 	public void setCursorName(String name) throws SQLException
 	{
-		throw new SQLException("setCursorName(String \"" + name
-				+ "\") not Supported !");
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setCursorName(String)");
 	}
 
 	@Override
@@ -128,7 +125,7 @@ public class CsvStatement implements Statement
 		}
 		else
 		{
-			throw new SQLException("setFetchDirection: direction not supported: " + direction);
+			throw new SQLException(CsvResources.getString("unsupportedDirection") + ": " + direction);
 		}
 	}
 
@@ -143,7 +140,7 @@ public class CsvStatement implements Statement
 	@Override
 	public int getMaxFieldSize() throws SQLException
 	{
-		throw new SQLException("getMaxFieldSize() not Supported !");
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": getMaxFieldSize()");
 	}
 
 	@Override
@@ -290,7 +287,7 @@ public class CsvStatement implements Statement
 		}
 		catch (Exception e)
 		{
-			throw new SQLException("Syntax Error. " + e.getMessage());
+			throw new SQLException(CsvResources.getString("syntaxError") + ": " + e.getMessage());
 		}
 
 		return executeParsedQuery(parser);
@@ -334,12 +331,12 @@ public class CsvStatement implements Statement
 
 				if (!checkFile.exists())
 				{
-					throw new SQLException("Cannot open data file '" + fileName + "'  !");
+					throw new SQLException(CsvResources.getString("fileNotFound") + ": " + fileName);
 				}
 
 				if (!checkFile.canRead())
 				{
-					throw new SQLException("Data file '" + fileName + "'  not readable !");
+					throw new SQLException(CsvResources.getString("fileNotReadable") + ": " + fileName);
 				}
 			}
 
@@ -419,8 +416,8 @@ public class CsvStatement implements Statement
 				}
 			}
 			catch (IOException e)
-			{
-				throw new SQLException("Error reading data file: " + e);
+			{			
+				throw new SQLException(CsvResources.getString("fileReadError") + ": " + e);
 			}
 			catch (SQLException e)
 			{
@@ -429,7 +426,7 @@ public class CsvStatement implements Statement
 			catch (Exception e)
 			{
 				e.printStackTrace();
-				throw new SQLException("Error initializing DataReader: " + e);
+				throw new SQLException(CsvResources.getString("dataReaderError") + ": " + e);
 			}
 		}
 
@@ -456,7 +453,7 @@ public class CsvStatement implements Statement
 	@Override
 	public int executeUpdate(String sql) throws SQLException
 	{
-		throw new SQLException("executeUpdate(String \"" + sql + "\") not Supported !");
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": Statement.executeUpdate(String)");
 	}
 
 	@Override
@@ -479,7 +476,7 @@ public class CsvStatement implements Statement
 	@Override
 	public void cancel() throws SQLException
 	{
-		throw new SQLException("cancel() not Supported !");
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": Statement.cancel()");
 	}
 
 	@Override
@@ -520,7 +517,7 @@ public class CsvStatement implements Statement
 		}
 		catch (Exception e)
 		{
-			throw new SQLException("Syntax Error. " + e.getMessage());
+			throw new SQLException(CsvResources.getString("syntaxError") + ": " + e.getMessage());
 		}
 
 		return true;
@@ -529,19 +526,19 @@ public class CsvStatement implements Statement
 	@Override
 	public void addBatch(String sql) throws SQLException
 	{
-		throw new SQLException("addBatch(String \"" + sql + "\") not Supported !");
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": Statement.addBatch(String)");
 	}
 
 	@Override
 	public void clearBatch() throws SQLException
 	{
-		throw new SQLException("clearBatch() not Supported !");
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": Statement.clearBatch()");
 	}
 
 	@Override
 	public int[] executeBatch() throws SQLException
 	{
-		throw new SQLException("executeBatch() not Supported !");
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": Statement.executeBatch()");
 	}
 
 	// ---------------------------------------------------------------------
@@ -551,69 +548,69 @@ public class CsvStatement implements Statement
 	@Override
 	public boolean getMoreResults(int current) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Statement.getMoreResults(int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": Statement.getMoreResults(int)");
 	}
 
 	@Override
 	public ResultSet getGeneratedKeys() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Statement.getGeneratedKeys() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": Statement.getGeneratedKeys()");
 	}
 
 	@Override
 	public int executeUpdate(String sql, int autoGeneratedKeys)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Statement.executeUpdate(String,int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": Statement.executeUpdate(String,int)");
 	}
 
 	@Override
 	public int executeUpdate(String sql, int[] columnIndexes)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Statement.executeUpdate(String,int[]) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": Statement.executeUpdate(String,int[])");
 	}
 
 	@Override
 	public int executeUpdate(String sql, String[] columnNames)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Statement.executeUpdate(String,String[]) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": Statement.executeUpdate(String,String[])");
 	}
 
 	@Override
 	public boolean execute(String sql, int autoGeneratedKeys)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Statement.execute(String,int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": Statement.execute(String,int)");
 	}
 
 	@Override
 	public boolean execute(String sql, int[] columnIndexes) throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Statement.execute(String,int[]) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": Statement.execute(String,int[])");
 	}
 
 	@Override
 	public boolean execute(String sql, String[] columnNames)
 			throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Statement.execute(String,String[]) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": Statement.execute(String,String[])");
 	}
 
 	@Override
 	public int getResultSetHoldability() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Statement.getResultSetHoldability() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": Statement.getResultSetHoldability()");
 	}
 
 	@Override
@@ -659,7 +656,7 @@ public class CsvStatement implements Statement
 
 	public void closeOnCompletion() throws SQLException
 	{
-		throw new UnsupportedOperationException(
-				"Statement.closeOnCompletion() not supported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
+			": Statement.closeOnCompletion()");
 	}
 }

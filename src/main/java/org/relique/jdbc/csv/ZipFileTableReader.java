@@ -63,7 +63,7 @@ public class ZipFileTableReader implements TableReader
 		{
 			ZipEntry zipEntry = zipFile.getEntry(tableName + fileExtension);
 			if (zipEntry == null)
-				throw new SQLException("Table not found: " + tableName);
+				throw new SQLException(CsvResources.getString("tableNotFound") + ": " + tableName);
 			
 			Reader reader;
 			if (charset != null)    

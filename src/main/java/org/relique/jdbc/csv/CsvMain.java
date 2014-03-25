@@ -68,7 +68,7 @@ public class CsvMain
 			}
 			else if (argIndex < args.length && args[argIndex].startsWith("-"))
 			{
-				System.err.println("Unknown command line option: " + args[argIndex]);
+				System.err.println(CsvResources.getString("unknownCommandLine") + ": " + args[argIndex]);
 				System.err.println();
 
 				argIndex = args.length;
@@ -153,13 +153,7 @@ public class CsvMain
 			}
 			else
 			{
-				System.err.println("Usage: java -jar csvjdbc.jar [-p properties.txt] jdbc-url file.sql ...");
-				System.err.println();
-				System.err.println("Connects to CsvJdbc database with URL jdbc-url and optional database");
-				System.err.println("connection properties and executes SQL statements in file.sql and other");
-				System.err.println("files given as command line arguments.");
-				System.err.println();
-				System.err.println("If no files are given, then standard input is read.");
+				System.err.println(CsvResources.getString("usage"));
 				exitStatus = -1;
 			}
 		}

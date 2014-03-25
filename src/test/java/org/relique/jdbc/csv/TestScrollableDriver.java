@@ -111,7 +111,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 		try
 		{
@@ -120,7 +120,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 
 		results.next();
@@ -210,7 +210,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 
 		try
@@ -220,7 +220,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 
 		results.relative(2);
@@ -243,7 +243,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 
 		try
@@ -253,7 +253,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 
 		results.absolute(2);
@@ -269,7 +269,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 
 		try
@@ -279,7 +279,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 
 		assertFalse(results.relative(0));
@@ -290,7 +290,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 
 		try
@@ -300,7 +300,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 
 		// clean up
@@ -425,7 +425,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 		try
 		{
@@ -434,7 +434,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 
 		results.next();
@@ -498,7 +498,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 		try
 		{
@@ -507,7 +507,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 
 		results.relative(2);
@@ -526,7 +526,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 		try
 		{
@@ -535,7 +535,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 
 		results.absolute(2);
@@ -550,7 +550,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 		try
 		{
@@ -559,7 +559,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 
 		assertFalse(results.relative(0));
@@ -570,7 +570,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 		try
 		{
@@ -579,7 +579,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 
 		// clean up
@@ -614,7 +614,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 		try
 		{
@@ -623,7 +623,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 		assertTrue("Is not last", results.isLast());
 		assertFalse(results.absolute(0));
@@ -634,7 +634,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 		try
 		{
@@ -643,7 +643,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: No current row, perhaps you need to call next", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 		}
 		assertTrue("Is not last", results.isLast());
 		assertFalse(results.absolute(0));
@@ -788,7 +788,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("closedResultSet"), "" + e);
 		}
 
 		// clean up
@@ -814,7 +814,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("closedResultSet"), "" + e);
 		}
 
 		// clean up
@@ -840,7 +840,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("closedResultSet"), "" + e);
 		}
 
 		// clean up
@@ -866,7 +866,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("closedResultSet"), "" + e);
 		}
 
 		// clean up
@@ -892,7 +892,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("closedResultSet"), "" + e);
 		}
 
 		// clean up
@@ -918,7 +918,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("closedResultSet"), "" + e);
 		}
 
 		// clean up
@@ -944,7 +944,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("closedResultSet"), "" + e);
 		}
 
 		// clean up
@@ -970,7 +970,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("closedResultSet"), "" + e);
 		}
 
 		// clean up
@@ -996,7 +996,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("closedResultSet"), "" + e);
 		}
 
 		// clean up
@@ -1022,7 +1022,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("closedResultSet"), "" + e);
 		}
 
 		// clean up
@@ -1048,7 +1048,7 @@ public class TestScrollableDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: ResultSet is already closed", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("closedResultSet"), "" + e);
 		}
 
 		// clean up

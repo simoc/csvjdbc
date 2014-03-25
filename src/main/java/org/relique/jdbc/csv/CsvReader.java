@@ -28,21 +28,21 @@ public class CsvReader extends DataReader
 {
 
 	private String headerline;
-	CsvRawReader rawReader;
-	int transposedLines;
+	private CsvRawReader rawReader;
+	private int transposedLines;
 	private int transposedFieldsToSkip;
-	String[] columnNames;
-	String[] aliasedColumnNames;
+	private String[] columnNames;
+	private String[] aliasedColumnNames;
 	private String[] columnTypes;
-	Vector<String[]> firstTable;
-	int joiningValueNo;
-	int valuesToJoin;
-	String[] joiningValues;
+	private Vector<String[]> firstTable;
+	private int joiningValueNo;
+	private int valuesToJoin;
+	private String[] joiningValues;
 	private StringConverter converter;
 	private String[] fieldValues;
 
 	public CsvReader(CsvRawReader rawReader, int transposedLines,
-			int transposedFieldsToSkip, String headerline) throws SQLException
+		int transposedFieldsToSkip, String headerline) throws SQLException
 	{
 		super();
 
@@ -201,8 +201,10 @@ public class CsvReader extends DataReader
 	{
 
 		if (fieldValues.length != getColumnNames().length)
-			throw new SQLException("data contains " + fieldValues.length
-					+ " columns, expected " + getColumnNames().length);
+		{
+			throw new SQLException(CsvResources.getString("wrongColumnCount") + ": " + fieldValues.length +
+				" " + getColumnNames().length);
+		}
 		if (columnTypes == null)
 			getColumnTypes();
 		String[] columnNames = getColumnNames();
@@ -236,13 +238,13 @@ public class CsvReader extends DataReader
 	{
 		String[] typeNamesLoc = line.split(",");
 		if (typeNamesLoc.length == 0)
-			throw new SQLException("Invalid column types: " + line);
+			throw new SQLException(CsvResources.getString("invalidColumnType") + ": " + line);
 		columnTypes = new String[getColumnNames().length];
 		for (int i = 0; i < Math.min(typeNamesLoc.length, columnTypes.length); i++)
 		{
 			String typeName = typeNamesLoc[i].trim();
 			if (converter.forSQLName(typeName) == null)
-				throw new SQLException("Invalid column type: " + typeName);
+				throw new SQLException(CsvResources.getString("invalidColumnType") + ": " + typeName);
 			columnTypes[i] = typeName;
 		}
 		/*
@@ -267,7 +269,7 @@ public class CsvReader extends DataReader
 	private void inferColumnTypes() throws SQLException
 	{
 		if (fieldValues == null)
-			throw new SQLException("Cannot infer column types until first row is fetched");
+			throw new SQLException(CsvResources.getString("cannotInferColumns"));
 
 		columnTypes = new String[fieldValues.length];
 		for (int i = 0; i < fieldValues.length; i++)

@@ -386,7 +386,7 @@ public class TestOrderBy
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: Invalid column name: XXXX", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidColumnName") + ": XXXX", "" + e);
 		}
 	}
 
@@ -405,7 +405,7 @@ public class TestOrderBy
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: Invalid ORDER BY column: 99", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidOrderBy") + ": 99", "" + e);
 		}
 	}
 
@@ -424,7 +424,7 @@ public class TestOrderBy
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: Invalid ORDER BY column: 3.14", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidOrderBy") + ": 3.14", "" + e);
 		}
 	}
 
@@ -443,7 +443,7 @@ public class TestOrderBy
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: Invalid ORDER BY column: 'X'", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidOrderBy") + ": 'X'", "" + e);
 		}
 	}
 

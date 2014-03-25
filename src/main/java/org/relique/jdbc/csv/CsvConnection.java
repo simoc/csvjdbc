@@ -155,7 +155,7 @@ public class CsvConnection implements Connection
 		// validate argument(s)
 		if (path == null || path.length() == 0)
 		{
-			throw new IllegalArgumentException("'path' argument may not be empty or null");
+			throw new IllegalArgumentException(CsvResources.getString("noPath"));
 		}
 		this.path = path;
 		this.urlProperties = "";
@@ -210,7 +210,7 @@ public class CsvConnection implements Connection
 		if (prop != null)
 		{
 			if (prop.length() != 1)
-				throw new SQLException("Invalid " + CsvDriver.QUOTECHAR + ": " + prop);
+				throw new SQLException(CsvResources.getString("invalid") + " " + CsvDriver.QUOTECHAR + ": " + prop);
 			quotechar = prop.charAt(0);
 		}
 		// set the global headerline and headerline.tablename values.
@@ -303,11 +303,11 @@ public class CsvConnection implements Connection
 			}
 			catch (ClassNotFoundException e)
 			{
-				throw new SQLException("could not find codec class " + className);
+				throw new SQLException(CsvResources.getString("noCodecClass") + ": " + className);
 			}
 			if (decryptingFilter == null)
 			{
-				throw new SQLException("could not initialize CryptoFilter");
+				throw new SQLException(CsvResources.getString("noCryptoFilter"));
 			}
 		}
 
@@ -369,7 +369,7 @@ public class CsvConnection implements Connection
 					locale = availableLocales[i];
 			}
 			if (locale == null)
-				throw new SQLException("Locale not available: " + prop);
+				throw new SQLException(CsvResources.getString("noLocale") + ": " + prop);
 		}
 		setCommentChar(info.getProperty(CsvDriver.COMMENT_CHAR,
 			CsvDriver.DEFAULT_COMMENT_CHAR));
@@ -406,7 +406,7 @@ public class CsvConnection implements Connection
 		// validate argument(s)
 		if (path == null || path.length() == 0)
 		{
-			throw new IllegalArgumentException("'path' argument may not be empty or null");
+			throw new IllegalArgumentException(CsvResources.getString("noPath"));
 		}
 		this.path = path;
 		this.urlProperties = urlProperties;
@@ -472,7 +472,7 @@ public class CsvConnection implements Connection
     private void checkOpen() throws SQLException
     {
     	if (closed)
-    		throw new SQLException("Connection is already closed");
+    		throw new SQLException(CsvResources.getString("closedConnection"));
     }
 
 	@Override
@@ -498,13 +498,13 @@ public class CsvConnection implements Connection
 	@Override
 	public CallableStatement prepareCall(String sql) throws SQLException
 	{
-		throw new UnsupportedOperationException("Connection.prepareCall(String) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.prepareCall(String)");
 	}
 
 	@Override
 	public String nativeSQL(String sql) throws SQLException
 	{
-		throw new UnsupportedOperationException("Connection.nativeSQL(String) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.nativeSQL(String)");
 	}
 
 	@Override
@@ -613,7 +613,7 @@ public class CsvConnection implements Connection
 	{
 		checkOpen();
 
-		throw new UnsupportedOperationException("Connection.setTransactionIsolation(int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.setTransactionIsolation(int)");
 	}
 
 	@Override
@@ -666,19 +666,19 @@ public class CsvConnection implements Connection
 	public CallableStatement prepareCall(String sql, int resultSetType,
 		int resultSetConcurrency) throws SQLException
 	{
-		throw new UnsupportedOperationException("Connection.prepareCall(String, int, int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.prepareCall(String, int, int)");
 	}
 
 	@Override
 	public Map<String, Class<?>> getTypeMap() throws SQLException
 	{
-		throw new UnsupportedOperationException("Connection.getTypeMap() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.getTypeMap()");
 	}
 
 	@Override
 	public void setTypeMap(Map<String, Class<?>> map) throws SQLException
 	{
-		throw new UnsupportedOperationException("Connection.setTypeMap(Map) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.setTypeMap(Map)");
 	}
 
 	// --------------------------JDBC 3.0-----------------------------
@@ -688,7 +688,7 @@ public class CsvConnection implements Connection
 		checkOpen();
 
 		if (holdability != ResultSet.HOLD_CURSORS_OVER_COMMIT)
-			throw new SQLFeatureNotSupportedException("setHoldability: holdability not supported: " + holdability);
+			throw new SQLFeatureNotSupportedException(CsvResources.getString("unsupportedHoldability") + ": " + holdability);
 	}
 
 	@Override
@@ -728,52 +728,52 @@ public class CsvConnection implements Connection
 		int resultSetConcurrency, int resultSetHoldability)
 		throws SQLException
 	{
-		throw new UnsupportedOperationException("Connection.prepareCall(String,int,int,int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.prepareCall(String,int,int,int)");
 	}
 
 	@Override
 	public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys)
 		throws SQLException
 	{
-		throw new UnsupportedOperationException("Connection.prepareStatement(String,int) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.prepareStatement(String,int)");
 	}
 
 	@Override
 	public PreparedStatement prepareStatement(String sql, int[] columnIndexes)
 		throws SQLException
 	{
-		throw new UnsupportedOperationException("Connection.prepareStatement(String,int[]) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.prepareStatement(String,int[])");
 	}
 
 	@Override
 	public PreparedStatement prepareStatement(String sql, String[] columnNames)
 		throws SQLException
 	{
-		throw new UnsupportedOperationException("Connection.prepareStatement(String,String[]) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.prepareStatement(String,String[])");
 	}
 
 	@Override
 	public void releaseSavepoint(Savepoint savePoint) throws SQLException
 	{
-		throw new UnsupportedOperationException("Connection.releaseSavepoint(Savepoint) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.releaseSavepoint(Savepoint)");
 	}
 
 	@Override
 	public void rollback(Savepoint savePoint) throws SQLException
 	{
-		throw new UnsupportedOperationException("Connection.rollback(Savepoint) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.rollback(Savepoint)");
 	}
 
 	@Override
 	public Savepoint setSavepoint() throws SQLException
 	{
-		throw new UnsupportedOperationException("Connection.setSavepoint() unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.setSavepoint()");
 	}
 
 	@Override
 	public Savepoint setSavepoint(String str) throws SQLException
 	{
-		throw new UnsupportedOperationException("Connection.setSavepoint(String) unsupported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.setSavepoint(String)");
 	}
 
 	// ---------------------------------------------------------------------
@@ -1201,12 +1201,12 @@ public class CsvConnection implements Connection
 	{
 		checkOpen();
 
-		throw new SQLFeatureNotSupportedException("Connection.setNetworkTimeout(Executor,int) not supported");
+		throw new SQLFeatureNotSupportedException(CsvResources.getString("methodNotSupported") + ": Connection.setNetworkTimeout(Executor,int)");
 	}
 
 	public void abort(Executor executor) throws SQLException
 	{
-		throw new UnsupportedOperationException("Connection.abort(Executor) not supported");
+		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.abort(Executor)");
 	}
 
 	public String getSchema() throws SQLException

@@ -149,7 +149,7 @@ public class CsvRawReader
 			for (int i = 0; i < this.columnNames.length; i++)
 				uniqueNames.add(this.columnNames[i]);
 			if (uniqueNames.size() != this.columnNames.length)
-				throw new SQLException("Table contains duplicate column names");
+				throw new SQLException(CsvResources.getString("duplicateColumns"));
 		}
 
 		for (int i=0; i<skipLeadingDataLines; i++)
@@ -443,9 +443,9 @@ public class CsvRawReader
 						}
 						if (nextChar != separator)
 						{
-							throw new SQLException("Expected separator at row and position "
-								+ input.getLineNumber() + " " + (currentPos + 1)
-								+ " Line=" + orgLine);
+							throw new SQLException(CsvResources.getString("expectedSeparator") + ": " +
+								input.getLineNumber() + " " + (currentPos + 1) +
+								": " + orgLine);
 						}
 
 						values.add(value.toString());
@@ -501,7 +501,7 @@ public class CsvRawReader
 					String additionalLine = input.readLine();
 					if (additionalLine == null)
 					{
-						throw new SQLException("EOF reached inside quotes starting at row: " +
+						throw new SQLException(CsvResources.getString("eofInQuotes") + ": " +
 							quotedLineNumber);
 					}
 					line = "\n" + additionalLine;

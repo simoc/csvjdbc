@@ -141,9 +141,8 @@ public class TestCryptoFilter
 		}
 		catch (SQLException e)
 		{
-			assertEquals(
-					"java.sql.SQLException: could not find codec class org.relique.io.NotACodec",
-					"" + e);
+			assertEquals("java.sql.SQLException: " +
+				CsvResources.getString("noCodecClass") + ": org.relique.io.NotACodec", "" + e);
 		}
 	}
 

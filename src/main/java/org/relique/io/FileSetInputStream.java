@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.relique.jdbc.csv.CsvResources;
+
 
 /**
  * Class that collapses a set of files into one input stream. All files matching
@@ -179,7 +181,7 @@ public class FileSetInputStream extends InputStream
 	public int read() throws IOException
 	{
 		if (isClosed)
-			throw new IOException("Stream closed");
+			throw new IOException(CsvResources.getString("streamClosed"));
 
 		// run out of input on all subfiles
 		if (currentFile == null)

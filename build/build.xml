@@ -41,6 +41,7 @@
   <property name="build.dir" value="../build"/>
   <property name="src.dir" value="../src"/>
   <property name="java.dir" value="${src.dir}/main/java"/>
+  <property name="resources.dir" value="${src.dir}/main/resources"/>
   <property name="test.java.dir" value="${src.dir}/test/java"/>
   <property name="doc.dir" value="${src.dir}/doc"/>
   <property name="lib.dir" value="../lib"/>
@@ -116,6 +117,7 @@
       <fileset dir="${class.dir}" includes="org/**/*.class"/>
       <!-- For java.sql.DriverManager Service Provider mechanism -->
       <service type="java.sql.Driver" provider="org.relique.jdbc.csv.CsvDriver"/>
+      <fileset dir="${resources.dir}" includes="org/**/*.properties"/>
     </jar>
   </target>
 
