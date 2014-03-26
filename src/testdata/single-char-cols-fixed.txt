@@ -1,0 +1,4 @@
+TwoChars,OneChar,ThreeChars,YetAnotherOneChar
+BBACCCD
+2213334
+XXyZZZa

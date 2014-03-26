@@ -225,4 +225,65 @@ public class TestFixedWidthFiles
 		assertEquals("Column 2 is wrong", 1, rs1.getInt(2));
 		assertEquals("Column 3 is wrong", "1320", rs1.getString(3));
 	}
+
+	@Test
+	public void testFixedWidthHeaderLineNotFixedWidth() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("isHeaderFixedWidth", "false");
+		props.put("fixedWidths", "1-2,3-3,4-6,7-7");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		// GERMANY		   Euro	   EUR		 0.7616450.7632460.002102
+		ResultSet rs1 = stmt.executeQuery("SELECT * FROM single-char-cols-fixed");
+		assertTrue(rs1.next());
+		assertEquals("Column 1 value is wrong", "BB", rs1.getString("TwoChars"));
+		assertEquals("Column 2 value is wrong", "A", rs1.getString("OneChar"));
+		assertEquals("Column 3 value is wrong", "CCC",rs1.getString("ThreeChars"));
+		assertEquals("Column 4 value is wrong", "D", rs1.getString("YetAnotherOneChar"));
+
+		assertTrue(rs1.next());
+		assertEquals("Column 1 value is wrong", "22", rs1.getString(1));
+		assertEquals("Column 2 value is wrong", "1", rs1.getString(2));
+		assertEquals("Column 3 value is wrong", "333", rs1.getString(3));
+		assertEquals("Column 4 value is wrong", "4", rs1.getString(4));
+
+		assertTrue(rs1.next());
+	}
+
+	@Test
+	public void testFixedWidthHeaderLineNotFixedWidthSupressHeaders() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("skipLeadingLines", "1");
+		props.put("suppressHeaders", "true");
+		props.put("headerline", "Column1,Column2,Column3,Column4");
+		props.put("isHeaderFixedWidth", "false");
+		props.put("fixedWidths", "1-2,3-3,4-6,7-7");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		// GERMANY		   Euro	   EUR		 0.7616450.7632460.002102
+		ResultSet rs1 = stmt.executeQuery("SELECT * FROM single-char-cols-fixed");
+		assertTrue(rs1.next());
+		assertEquals("Column 1 value is wrong", "BB", rs1.getString("Column1"));
+		assertEquals("Column 2 value is wrong", "A", rs1.getString("Column2"));
+		assertEquals("Column 3 value is wrong", "CCC",rs1.getString("Column3"));
+		assertEquals("Column 4 value is wrong", "D", rs1.getString("Column4"));
+
+		assertTrue(rs1.next());
+		assertEquals("Column 1 value is wrong", "22", rs1.getString(1));
+		assertEquals("Column 2 value is wrong", "1", rs1.getString(2));
+		assertEquals("Column 3 value is wrong", "333", rs1.getString(3));
+		assertEquals("Column 4 value is wrong", "4", rs1.getString(4));
+
+		assertTrue(rs1.next());
+	}
 }

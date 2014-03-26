@@ -81,6 +81,9 @@ public class CsvConnection implements Connection
 	/** Should headers be suppressed */
 	private boolean suppressHeaders = CsvDriver.DEFAULT_SUPPRESS;
 
+	/** Is header line also fixed width? */
+	private boolean isHeaderFixedWidth = CsvDriver.DEFAULT_IS_HEADER_FIXED_WIDTH;
+
 	/** Should headers be trimmed */
 	private boolean trimHeaders = CsvDriver.DEFAULT_TRIM_HEADERS;
 
@@ -224,6 +227,11 @@ public class CsvConnection implements Connection
 		if (info.getProperty(CsvDriver.SUPPRESS_HEADERS) != null)
 		{
 			suppressHeaders = Boolean.valueOf(info.getProperty(CsvDriver.SUPPRESS_HEADERS)).booleanValue();
+		}
+		// set the fixed width header flag
+		if (info.getProperty(CsvDriver.IS_HEADER_FIXED_WIDTH) != null)
+		{
+			isHeaderFixedWidth = Boolean.valueOf(info.getProperty(CsvDriver.IS_HEADER_FIXED_WIDTH));
 		}
 		// set the trimValues flag
 		if (info.getProperty(CsvDriver.TRIM_VALUES) != null)
@@ -871,6 +879,11 @@ public class CsvConnection implements Connection
 	protected boolean isSuppressHeaders()
 	{
 		return suppressHeaders;
+	}
+
+	protected boolean isHeaderFixedWidth()
+	{
+		return isHeaderFixedWidth;
 	}
 
 	public ArrayList<int[]> getFixedWidthColumns()

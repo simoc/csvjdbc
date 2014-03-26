@@ -54,6 +54,7 @@ public class CsvRawReader
 	protected char separator = ',';
 	protected String headerLine = "";
 	protected boolean suppressHeaders = false;
+	protected boolean isHeaderFixedWidth = true;
 	protected char quoteChar = '"';
 	protected String extension = CsvDriver.DEFAULT_EXTENSION;
 	protected boolean trimHeaders = true;
@@ -89,7 +90,7 @@ public class CsvRawReader
 	 * @since
 	 */
 	public CsvRawReader(LineNumberReader in, String tableAlias, char separator,
-			boolean suppressHeaders, char quoteChar, char commentChar,
+			boolean suppressHeaders, boolean isHeaderFixedWidth, char quoteChar, char commentChar,
 			String headerLine, String extension, boolean trimHeaders, boolean trimValues,
 			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter, 
 			boolean defectiveHeaders, int skipLeadingDataLines, String quoteStyle,
@@ -99,6 +100,7 @@ public class CsvRawReader
 		this.tableAlias = tableAlias;
 		this.separator = separator;
 		this.suppressHeaders = suppressHeaders;
+		this.isHeaderFixedWidth = isHeaderFixedWidth;
 		this.quoteChar = quoteChar;
 		this.commentChar = commentChar;
 		this.headerLine = headerLine;
@@ -121,14 +123,14 @@ public class CsvRawReader
 			// column names specified by property are available. Read and use.
 			if (this.headerLine != null)
 			{
-				this.columnNames = parseLine(this.headerLine, trimHeaders);
+				this.columnNames = parseHeaderLine(this.headerLine, trimHeaders);
 			}
 			else
 			{
 				// No column names available. Read first data line and determine
 				// number of columns.
 				firstLineBuffer = getNextDataLine();
-				String[] data = parseLine(firstLineBuffer, trimValues);
+				String[] data = parseHeaderLine(firstLineBuffer, trimValues);
 				this.columnNames = new String[data.length];
 				for (int i = 0; i < data.length; i++)
 				{
@@ -141,7 +143,7 @@ public class CsvRawReader
 		else
 		{
 			String tmpHeaderLine = getNextDataLine();
-			this.columnNames = parseLine(tmpHeaderLine, trimHeaders);
+			this.columnNames = parseHeaderLine(tmpHeaderLine, trimHeaders);
 			// some column names may be missing and should be corrected
 			if (defectiveHeaders)
 				fixDefectiveHeaders();
@@ -333,6 +335,18 @@ public class CsvRawReader
 			values = parseCsvLine(line, trimValues);
 		return values;
 	}
+
+	protected String [] parseHeaderLine(String line, boolean trimValues)
+		throws SQLException
+	{
+		String []values;
+		if (fixedWidthColumns != null && isHeaderFixedWidth)
+			values = parseFixedLine(line, trimValues);
+		else
+			values = parseCsvLine(line, trimValues);
+		return values;
+	}
+
 
 	private String [] parseFixedLine(String line, boolean trimValues)
 		throws SQLException

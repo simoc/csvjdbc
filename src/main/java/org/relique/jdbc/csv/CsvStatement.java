@@ -398,6 +398,7 @@ public class CsvStatement implements Statement
 					CsvRawReader rawReader = new CsvRawReader(input,
 							parser.getTableAlias(), connection.getSeparator(),
 							connection.isSuppressHeaders(),
+							connection.isHeaderFixedWidth(),
 							connection.getQuotechar(),
 							connection.getCommentChar(), headerline,
 							connection.getExtension(),
