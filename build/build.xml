@@ -102,6 +102,9 @@
       <classpath refid="classpath"/>
       <include name="org/**/*.java"/>
     </javac>
+    <copy todir="${class.dir}">
+      <fileset dir="${resources.dir}" includes="org/**/*.properties"/>
+    </copy>
   </target>
 
   <!-- =================================================================== -->
