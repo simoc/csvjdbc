@@ -1,20 +1,20 @@
-/*
-CsvJdbc - a JDBC driver for CSV files
-Copyright (C) 2001  Jonathan Ackerman
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ * CsvJdbc - a JDBC driver for CSV files
+ * Copyright (C) 2001  Jonathan Ackerman
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package org.relique.jdbc.csv;
 
@@ -525,6 +525,37 @@ public class TestSqlParser
 		assertEquals((Object)(new Double("2")), cs.eval(env));
 		env.put("A", new String("1"));
 		assertEquals("11", ""+cs.eval(env));
+	}
+
+	@Test
+	public void testEvaluateBinaryOperationsModulo() throws ParseException, SQLException
+	{
+		ExpressionParser cs;
+
+		cs = new ExpressionParser(new StringReader("A%b AS result"));
+		cs.parseQueryEnvEntry();
+
+		Map<String, Object> env = new HashMap<String, Object>();
+
+		env.put("A", new Integer(4));
+		env.put("B", new Integer(3));
+		assertEquals((Object)(new Integer("1")), cs.eval(env));
+
+		env.put("A", new Integer(-3));
+		env.put("B", new Integer(2));
+		assertEquals((Object)(new Integer("-1")), cs.eval(env));
+
+		env.put("A", new Double(5));
+		env.put("B", new Double(3));
+		assertEquals((Object)(new Double("2")), cs.eval(env));
+
+		env.put("A", new Double(8.8));
+		env.put("B", new Double(3.3));
+		assertEquals((Object)(new Double("2.2")), cs.eval(env));
+
+		env.put("A", new Double(-5));
+		env.put("B", new Double(3));
+		assertEquals((Object)(new Double("-2")), cs.eval(env));
 	}
 
 	@Test

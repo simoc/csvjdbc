@@ -1,4 +1,4 @@
-/*
+/**
  *  CsvJdbc - a JDBC driver for CSV files
  *  Copyright (C) 2008  Mario Frasca
  *
@@ -386,6 +386,10 @@ TOKEN:
 }
 TOKEN:
 {
+	<MODULO:"%">
+}
+TOKEN:
+{
 	<OPENPARENTHESIS:"(">
 }
 TOKEN:
@@ -666,7 +670,7 @@ char binMultiplyOp():
 	Token t;
 }
 {
-	(t = <ASTERISK>|t=<DIVIDE>)
+	(t = <ASTERISK>|t=<DIVIDE>|t=<MODULO>)
 	{
 		return t.image.charAt(0);
 	}

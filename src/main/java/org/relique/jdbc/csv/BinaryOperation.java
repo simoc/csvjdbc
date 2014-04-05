@@ -1,4 +1,4 @@
-/*
+/**
  *  CsvJdbc - a JDBC driver for CSV files
  *  Copyright (C) 2008  Mario Frasca
  *
@@ -93,6 +93,8 @@ class BinaryOperation extends Expression
 				bil = bil.multiply(bir);
 			if (op == '/')
 				bil = bil.divide(bir);
+			if (op == '%')
+				bil = bil.remainder(bir);
 			if (isLongExpression)
 				return new Long(bil.toString());
 			else
@@ -116,6 +118,8 @@ class BinaryOperation extends Expression
 			MathContext mc = new MathContext("precision=14 roundingMode=HALF_UP");
 			if (op == '/')
 				return new Double(bdl.divide(bdr, mc.getPrecision(), mc.getRoundingMode()).toString());
+			if (op == '%')
+				return new Double(bdl.remainder(bdr, mc).toString());
 		}
 		catch (ClassCastException e)
 		{
