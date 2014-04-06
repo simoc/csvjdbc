@@ -123,17 +123,19 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int DIVIDE = 60;
   /** RegularExpression Id. */
-  int OPENPARENTHESIS = 61;
+  int MODULO = 61;
   /** RegularExpression Id. */
-  int CLOSEPARENTHESIS = 62;
+  int OPENPARENTHESIS = 62;
   /** RegularExpression Id. */
-  int SEMICOLON = 63;
+  int CLOSEPARENTHESIS = 63;
   /** RegularExpression Id. */
-  int TABLENAME = 68;
+  int SEMICOLON = 64;
   /** RegularExpression Id. */
-  int QUOTEDTABLENAME = 69;
+  int TABLENAME = 69;
   /** RegularExpression Id. */
-  int UNEXPECTED_CHAR = 70;
+  int QUOTEDTABLENAME = 70;
+  /** RegularExpression Id. */
+  int UNEXPECTED_CHAR = 71;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -203,6 +205,7 @@ public interface ExpressionParserConstants {
     "\"-\"",
     "\"+\"",
     "\"/\"",
+    "\"%\"",
     "\"(\"",
     "\")\"",
     "\";\"",

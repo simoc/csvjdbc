@@ -544,6 +544,8 @@ public class ExpressionParser implements ExpressionParserConstants {
       t = jj_consume_token(ASTERISK);
     } else if (jj_2_49(2)) {
       t = jj_consume_token(DIVIDE);
+    } else if (jj_2_50(2)) {
+      t = jj_consume_token(MODULO);
     } else {
       jj_consume_token(-1);
       throw new ParseException();
@@ -555,10 +557,10 @@ public class ExpressionParser implements ExpressionParserConstants {
   final public Expression countOperation() throws ParseException {
         Expression arg;
         Token t;
-    if (jj_2_50(2)) {
+    if (jj_2_51(2)) {
       t = jj_consume_token(ASTERISK);
                 {if (true) return new AsteriskExpression(t.image);}
-    } else if (jj_2_51(2)) {
+    } else if (jj_2_52(2)) {
       arg = binaryOperation();
                 {if (true) return arg;}
     } else {
@@ -574,7 +576,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     left = multiplyOperation();
     label_9:
     while (true) {
-      if (jj_2_52(2)) {
+      if (jj_2_53(2)) {
         ;
       } else {
         break label_9;
@@ -593,7 +595,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     left = simpleExpression();
     label_10:
     while (true) {
-      if (jj_2_53(2)) {
+      if (jj_2_54(2)) {
         ;
       } else {
         break label_10;
@@ -610,72 +612,72 @@ public class ExpressionParser implements ExpressionParserConstants {
         Expression arg;
         Expression arg2;
         boolean isDistinct;
-    if (jj_2_59(2)) {
+    if (jj_2_60(2)) {
       jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return arg;}
-    } else if (jj_2_60(2)) {
+    } else if (jj_2_61(2)) {
       jj_consume_token(UPPER);
       jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLUpperFunction(arg);}
-    } else if (jj_2_61(2)) {
+    } else if (jj_2_62(2)) {
       jj_consume_token(LOWER);
       jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLLowerFunction(arg);}
-    } else if (jj_2_62(2)) {
+    } else if (jj_2_63(2)) {
       jj_consume_token(LENGTH);
       jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLLengthFunction(arg);}
-    } else if (jj_2_63(2)) {
+    } else if (jj_2_64(2)) {
       jj_consume_token(ROUND);
       jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLRoundFunction(arg);}
-    } else if (jj_2_64(2)) {
+    } else if (jj_2_65(2)) {
       jj_consume_token(DAYOFMONTH);
       jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLDayOfMonthFunction(arg);}
-    } else if (jj_2_65(2)) {
+    } else if (jj_2_66(2)) {
       jj_consume_token(MONTH);
       jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLMonthFunction(arg);}
-    } else if (jj_2_66(2)) {
+    } else if (jj_2_67(2)) {
       jj_consume_token(YEAR);
       jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLYearFunction(arg);}
-    } else if (jj_2_67(2)) {
+    } else if (jj_2_68(2)) {
       jj_consume_token(HOUROFDAY);
       jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLHourOfDayFunction(arg);}
-    } else if (jj_2_68(2)) {
+    } else if (jj_2_69(2)) {
       jj_consume_token(MINUTE);
       jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLMinuteFunction(arg);}
-    } else if (jj_2_69(2)) {
+    } else if (jj_2_70(2)) {
       jj_consume_token(SECOND);
       jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLSecondFunction(arg);}
-    } else if (jj_2_70(2)) {
+    } else if (jj_2_71(2)) {
       jj_consume_token(NULLIF);
       jj_consume_token(OPENPARENTHESIS);
       arg = binaryOperation();
@@ -683,11 +685,11 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg2 = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLNullIfFunction(arg, arg2);}
-    } else if (jj_2_71(2)) {
+    } else if (jj_2_72(2)) {
       jj_consume_token(COUNT);
       jj_consume_token(OPENPARENTHESIS);
                                     isDistinct = false;
-      if (jj_2_54(2)) {
+      if (jj_2_55(2)) {
         jj_consume_token(DISTINCT);
                             isDistinct = true;
       } else {
@@ -696,21 +698,8 @@ public class ExpressionParser implements ExpressionParserConstants {
       arg = countOperation();
       jj_consume_token(CLOSEPARENTHESIS);
                 {if (true) return new SQLCountFunction(isDistinct, arg);}
-    } else if (jj_2_72(2)) {
-      jj_consume_token(MAX);
-      jj_consume_token(OPENPARENTHESIS);
-                                  isDistinct = false;
-      if (jj_2_55(2)) {
-        jj_consume_token(DISTINCT);
-                            isDistinct = true;
-      } else {
-        ;
-      }
-      arg = binaryOperation();
-      jj_consume_token(CLOSEPARENTHESIS);
-                {if (true) return new SQLMaxFunction(isDistinct, arg);}
     } else if (jj_2_73(2)) {
-      jj_consume_token(MIN);
+      jj_consume_token(MAX);
       jj_consume_token(OPENPARENTHESIS);
                                   isDistinct = false;
       if (jj_2_56(2)) {
@@ -721,9 +710,9 @@ public class ExpressionParser implements ExpressionParserConstants {
       }
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
-                {if (true) return new SQLMinFunction(isDistinct, arg);}
+                {if (true) return new SQLMaxFunction(isDistinct, arg);}
     } else if (jj_2_74(2)) {
-      jj_consume_token(SUM);
+      jj_consume_token(MIN);
       jj_consume_token(OPENPARENTHESIS);
                                   isDistinct = false;
       if (jj_2_57(2)) {
@@ -734,9 +723,9 @@ public class ExpressionParser implements ExpressionParserConstants {
       }
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
-                {if (true) return new SQLSumFunction(isDistinct, arg);}
+                {if (true) return new SQLMinFunction(isDistinct, arg);}
     } else if (jj_2_75(2)) {
-      jj_consume_token(AVG);
+      jj_consume_token(SUM);
       jj_consume_token(OPENPARENTHESIS);
                                   isDistinct = false;
       if (jj_2_58(2)) {
@@ -747,26 +736,39 @@ public class ExpressionParser implements ExpressionParserConstants {
       }
       arg = binaryOperation();
       jj_consume_token(CLOSEPARENTHESIS);
-                {if (true) return new SQLAvgFunction(isDistinct, arg);}
+                {if (true) return new SQLSumFunction(isDistinct, arg);}
     } else if (jj_2_76(2)) {
+      jj_consume_token(AVG);
+      jj_consume_token(OPENPARENTHESIS);
+                                  isDistinct = false;
+      if (jj_2_59(2)) {
+        jj_consume_token(DISTINCT);
+                            isDistinct = true;
+      } else {
+        ;
+      }
+      arg = binaryOperation();
+      jj_consume_token(CLOSEPARENTHESIS);
+                {if (true) return new SQLAvgFunction(isDistinct, arg);}
+    } else if (jj_2_77(2)) {
       arg = columnName();
                 {if (true) return arg;}
-    } else if (jj_2_77(2)) {
+    } else if (jj_2_78(2)) {
       arg = numericConstant();
                 {if (true) return arg;}
-    } else if (jj_2_78(2)) {
+    } else if (jj_2_79(2)) {
       arg = stringConstant();
                 {if (true) return arg;}
-    } else if (jj_2_79(2)) {
+    } else if (jj_2_80(2)) {
       jj_consume_token(NULL);
                 {if (true) return new NullConstant();}
-    } else if (jj_2_80(2)) {
+    } else if (jj_2_81(2)) {
       jj_consume_token(CURRENT_DATE);
                 {if (true) return new CurrentDateConstant(this);}
-    } else if (jj_2_81(2)) {
+    } else if (jj_2_82(2)) {
       jj_consume_token(CURRENT_TIME);
                 {if (true) return new CurrentTimeConstant(this);}
-    } else if (jj_2_82(2)) {
+    } else if (jj_2_83(2)) {
       jj_consume_token(PLACEHOLDER);
                 {if (true) return new Placeholder();}
     } else {
@@ -778,39 +780,39 @@ public class ExpressionParser implements ExpressionParserConstants {
 
   final public Expression columnName() throws ParseException {
         Token t;
-    if (jj_2_83(2)) {
+    if (jj_2_84(2)) {
       t = jj_consume_token(NAME);
-    } else if (jj_2_84(2)) {
-      t = jj_consume_token(DAYOFMONTH);
     } else if (jj_2_85(2)) {
-      t = jj_consume_token(MONTH);
+      t = jj_consume_token(DAYOFMONTH);
     } else if (jj_2_86(2)) {
-      t = jj_consume_token(YEAR);
+      t = jj_consume_token(MONTH);
     } else if (jj_2_87(2)) {
-      t = jj_consume_token(HOUROFDAY);
+      t = jj_consume_token(YEAR);
     } else if (jj_2_88(2)) {
-      t = jj_consume_token(MINUTE);
+      t = jj_consume_token(HOUROFDAY);
     } else if (jj_2_89(2)) {
-      t = jj_consume_token(SECOND);
+      t = jj_consume_token(MINUTE);
     } else if (jj_2_90(2)) {
-      t = jj_consume_token(LOWER);
+      t = jj_consume_token(SECOND);
     } else if (jj_2_91(2)) {
-      t = jj_consume_token(ROUND);
+      t = jj_consume_token(LOWER);
     } else if (jj_2_92(2)) {
-      t = jj_consume_token(UPPER);
+      t = jj_consume_token(ROUND);
     } else if (jj_2_93(2)) {
-      t = jj_consume_token(LENGTH);
+      t = jj_consume_token(UPPER);
     } else if (jj_2_94(2)) {
-      t = jj_consume_token(NULLIF);
+      t = jj_consume_token(LENGTH);
     } else if (jj_2_95(2)) {
-      t = jj_consume_token(AVG);
+      t = jj_consume_token(NULLIF);
     } else if (jj_2_96(2)) {
-      t = jj_consume_token(COUNT);
+      t = jj_consume_token(AVG);
     } else if (jj_2_97(2)) {
-      t = jj_consume_token(MAX);
+      t = jj_consume_token(COUNT);
     } else if (jj_2_98(2)) {
-      t = jj_consume_token(MIN);
+      t = jj_consume_token(MAX);
     } else if (jj_2_99(2)) {
+      t = jj_consume_token(MIN);
+    } else if (jj_2_100(2)) {
       t = jj_consume_token(SUM);
     } else {
       jj_consume_token(-1);
@@ -825,15 +827,15 @@ public class ExpressionParser implements ExpressionParserConstants {
         String sign, digits;
         boolean isLong;
          sign="";
-    if (jj_2_100(2)) {
+    if (jj_2_101(2)) {
       t = jj_consume_token(MINUS);
                    sign=t.image;
     } else {
       ;
     }
-    if (jj_2_101(2)) {
+    if (jj_2_102(2)) {
       t = jj_consume_token(UNSIGNEDNUMBER);
-    } else if (jj_2_102(2)) {
+    } else if (jj_2_103(2)) {
       t = jj_consume_token(UNSIGNEDINT);
     } else {
       jj_consume_token(-1);
@@ -866,7 +868,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     left = stringConstantAtom();
     label_11:
     while (true) {
-      if (jj_2_103(2)) {
+      if (jj_2_104(2)) {
         ;
       } else {
         break label_11;
@@ -887,39 +889,39 @@ public class ExpressionParser implements ExpressionParserConstants {
 
   final public Expression columnAlias() throws ParseException {
         Token t;
-    if (jj_2_104(2)) {
+    if (jj_2_105(2)) {
       t = jj_consume_token(NAME);
-    } else if (jj_2_105(2)) {
-      t = jj_consume_token(DAYOFMONTH);
     } else if (jj_2_106(2)) {
-      t = jj_consume_token(MONTH);
+      t = jj_consume_token(DAYOFMONTH);
     } else if (jj_2_107(2)) {
-      t = jj_consume_token(YEAR);
+      t = jj_consume_token(MONTH);
     } else if (jj_2_108(2)) {
-      t = jj_consume_token(HOUROFDAY);
+      t = jj_consume_token(YEAR);
     } else if (jj_2_109(2)) {
-      t = jj_consume_token(MINUTE);
+      t = jj_consume_token(HOUROFDAY);
     } else if (jj_2_110(2)) {
-      t = jj_consume_token(SECOND);
+      t = jj_consume_token(MINUTE);
     } else if (jj_2_111(2)) {
-      t = jj_consume_token(LOWER);
+      t = jj_consume_token(SECOND);
     } else if (jj_2_112(2)) {
-      t = jj_consume_token(ROUND);
+      t = jj_consume_token(LOWER);
     } else if (jj_2_113(2)) {
-      t = jj_consume_token(UPPER);
+      t = jj_consume_token(ROUND);
     } else if (jj_2_114(2)) {
-      t = jj_consume_token(LENGTH);
+      t = jj_consume_token(UPPER);
     } else if (jj_2_115(2)) {
-      t = jj_consume_token(NULLIF);
+      t = jj_consume_token(LENGTH);
     } else if (jj_2_116(2)) {
-      t = jj_consume_token(AVG);
+      t = jj_consume_token(NULLIF);
     } else if (jj_2_117(2)) {
-      t = jj_consume_token(COUNT);
+      t = jj_consume_token(AVG);
     } else if (jj_2_118(2)) {
-      t = jj_consume_token(MAX);
+      t = jj_consume_token(COUNT);
     } else if (jj_2_119(2)) {
-      t = jj_consume_token(MIN);
+      t = jj_consume_token(MAX);
     } else if (jj_2_120(2)) {
+      t = jj_consume_token(MIN);
+    } else if (jj_2_121(2)) {
       t = jj_consume_token(SUM);
     } else {
       jj_consume_token(-1);
@@ -1769,28 +1771,24 @@ public class ExpressionParser implements ExpressionParserConstants {
     finally { jj_save(119, xla); }
   }
 
-  private boolean jj_3_65() {
-    if (jj_scan_token(MONTH)) return true;
-    if (jj_scan_token(OPENPARENTHESIS)) return true;
-    return false;
+  private boolean jj_2_121(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_121(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(120, xla); }
   }
 
-  private boolean jj_3_29() {
-    if (jj_scan_token(NAMEASTERISK)) return true;
-    return false;
-  }
-
-  private boolean jj_3_107() {
+  private boolean jj_3_108() {
     if (jj_scan_token(YEAR)) return true;
     return false;
   }
 
-  private boolean jj_3_92() {
+  private boolean jj_3_93() {
     if (jj_scan_token(UPPER)) return true;
     return false;
   }
 
-  private boolean jj_3_64() {
+  private boolean jj_3_65() {
     if (jj_scan_token(DAYOFMONTH)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
@@ -1812,7 +1810,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_63() {
+  private boolean jj_3_64() {
     if (jj_scan_token(ROUND)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
@@ -1823,18 +1821,18 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_62() {
+  private boolean jj_3_63() {
     if (jj_scan_token(LENGTH)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
   }
 
-  private boolean jj_3_106() {
+  private boolean jj_3_107() {
     if (jj_scan_token(MONTH)) return true;
     return false;
   }
 
-  private boolean jj_3_91() {
+  private boolean jj_3_92() {
     if (jj_scan_token(ROUND)) return true;
     return false;
   }
@@ -1854,19 +1852,19 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_53() {
+  private boolean jj_3_54() {
     if (jj_3R_26()) return true;
     if (jj_3R_27()) return true;
     return false;
   }
 
-  private boolean jj_3_61() {
+  private boolean jj_3_62() {
     if (jj_scan_token(LOWER)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
   }
 
-  private boolean jj_3_60() {
+  private boolean jj_3_61() {
     if (jj_scan_token(UPPER)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
@@ -1877,7 +1875,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_90() {
+  private boolean jj_3_91() {
     if (jj_scan_token(LOWER)) return true;
     return false;
   }
@@ -1885,8 +1883,6 @@ public class ExpressionParser implements ExpressionParserConstants {
   private boolean jj_3R_27() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_59()) {
-    jj_scanpos = xsp;
     if (jj_3_60()) {
     jj_scanpos = xsp;
     if (jj_3_61()) {
@@ -1931,7 +1927,9 @@ public class ExpressionParser implements ExpressionParserConstants {
     jj_scanpos = xsp;
     if (jj_3_81()) {
     jj_scanpos = xsp;
-    if (jj_3_82()) return true;
+    if (jj_3_82()) {
+    jj_scanpos = xsp;
+    if (jj_3_83()) return true;
     }
     }
     }
@@ -1958,18 +1956,18 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_59() {
+  private boolean jj_3_60() {
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     if (jj_3R_18()) return true;
     return false;
   }
 
-  private boolean jj_3_105() {
+  private boolean jj_3_106() {
     if (jj_scan_token(DAYOFMONTH)) return true;
     return false;
   }
 
-  private boolean jj_3_52() {
+  private boolean jj_3_53() {
     if (jj_3R_24()) return true;
     if (jj_3R_25()) return true;
     return false;
@@ -1998,7 +1996,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_103() {
+  private boolean jj_3_104() {
     if (jj_3R_31()) return true;
     return false;
   }
@@ -2009,7 +2007,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_89() {
+  private boolean jj_3_90() {
     if (jj_scan_token(SECOND)) return true;
     return false;
   }
@@ -2026,7 +2024,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_104() {
+  private boolean jj_3_105() {
     if (jj_scan_token(NAME)) return true;
     return false;
   }
@@ -2040,8 +2038,6 @@ public class ExpressionParser implements ExpressionParserConstants {
   private boolean jj_3R_17() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_104()) {
-    jj_scanpos = xsp;
     if (jj_3_105()) {
     jj_scanpos = xsp;
     if (jj_3_106()) {
@@ -2072,7 +2068,9 @@ public class ExpressionParser implements ExpressionParserConstants {
     jj_scanpos = xsp;
     if (jj_3_119()) {
     jj_scanpos = xsp;
-    if (jj_3_120()) return true;
+    if (jj_3_120()) {
+    jj_scanpos = xsp;
+    if (jj_3_121()) return true;
     }
     }
     }
@@ -2108,7 +2106,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3_53()) { jj_scanpos = xsp; break; }
+      if (jj_3_54()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
@@ -2118,7 +2116,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_88() {
+  private boolean jj_3_89() {
     if (jj_scan_token(MINUTE)) return true;
     return false;
   }
@@ -2155,12 +2153,17 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
+  private boolean jj_3_50() {
+    if (jj_scan_token(MODULO)) return true;
+    return false;
+  }
+
   private boolean jj_3R_18() {
     if (jj_3R_25()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3_52()) { jj_scanpos = xsp; break; }
+      if (jj_3_53()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
@@ -2170,7 +2173,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_87() {
+  private boolean jj_3_88() {
     if (jj_scan_token(HOUROFDAY)) return true;
     return false;
   }
@@ -2180,7 +2183,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3_103()) { jj_scanpos = xsp; break; }
+      if (jj_3_104()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
@@ -2194,12 +2197,12 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_120() {
+  private boolean jj_3_121() {
     if (jj_scan_token(SUM)) return true;
     return false;
   }
 
-  private boolean jj_3_51() {
+  private boolean jj_3_52() {
     if (jj_3R_18()) return true;
     return false;
   }
@@ -2209,32 +2212,32 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_102() {
+  private boolean jj_3_103() {
     if (jj_scan_token(UNSIGNEDINT)) return true;
     return false;
   }
 
-  private boolean jj_3_86() {
+  private boolean jj_3_87() {
     if (jj_scan_token(YEAR)) return true;
     return false;
   }
 
-  private boolean jj_3_119() {
+  private boolean jj_3_120() {
     if (jj_scan_token(MIN)) return true;
     return false;
   }
 
-  private boolean jj_3_50() {
+  private boolean jj_3_51() {
     if (jj_scan_token(ASTERISK)) return true;
     return false;
   }
 
-  private boolean jj_3_118() {
+  private boolean jj_3_119() {
     if (jj_scan_token(MAX)) return true;
     return false;
   }
 
-  private boolean jj_3_85() {
+  private boolean jj_3_86() {
     if (jj_scan_token(MONTH)) return true;
     return false;
   }
@@ -2274,22 +2277,25 @@ public class ExpressionParser implements ExpressionParserConstants {
     xsp = jj_scanpos;
     if (jj_3_48()) {
     jj_scanpos = xsp;
-    if (jj_3_49()) return true;
+    if (jj_3_49()) {
+    jj_scanpos = xsp;
+    if (jj_3_50()) return true;
+    }
     }
     return false;
   }
 
-  private boolean jj_3_117() {
+  private boolean jj_3_118() {
     if (jj_scan_token(COUNT)) return true;
     return false;
   }
 
-  private boolean jj_3_101() {
+  private boolean jj_3_102() {
     if (jj_scan_token(UNSIGNEDNUMBER)) return true;
     return false;
   }
 
-  private boolean jj_3_100() {
+  private boolean jj_3_101() {
     if (jj_scan_token(MINUS)) return true;
     return false;
   }
@@ -2297,11 +2303,11 @@ public class ExpressionParser implements ExpressionParserConstants {
   private boolean jj_3R_29() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_100()) jj_scanpos = xsp;
+    if (jj_3_101()) jj_scanpos = xsp;
     xsp = jj_scanpos;
-    if (jj_3_101()) {
+    if (jj_3_102()) {
     jj_scanpos = xsp;
-    if (jj_3_102()) return true;
+    if (jj_3_103()) return true;
     }
     return false;
   }
@@ -2329,12 +2335,12 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_84() {
+  private boolean jj_3_85() {
     if (jj_scan_token(DAYOFMONTH)) return true;
     return false;
   }
 
-  private boolean jj_3_116() {
+  private boolean jj_3_117() {
     if (jj_scan_token(AVG)) return true;
     return false;
   }
@@ -2344,7 +2350,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_83() {
+  private boolean jj_3_84() {
     if (jj_scan_token(NAME)) return true;
     return false;
   }
@@ -2352,8 +2358,6 @@ public class ExpressionParser implements ExpressionParserConstants {
   private boolean jj_3R_28() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_83()) {
-    jj_scanpos = xsp;
     if (jj_3_84()) {
     jj_scanpos = xsp;
     if (jj_3_85()) {
@@ -2384,7 +2388,9 @@ public class ExpressionParser implements ExpressionParserConstants {
     jj_scanpos = xsp;
     if (jj_3_98()) {
     jj_scanpos = xsp;
-    if (jj_3_99()) return true;
+    if (jj_3_99()) {
+    jj_scanpos = xsp;
+    if (jj_3_100()) return true;
     }
     }
     }
@@ -2415,7 +2421,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_115() {
+  private boolean jj_3_116() {
     if (jj_scan_token(NULLIF)) return true;
     return false;
   }
@@ -2425,7 +2431,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_82() {
+  private boolean jj_3_83() {
     if (jj_scan_token(PLACEHOLDER)) return true;
     return false;
   }
@@ -2445,7 +2451,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_81() {
+  private boolean jj_3_82() {
     if (jj_scan_token(CURRENT_TIME)) return true;
     return false;
   }
@@ -2461,12 +2467,12 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_114() {
+  private boolean jj_3_115() {
     if (jj_scan_token(LENGTH)) return true;
     return false;
   }
 
-  private boolean jj_3_80() {
+  private boolean jj_3_81() {
     if (jj_scan_token(CURRENT_DATE)) return true;
     return false;
   }
@@ -2477,12 +2483,12 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_79() {
+  private boolean jj_3_80() {
     if (jj_scan_token(NULL)) return true;
     return false;
   }
 
-  private boolean jj_3_78() {
+  private boolean jj_3_79() {
     if (jj_3R_30()) return true;
     return false;
   }
@@ -2492,12 +2498,12 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_113() {
+  private boolean jj_3_114() {
     if (jj_scan_token(UPPER)) return true;
     return false;
   }
 
-  private boolean jj_3_99() {
+  private boolean jj_3_100() {
     if (jj_scan_token(SUM)) return true;
     return false;
   }
@@ -2508,12 +2514,12 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_77() {
+  private boolean jj_3_78() {
     if (jj_3R_29()) return true;
     return false;
   }
 
-  private boolean jj_3_58() {
+  private boolean jj_3_59() {
     if (jj_scan_token(DISTINCT)) return true;
     return false;
   }
@@ -2523,7 +2529,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_76() {
+  private boolean jj_3_77() {
     if (jj_3R_28()) return true;
     return false;
   }
@@ -2541,7 +2547,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_98() {
+  private boolean jj_3_99() {
     if (jj_scan_token(MIN)) return true;
     return false;
   }
@@ -2561,17 +2567,17 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_112() {
+  private boolean jj_3_113() {
     if (jj_scan_token(ROUND)) return true;
     return false;
   }
 
-  private boolean jj_3_57() {
+  private boolean jj_3_58() {
     if (jj_scan_token(DISTINCT)) return true;
     return false;
   }
 
-  private boolean jj_3_75() {
+  private boolean jj_3_76() {
     if (jj_scan_token(AVG)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
@@ -2583,12 +2589,12 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_97() {
+  private boolean jj_3_98() {
     if (jj_scan_token(MAX)) return true;
     return false;
   }
 
-  private boolean jj_3_56() {
+  private boolean jj_3_57() {
     if (jj_scan_token(DISTINCT)) return true;
     return false;
   }
@@ -2607,14 +2613,30 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_74() {
+  private boolean jj_3_75() {
     if (jj_scan_token(SUM)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
   }
 
-  private boolean jj_3_111() {
+  private boolean jj_3_112() {
     if (jj_scan_token(LOWER)) return true;
+    return false;
+  }
+
+  private boolean jj_3_56() {
+    if (jj_scan_token(DISTINCT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_74() {
+    if (jj_scan_token(MIN)) return true;
+    if (jj_scan_token(OPENPARENTHESIS)) return true;
+    return false;
+  }
+
+  private boolean jj_3_97() {
+    if (jj_scan_token(COUNT)) return true;
     return false;
   }
 
@@ -2623,28 +2645,12 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_73() {
-    if (jj_scan_token(MIN)) return true;
-    if (jj_scan_token(OPENPARENTHESIS)) return true;
-    return false;
-  }
-
-  private boolean jj_3_96() {
-    if (jj_scan_token(COUNT)) return true;
-    return false;
-  }
-
-  private boolean jj_3_54() {
-    if (jj_scan_token(DISTINCT)) return true;
-    return false;
-  }
-
-  private boolean jj_3_110() {
+  private boolean jj_3_111() {
     if (jj_scan_token(SECOND)) return true;
     return false;
   }
 
-  private boolean jj_3_72() {
+  private boolean jj_3_73() {
     if (jj_scan_token(MAX)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
@@ -2655,7 +2661,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_95() {
+  private boolean jj_3_96() {
     if (jj_scan_token(AVG)) return true;
     return false;
   }
@@ -2678,15 +2684,15 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_23() {
-    if (jj_scan_token(OFFSET)) return true;
-    if (jj_scan_token(UNSIGNEDINT)) return true;
+  private boolean jj_3_72() {
+    if (jj_scan_token(COUNT)) return true;
+    if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
   }
 
-  private boolean jj_3_71() {
-    if (jj_scan_token(COUNT)) return true;
-    if (jj_scan_token(OPENPARENTHESIS)) return true;
+  private boolean jj_3_23() {
+    if (jj_scan_token(OFFSET)) return true;
+    if (jj_scan_token(UNSIGNEDINT)) return true;
     return false;
   }
 
@@ -2715,18 +2721,18 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_109() {
+  private boolean jj_3_110() {
     if (jj_scan_token(MINUTE)) return true;
     return false;
   }
 
-  private boolean jj_3_70() {
+  private boolean jj_3_71() {
     if (jj_scan_token(NULLIF)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
   }
 
-  private boolean jj_3_94() {
+  private boolean jj_3_95() {
     if (jj_scan_token(NULLIF)) return true;
     return false;
   }
@@ -2736,30 +2742,30 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_69() {
+  private boolean jj_3_70() {
     if (jj_scan_token(SECOND)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
   }
 
-  private boolean jj_3_68() {
+  private boolean jj_3_69() {
     if (jj_scan_token(MINUTE)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
   }
 
-  private boolean jj_3_67() {
+  private boolean jj_3_68() {
     if (jj_scan_token(HOUROFDAY)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
     return false;
   }
 
-  private boolean jj_3_108() {
+  private boolean jj_3_109() {
     if (jj_scan_token(HOUROFDAY)) return true;
     return false;
   }
 
-  private boolean jj_3_93() {
+  private boolean jj_3_94() {
     if (jj_scan_token(LENGTH)) return true;
     return false;
   }
@@ -2777,9 +2783,20 @@ public class ExpressionParser implements ExpressionParserConstants {
     return false;
   }
 
-  private boolean jj_3_66() {
+  private boolean jj_3_67() {
     if (jj_scan_token(YEAR)) return true;
     if (jj_scan_token(OPENPARENTHESIS)) return true;
+    return false;
+  }
+
+  private boolean jj_3_66() {
+    if (jj_scan_token(MONTH)) return true;
+    if (jj_scan_token(OPENPARENTHESIS)) return true;
+    return false;
+  }
+
+  private boolean jj_3_29() {
+    if (jj_scan_token(NAMEASTERISK)) return true;
     return false;
   }
 
@@ -2812,7 +2829,7 @@ public class ExpressionParser implements ExpressionParserConstants {
    private static void jj_la1_init_2() {
       jj_la1_2 = new int[] {};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[120];
+  final private JJCalls[] jj_2_rtns = new JJCalls[121];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -2996,7 +3013,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[71];
+    boolean[] la1tokens = new boolean[72];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -3016,7 +3033,7 @@ public class ExpressionParser implements ExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 71; i++) {
+    for (int i = 0; i < 72; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
@@ -3043,7 +3060,7 @@ public class ExpressionParser implements ExpressionParserConstants {
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 120; i++) {
+    for (int i = 0; i < 121; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -3170,6 +3187,7 @@ public class ExpressionParser implements ExpressionParserConstants {
             case 117: jj_3_118(); break;
             case 118: jj_3_119(); break;
             case 119: jj_3_120(); break;
+            case 120: jj_3_121(); break;
           }
         }
         p = p.next;
