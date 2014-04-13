@@ -41,6 +41,8 @@
   <property name="build.dir" value="../build"/>
   <property name="src.dir" value="../src"/>
   <property name="java.dir" value="${src.dir}/main/java"/>
+  <property name="javacc.dir" value="${src.dir}/main/javacc"/>
+  <property name="javacc.home" value="/opt/javacc"/>
   <property name="resources.dir" value="${src.dir}/main/resources"/>
   <property name="test.java.dir" value="${src.dir}/test/java"/>
   <property name="doc.dir" value="${src.dir}/doc"/>
@@ -98,7 +100,8 @@
   <!-- Compile target                                                      -->
   <!-- =================================================================== -->
   <target name="compile" depends="init" description="Compiles all code">
-    <javac srcdir="${java.dir}" destdir="${class.dir}">
+    <javacc target="${javacc.dir}/org/relique/jdbc/csv/where.jj" javacchome="${javacc.home}"/>
+    <javac srcdir="${java.dir}${path.separator}${javacc.dir}" destdir="${class.dir}">
       <classpath refid="classpath"/>
       <include name="org/**/*.java"/>
     </javac>
@@ -150,6 +153,7 @@
     <delete dir="${class.dir}"/>
     <delete dir="${javadoc.dir}"/>
     <delete dir="${rel.dir}"/>
+    <delete dir="${javacc.dir}" includes="org/**/*.java"/>
     <delete file="manifest"/>
   </target>
 
