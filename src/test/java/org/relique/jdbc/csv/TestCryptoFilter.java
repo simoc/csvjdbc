@@ -347,7 +347,7 @@ public class TestCryptoFilter
 
 		assertTrue("timeNoEncrypt = " + timeNoEncrypt
 				+ "ms; timeEncrypt = " + timeEncrypt + "ms",
-				timeEncrypt <= 20 * timeNoEncrypt);
+				timeEncrypt <= 30 * timeNoEncrypt);
 	}
 
 	@Test
