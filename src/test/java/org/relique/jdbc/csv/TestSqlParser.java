@@ -482,6 +482,9 @@ public class TestSqlParser
 		cs = new ExpressionParser(new StringReader("LENGTH(A)"));
 		cs.parseQueryEnvEntry();
 		assertEquals("LENGTH([A]): LENGTH([A])", cs.toString());
+		cs = new ExpressionParser(new StringReader("TRIM(A)"));
+		cs.parseQueryEnvEntry();
+		assertEquals("TRIM([A]): TRIM([A])", cs.toString());
 	}
 
 	@Test

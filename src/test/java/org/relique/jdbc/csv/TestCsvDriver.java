@@ -2212,6 +2212,28 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testTrimFunction() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "String,Int,Float,String");
+		props.put("commentChar", "#");
+		props.put("fileExtension", ".txt");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select TRIM(comment), TRIM('\tfoo bar\n') from with_comments");
+		assertTrue(results.next());
+		assertEquals("The comment is wrong", "some field", results.getString(1));
+		assertEquals("The trimmed value is wrong", "foo bar", results.getString(2));
+		assertTrue(results.next());
+		assertEquals("The comment is wrong", "other parameter", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("The comment is wrong", "still a field", results.getString(1));
+		assertFalse(results.next());		
+	}
+
+	@Test
 	public void testRoundFunction() throws SQLException
 	{
 		Properties props = new Properties();

@@ -279,6 +279,10 @@ TOKEN:
 }
 TOKEN:
 {
+	<TRIM:"TRIM">
+}
+TOKEN:
+{
 	<LENGTH:"LENGTH">
 }
 TOKEN:
@@ -739,6 +743,10 @@ Expression simpleExpression():
 	{
 		return new SQLLowerFunction(arg);
 	}
+	| <TRIM> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLTrimFunction(arg);
+	}
 	| <LENGTH> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
 	{
 		return new SQLLengthFunction(arg);
@@ -840,7 +848,7 @@ Expression columnName():
 	Token t;
 }
 {
-	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<LENGTH>|t=<NULLIF>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>)
+	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LENGTH>|t=<NULLIF>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>)
 	{
 		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}
@@ -906,7 +914,7 @@ Expression columnAlias():
 	Token t;
 }
 {
-	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<LENGTH>|t=<NULLIF>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>)
+	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LENGTH>|t=<NULLIF>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>)
 	{
 		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}
