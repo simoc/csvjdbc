@@ -210,12 +210,13 @@ public class TestCryptoFilter
 		boolean generating_input_file = false;
 		if(generating_input_file)
 		{
+			EncryptedFileOutputStream out = null;
 			try
 			{
 				File f = new File(filePath, "scrambled_trailing.txt");
 				String filename = f.getAbsolutePath();
 				CryptoFilter cip = new XORCipher(new String("gaius vipsanius agrippa"));;
-				EncryptedFileOutputStream out = new EncryptedFileOutputStream(filename, cip );
+				out = new EncryptedFileOutputStream(filename, cip );
 				out.write((new String("key,value\n")).getBytes());
 				out.write((new String("1,uno\n")).getBytes());
 				out.write((new String("\n")).getBytes());
@@ -230,6 +231,17 @@ public class TestCryptoFilter
 			catch (IOException e)
 			{
 				e.printStackTrace();
+			}
+			finally
+			{
+				try
+				{
+					if (out != null)
+						out.close();
+				}
+				catch (IOException e)
+				{
+				}
 			}
 		}
 		

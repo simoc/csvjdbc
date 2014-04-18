@@ -4175,18 +4175,30 @@ public class TestCsvDriver
 		 */
 		CsvDriver.writeToCsv(results, printStream, true);
 
-		BufferedReader reader1 = new BufferedReader(new FileReader(filePath + File.separator + "sample.csv"));
-		BufferedReader reader2 = new BufferedReader(new StringReader(byteStream.toString("US-ASCII")));
-		String line1 = reader1.readLine();
-		String line2 = reader2.readLine();
-
-		while (line1 != null || line2 != null)
+		BufferedReader reader1 = null;
+		BufferedReader reader2 = null;
+		try
 		{
-			assertTrue("line1 is null", line1 != null);
-			assertTrue("line2 is null", line2 != null);
-			assertEquals("lines do not match", line1, line2);
-			line1 = reader1.readLine();
-			line2 = reader2.readLine();
+			reader1 = new BufferedReader(new FileReader(filePath + File.separator + "sample.csv"));
+			reader2 = new BufferedReader(new StringReader(byteStream.toString("US-ASCII")));
+			String line1 = reader1.readLine();
+			String line2 = reader2.readLine();
+	
+			while (line1 != null || line2 != null)
+			{
+				assertTrue("line1 is null", line1 != null);
+				assertTrue("line2 is null", line2 != null);
+				assertEquals("lines do not match", line1, line2);
+				line1 = reader1.readLine();
+				line2 = reader2.readLine();
+			}
+		}
+		finally
+		{
+			if (reader1 != null)
+				reader1.close();
+			if (reader2 != null)
+				reader2.close();
 		}
 		results.close();
 		stmt.close();
