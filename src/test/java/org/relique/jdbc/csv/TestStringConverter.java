@@ -25,6 +25,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.junit.BeforeClass;
@@ -108,6 +109,38 @@ public class TestStringConverter
 		
 		got = sc.parseDate("3-1983-9");
 		expect = java.sql.Date.valueOf("1983-03-09");
+		assertEquals(got, expect);
+	}
+
+	@Test
+	public void testParseDateNamedMonth()
+	{
+		StringConverter sc = new StringConverter("dd-MMM-yyyy", "", "", "", Locale.ENGLISH);
+
+		Date got, expect;
+
+		got = sc.parseDate("21-APR-2014");
+		expect = java.sql.Date.valueOf("2014-04-21");
+		assertEquals(got, expect);
+		
+		got = sc.parseDate("21-April-2014");
+		expect = java.sql.Date.valueOf("2014-04-21");
+		assertEquals(got, expect);
+	}
+	
+	@Test
+	public void testParseDateNamedDay()
+	{
+		StringConverter sc = new StringConverter("EEE, MMM d, yyyy", "", "", "", Locale.ENGLISH);
+
+		Date got, expect;
+
+		got = sc.parseDate("Mon, Apr 21, 2014");
+		expect = java.sql.Date.valueOf("2014-04-21");
+		assertEquals(got, expect);
+		
+		got = sc.parseDate("Monday, April 21, 2014");
+		expect = java.sql.Date.valueOf("2014-04-21");
 		assertEquals(got, expect);
 	}
 

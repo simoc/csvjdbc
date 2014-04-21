@@ -46,6 +46,7 @@ public class StringConverter
 	private GregorianCalendar calendar;
 	private Pattern timestampPattern;
 	private SimpleDateFormat timestampFormat;
+	private SimpleDateFormat simpleDateFormat;
 
 	public StringConverter(String dateformat, String timeformat, String timestampformat,
 		String timeZoneName)
@@ -63,6 +64,53 @@ public class StringConverter
 		String timeZoneName, Locale locale)
 	{
 		dateFormat = dateformat;
+		if (dateformat != null)
+		{
+			/*
+			 * Can date be parsed with a simple regular expression, or is the full
+			 * SimpleDateFormat parsing required?
+			 */
+			// TODO prefer to use SimpleDateFormat for everything but existing regex not 100% compatible
+			String upper = dateformat.toUpperCase();
+			boolean useSimpleDateFormat = false;
+			if (upper.contains("MMM"))
+			{
+				/*
+				 * Dates contain named months -- we need to use a SimpleDateFormat to parse them.
+				 */
+				useSimpleDateFormat = true;
+			}
+			else
+			{
+				for (int i = 0; i < upper.length(); i++)
+				{
+					char c = upper.charAt(i);
+					if (Character.isLetter(c) && c != 'D' && c != 'M' && c != 'Y')
+					{
+						/*
+						 * Dates are not just a straightforward format with days, months,
+						 * years -- we need to use a SimpleDateFormat to parse them.
+						 */
+						useSimpleDateFormat = true;
+					}
+				}
+			}
+			if (useSimpleDateFormat)
+			{
+				/*
+				 * Use Java API for parsing dates.
+				 */
+				if (locale != null)
+				{
+					DateFormatSymbols symbols = DateFormatSymbols.getInstance(locale);
+					simpleDateFormat = new SimpleDateFormat(dateformat, symbols);
+				}
+				else
+				{
+					simpleDateFormat = new SimpleDateFormat(dateformat);
+				}
+			}
+		}
 		timeFormat = timeformat;
 		TimeZone timeZone = TimeZone.getTimeZone(timeZoneName);
 		calendar = new GregorianCalendar();
@@ -326,9 +374,20 @@ public class StringConverter
 	{
 		try
 		{
+			if (simpleDateFormat != null)
+			{
+				java.util.Date parsedDate = simpleDateFormat.parse(str);
+				long millis = parsedDate.getTime();
+				Date sqlResult = new Date(millis);
+				return sqlResult;
+			}
 			String isoDate = makeISODate(str, dateFormat);
 			Date sqlResult = Date.valueOf(isoDate);
 			return sqlResult;
+		}
+		catch (ParseException e)
+		{
+			return null;
 		}
 		catch (RuntimeException e)
 		{
