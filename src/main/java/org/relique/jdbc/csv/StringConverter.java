@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 public class StringConverter
 {
 	private String dateFormat;
+	private SimpleDateFormat simpleTimeFormat;
 	private String timeFormat;
 	private GregorianCalendar calendar;
 	private Pattern timestampPattern;
@@ -111,7 +112,21 @@ public class StringConverter
 				}
 			}
 		}
+		
+		/*
+		 * Use Java API for parsing times.
+		 */
 		timeFormat = timeformat;
+		if (locale != null)
+		{
+			DateFormatSymbols symbols = DateFormatSymbols.getInstance(locale);
+			simpleTimeFormat = new SimpleDateFormat(timeformat, symbols);
+		}
+		else
+		{
+			simpleTimeFormat = new SimpleDateFormat(timeformat);
+		}
+
 		TimeZone timeZone = TimeZone.getTimeZone(timeZoneName);
 		calendar = new GregorianCalendar();
 		calendar.clear();
@@ -403,27 +418,15 @@ public class StringConverter
 			while (str.length() < timeFormat.length())
 			{
 				str = "0" + str;
-			}
-			String hours = "00";
-			int pos = timeFormat.indexOf('H');
-			if (pos != -1)
-			{
-				hours = str.substring(pos, pos + 2);
-			}
-			String minutes = "00";
-			pos = timeFormat.indexOf('m');
-			if (pos != -1)
-			{
-				minutes = str.substring(pos, pos + 2);
-			}
-			String seconds = "00";
-			pos = timeFormat.indexOf('s');
-			if (pos != -1)
-			{
-				seconds = str.substring(pos, pos + 2);
-			}
-			Time sqlResult = Time.valueOf(hours + ":" + minutes + ":" + seconds);
+			} 
+			java.util.Date parsedDate = simpleTimeFormat.parse(str);
+			long millis = parsedDate.getTime();
+			Time sqlResult = new Time(millis);
 			return sqlResult;
+		}
+		catch (ParseException e)
+		{
+			return null;
 		}
 		catch (RuntimeException e)
 		{

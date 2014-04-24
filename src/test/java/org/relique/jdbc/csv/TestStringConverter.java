@@ -22,6 +22,7 @@ package org.relique.jdbc.csv;
 import static org.junit.Assert.assertEquals;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -144,6 +145,20 @@ public class TestStringConverter
 		assertEquals(got, expect);
 	}
 
+	@Test
+	public void testParseTimeMilliseconds()
+	{
+		StringConverter sc = new StringConverter("", "HH:mm:ss.SSS", "", "", Locale.ENGLISH);
+
+		Time got, expect;
+
+		// Ensure milliseconds component is included in time.
+		got = sc.parseTime("14:21:07.858");
+		expect = java.sql.Time.valueOf("14:21:07");
+		expect = new Time(expect.getTime() + 858);
+		assertEquals(got, expect);
+	}
+	
 	@Test
 	public void testParseTimestampWithTimeZoneGuadeloupe()
 	{
