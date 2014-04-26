@@ -167,7 +167,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 					 * Only add columns matching the column pattern.
 					 */
 					if (columnNamePattern == null ||
-						LikePattern.matches(columnNamePattern, columnName))
+						LikePattern.matches(columnNamePattern, LikePattern.DEFAULT_ESCAPE_STRING, columnName))
 					{
 						int columnType = metadata.getColumnType(i + 1);
 						String columnTypeName = metadata.getColumnTypeName(i + 1);
@@ -592,7 +592,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		for (int i = 0; i < tableNames.size(); i++)
 		{
 			String tableName = tableNames.get(i);
-			if (typesMatch && (tableNamePattern == null || LikePattern.matches(tableNamePattern, tableName)))
+			if (typesMatch && (tableNamePattern == null || LikePattern.matches(tableNamePattern, LikePattern.DEFAULT_ESCAPE_STRING, tableName)))
 			{
 				Object[] data = new Object[]{null, SCHEMA_NAME, tableName, "TABLE", "",
 					null, null, null, null, null};

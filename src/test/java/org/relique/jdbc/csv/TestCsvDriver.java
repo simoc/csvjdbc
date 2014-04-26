@@ -1355,6 +1355,46 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testWhereWithLikeOperatorEscape() throws SQLException
+	{
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("select ID from escape where ID like 'index\\__'");
+
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", "index_1", results.getString("ID"));
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", "index_2", results.getString("ID"));
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", "index_3", results.getString("ID"));
+		assertFalse(results.next());
+
+		ResultSet results2 = stmt
+				.executeQuery("select ID from escape where ID like 'index^__' escape '^'");
+
+		assertTrue(results2.next());
+		assertEquals("The ID is wrong", "index_1", results2.getString("ID"));
+		assertTrue(results2.next());
+		assertEquals("The ID is wrong", "index_2", results2.getString("ID"));
+		assertTrue(results2.next());
+		assertEquals("The ID is wrong", "index_3", results2.getString("ID"));
+		assertFalse(results2.next());
+		
+		ResultSet results3 = stmt
+				.executeQuery("select ID from escape where ID like 'index^%%' escape '^'");
+
+		assertTrue(results3.next());
+		assertEquals("The ID is wrong", "index%%", results3.getString("ID"));
+		assertTrue(results3.next());
+		assertEquals("The ID is wrong", "index%3", results3.getString("ID"));
+		assertFalse(results3.next());
+	}
+
+	@Test
 	public void testWhereWithUnselectedColumn() throws SQLException
 	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"

@@ -272,7 +272,9 @@ public class TestSqlParser
 		assertEquals("Incorrect WHERE", "NOT B [B] '20' 'AA'", whereClause.toString());
 		parser.parse("SELECT * FROM test WHERE B LIKE '20 AND AA'");
 		whereClause = parser.getWhereClause();
-		assertEquals("Incorrect WHERE", "L [B] '20 AND AA'", whereClause.toString());
+		parser.parse("SELECT * FROM test WHERE B LIKE '12^_34' ESCAPE '^'");
+		whereClause = parser.getWhereClause();
+		assertEquals("Incorrect WHERE", "L [B] '12^_34' ESCAPE '^'", whereClause.toString());
 		parser.parse("SELECT * FROM test WHERE B NOT LIKE 'X%'");
 		whereClause = parser.getWhereClause();
 		assertEquals("Incorrect WHERE", "NOT L [B] 'X%'", whereClause.toString());

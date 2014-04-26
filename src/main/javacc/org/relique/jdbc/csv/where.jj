@@ -223,6 +223,10 @@ TOKEN:
 }
 TOKEN:
 {
+	<ESCAPE:"ESCAPE">
+}
+TOKEN:
+{
 	<BETWEEN:"BETWEEN">
 }
 TOKEN:
@@ -611,6 +615,7 @@ LogicalExpression relationalExpression():
 }
 {
 	{
+		arg3 = null;
 		negate = false;
 		inEntries = new LinkedList<Expression>();
 	}
@@ -625,9 +630,9 @@ LogicalExpression relationalExpression():
 			expr = new NotExpression(expr);
 		return expr;
 	}
-	| <LIKE>arg2 = binaryOperation()
+	| <LIKE>arg2 = binaryOperation()(<ESCAPE>arg3 = binaryOperation())?
 	{
-		expr = new LikeExpression(arg1, arg2);
+		expr = new LikeExpression(arg1, arg2, arg3);
 		if (negate)
 			expr = new NotExpression(expr);
 		return expr;
