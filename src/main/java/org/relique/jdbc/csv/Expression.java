@@ -34,8 +34,4 @@ public abstract class Expression
 	{
 		return new LinkedList<AggregateFunction>();
 	}
-	public boolean isTrue(Map<String, Object> env)
-	{
-	    return false;
-	}
 }

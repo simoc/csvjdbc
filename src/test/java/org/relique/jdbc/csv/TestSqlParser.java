@@ -335,7 +335,7 @@ public class TestSqlParser
 		assertEquals(true, parser.getWhereClause().isTrue(env));
 
 		parser.parse("SELECT * FROM test WHERE (A='20' OR B='AA') AND c=1");
-		Expression whereClause = parser.getWhereClause();
+		LogicalExpression whereClause = parser.getWhereClause();
 
 		env.clear();
 		env.put("A", new String("20"));

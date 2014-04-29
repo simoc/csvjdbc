@@ -170,7 +170,7 @@ public class SqlParser
 		return result;
 	}
 
-	public Expression getWhereClause()
+	public LogicalExpression getWhereClause()
 	{
 		return whereClause;
 	}
@@ -180,7 +180,7 @@ public class SqlParser
 		return groupByColumns;
 	}
 
-	public Expression getHavingClause()
+	public LogicalExpression getHavingClause()
 	{
 		return havingClause;
 	}

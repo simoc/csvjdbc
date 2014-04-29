@@ -81,13 +81,13 @@ public class CsvResultSet implements ResultSet
 	/** Last column name index read */
 	private int lastIndexRead = -1;
 
-	private Expression whereClause;
+	private LogicalExpression whereClause;
 
 	private List<Expression> groupByColumns;
 	
 	private List<Expression> distinctColumns;
 
-	private Expression havingClause;
+	private LogicalExpression havingClause;
 
 	private List<Object []> orderByColumns;
 
@@ -192,9 +192,9 @@ public class CsvResultSet implements ResultSet
 			List<Object []> queryEnvironment,
 			boolean isDistinct,
 			int resultSetType, 
-			Expression whereClause,
+			LogicalExpression whereClause,
 			List<Expression> groupByColumns,
-			Expression havingClause,
+			LogicalExpression havingClause,
 			List<Object []> orderByColumns,
 			int sqlLimit,
 			int sqlOffset,
