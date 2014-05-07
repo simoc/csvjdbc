@@ -18,6 +18,7 @@
  */
 package org.relique.jdbc.csv;
 
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +35,7 @@ class SQLCountFunction extends AggregateFunction
 			this.distinctValues = new HashSet<Object>();
 		this.expression = expression;
 	}
-	public Object eval(Map<String, Object> env)
+	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Integer retval;
 		Object o = env.get("@GROUPROWS");
@@ -96,7 +97,7 @@ class SQLCountFunction extends AggregateFunction
 		result.add(this);
 		return result;
 	}
-	public void processRow(Map<String, Object> env)
+	public void processRow(Map<String, Object> env) throws SQLException
 	{
 		if (expression instanceof AsteriskExpression)
 		{

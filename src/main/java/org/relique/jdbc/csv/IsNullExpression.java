@@ -18,6 +18,7 @@
  */
 package org.relique.jdbc.csv;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,7 @@ class IsNullExpression extends LogicalExpression
 	{
 		this.arg = arg;
 	}
-	public boolean isTrue(Map<String, Object> env)
+	public boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		Object o = arg.eval(env);
 		return (o == null);

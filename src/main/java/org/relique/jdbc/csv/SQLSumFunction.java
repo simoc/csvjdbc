@@ -19,6 +19,7 @@
 package org.relique.jdbc.csv;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,7 +37,7 @@ class SQLSumFunction extends AggregateFunction
 			this.distinctValues = new HashSet<Object>();
 		this.expression = expression;
 	}
-	public Object eval(Map<String, Object> env)
+	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object retval = null;
 		Object o = env.get("@GROUPROWS");
@@ -160,7 +161,7 @@ class SQLSumFunction extends AggregateFunction
 		result.add(this);
 		return result;
 	}
-	public void processRow(Map<String, Object> env)
+	public void processRow(Map<String, Object> env) throws SQLException
 	{
 		/*
 		 * Only consider non-null values.

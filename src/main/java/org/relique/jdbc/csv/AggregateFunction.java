@@ -18,11 +18,12 @@
  */
 package org.relique.jdbc.csv;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 abstract class AggregateFunction extends Expression
 {
 	public abstract List<String> aggregateColumns();
-	public abstract void processRow(Map<String, Object> env);
+	public abstract void processRow(Map<String, Object> env) throws SQLException;
 }

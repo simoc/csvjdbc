@@ -18,6 +18,7 @@
  */
 package org.relique.jdbc.csv;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 class SQLAvgFunction extends SQLSumFunction
@@ -26,7 +27,7 @@ class SQLAvgFunction extends SQLSumFunction
 	{
 		super(isDistinct, expression);
 	}
-	public Object eval(Map<String, Object> env)
+	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object o = super.eval(env);
 		if (o != null)

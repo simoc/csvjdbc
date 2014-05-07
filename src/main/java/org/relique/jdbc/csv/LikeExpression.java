@@ -18,6 +18,7 @@
  */
 package org.relique.jdbc.csv;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ class LikeExpression extends LogicalExpression
 		this.arg2 = arg2;
 		this.escapeArg = escapeArg;
 	}
-	public boolean isTrue(Map<String, Object> env)
+	public boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		Object left = arg1.eval(env);
 		Object right = arg2.eval(env);

@@ -18,6 +18,7 @@
  */
 package org.relique.jdbc.csv;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,7 @@ class SQLLowerFunction extends Expression
 	{
 		this.expression = expression;
 	}
-	public Object eval(Map<String, Object> env)
+	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object retval = expression.eval(env);
 		if (retval != null)

@@ -123,6 +123,17 @@ public class CsvResultSet implements ResultSet
 	private boolean isClosed = false;
 
 	/**
+	 * Wrapper for any exception thrown by OrderByComparator.
+	 */
+	public class OrderByException extends RuntimeException
+	{	
+		public OrderByException(String message)
+		{
+			super(message);
+		}
+	}
+
+	/**
 	 * Compares SQL ORDER BY expressions for two records.
 	 */
 	public class OrderByComparator implements Comparator<Map<String, Object>>
@@ -130,40 +141,48 @@ public class CsvResultSet implements ResultSet
 		public int compare(Map<String, Object> recordEnvironment1, Map<String, Object> recordEnvironment2)
 		{
 			int retval = 0;
-			int i = 0;
-			while (i < orderByColumns.size() && retval == 0)
+			
+			try
 			{
-				Object []o = orderByColumns.get(i);
-				Integer direction = (Integer)o[0];
-				Expression expr = (Expression)o[1];
-				recordEnvironment = recordEnvironment1;
-				Map<String, Object> objectEnvironment1 = updateRecordEnvironment(true);
-				if (converter != null)
-					objectEnvironment1.put("@STRINGCONVERTER", converter);
-				Comparable<Object> result1 = (Comparable<Object>)expr.eval(objectEnvironment1);
-				recordEnvironment = recordEnvironment2;
-				Map<String, Object> objectEnvironment2 = updateRecordEnvironment(true);
-				if (converter != null)
-					objectEnvironment2.put("@STRINGCONVERTER", converter);
-				Comparable<Object> result2 = (Comparable<Object>)expr.eval(objectEnvironment2);
-				if (result1 == null)
+				int i = 0;
+				while (i < orderByColumns.size() && retval == 0)
 				{
-					if (result2 == null)
-						retval = 0;
+					Object []o = orderByColumns.get(i);
+					Integer direction = (Integer)o[0];
+					Expression expr = (Expression)o[1];
+					recordEnvironment = recordEnvironment1;
+					Map<String, Object> objectEnvironment1 = updateRecordEnvironment(true);
+					if (converter != null)
+						objectEnvironment1.put("@STRINGCONVERTER", converter);
+					Comparable<Object> result1 = (Comparable<Object>)expr.eval(objectEnvironment1);
+					recordEnvironment = recordEnvironment2;
+					Map<String, Object> objectEnvironment2 = updateRecordEnvironment(true);
+					if (converter != null)
+						objectEnvironment2.put("@STRINGCONVERTER", converter);
+					Comparable<Object> result2 = (Comparable<Object>)expr.eval(objectEnvironment2);
+					if (result1 == null)
+					{
+						if (result2 == null)
+							retval = 0;
+						else
+							retval = -1;
+					}
+					else if (result2 == null)
+					{
+						retval = 1;
+					}
 					else
-						retval = -1;
+					{
+						retval = result1.compareTo(result2);
+					}
+					if (direction.intValue() < 0)
+						retval = -retval;
+					i++;
 				}
-				else if (result2 == null)
-				{
-					retval = 1;
-				}
-				else
-				{
-					retval = result1.compareTo(result2);
-				}
-				if (direction.intValue() < 0)
-					retval = -retval;
-				i++;
+			}
+			catch (SQLException e)
+			{
+				throw new OrderByException(e.getMessage());
 			}
 			return retval;
 		}
@@ -755,13 +774,20 @@ public class CsvResultSet implements ResultSet
 		}
 	}
 
-	private void sortRows(int sqlOffset)
+	private void sortRows(int sqlOffset) throws SQLException
 	{
 		Map<String, Object> []allRows = new Map[bufferedRecordEnvironments.size()];
 		for (int i = 0; i < allRows.length; i++)
 			allRows[i] = bufferedRecordEnvironments.get(i);
 		bufferedRecordEnvironments.clear();
-		Arrays.sort(allRows, new OrderByComparator());
+		try
+		{
+			Arrays.sort(allRows, new OrderByComparator());
+		}
+		catch (OrderByException e)
+		{
+			throw new SQLException(e.getMessage());
+		}
 		int rowLimit = allRows.length;
 		if (maxRows != 0 && maxRows < rowLimit)
 			rowLimit = maxRows;
@@ -875,7 +901,7 @@ public class CsvResultSet implements ResultSet
 		return thereWasAnAnswer;
 	}
 
-	private Map<String, Object> updateRecordEnvironment(boolean thereWasAnAnswer)
+	private Map<String, Object> updateRecordEnvironment(boolean thereWasAnAnswer) throws SQLException
 	{
 		HashMap<String, Object> objectEnvironment = new HashMap<String, Object>();
 		if(!thereWasAnAnswer)
@@ -920,7 +946,7 @@ public class CsvResultSet implements ResultSet
 		return objectEnvironment;
 	}
 
-	private boolean addDistinctEnvironment(Map<String, Object> objectEnvironment)
+	private boolean addDistinctEnvironment(Map<String, Object> objectEnvironment) throws SQLException
 	{
 		boolean isDistinct;
 

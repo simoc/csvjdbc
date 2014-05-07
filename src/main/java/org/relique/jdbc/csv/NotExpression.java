@@ -18,6 +18,7 @@
  */
 package org.relique.jdbc.csv;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ class NotExpression extends LogicalExpression
 	{
 		this.content = arg;
 	}
-	public boolean isTrue(Map<String, Object> env)
+	public boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		return !content.isTrue(env);
 	}

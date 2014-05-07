@@ -18,6 +18,7 @@
  */
 package org.relique.jdbc.csv;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ class InExpression extends LogicalExpression
 		this.obj = obj;
 		this.inList = inList;
 	}
-	public boolean isTrue(Map<String, Object> env)
+	public boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		Comparable objValue = (Comparable)obj.eval(env);
 		for (Expression expr: inList)

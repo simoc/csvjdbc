@@ -18,6 +18,7 @@
  */
 package org.relique.jdbc.csv;
 
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +36,7 @@ class SQLCalendarFunction extends Expression
 		this.calendarField = calendarField;
 		this.expression = expression;
 	}
-	public Object eval(Map<String, Object> env)
+	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object retval = null;
 		Object o = expression.eval(env);

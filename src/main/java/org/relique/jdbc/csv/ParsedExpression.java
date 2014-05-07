@@ -18,6 +18,7 @@
  */
 package org.relique.jdbc.csv;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ class ParsedExpression extends LogicalExpression
 		content = left;
 		placeholders = new HashMap<String, Object>();
 	}
-	public boolean isTrue(Map<String, Object> env)
+	public boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		if(placeholders != null)
 		{
@@ -42,7 +43,7 @@ class ParsedExpression extends LogicalExpression
 		} 
 		return ((LogicalExpression)content).isTrue(env);
 	}
-	public Object eval(Map<String, Object> env)
+	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		if(placeholders != null)
 		{

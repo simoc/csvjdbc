@@ -550,6 +550,18 @@ public class TestSqlParser
 		env.put("B", new Integer(2));
 		assertEquals((Object)(new Integer("-1")), cs.eval(env));
 
+		env.put("A", new Integer(4));
+		env.put("B", new Integer(0));
+		try
+		{
+			cs.eval(env);
+			fail("Should raise a java.sql.SQLException");
+		}
+		catch (SQLException e)
+		{
+			
+		}
+
 		env.put("A", new Double(5));
 		env.put("B", new Double(3));
 		assertEquals((Object)(new Double("2")), cs.eval(env));
@@ -591,6 +603,16 @@ public class TestSqlParser
 		assertEquals((Object)(new Integer("2")), cs.eval(env));
 		env.put("B", new Double(2));
 		assertEquals((Object)(new Double("2.5")), cs.eval(env));
+
+		env.put("B", new Double(0));
+		try
+		{
+			cs.eval(env);
+			fail("Should raise a java.sql.SQLException");
+		}
+		catch (SQLException e)
+		{
+		}
 	}
 
 	@Test

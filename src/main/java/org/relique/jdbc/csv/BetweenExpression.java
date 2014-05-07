@@ -18,6 +18,7 @@
  */
 package org.relique.jdbc.csv;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ class BetweenExpression extends LogicalExpression
 		this.left = left;
 		this.right = right;
 	}
-	public boolean isTrue(Map<String, Object> env)
+	public boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		Comparable leftValue = (Comparable)left.eval(env);
 		Comparable rightValue = (Comparable)right.eval(env);

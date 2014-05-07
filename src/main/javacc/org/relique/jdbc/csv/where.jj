@@ -29,6 +29,7 @@ PARSER_BEGIN(ExpressionParser)
 package org.relique.jdbc.csv;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.math.BigInteger;
@@ -95,7 +96,7 @@ public class ExpressionParser
 		List<ParsedStatement> statements = multipleStatements();
 		return statements;
 	}
-	public Object eval(Map<String, Object> env)
+	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		return content.eval(env);
 	}

@@ -18,6 +18,7 @@
  */
 package org.relique.jdbc.csv;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ class SQLMaxFunction extends AggregateFunction
 		this.isDistinct = isDistinct;
 		this.expression = expression;
 	}
-	public Object eval(Map<String, Object> env)
+	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object o = env.get("@GROUPROWS");
 		if (o != null)
@@ -81,7 +82,7 @@ class SQLMaxFunction extends AggregateFunction
 		result.add(this);
 		return result;
 	}
-	public void processRow(Map<String, Object> env)
+	public void processRow(Map<String, Object> env) throws SQLException
 	{
 		/*
 		 * Only consider non-null values.

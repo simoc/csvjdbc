@@ -18,6 +18,7 @@
  */
 package org.relique.jdbc.csv;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 class QueryEnvEntry extends Expression
@@ -34,7 +35,7 @@ class QueryEnvEntry extends Expression
 		this.key = fieldName.toUpperCase();
 		this.expression = exp;
 	}
-	public Object eval(Map<String, Object> env)
+	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		return expression.eval(env);
 	}

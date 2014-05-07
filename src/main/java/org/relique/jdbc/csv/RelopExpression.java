@@ -19,6 +19,7 @@
 package org.relique.jdbc.csv;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.LinkedList;
@@ -35,7 +36,7 @@ class RelopExpression extends LogicalExpression
 		this.left = left;
 		this.right = right;
 	}
-	public boolean isTrue(Map<String, Object> env)
+	public boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		boolean result = false;
 		Comparable leftValue = (Comparable)left.eval(env);
@@ -75,7 +76,7 @@ class RelopExpression extends LogicalExpression
 		return result;
 	}
 	public static Integer compare(Comparable leftValue,
-		Comparable rightValue, Map<String, Object> env)
+		Comparable rightValue, Map<String, Object> env) throws SQLException
 	{
 		Integer leftComparedToRightObj = null;
 		try
