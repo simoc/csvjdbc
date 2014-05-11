@@ -44,18 +44,10 @@ import java.util.LinkedList;
 
 public class ExpressionParser
 {
-	ParsedExpression content;
-	private List<ParsedExpression> queryEntries;
-	private boolean isDistinct;
-	private String tableName;
-	private String tableAlias;
-	private List<ParsedExpression> groupByEntries;
-	private ParsedExpression havingClause;
-	private List<ParsedExpression> orderByEntries;
-	private int limit;
-	private int offset;
-	Date currentDate;
-	Time currentTime;
+	private ParsedExpression content;
+	private Date currentDate;
+	private Time currentTime;
+
 	public void parseLogicalExpression()throws ParseException
 	{
 		content = logicalExpression();
@@ -77,16 +69,6 @@ public class ExpressionParser
 		/* Reset prepared statement place-holder counter */
 		Placeholder.nextIndex = 1;
 		ParsedStatement parsedStatement = singleStatement();
-		queryEntries = parsedStatement.queryEntries;
-		isDistinct = parsedStatement.isDistinct;
-		tableName = parsedStatement.tableName;
-		tableAlias = parsedStatement.tableAlias;
-		content = parsedStatement.whereClause;
-		groupByEntries = parsedStatement.groupByEntries;
-		havingClause = parsedStatement.havingClause;
-		orderByEntries = parsedStatement.orderByEntries;
-		limit = parsedStatement.limit;
-		offset = parsedStatement.offset;
 		return parsedStatement;
 	}
 	public List<ParsedStatement> parseMultipleStatements()throws ParseException
