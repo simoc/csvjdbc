@@ -34,8 +34,11 @@ class ParsedExpression extends LogicalExpression
 	}
 	public boolean isTrue(Map<String, Object> env) throws SQLException
 	{
-		if(placeholders != null)
+		if(!placeholders.isEmpty())
 		{
+			/*
+			 * Add prepared statement placeholders to environment.
+			 */
 			Map<String, Object> useThisEnv = new HashMap<String, Object>();
 			useThisEnv.putAll(env);
 			useThisEnv.putAll(placeholders);
@@ -45,8 +48,11 @@ class ParsedExpression extends LogicalExpression
 	}
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
-		if(placeholders != null)
+		if(!placeholders.isEmpty())
 		{
+			/*
+			 * Add prepared statement placeholders to environment.
+			 */
 			Map<String, Object> useThisEnv = new HashMap<String, Object>();
 			useThisEnv.putAll(env);
 			useThisEnv.putAll(placeholders);
