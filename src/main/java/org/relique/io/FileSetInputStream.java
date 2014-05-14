@@ -48,7 +48,7 @@ public class FileSetInputStream extends InputStream
 	private String tail;
 	private int pos;
 	private Pattern fileNameRE;
-	private char separator;
+	private String separator;
 	private String dataTail;
 	private boolean prepend;
 	private int lookahead = '\n';
@@ -77,7 +77,7 @@ public class FileSetInputStream extends InputStream
 	 * @throws IOException
 	 */
 	public FileSetInputStream(String dirName, String fileNamePattern,
-			String[] fieldsInName, char separator, boolean prepend,
+			String[] fieldsInName, String separator, boolean prepend,
 			boolean headerless, CryptoFilter filter, int skipLeadingDataLines)
 			throws IOException
 	{

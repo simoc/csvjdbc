@@ -70,7 +70,7 @@ public class CsvConnection implements Connection
 	private String extension = CsvDriver.DEFAULT_EXTENSION;
 
 	/** Field separator to use */
-	private char separator = CsvDriver.DEFAULT_SEPARATOR;
+	private String separator = CsvDriver.DEFAULT_SEPARATOR;
 
 	/** Field quotechar to use */
 	private char quotechar = CsvDriver.DEFAULT_QUOTECHAR;
@@ -206,7 +206,9 @@ public class CsvConnection implements Connection
 		// set the separator character to be used
 		if (info.getProperty(CsvDriver.SEPARATOR) != null)
 		{
-			separator = info.getProperty(CsvDriver.SEPARATOR).charAt(0);
+			separator = info.getProperty(CsvDriver.SEPARATOR);
+			if (separator.length() == 0)
+				throw new SQLException(CsvResources.getString("invalid") + " " + CsvDriver.SEPARATOR + ": " + separator);
 		}
 		// set the quotechar character to be used
 		prop = info.getProperty(CsvDriver.QUOTECHAR);
@@ -838,7 +840,7 @@ public class CsvConnection implements Connection
 	 * 
 	 * @return current value for the separator property
 	 */
-	protected char getSeparator()
+	protected String getSeparator()
 	{
 		return separator;
 	}

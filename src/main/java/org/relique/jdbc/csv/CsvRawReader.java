@@ -51,7 +51,7 @@ public class CsvRawReader
 	protected String[] columnNames;
 	protected String[] fieldValues;
 	protected String firstLineBuffer = null;
-	protected char separator = ',';
+	protected String separator = ",";
 	protected String headerLine = "";
 	protected boolean suppressHeaders = false;
 	protected boolean isHeaderFixedWidth = true;
@@ -89,7 +89,7 @@ public class CsvRawReader
 	 * @throws UnsupportedEncodingException
 	 * @since
 	 */
-	public CsvRawReader(LineNumberReader in, String tableAlias, char separator,
+	public CsvRawReader(LineNumberReader in, String tableAlias, String separator,
 			boolean suppressHeaders, boolean isHeaderFixedWidth, char quoteChar, char commentChar,
 			String headerLine, String extension, boolean trimHeaders, boolean trimValues,
 			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter, 
@@ -407,7 +407,7 @@ public class CsvRawReader
 		while (fullLine == 0)
 		{
 			currentPos = 0;
-			line += separator; // this way fields are separator-terminated
+			line += separator; // this way all fields are separator-terminated
 			while (currentPos < line.length())
 			{
 				char currentChar = line.charAt(currentPos);
@@ -447,7 +447,7 @@ public class CsvRawReader
 					else
 					{
 						while (trimValues &&
-							nextChar != separator &&
+							atSeparator(line, currentPos + 1) == false &&
 							Character.isWhitespace(nextChar) &&
 							currentPos + 2 < line.length())
 						{
@@ -455,7 +455,7 @@ public class CsvRawReader
 							nextChar = line.charAt(currentPos + 2);
 							currentPos++;
 						}
-						if (nextChar != separator)
+						if (atSeparator(line, currentPos + 1) == false)
 						{
 							throw new SQLException(CsvResources.getString("expectedSeparator") + ": " +
 								input.getLineNumber() + " " + (currentPos + 1) +
@@ -470,7 +470,7 @@ public class CsvRawReader
 				}
 				else
 				{
-					if (currentChar == separator)
+					if (atSeparator(line, currentPos))
 					{
 						if (inQuotedString)
 						{
@@ -487,6 +487,14 @@ public class CsvRawReader
 								values.add(value.toString());
 							}
 							value.setLength(0);
+
+							if (separator.length() > 1)
+							{
+								/*
+								 * Skip other characters in separator too.
+								 */
+								currentPos += separator.length() - 1;
+							}
 						}
 					}
 					else if (trimValues &&
@@ -542,5 +550,20 @@ public class CsvRawReader
 		String[] retVal = new String[values.size()];
 		values.copyInto(retVal);
 		return retVal;
+	}
+
+	private boolean atSeparator(String line, int currentPos)
+	{
+		boolean matchesSeparator;
+		
+		/*
+		 * Quicker to compare just the current character for the
+		 * normal case of a single character separator.
+		 */
+		if (separator.length() == 1)
+			matchesSeparator = (line.charAt(currentPos) == separator.charAt(0));
+		else
+			matchesSeparator = line.regionMatches(currentPos, separator, 0, separator.length());
+		return matchesSeparator;
 	}
 }

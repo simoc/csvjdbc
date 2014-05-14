@@ -34,7 +34,7 @@ import org.relique.io.TableReader;
 public class CsvDriver implements Driver
 {
 	public static final String DEFAULT_EXTENSION = ".csv";
-	public static final char DEFAULT_SEPARATOR = ',';
+	public static final String DEFAULT_SEPARATOR = ",";
 	public static final char DEFAULT_QUOTECHAR = '"';
 	public static final String DEFAULT_HEADERLINE = null;
 	public static final boolean DEFAULT_SUPPRESS = false;
@@ -278,7 +278,7 @@ public class CsvDriver implements Driver
 	public static void writeToCsv(ResultSet resultSet, PrintStream out, boolean writeHeaderLine)
 		throws SQLException
 	{
-		char separator = DEFAULT_SEPARATOR;
+		String separator = DEFAULT_SEPARATOR;
 		char quoteChar = DEFAULT_QUOTECHAR;
 		String quoteStyle = DEFAULT_QUOTE_STYLE;
 
@@ -347,7 +347,7 @@ public class CsvDriver implements Driver
 		out.flush();
 	}
 
-	private static String addQuotes(String value, char separator, char quoteChar, String quoteStyle)
+	private static String addQuotes(String value, String separator, char quoteChar, String quoteStyle)
 	{
 		/*
 		 * Escape all quote chars embedded in the string.
