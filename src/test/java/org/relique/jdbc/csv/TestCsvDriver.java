@@ -3005,6 +3005,27 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testLongCommentChar() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("separator", "#@");
+		props.put("commentChar", "rem");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM evonix");
+
+		ResultSetMetaData metadata = results.getMetaData();
+		assertEquals("ID", metadata.getColumnName(1));
+		assertEquals("Name", metadata.getColumnName(2));
+		assertEquals("Birthday", metadata.getColumnName(3));
+		assertTrue(results.next());
+		assertEquals("1:ID is wrong", "0", results.getString(1));
+		assertEquals("2:Name is wrong", "(Florian)", results.getString(2));
+		assertEquals("3:Birthday is wrong", "01.01.1990", results.getString(3));
+	}
+
+	@Test
 	public void testWithNoData() throws SQLException
 	{
 		Properties props = new Properties();

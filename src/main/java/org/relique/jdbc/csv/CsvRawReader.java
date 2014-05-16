@@ -59,7 +59,7 @@ public class CsvRawReader
 	protected String extension = CsvDriver.DEFAULT_EXTENSION;
 	protected boolean trimHeaders = true;
 	protected boolean trimValues = true;
-	protected char commentChar = 0;
+	protected String comment = null;
 	private boolean ignoreUnparseableLines;
 	protected CryptoFilter filter;
 	private String quoteStyle;
@@ -90,7 +90,7 @@ public class CsvRawReader
 	 * @since
 	 */
 	public CsvRawReader(LineNumberReader in, String tableAlias, String separator,
-			boolean suppressHeaders, boolean isHeaderFixedWidth, char quoteChar, char commentChar,
+			boolean suppressHeaders, boolean isHeaderFixedWidth, char quoteChar, String comment,
 			String headerLine, String extension, boolean trimHeaders, boolean trimValues,
 			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter, 
 			boolean defectiveHeaders, int skipLeadingDataLines, String quoteStyle,
@@ -102,7 +102,7 @@ public class CsvRawReader
 		this.suppressHeaders = suppressHeaders;
 		this.isHeaderFixedWidth = isHeaderFixedWidth;
 		this.quoteChar = quoteChar;
-		this.commentChar = commentChar;
+		this.comment = comment;
 		this.headerLine = headerLine;
 		this.extension = extension;
 		this.trimHeaders = trimHeaders;
@@ -237,12 +237,12 @@ public class CsvRawReader
 	protected String getNextDataLine() throws IOException
 	{
 		String tmp = input.readLine();
-		if (commentChar != 0 && tmp != null)
+		if (comment != null && tmp != null)
 		{
-			while (tmp != null && (tmp.length() == 0 || tmp.charAt(0) == commentChar))
+			while (tmp != null && (tmp.length() == 0 || tmp.startsWith(comment)))
 				tmp = input.readLine();
 			// set it to 0: we don't skip data lines, only pre-header lines...
-			commentChar = 0;
+			comment = null;
 		}
 		if(ignoreUnparseableLines && tmp != null)
 		{

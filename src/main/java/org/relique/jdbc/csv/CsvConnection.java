@@ -112,7 +112,7 @@ public class CsvConnection implements Connection
 	private String timeFormat;
 	private String timeZoneName;
 	private Locale locale = null;
-	private Character commentChar;
+	private String commentChar;
 
 	private int skipLeadingLines = 0;
 
@@ -1108,15 +1108,13 @@ public class CsvConnection implements Connection
 		}
 		else
 		{
-			commentChar = new Character(value.charAt(0));
+			commentChar = value;
 		}
 	}
 
-	public char getCommentChar()
+	public String getCommentChar()
 	{
-		if (commentChar == null)
-			return 0;
-		return commentChar.charValue();
+		return commentChar;
 	}
 
 	private void setSkipLeadingLines(String property)
