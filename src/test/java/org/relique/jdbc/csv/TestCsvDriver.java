@@ -2271,6 +2271,19 @@ public class TestCsvDriver
 		assertTrue(results.next());
 		assertEquals("The comment is wrong", "still a field", results.getString(1));
 		assertFalse(results.next());		
+
+		results = stmt.executeQuery("select TRIM(name, '#'), TRIM(name, '#h'), TRIM('00000', '0') from with_comments");
+		assertTrue(results.next());
+		assertEquals("The trimmed value is wrong", "alpha", results.getString(1));
+		assertEquals("The trimmed value is wrong", "alpha", results.getString(2));
+		assertEquals("The trimmed value is wrong", "", results.getString(3));
+		assertTrue(results.next());
+		assertEquals("The trimmed value is wrong", "beta", results.getString(1));
+		assertEquals("The trimmed value is wrong", "beta", results.getString(2));
+		assertTrue(results.next());
+		assertEquals("The trimmed value is wrong", "hash", results.getString(1));
+		assertEquals("The trimmed value is wrong", "as", results.getString(2));
+		assertFalse(results.next());
 	}
 
 	@Test

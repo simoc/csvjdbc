@@ -715,7 +715,7 @@ Expression multiplyOperation():
 Expression simpleExpression():
 {
 	Expression arg;
-	Expression arg2;
+	Expression arg2 = null;
 	boolean isDistinct;
 }
 {
@@ -731,9 +731,10 @@ Expression simpleExpression():
 	{
 		return new SQLLowerFunction(arg);
 	}
-	| <TRIM> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	| <TRIM> <OPENPARENTHESIS> arg = binaryOperation() (<COMMA>
+		arg2 = binaryOperation())? <CLOSEPARENTHESIS>
 	{
-		return new SQLTrimFunction(arg);
+		return new SQLTrimFunction(arg, arg2);
 	}
 	| <LENGTH> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
 	{

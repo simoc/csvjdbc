@@ -26,16 +26,51 @@ import java.util.Map;
 class SQLTrimFunction extends Expression
 {
 	Expression expression;
+	Expression trimChars;
 
-	public SQLTrimFunction(Expression expression)
+	public SQLTrimFunction(Expression expression, Expression trimChars)
 	{
 		this.expression = expression;
+		this.trimChars = trimChars;
 	}
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object retval = expression.eval(env);
 		if (retval != null)
-			retval = retval.toString().trim();
+		{
+			String str = retval.toString();
+			if (trimChars != null)
+			{
+				Object o = trimChars.eval(env);
+				if (o != null)
+				{
+					String trim = o.toString();
+					int startIndex = 0;
+					while (startIndex < str.length() && trim.indexOf(str.charAt(startIndex)) >= 0)
+							startIndex++;
+
+					int endIndex = str.length() - 1;
+					while (endIndex >= startIndex && trim.indexOf(str.charAt(endIndex)) >= 0)
+						endIndex--;
+
+					if (endIndex >= startIndex)
+						retval = str.substring(startIndex, endIndex + 1);
+					else
+						retval = "";
+				}
+				else
+				{
+					retval = null;
+				}
+			}
+			else
+			{
+				/*
+				 * Trim whitespace by default.
+				 */
+				retval = str.trim();
+			}
+		}
 		return retval;
 	}
 	public String toString()
