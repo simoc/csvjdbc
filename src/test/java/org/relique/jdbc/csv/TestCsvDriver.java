@@ -2287,6 +2287,50 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testLTrimFunction() throws SQLException
+	{
+		Properties props = new Properties(); 
+		props.put("headerline", "TRANS_DATE,FROM_ACCT,FROM_BLZ,TO_ACCT,TO_BLZ,AMOUNT");
+		props.put("suppressHeaders", "true");
+		props.put("fileExtension", ".txt");
+		props.put("commentChar", "#");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT LTRIM(TO_ACCT,'0'), LTRIM('0000','0'), LTRIM('','0'), LTRIM('  X  ') FROM transactions");
+		assertTrue(results.next());
+		assertEquals("The trimmed value is wrong", "27853256", results.getString(1));
+		assertEquals("The trimmed value is wrong", "", results.getString(2));
+		assertEquals("The trimmed value is wrong", "", results.getString(3));
+		assertEquals("The trimmed value is wrong", "X  ", results.getString(4));
+		assertTrue(results.next());
+		assertEquals("The trimmed value is wrong", "27234813", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("The trimmed value is wrong", "81824588", results.getString(1));
+	}
+
+	@Test
+	public void testRTrimFunction() throws SQLException
+	{
+		Properties props = new Properties(); 
+		props.put("headerline", "BLZ,BANK_NAME");
+		props.put("suppressHeaders", "true");
+		props.put("fileExtension", ".txt");
+		props.put("commentChar", "#");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT RTRIM(BLZ,'0'), RTRIM(' ZZ ') FROM banks");
+		assertTrue(results.next());
+		assertEquals("The trimmed value is wrong", "1", results.getString(1));
+		assertEquals("The trimmed value is wrong", " ZZ", results.getString(2));
+		assertTrue(results.next());
+		assertEquals("The trimmed value is wrong", "1001001", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("The trimmed value is wrong", "10010111", results.getString(1));
+	}
+
+	@Test
 	public void testRoundFunction() throws SQLException
 	{
 		Properties props = new Properties();
