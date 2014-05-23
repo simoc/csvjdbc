@@ -3058,6 +3058,10 @@ public class TestCsvDriver
 		assertEquals("1:ID is wrong", "3", results.getString(1));
 		assertEquals("2:Name is wrong", "(@Jason)", results.getString(2));
 		assertEquals("3:Birthday is wrong", "01.01.1990", results.getString(3));
+		assertTrue(results.next());
+		assertEquals("1:ID is wrong", "4", results.getString(1));
+		assertEquals("2:Name is wrong", "Robert", results.getString(2));
+		assertEquals("3:Birthday is wrong", "01.01.1990", results.getString(3));
 		assertFalse(results.next());
 	}
 

@@ -465,7 +465,7 @@ public class CsvRawReader
 						values.add(value.toString());
 						value.setLength(0);
 						inQuotedString = false;
-						currentPos++;
+						currentPos += separator.length();
 					}
 				}
 				else
