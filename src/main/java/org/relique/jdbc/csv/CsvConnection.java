@@ -546,10 +546,10 @@ public class CsvConnection implements Connection
 	private synchronized void closeStatements() throws SQLException
 	{
 		// close all created statements (synchronized so that closing runs only one time from one thread).
-		for (Enumeration<Statement> i = statements.elements(); i.hasMoreElements();)
+		while (statements.size() > 0)
 		{
-			CsvStatement statement = (CsvStatement) i.nextElement();
-			statement.close();
+			// Closing each statement will callback and remove the statement from our list.
+			statements.firstElement().close();
 		}
 		statements.clear();
 	}

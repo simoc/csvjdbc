@@ -3182,6 +3182,24 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testConnectionClosesStatements() throws SQLException
+	{
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+		Statement stmt1 = conn.createStatement();
+		Statement stmt2 = conn.createStatement();
+		Statement stmt3 = conn.createStatement();
+		Statement stmt4 = conn.createStatement();
+
+		conn.close();
+
+		assertTrue(stmt1.isClosed());
+		assertTrue(stmt2.isClosed());
+		assertTrue(stmt3.isClosed());
+		assertTrue(stmt4.isClosed());
+	}
+
+	@Test
 	public void testTrimValues() throws SQLException
 	{
 		Properties props = new Properties();
