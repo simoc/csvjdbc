@@ -32,11 +32,13 @@ import java.util.Map;
 class BinaryOperation extends Expression
 {
 	private static final long MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+	String operation;
 	char op;
 	Expression left, right;
-	public BinaryOperation(char op, Expression left, Expression right)
+	public BinaryOperation(String operation, Expression left, Expression right)
 	{
-		this.op = op;
+		this.operation = operation;
+		this.op = operation.charAt(0);
 		this.left = left;
 		this.right = right;
 	}
@@ -237,7 +239,7 @@ class BinaryOperation extends Expression
 		catch (ClassCastException e)
 		{
 		}
-		if(op == '+')
+		if(op == '+' || op == '|')
 			return ""+leftEval+rightEval;
 		return null;
 	}
@@ -252,7 +254,7 @@ class BinaryOperation extends Expression
 	}
 	public String toString()
 	{
-		return ""+op+" "+left+" "+right;
+		return ""+operation+" "+left+" "+right;
 	}
 	public List<String> usedColumns()
 	{

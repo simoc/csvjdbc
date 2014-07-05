@@ -454,6 +454,9 @@ public class TestSqlParser
 		cs = new ExpressionParser(new StringReader("123/-2 A"));
 		cs.parseQueryEnvEntry();
 		assertEquals("A: / 123 -2", cs.toString());
+		cs = new ExpressionParser(new StringReader("'foo'||'bar' A"));
+		cs.parseQueryEnvEntry();
+		assertEquals("A: || 'foo' 'bar'", cs.toString());
 		cs = new ExpressionParser(new StringReader("'123' A"));
 		cs.parseQueryEnvEntry();
 		assertEquals("A: '123'", cs.toString());
@@ -529,7 +532,23 @@ public class TestSqlParser
 		env.put("A", new Double(1));
 		assertEquals((Object)(new Double("2")), cs.eval(env));
 		env.put("A", new String("1"));
+		// string concatenation because one of the arguments is a string
 		assertEquals("11", ""+cs.eval(env));
+	}
+
+
+	@Test
+	public void testEvaluateBinaryOperationsConcat() throws ParseException, SQLException
+	{
+		ExpressionParser cs;
+		cs = new ExpressionParser(new StringReader("A || B AS result"));
+		cs.parseQueryEnvEntry();
+		Map<String, Object> env = new HashMap<String, Object>();
+		env.put("A", "Hello");
+		env.put("B", "World");
+		assertEquals("HelloWorld", cs.eval(env));
+		env.put("B", new Integer(100));
+		assertEquals("Hello100", cs.eval(env));
 	}
 
 	@Test

@@ -389,6 +389,10 @@ TOKEN:
 }
 TOKEN:
 {
+	<CONCAT:"||">
+}
+TOKEN:
+{
 	<OPENPARENTHESIS:"(">
 }
 TOKEN:
@@ -655,24 +659,24 @@ String relOp():
 		return new String(t.image);
 	}
 }
-char binAddOp():
+String binAddOp():
 {
 	Token t;
 }
 {
-	(t = <PLUS>|t=<MINUS>)
+	(t = <PLUS>|t=<MINUS>|t=<CONCAT>)
 	{
-		return t.image.charAt(0);
+		return t.image;
 	}
 }
-char binMultiplyOp():
+String binMultiplyOp():
 {
 	Token t;
 }
 {
 	(t = <ASTERISK>|t=<DIVIDE>|t=<MODULO>)
 	{
-		return t.image.charAt(0);
+		return t.image;
 	}
 }
 Expression countOperation():
@@ -693,7 +697,7 @@ Expression countOperation():
 Expression binaryOperation():
 {
 	Expression left, right;
-	char op;
+	String op;
 }
 {
 	left = multiplyOperation()(op = binAddOp()right = multiplyOperation()
@@ -708,7 +712,7 @@ Expression binaryOperation():
 Expression multiplyOperation():
 {
 	Expression left, right;
-	char op;
+	String op;
 }
 {
 	left = simpleExpression()(op = binMultiplyOp()right = simpleExpression()
