@@ -1026,43 +1026,92 @@ public class CsvResultSet implements ResultSet
 	@Override
 	public boolean getBoolean(int columnIndex) throws SQLException
 	{
-		return converter.parseBoolean(getString(columnIndex));
+		String s = getString(columnIndex);
+		if (s != null)
+		{
+			Boolean b = converter.parseBoolean(s);
+			if (b != null)
+				return b.booleanValue();
+		}
+		return false;
 	}
 
 	@Override
 	public byte getByte(int columnIndex) throws SQLException
 	{
-		return converter.parseByte(getString(columnIndex));
+		String s = getString(columnIndex);
+		if (s != null)
+		{
+			Byte b = converter.parseByte(s);
+			if (b != null)
+				return b.byteValue();
+		}
+		return 0;
 	}
 
 	@Override
 	public short getShort(int columnIndex) throws SQLException
 	{
-		return converter.parseShort(getString(columnIndex));
+		String s = getString(columnIndex);
+		if (s != null)
+		{
+			Short n = converter.parseShort(s);
+			if (n != null)
+				return n.shortValue();
+		}
+		return 0;
 	}
 
 	@Override
 	public int getInt(int columnIndex) throws SQLException
 	{
-		return converter.parseInt(getString(columnIndex));
+		String s = getString(columnIndex);
+		if (s != null)
+		{
+			Integer i = converter.parseInt(s);
+			if (i != null)
+				return i.intValue();
+		}
+		return 0;
 	}
 
 	@Override
 	public long getLong(int columnIndex) throws SQLException
 	{
-		return converter.parseLong(getString(columnIndex));
+		String s = getString(columnIndex);
+		if (s != null)
+		{
+			Long l = converter.parseLong(s);
+			if (l != null)
+				return l.longValue();
+		}
+		return 0;
 	}
 
 	@Override
 	public float getFloat(int columnIndex) throws SQLException
 	{
-		return converter.parseFloat(getString(columnIndex));
+		String s = getString(columnIndex);
+		if (s != null)
+		{
+			Float f = converter.parseFloat(s);
+			if (f != null)
+				return f.floatValue();
+		}
+		return 0;
 	}
 
 	@Override
 	public double getDouble(int columnIndex) throws SQLException
 	{
-		return converter.parseDouble(getString(columnIndex));
+		String s = getString(columnIndex);
+		if (s != null)
+		{
+			Double d = converter.parseDouble(s);
+			if (d != null)
+				return d.doubleValue();
+		}
+		return 0;
 	}
 
 	@Override
@@ -1077,7 +1126,10 @@ public class CsvResultSet implements ResultSet
 	@Override
 	public byte[] getBytes(int columnIndex) throws SQLException
 	{
-		return converter.parseBytes(getString(columnIndex));
+		String s = getString(columnIndex);
+		if (s != null)
+			return converter.parseBytes(s);
+		return null;
 	}
 
 	@Override
@@ -1104,7 +1156,10 @@ public class CsvResultSet implements ResultSet
 	@Override
 	public InputStream getAsciiStream(int columnIndex) throws SQLException
 	{
-		return converter.parseAsciiStream(getString(columnIndex));
+		String s = getString(columnIndex);
+		if (s != null)
+			return converter.parseAsciiStream(s);
+		return null;
 	}
 
 	@Override

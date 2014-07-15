@@ -61,7 +61,7 @@ public class TestStringConverter
 		assertEquals(expect, got);
 		
 		got = sc.parseDate("3-3-1983");
-		expect = java.sql.Date.valueOf("1970-01-01");
+		expect = null;
 		assertEquals(expect, got);
 	}
 

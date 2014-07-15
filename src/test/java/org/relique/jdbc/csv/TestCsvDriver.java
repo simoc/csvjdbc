@@ -2704,6 +2704,53 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testBadColumnValues() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select ID, ID + 1, NAME, START_DATE, START_DATE + 1, START_TIME from bad_values");
+		assertTrue(results.next());
+
+		/*
+		 * Check that SQL NULL is returned for empty or invalid numeric, date and time fields,
+		 * and that zero is returned from methods that return a number.
+		 */
+		assertEquals("ID is wrong", 0, results.getInt("ID"));
+		assertTrue(results.wasNull());
+		assertEquals("ID + 1 is wrong", 0, results.getInt(2));
+		assertTrue(results.wasNull());
+		assertEquals("NAME is wrong", "Simon", results.getString(3));
+		assertFalse(results.wasNull());
+		assertNull("START_DATE is wrong", results.getDate(4));
+		assertTrue(results.wasNull());
+		assertNull("START_DATE + 1 is wrong", results.getDate(5));
+		assertTrue(results.wasNull());
+		assertNull("START_TIME is wrong", results.getTime(6));
+		assertTrue(results.wasNull());
+
+		assertTrue(results.next());
+
+		assertNull("ID is wrong", results.getObject("ID"));
+		assertTrue(results.wasNull());
+		assertNull("ID + 1 is wrong", results.getObject(2));
+		assertTrue(results.wasNull());
+		assertEquals("NAME is wrong", "Wally", results.getString(3));
+		assertFalse(results.wasNull());
+		assertNull("START_DATE is wrong", results.getObject(4));
+		assertTrue(results.wasNull());
+		assertNull("START_DATE + 1 is wrong", results.getObject(5));
+		assertTrue(results.wasNull());
+		assertNull("START_TIME is wrong", results.getObject(6));
+		assertTrue(results.wasNull());
+		
+		assertFalse(results.next());
+	}
+
+	@Test
 	public void testVariableColumnCount() throws SQLException
 	{
 		Properties props = new Properties();

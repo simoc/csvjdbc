@@ -180,14 +180,14 @@ public class StringConverter
 		{
 			Byte b;
 			if (str == null)
-				b = Byte.valueOf((byte) 0);
+				b = null;
 			else
 				b = Byte.valueOf(Byte.parseByte(str));
 			return b;
 		}
 		catch (RuntimeException e)
 		{
-			return Byte.valueOf((byte) 0);
+			return null;
 		}
 	}
 
@@ -197,14 +197,14 @@ public class StringConverter
 		{
 			Short s;
 			if (str == null)
-				s = Short.valueOf(str);
+				s = null;
 			else
 				s = Short.valueOf(Short.parseShort(str));
 			return s;
 		}
 		catch (RuntimeException e)
 		{
-			return Short.valueOf((short) 0);
+			return null;
 		}
 	}
 
@@ -214,14 +214,14 @@ public class StringConverter
 		{
 			Integer i;
 			if (str == null)
-				i = Integer.valueOf(0);
+				i = null;
 			else
 				i = Integer.valueOf(Integer.parseInt(str));
 			return i;
 		}
 		catch (RuntimeException e)
 		{
-			return Integer.valueOf(0);
+			return null;
 		}
 	}
 
@@ -231,14 +231,14 @@ public class StringConverter
 		{
 			Long l;
 			if (str == null)
-				l = Long.valueOf(0);
+				l = null;
 			else
 				l = Long.valueOf(Long.parseLong(str));
 			return l;
 		}
 		catch (RuntimeException e)
 		{
-			return Long.valueOf(0);
+			return null;
 		}
 	}
 
@@ -248,7 +248,9 @@ public class StringConverter
 		{
 			Float f;
 			if (str == null)
-				f = Float.valueOf(0);
+			{
+				f = null;
+			}
 			else
 			{
 				str = str.replace(",", ".");
@@ -258,7 +260,7 @@ public class StringConverter
 		}
 		catch (RuntimeException e)
 		{
-			return Float.valueOf(0);
+			return null;
 		}
 	}
 
@@ -268,7 +270,9 @@ public class StringConverter
 		{
 			Double d;
 			if (str == null)
-				d = Double.valueOf(0);
+			{
+				d = null;
+			}
 			else
 			{
 				str = str.replace(",", ".");
@@ -278,7 +282,7 @@ public class StringConverter
 		}
 		catch (RuntimeException e)
 		{
-			return Double.valueOf(0);
+			return null;
 		}
 	}
 
@@ -382,22 +386,29 @@ public class StringConverter
 			return retval;
 		}
 		else
-			return "1970-01-01";
+		{
+			return null;
+		}
 	}
 
 	public Date parseDate(String str)
 	{
 		try
 		{
-			if (simpleDateFormat != null)
+			Date sqlResult = null;
+			if (str != null)
 			{
-				java.util.Date parsedDate = simpleDateFormat.parse(str);
-				long millis = parsedDate.getTime();
-				Date sqlResult = new Date(millis);
-				return sqlResult;
+				if (simpleDateFormat != null)
+				{
+					java.util.Date parsedDate = simpleDateFormat.parse(str);
+					long millis = parsedDate.getTime();
+					sqlResult = new Date(millis);
+					return sqlResult;
+				}
+				String isoDate = makeISODate(str, dateFormat);
+				if (isoDate != null)
+					sqlResult = Date.valueOf(isoDate);
 			}
-			String isoDate = makeISODate(str, dateFormat);
-			Date sqlResult = Date.valueOf(isoDate);
 			return sqlResult;
 		}
 		catch (ParseException e)
@@ -414,14 +425,18 @@ public class StringConverter
 	{
 		try
 		{
-			str = str.trim();
-			while (str.length() < timeFormat.length())
+			Time sqlResult = null;
+			if (str != null)
 			{
-				str = "0" + str;
-			} 
-			java.util.Date parsedDate = simpleTimeFormat.parse(str);
-			long millis = parsedDate.getTime();
-			Time sqlResult = new Time(millis);
+				str = str.trim();
+				while (str.length() < timeFormat.length())
+				{
+					str = "0" + str;
+				} 
+				java.util.Date parsedDate = simpleTimeFormat.parse(str);
+				long millis = parsedDate.getTime();
+				sqlResult = new Time(millis);
+			}
 			return sqlResult;
 		}
 		catch (ParseException e)
@@ -439,24 +454,27 @@ public class StringConverter
 		Timestamp result = null;
 		try
 		{
-			if (timestampFormat != null)
+			if (str != null)
 			{
-				java.util.Date date = timestampFormat.parse(str);
-				result = new Timestamp(date.getTime());
-			}
-			else
-			{
-				Matcher matcher = timestampPattern.matcher(str);
-				if (matcher.matches())
+				if (timestampFormat != null)
 				{
-					int year = Integer.parseInt(matcher.group(1));
-					int month = Integer.parseInt(matcher.group(2)) - 1;
-					int date = Integer.parseInt(matcher.group(3));
-					int hours = Integer.parseInt(matcher.group(4));
-					int minutes = Integer.parseInt(matcher.group(5));
-					int seconds = Integer.parseInt(matcher.group(6));
-					calendar.set(year, month, date, hours, minutes, seconds);
-					result = new Timestamp(calendar.getTimeInMillis());
+					java.util.Date date = timestampFormat.parse(str);
+					result = new Timestamp(date.getTime());
+				}
+				else
+				{
+					Matcher matcher = timestampPattern.matcher(str);
+					if (matcher.matches())
+					{
+						int year = Integer.parseInt(matcher.group(1));
+						int month = Integer.parseInt(matcher.group(2)) - 1;
+						int date = Integer.parseInt(matcher.group(3));
+						int hours = Integer.parseInt(matcher.group(4));
+						int minutes = Integer.parseInt(matcher.group(5));
+						int seconds = Integer.parseInt(matcher.group(6));
+						calendar.set(year, month, date, hours, minutes, seconds);
+						result = new Timestamp(calendar.getTimeInMillis());
+					}
 				}
 			}
 		}
