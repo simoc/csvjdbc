@@ -67,7 +67,17 @@ public class XORCipher implements CryptoFilter
 	@Override
 	public String toString()
 	{
-		return "XORCipher(" + scrambleKey.length + "):'" + scrambleKey + "'";
+		StringBuilder sb = new StringBuilder("XORCipher(");
+		sb.append(scrambleKey.length);
+		sb.append("):'");
+		for (int i = 0; i < scrambleKey.length; i++)
+		{
+			if (i > 0)
+				sb.append(' ');
+			sb.append(i);
+		}
+		sb.append("'");
+		return sb.toString();
 	}
 
 	/**
@@ -83,9 +93,13 @@ public class XORCipher implements CryptoFilter
 	 */
 	private int scrambleInt(int org)
 	{
-		int encrDataChar = org ^ scrambleKey[keyCounter];
-		keyCounter++;
-		keyCounter %= scrambleKey.length;
+		int encrDataChar = org;
+		if (scrambleKey.length > 0)
+		{
+			encrDataChar = org ^ scrambleKey[keyCounter];
+			keyCounter++;
+			keyCounter %= scrambleKey.length;
+		}
 		return encrDataChar;
 	}
 
@@ -102,11 +116,14 @@ public class XORCipher implements CryptoFilter
 	 */
 	private void scrambleArray(byte[] org)
 	{
-		for (int i = 0; i < org.length; i++)
+		if (scrambleKey.length > 0)
 		{
-			org[i] ^= scrambleKey[keyCounter];
-			keyCounter++;
-			keyCounter %= scrambleKey.length;
+			for (int i = 0; i < org.length; i++)
+			{
+				org[i] ^= scrambleKey[keyCounter];
+				keyCounter++;
+				keyCounter %= scrambleKey.length;
+			}
 		}
 	}
 
