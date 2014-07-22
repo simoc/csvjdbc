@@ -1009,18 +1009,10 @@ public class CsvResultSet implements ResultSet
 	@Override
 	public String getString(int columnIndex) throws SQLException
 	{
-		// perform pre-accessor method processing
-		preAccessor(columnIndex);
-
-		Object[] o = queryEnvironment.get(columnIndex-1);
-		try
-		{
-			return ((Expression) o[1]).eval(recordEnvironment).toString();
-		}
-		catch (NullPointerException e)
-		{
-			return null;
-		}
+		Object o = getObject(columnIndex);
+		if (o != null)
+			return o.toString();
+		return null;
 	}
 
 	@Override
@@ -1387,14 +1379,9 @@ public class CsvResultSet implements ResultSet
 		preAccessor(columnIndex);
 
 		Object[] o = queryEnvironment.get(columnIndex-1);
-		try
-		{
+		if (recordEnvironment != null)
 			return ((Expression) o[1]).eval(recordEnvironment);
-		}
-		catch (NullPointerException e)
-		{
-			return null;
-		}
+		return null;
 	}
 
 	@Override
