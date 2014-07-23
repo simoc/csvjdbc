@@ -286,6 +286,10 @@ TOKEN:
 }
 TOKEN:
 {
+	<COALESCE:"COALESCE">
+}
+TOKEN:
+{
 	<COUNT:"COUNT">
 }
 TOKEN:
@@ -726,6 +730,7 @@ Expression multiplyOperation():
 }
 Expression simpleExpression():
 {
+	List<Expression> args = new LinkedList<Expression>();
 	Expression arg;
 	Expression arg2 = null;
 	boolean isDistinct;
@@ -795,6 +800,11 @@ Expression simpleExpression():
 	{
 		return new SQLNullIfFunction(arg, arg2);
 	}
+	| <COALESCE> <OPENPARENTHESIS> arg = binaryOperation(){args.add(arg);}
+		(<COMMA> arg = binaryOperation(){args.add(arg);})* <CLOSEPARENTHESIS>
+	{
+		return new SQLCoalesceFunction(args);
+	}
 	| <COUNT> <OPENPARENTHESIS>{isDistinct = false;}
 		(<DISTINCT>{isDistinct = true;})?
 		arg = countOperation() <CLOSEPARENTHESIS>
@@ -859,7 +869,7 @@ Expression columnName():
 	Token t;
 }
 {
-	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<LENGTH>|t=<NULLIF>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>)
+	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<LENGTH>|t=<NULLIF>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>)
 	{
 		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}
@@ -925,7 +935,7 @@ Expression columnAlias():
 	Token t;
 }
 {
-	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<LENGTH>|t=<NULLIF>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>)
+	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<LENGTH>|t=<NULLIF>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>)
 	{
 		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}

@@ -2511,6 +2511,25 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testCoalesceFunction() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,Date,Time");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT COALESCE(ID, 999) FROM bad_values");
+		assertTrue(results.next());
+		assertEquals("ID is wrong", 999, results.getInt(1));
+		assertTrue(results.next());
+		assertEquals("ID is wrong", 999, results.getInt(1));
+		assertTrue(results.next());
+		assertEquals("ID is wrong", 3, results.getInt(1));
+		assertFalse(results.next());
+	}
+
+	@Test
 	public void testWithComments() throws SQLException
 	{
 		Properties props = new Properties();
@@ -2746,8 +2765,8 @@ public class TestCsvDriver
 		assertTrue(results.wasNull());
 		assertNull("START_TIME is wrong", results.getObject(6));
 		assertTrue(results.wasNull());
-		
-		assertFalse(results.next());
+
+		assertTrue(results.next());
 	}
 
 	@Test
