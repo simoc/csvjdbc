@@ -26,7 +26,6 @@ import org.relique.io.DataReader;
 
 public class CsvReader extends DataReader
 {
-
 	private String headerline;
 	private CsvRawReader rawReader;
 	private int transposedLines;
@@ -116,8 +115,8 @@ public class CsvReader extends DataReader
 		}
 		else
 		{
-			if (joiningValues == null
-					|| joiningValueNo + getTransposedFieldsToSkip() == valuesToJoin)
+			if (joiningValues == null ||
+				joiningValueNo + getTransposedFieldsToSkip() == valuesToJoin)
 			{
 				String line;
 				try
@@ -136,14 +135,14 @@ public class CsvReader extends DataReader
 			for (int i = 0; i < transposedLines; i++)
 			{
 				fieldValues[i] = firstTable.get(i)[joiningValueNo
-						+ getTransposedFieldsToSkip()];
+					+ getTransposedFieldsToSkip()];
 			}
 			for (int i = transposedLines; i < columnNames.length - 1; i++)
 			{
 				fieldValues[i] = joiningValues[i - transposedLines];
 			}
-			fieldValues[columnNames.length - 1] = joiningValues[columnNames.length
-					- transposedLines - 1 + joiningValueNo];
+			fieldValues[columnNames.length - 1] =
+				joiningValues[columnNames.length - transposedLines - 1 + joiningValueNo];
 			joiningValueNo++;
 			if (columnTypes == null)
 				getColumnTypes();
@@ -174,8 +173,10 @@ public class CsvReader extends DataReader
 				String[] columnNames = getColumnNames();
 				this.aliasedColumnNames = new String[columnNames.length];
 				for (int i = 0; i < columnNames.length; i++)
-					this.aliasedColumnNames[i] = tableAlias + "."
-							+ columnNames[i].toUpperCase();
+				{
+					this.aliasedColumnNames[i] = tableAlias + "." +
+						columnNames[i].toUpperCase();
+				}
 			}
 		}
 		return this.aliasedColumnNames;
@@ -202,8 +203,8 @@ public class CsvReader extends DataReader
 
 		if (fieldValues.length != getColumnNames().length)
 		{
-			throw new SQLException(CsvResources.getString("wrongColumnCount") + ": " + fieldValues.length +
-				" " + getColumnNames().length);
+			throw new SQLException(CsvResources.getString("wrongColumnCount") + ": " +
+				fieldValues.length + " " + getColumnNames().length);
 		}
 		if (columnTypes == null)
 			getColumnTypes();
@@ -247,6 +248,7 @@ public class CsvReader extends DataReader
 				throw new SQLException(CsvResources.getString("invalidColumnType") + ": " + typeName);
 			columnTypes[i] = typeName;
 		}
+
 		/*
 		 * Use last column type for any remaining columns.
 		 */
