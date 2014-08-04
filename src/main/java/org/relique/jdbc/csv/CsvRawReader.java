@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
-import org.relique.io.CryptoFilter;
 import org.relique.io.DataReader;
 
 /**
@@ -46,22 +45,19 @@ import org.relique.io.DataReader;
 
 public class CsvRawReader
 {
-	protected LineNumberReader input;
-	protected String tableAlias;
-	protected String[] columnNames;
-	protected String[] fieldValues;
-	protected String firstLineBuffer = null;
-	protected String separator = ",";
-	protected String headerLine = "";
-	protected boolean suppressHeaders = false;
-	protected boolean isHeaderFixedWidth = true;
-	protected char quoteChar = '"';
-	protected String extension = CsvDriver.DEFAULT_EXTENSION;
-	protected boolean trimHeaders = true;
-	protected boolean trimValues = true;
-	protected String comment = null;
+	private LineNumberReader input;
+	private String tableAlias;
+	private String[] columnNames;
+	private String[] fieldValues;
+	private String firstLineBuffer = null;
+	private String separator = ",";
+	private String headerLine = "";
+	private boolean suppressHeaders = false;
+	private boolean isHeaderFixedWidth = true;
+	private char quoteChar = '"';
+	private boolean trimValues = true;
+	private String comment = null;
 	private boolean ignoreUnparseableLines;
-	protected CryptoFilter filter;
 	private String quoteStyle;
 	private ArrayList<int []> fixedWidthColumns;
 
@@ -78,7 +74,6 @@ public class CsvRawReader
 	 *			  boolean
 	 * @param quoteChar
 	 *			  char
-	 * @param filter the decrypting filter
 	 * @param defectiveHeaders 
 	 * @param skipLeadingDataLines 
 	 * @exception java.lang.Exception
@@ -91,8 +86,8 @@ public class CsvRawReader
 	 */
 	public CsvRawReader(LineNumberReader in, String tableAlias, String separator,
 			boolean suppressHeaders, boolean isHeaderFixedWidth, char quoteChar, String comment,
-			String headerLine, String extension, boolean trimHeaders, boolean trimValues,
-			int skipLeadingLines, boolean ignoreUnparseableLines, CryptoFilter filter, 
+			String headerLine, boolean trimHeaders, boolean trimValues,
+			int skipLeadingLines, boolean ignoreUnparseableLines,
 			boolean defectiveHeaders, int skipLeadingDataLines, String quoteStyle,
 			ArrayList<int []> fixedWidthColumns)
 			throws IOException, SQLException
@@ -104,12 +99,9 @@ public class CsvRawReader
 		this.quoteChar = quoteChar;
 		this.comment = comment;
 		this.headerLine = headerLine;
-		this.extension = extension;
-		this.trimHeaders = trimHeaders;
 		this.trimValues = trimValues;
 		this.input = in;
 		this.ignoreUnparseableLines = ignoreUnparseableLines;
-		this.filter = filter;
 		this.quoteStyle = quoteStyle;
 		this.fixedWidthColumns = fixedWidthColumns;
 
@@ -250,7 +242,7 @@ public class CsvRawReader
 			{
 				do
 				{
-					int fieldsCount = this.parseLine(tmp, true).length;
+					int fieldsCount = parseLine(tmp, true).length;
 					if (columnNames != null && columnNames.length == fieldsCount)
 						break; // we are satisfied
 					if (columnNames == null && fieldsCount != 1)
@@ -305,6 +297,11 @@ public class CsvRawReader
 		return tableAlias;
 	}
 
+	public String []getFieldValues()
+	{
+		return fieldValues;
+	}
+
 	/**
 	 * Get the value of the column at the specified index, 0 based.
 	 * 
@@ -336,7 +333,7 @@ public class CsvRawReader
 		return values;
 	}
 
-	protected String [] parseHeaderLine(String line, boolean trimValues)
+	private String [] parseHeaderLine(String line, boolean trimValues)
 		throws SQLException
 	{
 		String []values;
