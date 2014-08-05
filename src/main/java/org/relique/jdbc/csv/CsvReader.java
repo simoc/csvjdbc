@@ -110,7 +110,7 @@ public class CsvReader extends DataReader
 		if (this.isPlainReader())
 		{
 			boolean result = rawReader.next();
-			fieldValues = rawReader.fieldValues;
+			fieldValues = rawReader.getFieldValues();
 			return result;
 		}
 		else
