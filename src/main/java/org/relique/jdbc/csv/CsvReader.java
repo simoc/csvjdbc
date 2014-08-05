@@ -26,7 +26,6 @@ import org.relique.io.DataReader;
 
 public class CsvReader extends DataReader
 {
-	private String headerline;
 	private CsvRawReader rawReader;
 	private int transposedLines;
 	private int transposedFieldsToSkip;
@@ -48,7 +47,6 @@ public class CsvReader extends DataReader
 		this.rawReader = rawReader;
 		this.transposedLines = transposedLines;
 		this.transposedFieldsToSkip = transposedFieldsToSkip;
-		this.headerline = headerline;
 		this.columnNames = rawReader.parseLine(headerline, true);
 		this.firstTable = null;
 		columnTypes = null;
@@ -84,22 +82,12 @@ public class CsvReader extends DataReader
 		this.converter = converter;
 	}
 
-	public int getTransposedFieldsToSkip()
+	private int getTransposedFieldsToSkip()
 	{
 		return transposedFieldsToSkip;
 	}
 
-	public int getTransposedLines()
-	{
-		return transposedLines;
-	}
-
-	public String getHeaderline()
-	{
-		return headerline;
-	}
-
-	boolean isPlainReader()
+	private boolean isPlainReader()
 	{
 		return transposedLines == 0 && transposedFieldsToSkip == 0;
 	}
@@ -159,7 +147,7 @@ public class CsvReader extends DataReader
 			return columnNames;
 	}
 
-	public String[] getAliasedColumnNames()
+	private String[] getAliasedColumnNames()
 	{
 		if (this.aliasedColumnNames == null)
 		{
