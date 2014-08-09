@@ -3496,6 +3496,33 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testWrongColumnCount() throws SQLException
+	{
+		Properties props = new Properties();
+		ResultSet results = null;
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+
+		results = stmt.executeQuery("SELECT * FROM wrong_column_count");
+
+		try
+		{
+			while(results.next())
+			{
+			}
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			// Should fail with the line number in message.
+			assertTrue(e.getMessage().contains(CsvResources.getString("wrongColumnCount")));
+			assertTrue(e.getMessage().contains("137"));
+		}
+	}
+
+	@Test
 	public void testUnparseableInIndexedFileCausesSQLException() throws SQLException
 	{
 		Properties props = new Properties();
@@ -3527,7 +3554,7 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("java.sql.SQLException: " + CsvResources.getString("wrongColumnCount") + ": 6 8", "" + e);
+			assertTrue(("" + e).contains(CsvResources.getString("wrongColumnCount")));
 		}
 	}
 

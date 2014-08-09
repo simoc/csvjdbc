@@ -38,6 +38,7 @@ public class CsvReader extends DataReader
 	private String[] joiningValues;
 	private StringConverter converter;
 	private String[] fieldValues;
+	private int lineNumber;
 
 	public CsvReader(CsvRawReader rawReader, int transposedLines,
 		int transposedFieldsToSkip, String headerline) throws SQLException
@@ -98,6 +99,7 @@ public class CsvReader extends DataReader
 		if (this.isPlainReader())
 		{
 			boolean result = rawReader.next();
+			lineNumber = rawReader.getLineNumber();
 			fieldValues = rawReader.getFieldValues();
 			return result;
 		}
@@ -110,6 +112,8 @@ public class CsvReader extends DataReader
 				try
 				{
 					line = rawReader.getNextDataLine();
+					if (line != null)
+						lineNumber = rawReader.getLineNumber();
 				}
 				catch (IOException e)
 				{
@@ -188,11 +192,12 @@ public class CsvReader extends DataReader
 	@Override
 	public Map<String, Object> getEnvironment() throws SQLException
 	{
-
 		if (fieldValues.length != getColumnNames().length)
 		{
 			throw new SQLException(CsvResources.getString("wrongColumnCount") + ": " +
-				fieldValues.length + " " + getColumnNames().length);
+				lineNumber + " " +
+				CsvResources.getString("columnsRead") + ": " + fieldValues.length + " " +
+				CsvResources.getString("columnsExpected") + ": " + getColumnNames().length);
 		}
 		if (columnTypes == null)
 			getColumnTypes();

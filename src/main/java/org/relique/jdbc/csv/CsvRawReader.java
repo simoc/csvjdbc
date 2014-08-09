@@ -261,6 +261,11 @@ public class CsvRawReader
 		return tmp;
 	}
 
+	public int getLineNumber()
+	{
+		return input.getLineNumber();
+	}
+
 	/**
 	 *Gets the columnNames attribute of the CsvReader object
 	 * 
