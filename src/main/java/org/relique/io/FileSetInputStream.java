@@ -22,8 +22,8 @@ package org.relique.io;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,6 +42,7 @@ import org.relique.jdbc.csv.CsvResources;
  */
 public class FileSetInputStream extends InputStream
 {
+	private String dirName;
 	private List<String> fileNames;
 	private EncryptedFileInputStream currentFile;
 	private boolean readingHeader;
@@ -81,6 +82,7 @@ public class FileSetInputStream extends InputStream
 			boolean headerless, CryptoFilter filter, int skipLeadingDataLines)
 			throws IOException
 	{
+		this.dirName = dirName;
 		this.filter = filter;
 		this.skipLeadingDataLines = skipLeadingDataLines;
 		if (!headerless)
@@ -118,7 +120,7 @@ public class FileSetInputStream extends InputStream
 			tail += '\n';
 		}
 
-		fileNames = new LinkedList<String>();
+		fileNames = new ArrayList<String>();
 		File root = new File(dirName);
 		String[] candidates = root.list();
 
@@ -129,21 +131,22 @@ public class FileSetInputStream extends InputStream
 			Matcher m = fileNameRE.matcher(candidates[i]);
 			if (m.matches())
 			{
-				fileNames.add(dirName + candidates[i]);
+				fileNames.add(candidates[i]);
 			}
 		}
 		Collections.sort(fileNames);
-		if (fileNames.size()==0)
+		if (fileNames.isEmpty())
 		{
 			return;
 		}
+
 		fileNameRE = Pattern.compile(".*" + fileNamePattern);
 		readingHeader = true;
-		String currentName = fileNames.remove(0);
-		dataTail = getTailFromName(currentName);
+		String currentFileName = fileNames.remove(0);
+		dataTail = getTailFromName(dirName + currentFileName);
 		if (headerless)
 			tail = dataTail;
-		currentFile = new EncryptedFileInputStream(currentName, filter);
+		currentFile = new EncryptedFileInputStream(dirName + currentFileName, filter);
 		lookahead = currentFile.read();
 		doingTail = prepend;
 		if (doingTail)
@@ -229,18 +232,18 @@ public class FileSetInputStream extends InputStream
 			currentFile.close();
 			// open next file and possibly skip header
 			pos = 0;
-			String currentName;
+			String currentFileName;
 			if (fileNames.size() > 0)
 			{
-				currentName = fileNames.remove(0);
+				currentFileName = fileNames.remove(0);
 			}
 			else
 			{
 				currentFile = null;
 				return -1;
 			}
-			tail = getTailFromName(currentName);
-			currentFile = new EncryptedFileInputStream(currentName, filter);
+			tail = getTailFromName(dirName + currentFileName);
+			currentFile = new EncryptedFileInputStream(dirName + currentFileName, filter);
 			// if files do contain a header, skip it
 			for(int i = 0; i < this.skipLeadingDataLines; i++)
 			{
