@@ -418,10 +418,13 @@ TOKEN:
  * Tablename is a sequence of non-whitespace or double-quoted
  * string when in IN_TABLE state.
  * Switch back to DEFAULT state after parsing table name.
+ *
+ * Do not allow ")" in tablename so subqueries like "(SELECT x FROM t)" are
+ * accepted.
  */
 <IN_TABLE> TOKEN:
 {
-	<TABLENAME:(~[" ", "\t", "\r", "\n", ";"])+> : DEFAULT
+	<TABLENAME:(~[" ", "\t", "\r", "\n", ";", ")"])+> : DEFAULT
 }
 <IN_TABLE> TOKEN:
 {
@@ -734,9 +737,14 @@ Expression simpleExpression():
 	Expression arg;
 	Expression arg2 = null;
 	boolean isDistinct;
+	ParsedStatement parsedStatement;
 }
 {
-	<OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	<OPENPARENTHESIS> parsedStatement = selectStatement() <CLOSEPARENTHESIS>
+	{
+		return new SubQueryExpression(parsedStatement);
+	}
+	| <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
 	{
 		return arg;
 	}
