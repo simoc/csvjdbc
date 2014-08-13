@@ -461,11 +461,10 @@ ParsedExpression groupByEntry():
 ParsedExpression orderByEntry():
 {
 	Expression left;
-	String order;
+	String order = "ASC";
 	Token t;
 }
 {
-	{order = "ASC";}
 	left = binaryOperation()(t=<ASC>{order=t.image;}|t=<DESC>{order=t.image;})?
 	{
 		return new ParsedExpression(new OrderByEntry(left, order));
@@ -473,11 +472,10 @@ ParsedExpression orderByEntry():
 }
 List<ParsedStatement> multipleStatements():
 {
-	List<ParsedStatement> statements;
+	List<ParsedStatement> statements = new LinkedList<ParsedStatement>();
 	ParsedStatement parsedStatement;
 }
 {
-	{statements = new LinkedList<ParsedStatement>();}
 	parsedStatement = selectStatement(){statements.add(parsedStatement);}
 	(<SEMICOLON>(parsedStatement = selectStatement(){statements.add(parsedStatement);})?)*<EOF>
 	{
@@ -496,31 +494,21 @@ ParsedStatement singleStatement():
 }
 ParsedStatement selectStatement():
 {
-	List<ParsedExpression> result;
+	List<ParsedExpression> result = new LinkedList<ParsedExpression>();
 	ParsedExpression expr;
-	boolean isDistinct;
-	String tableName;
-	String tableAlias;
-	ParsedExpression whereClause, entry;
-	List<ParsedExpression> groupByEntries;
-	ParsedExpression havingClause;
-	List<ParsedExpression> orderByEntries;
-	int limit, offset;
+	boolean isDistinct = false;
+	String tableName = null;
+	String tableAlias = null;
+	ParsedExpression whereClause = null;
+	ParsedExpression entry;
+	List<ParsedExpression> groupByEntries = new LinkedList<ParsedExpression>();
+	ParsedExpression havingClause = null;
+	List<ParsedExpression> orderByEntries = new LinkedList<ParsedExpression>();
+	int limit = -1;
+	int offset = 0;
 	Token t;
 }
 {
-	{
-		result = new LinkedList<ParsedExpression>();
-		isDistinct = false;
-		tableName = null;
-		tableAlias = null;
-		whereClause = null;
-		groupByEntries = new LinkedList<ParsedExpression>();
-		havingClause = null;
-		orderByEntries = new LinkedList<ParsedExpression>();
-		limit = -1;
-		offset = 0;
-	}
 	<SELECT>
 	(<DISTINCT>{isDistinct = true;})?
 	expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*
@@ -537,13 +525,11 @@ ParsedStatement selectStatement():
 }
 ParsedExpression queryEnvEntry():
 {
-	Expression expression, alias, result, asterisk;
+	Expression expression, result, asterisk;
+	Expression alias = null;
 	Token t;
 }
 {
-	{
-		alias = null;
-	}
 	(expression = binaryOperation()((<AS>)?alias = columnAlias())?
 	{
 		if (alias != null)
@@ -580,7 +566,8 @@ LogicalExpression logicalAndExpression():
 	LogicalExpression left, right;
 }
 {
-		left = logicalUnaryExpression()(<AND>right = logicalUnaryExpression(){
+	left = logicalUnaryExpression()(<AND>right = logicalUnaryExpression()
+	{
 		left = new AndExpression(left, right);
 	}
 	)*
@@ -608,19 +595,15 @@ LogicalExpression logicalUnaryExpression():
 }
 LogicalExpression relationalExpression():
 {
-	Expression arg1, arg2, arg3;
+	Expression arg1, arg2;
+	Expression arg3 = null;
 	LogicalExpression expr;
 	String op;
 	Token t;
-	boolean negate;
-	List<Expression> inEntries;
+	boolean negate = false;
+	List<Expression> inEntries = new LinkedList<Expression>();
 }
 {
-	{
-		arg3 = null;
-		negate = false;
-		inEntries = new LinkedList<Expression>();
-	}
 	arg1 = binaryOperation()(op = relOp()arg2 = binaryOperation()
 	{
 		return new RelopExpression(op, arg1, arg2);
@@ -885,11 +868,11 @@ Expression columnName():
 Expression numericConstant():
 {
 	Token t;
-	String sign, digits;
+	String sign = "";
+	String digits;
 	boolean isLong;
 }
 {
-	{sign="";}
 	(t=<MINUS>{sign=t.image;})?
 	(t = <UNSIGNEDNUMBER>|t = <UNSIGNEDINT>)
 	{
