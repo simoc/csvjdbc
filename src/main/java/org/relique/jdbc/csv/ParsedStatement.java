@@ -24,8 +24,7 @@ class ParsedStatement
 {
 	List<ParsedExpression> queryEntries;
 	boolean isDistinct;
-	String tableName;
-	String tableAlias;
+	List<ParsedTable> tableEntries;
 	ParsedExpression whereClause;
 	List<ParsedExpression> groupByEntries;
 	ParsedExpression havingClause;
@@ -33,7 +32,7 @@ class ParsedStatement
 	int limit, offset;
 
 	public ParsedStatement(List<ParsedExpression> queryEntries, boolean isDistinct,
-		String tableName, String tableAlias,
+		List<ParsedTable> tableEntries,
 		ParsedExpression whereClause,
 		List<ParsedExpression> groupByEntries,
 		ParsedExpression havingClause,
@@ -42,8 +41,7 @@ class ParsedStatement
 	{
 		this.queryEntries = queryEntries;
 		this.isDistinct = isDistinct;
-		this.tableName = tableName;
-		this.tableAlias = tableAlias;
+		this.tableEntries = tableEntries;
 		this.whereClause = whereClause;
 		this.groupByEntries = groupByEntries;
 		this.havingClause = havingClause;

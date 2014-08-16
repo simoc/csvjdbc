@@ -448,6 +448,30 @@ ParsedExpression logicalExpression():
 		return new ParsedExpression(left);
 	}
 }
+ParsedTable firstTableEntry():
+{
+	String tableName;
+	String tableAlias = null;
+	Token t;
+}
+{
+	(t=<QUOTEDTABLENAME>|t=<TABLENAME>){tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?
+	{
+		return new ParsedTable(tableName, tableAlias);
+	}
+}
+ParsedTable tableEntry():
+{
+	String tableName;
+	String tableAlias = null;
+	Token t;
+}
+{
+	(t=<NAME>){tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?
+	{
+		return new ParsedTable(tableName, tableAlias);
+	}
+}
 ParsedExpression groupByEntry():
 {
   Expression left;
@@ -497,8 +521,8 @@ ParsedStatement selectStatement():
 	List<ParsedExpression> result = new LinkedList<ParsedExpression>();
 	ParsedExpression expr;
 	boolean isDistinct = false;
-	String tableName = null;
-	String tableAlias = null;
+	ParsedTable tableEntry;
+	List<ParsedTable> tableEntries = new LinkedList<ParsedTable>();
 	ParsedExpression whereClause = null;
 	ParsedExpression entry;
 	List<ParsedExpression> groupByEntries = new LinkedList<ParsedExpression>();
@@ -513,14 +537,15 @@ ParsedStatement selectStatement():
 	(<DISTINCT>{isDistinct = true;})?
 	expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*
 	(
-		<FROM>(t=<QUOTEDTABLENAME>|t=<TABLENAME>){tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?(<COMMA>(t=<QUOTEDTABLENAME>|t=<TABLENAME>){}((<AS>)?t=<NAME>{}))*
+		<FROM>tableEntry = firstTableEntry(){tableEntries.add(tableEntry);}
+		(<COMMA>tableEntry = tableEntry(){tableEntries.add(tableEntry);})*
 		(<WHERE>whereClause = logicalExpression())?
 		(<GROUP><BY>entry = groupByEntry(){groupByEntries.add(entry);}(<COMMA>entry = groupByEntry(){groupByEntries.add(entry);})*(<HAVING>havingClause = logicalExpression())?)?
 		(<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?
 		(<LIMIT>t=<UNSIGNEDINT>{limit = Integer.parseInt(t.image);}(<OFFSET>t=<UNSIGNEDINT>{offset = Integer.parseInt(t.image);})?)?
 	)?
 	{
-		return new ParsedStatement(result, isDistinct, tableName, tableAlias, whereClause, groupByEntries, havingClause, orderByEntries, limit, offset);
+		return new ParsedStatement(result, isDistinct, tableEntries, whereClause, groupByEntries, havingClause, orderByEntries, limit, offset);
 	}
 }
 ParsedExpression queryEnvEntry():

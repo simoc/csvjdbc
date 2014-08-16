@@ -112,11 +112,17 @@ public class SqlParser
 	public void setParsedStatement(ParsedStatement parsedStatement) throws SQLException
 	{
 		this.isDistinct = parsedStatement.isDistinct;
-		this.tableName = parsedStatement.tableName;
-		this.tableAlias = parsedStatement.tableAlias;
 		this.whereClause = parsedStatement.whereClause;
 		this.limit = parsedStatement.limit;
 		this.offset = parsedStatement.offset;
+
+		if (parsedStatement.tableEntries.size() > 1)
+			throw new SQLException(CsvResources.getString("joinNotSupported"));
+		if (parsedStatement.tableEntries.size() > 0)
+		{
+			tableName = parsedStatement.tableEntries.get(0).getTableName();
+			tableAlias = parsedStatement.tableEntries.get(0).getTableAlias();
+		}
 
 		this.environment = new ArrayList<Object[]>();
 
