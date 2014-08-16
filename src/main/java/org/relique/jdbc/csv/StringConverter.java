@@ -41,6 +41,12 @@ import java.util.regex.Pattern;
 
 public class StringConverter
 {
+	/*
+	 * Key used when passing around a converter as part of a HashMap for a database row.
+	 * Use upper-case, as class ColumnName converts all keys to upper-case too.
+	 */
+	public static final String COLUMN_NAME = "@STRINGCONVERTER";
+
 	private String dateFormat;
 	private SimpleDateFormat simpleTimeFormat;
 	private String timeFormat;

@@ -147,7 +147,7 @@ class BinaryOperation extends Expression
 				if (rightEval instanceof Time)
 				{
 					Time rightT = (Time)rightEval;
-					Expression stringConverter = new ColumnName("@StringConverter");
+					Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					return sc.parseTimestamp(leftD.toString() + " " + rightT.toString());
 				}
@@ -169,7 +169,7 @@ class BinaryOperation extends Expression
 				if (leftEval instanceof Time)
 				{
 					Time leftT = (Time)leftEval;
-					Expression stringConverter = new ColumnName("@StringConverter");
+					Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					return sc.parseTimestamp(rightD.toString() + " " + leftT.toString());
 				}
@@ -201,13 +201,13 @@ class BinaryOperation extends Expression
 			{
 				if (!(leftEval instanceof Date))
 				{
-					Expression stringConverter = new ColumnName("@StringConverter");
+					Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					leftEval = sc.parseDate(leftEval.toString());
 				}
 				if (!(rightEval instanceof Date))
 				{
-					Expression stringConverter = new ColumnName("@StringConverter");
+					Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					rightEval = sc.parseDate(rightEval.toString());
 	  			}

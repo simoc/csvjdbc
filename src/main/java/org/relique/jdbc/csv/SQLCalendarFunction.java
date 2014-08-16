@@ -55,7 +55,7 @@ class SQLCalendarFunction extends Expression
 				/*
 				 * Try and convert from String to a Timestamp or Date/Time.
 				 */
-				Expression stringConverter = new ColumnName("@StringConverter");
+				Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
 				StringConverter sc = (StringConverter) stringConverter.eval(env);
 				date = sc.parseTimestamp(o.toString());
 				if (date == null)

@@ -208,7 +208,7 @@ public class CsvReader extends DataReader
 		if (columnAliases != null)
 			nKeys += columnAliases.length;
 		Map<String, Object> result = new HashMap<String, Object>(nKeys, 1);
-		result.put("@STRINGCONVERTER", converter);
+		result.put(StringConverter.COLUMN_NAME, converter);
 
 		for (int i = 0; i < columnNames.length; i++)
 		{

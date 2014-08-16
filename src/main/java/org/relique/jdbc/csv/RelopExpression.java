@@ -99,7 +99,7 @@ class RelopExpression extends LogicalExpression
 				}
 				else if (leftValue instanceof Date)
 				{
-					Expression stringConverter = new ColumnName("@StringConverter");
+					Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					Date date = sc.parseDate(rightValue.toString());
 					if (date != null)
@@ -107,7 +107,7 @@ class RelopExpression extends LogicalExpression
 				}
 				else if (rightValue instanceof Date)
 				{
-					Expression stringConverter = new ColumnName("@StringConverter");
+					Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					Date date = sc.parseDate(leftValue.toString());
 					if (date != null)
@@ -115,7 +115,7 @@ class RelopExpression extends LogicalExpression
 				}
 				else if (leftValue instanceof Time)
 				{
-					Expression stringConverter = new ColumnName("@StringConverter");
+					Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					Time time = sc.parseTime(rightValue.toString());
 					if (time != null)
@@ -123,7 +123,7 @@ class RelopExpression extends LogicalExpression
 				}
 				else if (rightValue instanceof Time)
 				{
-					Expression stringConverter = new ColumnName("@StringConverter");
+					Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					Time time = sc.parseTime(leftValue.toString());
 					if (time != null)
@@ -131,7 +131,7 @@ class RelopExpression extends LogicalExpression
 				}
 				else if (leftValue instanceof Timestamp)
 				{
-					Expression stringConverter = new ColumnName("@StringConverter");
+					Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					Timestamp timestamp = sc.parseTimestamp(rightValue.toString());
 					if (timestamp != null)
@@ -139,7 +139,7 @@ class RelopExpression extends LogicalExpression
 				}
 				else if (rightValue instanceof Timestamp)
 				{
-					Expression stringConverter = new ColumnName("@StringConverter");
+					Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					Timestamp timestamp = sc.parseTimestamp(leftValue.toString());
 					if (timestamp != null)
