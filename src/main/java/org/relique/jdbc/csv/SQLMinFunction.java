@@ -35,7 +35,7 @@ class SQLMinFunction extends AggregateFunction
 	}
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
-		Object o = env.get("@GROUPROWS");
+		Object o = env.get(GROUPING_COLUMN_NAME);
 		if (o != null)
 		{
 			/*

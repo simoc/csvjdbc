@@ -40,7 +40,7 @@ class SQLSumFunction extends AggregateFunction
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object retval = null;
-		Object o = env.get("@GROUPROWS");
+		Object o = env.get(GROUPING_COLUMN_NAME);
 		if (o != null)
 		{
 			/*

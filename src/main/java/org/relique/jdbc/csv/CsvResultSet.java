@@ -527,7 +527,7 @@ public class CsvResultSet implements ResultSet
 					 * later calculate any aggregate functions for each group.
 					 */
 					Map<String, Object> firstRow = new HashMap<String, Object>(values.get(0));
-					firstRow.put("@GROUPROWS", values);
+					firstRow.put(AggregateFunction.GROUPING_COLUMN_NAME, values);
 
 					if (this.havingClause == null || this.havingClause.isTrue(firstRow))
 						bufferedRecordEnvironments.add(firstRow);
@@ -930,7 +930,7 @@ public class CsvResultSet implements ResultSet
 		 * Always include any group of rows so we have assembled so we can evaluate
 		 * any aggregate functions.
 		 */
-		String key = "@GROUPROWS";
+		String key = AggregateFunction.GROUPING_COLUMN_NAME;
 		Object groupRows = recordEnvironment.get(key);
 		if (groupRows != null)
 			objectEnvironment.put(key, groupRows);

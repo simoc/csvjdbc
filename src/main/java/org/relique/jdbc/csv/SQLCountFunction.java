@@ -38,7 +38,7 @@ class SQLCountFunction extends AggregateFunction
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Integer retval;
-		Object o = env.get("@GROUPROWS");
+		Object o = env.get(GROUPING_COLUMN_NAME);
 		if (o != null)
 		{
 			/*
