@@ -886,6 +886,17 @@ public class TestSqlParser
 	}
 	
 	@Test
+	public void testParsingSubquery() throws ParseException, SQLException
+	{
+		SqlParser parser = new SqlParser();
+
+		parser.parse("SELECT ID, (SELECT SUM(Amount) FROM t2 WHERE sample.ID=t2.ID) FROM sample");
+		String subquery = parser.getExpression(1).toString();
+		assertTrue("Incorrect Subquery", subquery.startsWith("(SELECT"));
+		assertTrue("Incorrect Subquery", subquery.endsWith(")"));
+	}
+
+	@Test
 	public void testWhereDiacritics() throws SQLException, ParseException
 	{
 		SqlParser parser = new SqlParser();
