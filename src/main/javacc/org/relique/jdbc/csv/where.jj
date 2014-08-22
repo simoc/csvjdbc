@@ -317,6 +317,38 @@ TOKEN:
 }
 TOKEN:
 {
+	<LEFT:"LEFT">
+}
+TOKEN:
+{
+	<RIGHT:"RIGHT">
+}
+TOKEN:
+{
+	<FULL:"FULL">
+}
+TOKEN:
+{
+	<INNER:"INNER">
+}
+TOKEN:
+{
+	<OUTER:"OUTER">
+}
+TOKEN:
+{
+	<JOIN:"JOIN">
+}
+TOKEN:
+{
+	<ON:"ON">
+}
+TOKEN:
+{
+	<CROSS:"CROSS">
+}
+TOKEN:
+{
 	<WHERE:"WHERE">
 }
 TOKEN:
@@ -359,13 +391,27 @@ TOKEN:
 }
 TOKEN:
 {
-	<RELOP:(">"
-		| "<"
-		| ">="
-		| "<="
-		| "<>"
-		| "="
-		| "!=")>
+	<GREATERTHAN:">">
+}
+TOKEN:
+{
+	<LESSTHAN:"<">
+}
+TOKEN:
+{
+	<GREATERTHANEQUALS:">=">
+}
+TOKEN:
+{
+	<LESSTHANEQUALS:"<=">
+}
+TOKEN:
+{
+	<NOTEQUALS:("<>" | "!=")>
+}
+TOKEN:
+{
+	<EQUALS:"=">
 }
 TOKEN:
 {
@@ -424,7 +470,7 @@ TOKEN:
  */
 <IN_TABLE> TOKEN:
 {
-	<TABLENAME:(~[" ", "\t", "\r", "\n", ";", ")"])+> : DEFAULT
+	<TABLENAME:(~[" ", "\t", "\r", "\n", ";", ",", ")"])+> : DEFAULT
 }
 <IN_TABLE> TOKEN:
 {
@@ -460,16 +506,48 @@ ParsedTable firstTableEntry():
 		return new ParsedTable(tableName, tableAlias);
 	}
 }
-ParsedTable tableEntry():
+LogicalExpression onEntry():
 {
-	String tableName;
-	String tableAlias = null;
+	Expression left, right;
+	String op;
 	Token t;
 }
 {
-	(t=<NAME>){tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?
+	/*
+	 * A JOIN B ON A.ID = B.ID must have an equality comparison.
+	 */
+	left = binaryOperation()t=<EQUALS>{op = t.image;}right = binaryOperation()
 	{
-		return new ParsedTable(tableName, tableAlias);
+		return new RelopExpression(op, left, right);
+	}
+}
+ParsedTable joinedTableEntry():
+{
+	String tableName;
+	String tableAlias = null;
+	LogicalExpression joinClause;
+	Token t;
+}
+{
+	(<COMMA>|(<CROSS><JOIN>))t=<NAME>{tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?
+	{
+		return new ParsedTable(JoinType.CROSS, null, tableName, tableAlias);
+	}
+	| (<INNER>)?<JOIN>t=<NAME>{tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?<ON>joinClause = onEntry()
+	{
+		return new ParsedTable(JoinType.INNER, joinClause, tableName, tableAlias);
+	}
+	| <LEFT>(<OUTER>)?<JOIN>t=<NAME>{tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?<ON>joinClause = onEntry()
+	{
+		return new ParsedTable(JoinType.LEFT_OUTER, joinClause, tableName, tableAlias);
+	}
+	| <RIGHT>(<OUTER>)?<JOIN>t=<NAME>{tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?<ON>joinClause = onEntry()
+	{
+		return new ParsedTable(JoinType.RIGHT_OUTER, joinClause, tableName, tableAlias);
+	}
+	| <FULL>(<OUTER>)?<JOIN>t=<NAME>{tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?<ON>joinClause = onEntry()
+	{
+		return new ParsedTable(JoinType.FULL_OUTER, joinClause, tableName, tableAlias);
 	}
 }
 ParsedExpression groupByEntry():
@@ -522,6 +600,7 @@ ParsedStatement selectStatement():
 	ParsedExpression expr;
 	boolean isDistinct = false;
 	ParsedTable tableEntry;
+	ParsedTable joinedTableEntry;
 	List<ParsedTable> tableEntries = new LinkedList<ParsedTable>();
 	ParsedExpression whereClause = null;
 	ParsedExpression entry;
@@ -538,7 +617,7 @@ ParsedStatement selectStatement():
 	expr = queryEnvEntry(){result.add(expr);}(<COMMA>expr = queryEnvEntry(){result.add(expr);})*
 	(
 		<FROM>tableEntry = firstTableEntry(){tableEntries.add(tableEntry);}
-		(<COMMA>tableEntry = tableEntry(){tableEntries.add(tableEntry);})*
+		(joinedTableEntry = joinedTableEntry(){tableEntries.add(joinedTableEntry);})*
 		(<WHERE>whereClause = logicalExpression())?
 		(<GROUP><BY>entry = groupByEntry(){groupByEntries.add(entry);}(<COMMA>entry = groupByEntry(){groupByEntries.add(entry);})*(<HAVING>havingClause = logicalExpression())?)?
 		(<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?
@@ -669,7 +748,7 @@ String relOp():
 	Token t;
 }
 {
-	t = <RELOP>
+	(t=<GREATERTHAN>|t=<LESSTHAN>|t=<GREATERTHANEQUALS>|t=<LESSTHANEQUALS>|t=<NOTEQUALS>|t=<EQUALS>)
 	{
 		return new String(t.image);
 	}
