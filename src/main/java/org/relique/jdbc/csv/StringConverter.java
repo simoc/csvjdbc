@@ -498,26 +498,29 @@ public class StringConverter
 		return (str == null) ? null : new ByteArrayInputStream(str.getBytes());
 	}
 
-	static protected Map<String, Class<?>> forSQLNameMap = new HashMap<String, Class<?>>()
+	static private Map<String, Class<?>> forSQLNameMap = new HashMap<String, Class<?>>()
 	{
 		private static final long serialVersionUID = -3037117163532338893L;
 		{
 			try
 			{
-				put("String", Class.forName("java.lang.String"));
-				put("Boolean", Class.forName("java.lang.Boolean"));
-				put("Byte", Class.forName("java.lang.Byte"));
-				put("Short", Class.forName("java.lang.Short"));
-				put("Int", Class.forName("java.lang.Integer"));
-				put("Integer", Class.forName("java.lang.Integer"));
-				put("Long", Class.forName("java.lang.Long"));
-				put("Float", Class.forName("java.lang.Float"));
-				put("Double", Class.forName("java.lang.Double"));
-				put("BigDecimal", Class.forName("java.math.BigDecimal"));
-				put("Date", Class.forName("java.sql.Date"));
-				put("Time", Class.forName("java.sql.Time"));
-				put("Timestamp", Class.forName("java.sql.Timestamp"));
-				put("AsciiStream", Class.forName("java.io.InputStream"));
+				/*
+				 * Lookup from SQL type names to java class.
+				 */
+				put("string", Class.forName("java.lang.String"));
+				put("boolean", Class.forName("java.lang.Boolean"));
+				put("byte", Class.forName("java.lang.Byte"));
+				put("short", Class.forName("java.lang.Short"));
+				put("int", Class.forName("java.lang.Integer"));
+				put("integer", Class.forName("java.lang.Integer"));
+				put("long", Class.forName("java.lang.Long"));
+				put("float", Class.forName("java.lang.Float"));
+				put("double", Class.forName("java.lang.Double"));
+				put("bigdecimal", Class.forName("java.math.BigDecimal"));
+				put("date", Class.forName("java.sql.Date"));
+				put("time", Class.forName("java.sql.Time"));
+				put("timestamp", Class.forName("java.sql.Timestamp"));
+				put("asciistream", Class.forName("java.io.InputStream"));
 			}
 			catch (ClassNotFoundException e)
 			{
@@ -526,7 +529,7 @@ public class StringConverter
 		}
 	};
 
-	static protected Map<String, Method> converterMethodForClass = new HashMap<String, Method>()
+	static private Map<String, Method> converterMethodForClass = new HashMap<String, Method>()
 	{
 		private static final long serialVersionUID = -3037117163532338893L;
 		Class<?>[] argTypes = new Class[1];
@@ -535,22 +538,21 @@ public class StringConverter
 			try
 			{
 				argTypes[0] = Class.forName("java.lang.String");
-				containerClass = Class
-						.forName("org.relique.jdbc.csv.StringConverter");
-				put("String", containerClass.getMethod("parseString", argTypes));
-				put("Boolean", containerClass.getMethod("parseBoolean", argTypes));
-				put("Byte", containerClass.getMethod("parseByte", argTypes));
-				put("Short", containerClass.getMethod("parseShort", argTypes));
-				put("Int", containerClass.getMethod("parseInt", argTypes));
-				put("Integer", containerClass.getMethod("parseInt", argTypes));
-				put("Long", containerClass.getMethod("parseLong", argTypes));
-				put("Float", containerClass.getMethod("parseFloat", argTypes));
-				put("Double", containerClass.getMethod("parseDouble", argTypes));
-				put("BigDecimal", containerClass.getMethod("parseBigDecimal", argTypes));
-				put("Date", containerClass.getMethod("parseDate", argTypes));
-				put("Time", containerClass.getMethod("parseTime", argTypes));
-				put("Timestamp", containerClass.getMethod("parseTimestamp", argTypes));
-				put("AsciiStream", containerClass.getMethod("parseAsciiStream", argTypes));
+				containerClass = Class.forName("org.relique.jdbc.csv.StringConverter");
+				put("string", containerClass.getMethod("parseString", argTypes));
+				put("boolean", containerClass.getMethod("parseBoolean", argTypes));
+				put("byte", containerClass.getMethod("parseByte", argTypes));
+				put("short", containerClass.getMethod("parseShort", argTypes));
+				put("int", containerClass.getMethod("parseInt", argTypes));
+				put("integer", containerClass.getMethod("parseInt", argTypes));
+				put("long", containerClass.getMethod("parseLong", argTypes));
+				put("float", containerClass.getMethod("parseFloat", argTypes));
+				put("double", containerClass.getMethod("parseDouble", argTypes));
+				put("bigdecimal", containerClass.getMethod("parseBigDecimal", argTypes));
+				put("date", containerClass.getMethod("parseDate", argTypes));
+				put("time", containerClass.getMethod("parseTime", argTypes));
+				put("timestamp", containerClass.getMethod("parseTimestamp", argTypes));
+				put("asciiStream", containerClass.getMethod("parseAsciiStream", argTypes));
 				/*
 				 * sooner or later, maybe... put("UnicodeStream",
 				 * containerClass.getMethod("parseUnicodeStream", argTypes));
@@ -591,6 +593,7 @@ public class StringConverter
 			args[0] = stringRepresentation;
 			try
 			{
+				sqlTypeName = sqlTypeName.toLowerCase();
 				value = converterMethodForClass.get(sqlTypeName).invoke(this, args);
 			}
 			catch (IllegalArgumentException e)
@@ -606,9 +609,10 @@ public class StringConverter
 		return value;
 	}
 
-	public Class<?> forSQLName(String string)
+	public Class<?> forSQLName(String sqlTypeName)
 	{
-		return forSQLNameMap.get(string);
+		sqlTypeName = sqlTypeName.toLowerCase();
+		return forSQLNameMap.get(sqlTypeName);
 	}
 
 	/**
@@ -621,31 +625,32 @@ public class StringConverter
 	public static Object getLiteralForTypeName(String sqlTypeName)
 	{
 		Object retval = null;
-		if (sqlTypeName.equals("String"))
+		sqlTypeName = sqlTypeName.toLowerCase();
+		if (sqlTypeName.equals("string"))
 			retval = "";
-		else if (sqlTypeName.equals("Boolean"))
+		else if (sqlTypeName.equals("boolean"))
 			retval = Boolean.FALSE;
-		else if (sqlTypeName.equals("Byte"))
+		else if (sqlTypeName.equals("byte"))
 			retval = Byte.valueOf((byte) 1);
-		else if (sqlTypeName.equals("Short"))
+		else if (sqlTypeName.equals("short"))
 			retval = Short.valueOf((short) 1);
-		else if (sqlTypeName.equals("Int") || sqlTypeName.equals("Integer"))
+		else if (sqlTypeName.equals("int") || sqlTypeName.equals("integer"))
 			retval = Integer.valueOf(1);
-		else if (sqlTypeName.equals("Long"))
+		else if (sqlTypeName.equals("long"))
 			retval = Long.valueOf(1);
-		else if (sqlTypeName.equals("Float"))
+		else if (sqlTypeName.equals("float"))
 			retval = Float.valueOf(1);
-		else if (sqlTypeName.equals("Double"))
+		else if (sqlTypeName.equals("double"))
 			retval = Double.valueOf(1);
-		else if (sqlTypeName.equals("BigDecimal"))
+		else if (sqlTypeName.equals("bigdecimal"))
 			retval = BigDecimal.valueOf(1);
-		else if (sqlTypeName.equals("Date"))
+		else if (sqlTypeName.equals("date"))
 			retval = Date.valueOf("1970-01-01");
-		else if (sqlTypeName.equals("Time"))
+		else if (sqlTypeName.equals("time"))
 			retval = Time.valueOf("00:00:00");
-		else if (sqlTypeName.equals("Timestamp"))
+		else if (sqlTypeName.equals("timestamp"))
 			retval = Timestamp.valueOf("1970-01-01 00:00:00");
-		else if (sqlTypeName.equals("AsciiStream"))
+		else if (sqlTypeName.equals("asciistream"))
 			retval = new ByteArrayInputStream(new byte[]{});
 		return retval;
 	}
