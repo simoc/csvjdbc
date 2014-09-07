@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
@@ -40,7 +42,6 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -136,6 +137,8 @@ public class CsvConnection implements Connection
 
 	private ArrayList<int[]> fixedWidthColumns = null;
 
+	private HashMap<String, Method> sqlFunctions = new HashMap<String, Method>();
+
 	/**
 	 * Set defaults for connection.
 	 */
@@ -192,6 +195,115 @@ public class CsvConnection implements Connection
 			}
 		}
 		return retval;
+	}
+
+	private void setFunctions(Properties info) throws SQLException
+	{
+		String prefix = CsvDriver.FUNCTION + ".";
+		for (Map.Entry<String, String> entry : getMatchingProperties(info, prefix).entrySet())
+		{
+			String functionName = entry.getKey().toUpperCase();
+			String javaName = entry.getValue();
+			try
+			{
+				/*
+				 * SQL function name must be alphanumeric otherwise it cannot
+				 * be parsed by javacc correctly.
+				 */
+				for (int i = 0; i < functionName.length(); i++)
+				{
+					char c = functionName.charAt(i);
+					if (!(Character.isLetterOrDigit(c) || c == '_' || c == '.'))
+					{
+						throw new SQLException(CsvResources.getString("invalidFunction") +
+							": " + functionName);
+					}
+				}
+
+				int openParenIndex = javaName.indexOf('(');
+				if (openParenIndex < 0)
+					throw new SQLException(CsvResources.getString("noFunctionClass") + ": " + javaName);
+				String definition = javaName.substring(0, openParenIndex).trim();
+				String parameterNames = javaName.substring(openParenIndex + 1);
+				int closeParenIndex = parameterNames.lastIndexOf(')');
+				if (closeParenIndex < 0)
+					throw new SQLException(CsvResources.getString("noFunctionClass") + ": " + javaName);
+				parameterNames = parameterNames.substring(0, closeParenIndex).trim();
+				int lastDotIndex = definition.lastIndexOf('.');
+				if (lastDotIndex < 0)
+					throw new SQLException(CsvResources.getString("noFunctionClass") + ": " + definition);
+				String className = definition.substring(0, lastDotIndex);
+				Class<?> clazz = Class.forName(className);
+				String methodName = definition.substring(lastDotIndex + 1);
+				String []parameters = new String[0];
+				boolean isVarArgs = false;
+				if (parameterNames.length() > 0)
+				{
+					parameters = parameterNames.split(",");
+					for (int i = 0; i < parameters.length; i++)
+					{
+						/*
+						 * Does this method have a variable length argument list?
+						 * 
+						 * In this case, the last parameter is an array containing the
+						 * the remaining parameters.
+						 */
+						int dotIndex = parameters[i].indexOf("...");
+						if (i == parameters.length - 1 && dotIndex >= 0)
+						{
+							parameters[i] = parameters[i].substring(0, dotIndex) + "[]";
+							isVarArgs = true;
+						}
+
+						/*
+						 * Just want parameter class name, not any whitespace
+						 * nor any parameter name following the class name.
+						 */
+						parameters[i] = parameters[i].trim();
+						String []split = parameters[i].split("\\s+");
+						if (split.length > 1)
+							parameters[i] = split[0];
+					}
+				}
+
+				Method[] methods = clazz.getMethods();
+				boolean methodFound = false;
+				for (int i = 0; i < methods.length && methodFound == false; i++)
+				{
+					if (methods[i].getName().equals(methodName) &&
+						(methods[i].getModifiers() & Modifier.STATIC) != 0)
+					{
+						Class<?>[] methodParameters = methods[i].getParameterTypes();
+						boolean matchingParameters;
+						matchingParameters = (methodParameters.length == parameters.length &&
+							methods[i].isVarArgs() == isVarArgs);
+						int j = 0;
+						while (j < methodParameters.length && matchingParameters)
+						{
+							String methodParameterName = methodParameters[j].getSimpleName();
+							if (!methodParameterName.equals(parameters[j]))
+								matchingParameters = false;
+							j++;
+						}
+						if (matchingParameters)
+						{
+							sqlFunctions.put(functionName, methods[i]);
+							methodFound = true;
+						}
+					}
+				}
+				if (!methodFound)
+				{
+					throw new SQLException(CsvResources.getString("noFunctionMethod") +
+						": " + javaName);
+				}
+			}
+			catch (ClassNotFoundException e)
+			{
+				throw new SQLException(CsvResources.getString("noFunctionClass") + ": " + javaName, e);
+			}
+		}
+
 	}
 
 	private void setProperties(Properties info) throws SQLException
@@ -320,6 +432,8 @@ public class CsvConnection implements Connection
 				throw new SQLException(CsvResources.getString("noCryptoFilter"));
 			}
 		}
+
+		setFunctions(info);
 
 		/*
 		 * for fixed width file handling fixedWidths uses format:
@@ -1173,6 +1287,11 @@ public class CsvConnection implements Connection
 	public CryptoFilter getDecryptingCodec()
 	{
 		return this.decryptingFilter;
+	}
+
+	public HashMap<String, Method> getSqlFunctions()
+	{
+		return this.sqlFunctions;
 	}
 
 	@Override

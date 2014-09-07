@@ -92,6 +92,8 @@ public class CsvDriver implements Driver
 
 	public static final String FIXED_WIDTHS = "fixedWidths";
 
+	public static final String FUNCTION = "function";
+
 	@Override
 	public DriverPropertyInfo[] getPropertyInfo(String url, Properties info)
 		throws SQLException

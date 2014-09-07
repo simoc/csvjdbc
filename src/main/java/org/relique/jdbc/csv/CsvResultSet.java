@@ -842,9 +842,14 @@ public class CsvResultSet implements ResultSet
 			}
 
 			if(thereWasAnAnswer)
+			{
 				recordEnvironment = reader.getEnvironment();
+				recordEnvironment.put(CsvStatement.STATEMENT_COLUMN_NAME, statement);
+			}
 			else
+			{
 				recordEnvironment = null;
+			}
 
 			// We have a where clause or DISTINCT keyword, honor it
 			if (whereClause != null || distinctValues != null)
@@ -869,9 +874,14 @@ public class CsvResultSet implements ResultSet
 					}
 					thereWasAnAnswer = reader.next();
 					if(thereWasAnAnswer)
+					{
 						recordEnvironment = reader.getEnvironment();
+						recordEnvironment.put(CsvStatement.STATEMENT_COLUMN_NAME, statement);
+					}
 					else
+					{
 						recordEnvironment = null;
+					}
 					objectEnvironment = updateRecordEnvironment(thereWasAnAnswer);
 				}
 			}
@@ -879,7 +889,9 @@ public class CsvResultSet implements ResultSet
 			{
 				if(thereWasAnAnswer)
 				{
-					bufferedRecordEnvironments.add(reader.getEnvironment());
+					Map<String, Object> env = reader.getEnvironment();
+					env.put(CsvStatement.STATEMENT_COLUMN_NAME, statement);
+					bufferedRecordEnvironments.add(env);
 					currentRow++;
 				}
 				else
@@ -943,6 +955,16 @@ public class CsvResultSet implements ResultSet
 		Object stringConverter = recordEnvironment.get(key);
 		if (stringConverter != null)
 			objectEnvironment.put(key, stringConverter);
+
+		/*
+		 * Always include the java.sql.Statement object that user-defined
+		 * SQL functions can refer back to.
+		 */
+		key = CsvStatement.STATEMENT_COLUMN_NAME;
+		Object statement = recordEnvironment.get(key);
+		if (statement != null)
+			objectEnvironment.put(key, statement);
+
 		return objectEnvironment;
 	}
 
@@ -1325,6 +1347,7 @@ public class CsvResultSet implements ResultSet
 			}
 			if (converter != null)
 				env.put(StringConverter.COLUMN_NAME, converter);
+			env.put(CsvStatement.STATEMENT_COLUMN_NAME, statement);
 
 			for(int i=0; i<columnCount; i++)
 			{

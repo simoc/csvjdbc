@@ -145,6 +145,19 @@ class RelopExpression extends LogicalExpression
 					if (timestamp != null)
 						leftComparedToRightObj = new Integer(timestamp.compareTo((Timestamp)rightValue));
 				}
+				else if (leftValue instanceof Boolean)
+				{
+					Boolean leftBoolean = (Boolean)leftValue;
+					Boolean rightBoolean = Boolean.valueOf(rightValue.toString());
+
+					// false (0) is less than true (1) in Boolean algebra
+					if (leftBoolean.equals(rightBoolean))
+						leftComparedToRightObj = Integer.valueOf(0);
+					else if (leftBoolean.booleanValue() == false)
+						leftComparedToRightObj = Integer.valueOf(-1);
+					else
+						leftComparedToRightObj = Integer.valueOf(1);
+				}
 				else
 				{
 					Double leftDouble = new Double(((Number)leftValue).toString());

@@ -44,6 +44,11 @@ import org.relique.jdbc.dbf.DbfReader;
  */
 public class CsvStatement implements Statement
 {
+	/*
+	 * Key for column name in database rows for accessing CsvStatement.
+	 */
+	public static final String STATEMENT_COLUMN_NAME = "@STATEMENT";
+
 	private CsvConnection connection;
 	protected ResultSet lastResultSet = null;
 	protected List<SqlParser> multipleParsers = null;

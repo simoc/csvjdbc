@@ -4547,4 +4547,78 @@ public class TestCsvDriver
 		stmt.close();
 		conn.close();
 	}
+
+	@Test
+	public void testUserSqlFunction() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("function.POW", "java.lang.Math.pow(double, double)");
+		props.put("function.BITCOUNT", "java.lang.Integer.bitCount(int i)");
+		props.put("function.PROPERTY", "java.lang.System.getProperty(String)");
+		props.put("function.RLIKE", "java.util.regex.Pattern.matches(String regex,CharSequence input)");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT POW(C1, 2) FROM numeric");
+		assertTrue(results.next());
+		assertEquals("pow is wrong", 99 * 99, Math.round(results.getDouble(1)));
+		assertTrue(results.next());
+		assertEquals("pow is wrong", -22 * -22, Math.round(results.getDouble(1)));
+
+		results = stmt.executeQuery("SELECT BITCOUNT(C1) FROM numeric");
+		assertTrue(results.next());
+		assertEquals("bitcount is wrong", Integer.bitCount(99), results.getInt(1));
+		assertTrue(results.next());
+		assertEquals("bitcount is wrong", Integer.bitCount(-22), results.getInt(1));
+
+		String separator = System.getProperty("file.separator");
+		results = stmt.executeQuery("SELECT PROPERTY('file.separator') || ID FROM sample");
+		assertTrue(results.next());
+		assertEquals("property is wrong", separator + "Q123", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("property is wrong", separator + "A123", results.getString(1));
+
+		results = stmt.executeQuery("SELECT * FROM sample WHERE RLIKE('.*234', ID) = 'true'");
+		assertTrue(results.next());
+		assertEquals("ID is wrong", "B234", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("ID is wrong", "X234", results.getString(1));
+		assertFalse(results.next());
+	}
+
+	@Test
+	public void testVarargsUserSqlFunction() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Byte,Short,Integer,Long,Float,Double,BigDecimal");
+		props.put("function.FORMAT", "java.lang.String.format(String, Object...)");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT FORMAT('%04d%06d %x', C1, C2, 255) FROM numeric");
+		assertTrue(results.next());
+		assertEquals("format is wrong", "0099-01010 ff", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("format is wrong", "-022000015 ff", results.getString(1));
+	}
+
+	@Test
+	public void testBadUserSqlFunction() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("function.BAD", "java.lang.Math.bad(double)");
+
+		try
+		{
+			DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertTrue(e.getMessage().contains(CsvResources.getString("noFunctionMethod")));
+		}
+	}
 }
