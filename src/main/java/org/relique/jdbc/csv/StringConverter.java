@@ -585,6 +585,11 @@ public class StringConverter
 
 	public Object convert(String sqlTypeName, String stringRepresentation)
 	{
+		/*
+		 * No need to do a conversion if desired type is also a string.
+		 */
+		if (sqlTypeName.equalsIgnoreCase("string"))
+			return stringRepresentation;
 
 		Object value = stringRepresentation;
 		if (sqlTypeName != null)
