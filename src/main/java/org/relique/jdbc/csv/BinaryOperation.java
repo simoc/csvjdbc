@@ -270,4 +270,15 @@ class BinaryOperation extends Expression
 		result.addAll(right.aggregateFunctions());
 		return result;
 	}
+	public boolean isValid()
+	{
+		/*
+		 * An operation containing a logical expression such as (A > 5) + 1
+		 * is not allowed in SQL.
+		 */
+		if (left instanceof LogicalExpression || right instanceof LogicalExpression)
+			return false;
+		else
+			return (left.isValid() && right.isValid());
+	}
 }

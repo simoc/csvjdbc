@@ -26,10 +26,20 @@ import java.util.Map;
 class AndExpression extends LogicalExpression
 {
 	LogicalExpression left, right;
-	public AndExpression(LogicalExpression left, LogicalExpression right)
+	boolean isValid;
+	public AndExpression(Expression left, Expression right)
 	{
-		this.left = left;
-		this.right = right;
+		isValid = (left instanceof LogicalExpression && right instanceof LogicalExpression);
+		if (isValid)
+		{
+			this.left = (LogicalExpression)left;
+			this.right = (LogicalExpression)right;
+			isValid = left.isValid() && right.isValid();
+		}
+	}
+	public boolean isValid()
+	{
+		return isValid;
 	}
 	public boolean isTrue(Map<String, Object> env) throws SQLException
 	{

@@ -32,6 +32,10 @@ class ParsedExpression extends LogicalExpression
 		content = left;
 		placeholders = new HashMap<String, Object>();
 	}
+	public boolean isValid()
+	{
+		return content.isValid();
+	}
 	public boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		if(!placeholders.isEmpty())

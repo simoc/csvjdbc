@@ -25,9 +25,19 @@ import java.util.Map;
 class NotExpression extends LogicalExpression
 {
 	LogicalExpression content;
-	public NotExpression(LogicalExpression arg)
+	boolean isValid;
+	public NotExpression(Expression arg)
 	{
-		this.content = arg;
+		isValid = (arg instanceof LogicalExpression);
+		if (isValid)
+		{
+			this.content = (LogicalExpression)arg;
+			isValid = this.content.isValid();
+		}
+	}
+	public boolean isValid()
+	{
+		return isValid;
 	}
 	public boolean isTrue(Map<String, Object> env) throws SQLException
 	{

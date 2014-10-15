@@ -486,7 +486,7 @@ TOKEN:
 }
 ParsedExpression logicalExpression():
 {
-	LogicalExpression left;
+	Expression left;
 }
 {
 	left = logicalOrExpression()
@@ -651,9 +651,9 @@ ParsedExpression queryEnvEntry():
 		return new ParsedExpression(new QueryEnvEntry(t.image, asterisk));
 	}
 }
-LogicalExpression logicalOrExpression():
+Expression logicalOrExpression():
 {
-	LogicalExpression left, right;
+	Expression left, right;
 }
 {
 	left = logicalAndExpression()(<OR>right = logicalAndExpression()
@@ -665,9 +665,9 @@ LogicalExpression logicalOrExpression():
 		return left;
 	}
 }
-LogicalExpression logicalAndExpression():
+Expression logicalAndExpression():
 {
-	LogicalExpression left, right;
+	Expression left, right;
 }
 {
 	left = logicalUnaryExpression()(<AND>right = logicalUnaryExpression()
@@ -679,25 +679,21 @@ LogicalExpression logicalAndExpression():
 		return left;
 	}
 }
-LogicalExpression logicalUnaryExpression():
+Expression logicalUnaryExpression():
 {
-	LogicalExpression arg;
+	Expression arg;
 }
 {
 	<NOT>arg = logicalUnaryExpression()
 	{
 		return new NotExpression(arg);
 	}
-	| <OPENPARENTHESIS>arg = logicalOrExpression()<CLOSEPARENTHESIS>
-	{
-		return arg;
-	}
 	| arg = relationalExpression()
 	{
 		return arg;
 	}
 }
-LogicalExpression relationalExpression():
+Expression relationalExpression():
 {
 	Expression arg1, arg2;
 	Expression arg3 = null;
@@ -710,28 +706,28 @@ LogicalExpression relationalExpression():
 {
 	arg1 = binaryOperation()(op = relOp()arg2 = binaryOperation()
 	{
-		return new RelopExpression(op, arg1, arg2);
+		arg1 = new RelopExpression(op, arg1, arg2);
 	}
 	| (<NOT>{negate=true;})?(<BETWEEN>arg2 = binaryOperation()<AND>arg3 = binaryOperation()
 	{
 		expr = new BetweenExpression(arg1, arg2, arg3);
 		if (negate)
 			expr = new NotExpression(expr);
-		return expr;
+		arg1 = expr;
 	}
 	| <LIKE>arg2 = binaryOperation()(<ESCAPE>arg3 = binaryOperation())?
 	{
 		expr = new LikeExpression(arg1, arg2, arg3);
 		if (negate)
 			expr = new NotExpression(expr);
-		return expr;
+		arg1 = expr;
 	}
 	| <IN><OPENPARENTHESIS>arg2 = binaryOperation(){inEntries.add(arg2);}(<COMMA>arg2 = binaryOperation(){inEntries.add(arg2);})*<CLOSEPARENTHESIS>
 	{
 		expr = new InExpression(arg1, inEntries);
 		if (negate)
 			expr = new NotExpression(expr);
-		return expr;
+		arg1 = expr;
 	}
 	)
 	| <IS>(<NOT>{negate=true;})?<NULL>
@@ -739,9 +735,12 @@ LogicalExpression relationalExpression():
 		expr = new IsNullExpression(arg1);
 		if (negate)
 			expr = new NotExpression(expr);
-		return expr;
+		arg1 = expr;
 	}
-	)
+	)?
+	{
+		return arg1;
+	}
 }
 String relOp():
 {
@@ -832,7 +831,7 @@ Expression simpleExpression():
 	{
 		return new SubQueryExpression(parsedStatement);
 	}
-	| <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	| <OPENPARENTHESIS> arg = logicalOrExpression() <CLOSEPARENTHESIS>
 	{
 		return arg;
 	}

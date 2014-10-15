@@ -35,4 +35,15 @@ public abstract class Expression
 	{
 		return new LinkedList<AggregateFunction>();
 	}
+
+	/**
+	 * Is this a valid expression such as A > 5 or an invalid
+	 * mix of logical and arithmetic such as (A > 5) + 1 that we
+	 * cannot detect during parsing.
+	 * @return true if valid.
+	 */
+	public boolean isValid()
+	{
+		return true;
+	}
 }

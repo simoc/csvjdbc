@@ -30,8 +30,10 @@ class RelopExpression extends LogicalExpression
 {
 	String op;
 	Expression left, right;
+	boolean isValid;
 	public RelopExpression(String op, Expression left, Expression right)
 	{
+		isValid = !(left instanceof LogicalExpression || right instanceof LogicalExpression);
 		this.op = op;
 		this.left = left;
 		this.right = right;
@@ -191,5 +193,9 @@ class RelopExpression extends LogicalExpression
 		result.addAll(left.aggregateFunctions());
 		result.addAll(right.aggregateFunctions());
 		return result;
+	}
+	public boolean isValid()
+	{
+		return isValid;
 	}
 }

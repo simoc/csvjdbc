@@ -296,6 +296,9 @@ public class TestSqlParser
 		catch (ParseException e)
 		{
 		}
+		catch (SQLException e)
+		{
+		}
 
 		try
 		{
@@ -304,6 +307,22 @@ public class TestSqlParser
 			fail("incorrect query '" + query + "' parsed as correct");
 		}
 		catch (ParseException e)
+		{
+		}
+		catch (SQLException e)
+		{
+		}
+
+		try
+		{
+			query = "SELECT (B > 5) FROM test";
+			parser.parse(query);
+			fail("incorrect query '" + query + "' parsed as correct");
+		}
+		catch (ParseException e)
+		{
+		}
+		catch (SQLException e)
 		{
 		}
 

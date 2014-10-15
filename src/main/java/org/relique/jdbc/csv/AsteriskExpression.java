@@ -20,18 +20,13 @@ package org.relique.jdbc.csv;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-class AsteriskExpression extends LogicalExpression
+class AsteriskExpression extends Expression
 {
 	String expression;
 	public AsteriskExpression(String expression)
 	{
 		this.expression = expression;
-	}
-	public boolean isTrue(Map<String, Object> env)
-	{
-		return false;
 	}
 	public String toString()
 	{

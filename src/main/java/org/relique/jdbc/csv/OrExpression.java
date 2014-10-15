@@ -26,10 +26,20 @@ import java.util.Map;
 class OrExpression extends LogicalExpression
 {
 	LogicalExpression left, right;
-	public OrExpression(LogicalExpression left, LogicalExpression right)
+	boolean isValid;
+	public OrExpression(Expression left, Expression right)
 	{
-		this.left = left;
-		this.right = right;
+		isValid = (left instanceof LogicalExpression && right instanceof LogicalExpression);
+		if (isValid)
+		{
+			this.left = (LogicalExpression)left;
+			this.right = (LogicalExpression)right;
+			isValid = left.isValid() && right.isValid();
+		}
+	}
+	public boolean isValid()
+	{
+		return isValid;
 	}
 	public boolean isTrue(Map<String, Object> env) throws SQLException
 	{

@@ -112,6 +112,20 @@ public class SqlParser
 	public void setParsedStatement(ParsedStatement parsedStatement) throws SQLException
 	{
 		this.isDistinct = parsedStatement.isDistinct;
+
+		if (parsedStatement.whereClause != null)
+		{
+			/*
+			 * WHERE clause must be logical expression such as A > 5 and not a
+			 * simple expression such as A + 5.
+			 */
+			if (!(parsedStatement.whereClause.content instanceof LogicalExpression &&
+				parsedStatement.whereClause.content.isValid()))
+			{
+				throw new SQLException(CsvResources.getString("whereNotLogical"));
+			}
+		}
+
 		this.whereClause = parsedStatement.whereClause;
 		this.limit = parsedStatement.limit;
 		this.offset = parsedStatement.offset;
@@ -133,6 +147,16 @@ public class SqlParser
 			if (parsedExpression != null)
 			{
 				QueryEnvEntry cc = (QueryEnvEntry) parsedExpression.content;
+
+				/*
+				 * A logical expression such as A > 5 is not allowed as a query expression.
+				 */
+				if ((cc.expression instanceof LogicalExpression) ||
+					(cc.expression.isValid() == false))
+				{
+					throw new SQLException("invalidQueryExpression");
+				}
+
 				String key = cc.key;
 				if (tableAlias != null && key.startsWith(tableAlias + "."))
 					key = key.substring(tableAlias.length() + 1);
@@ -150,6 +174,15 @@ public class SqlParser
 		{
 			ParsedExpression cc = it2.next();
 			groupByColumns.add(cc.content);
+		}
+
+		if (parsedStatement.havingClause != null)
+		{
+			if (!(parsedStatement.havingClause.content instanceof LogicalExpression) &&
+				parsedStatement.havingClause.content.isValid())
+			{
+				throw new SQLException(CsvResources.getString("havingNotLogical"));
+			}
 		}
 		this.havingClause = parsedStatement.havingClause;
 
