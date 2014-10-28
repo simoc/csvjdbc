@@ -204,10 +204,7 @@ public class CsvReader extends DataReader
 		String[] columnNames = getColumnNames();
 		String[] columnAliases = getAliasedColumnNames();
 
-		int nKeys = 1 + columnNames.length;
-		if (columnAliases != null)
-			nKeys += columnAliases.length;
-		Map<String, Object> result = new HashMap<String, Object>(nKeys, 1);
+		Map<String, Object> result = new HashMap<String, Object>();
 		result.put(StringConverter.COLUMN_NAME, converter);
 
 		for (int i = 0; i < columnNames.length; i++)
