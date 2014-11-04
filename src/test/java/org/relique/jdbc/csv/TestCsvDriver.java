@@ -2331,6 +2331,20 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testSubstringFunction() throws SQLException
+	{
+		Properties props = new Properties(); 
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT substring(name, 2), substring(name, 3, 4), substring(name, 200) FROM sample4");
+		assertTrue(results.next());
+		assertEquals("The substring is wrong", "uan Pablo Morales", results.getString(1));
+		assertEquals("The substring is wrong", "an P", results.getString(2));
+		assertEquals("The substring is wrong", "", results.getString(3));
+	}
+
+	@Test
 	public void testRoundFunction() throws SQLException
 	{
 		Properties props = new Properties();
