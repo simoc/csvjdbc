@@ -119,6 +119,15 @@ SKIP:
 	| "\r"
 	| "\n"
 }
+SKIP:
+{
+	<"/*">: IN_C_COMMENT
+}
+<IN_C_COMMENT> SKIP:
+{
+	<"*/">: DEFAULT
+	| <~[]>
+}
 SPECIAL_TOKEN:
 {
 	/*
