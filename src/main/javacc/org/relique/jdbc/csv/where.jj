@@ -712,7 +712,6 @@ Expression relationalExpression():
 	Expression arg3 = null;
 	LogicalExpression expr;
 	String op;
-	Token t;
 	boolean negate = false;
 	List<Expression> inEntries = new LinkedList<Expression>();
 }
