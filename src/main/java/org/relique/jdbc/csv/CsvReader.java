@@ -73,8 +73,7 @@ public class CsvReader extends DataReader
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
-				throw new SQLException("" + e);
+				throw new SQLException(e.toString());
 			}
 		}
 	}
@@ -118,7 +117,7 @@ public class CsvReader extends DataReader
 				}
 				catch (IOException e)
 				{
-					throw new SQLException("" + e);
+					throw new SQLException(e.toString());
 				}
 				if (line == null)
 					return false;
