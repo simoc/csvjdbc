@@ -74,7 +74,7 @@ public class CsvConnection implements Connection
 	private String separator = CsvDriver.DEFAULT_SEPARATOR;
 
 	/** Field quotechar to use */
-	private char quotechar = CsvDriver.DEFAULT_QUOTECHAR;
+	private Character quotechar = Character.valueOf(CsvDriver.DEFAULT_QUOTECHAR);
 
 	/** Lookup table with headerline to use for each table */
 	private HashMap<String, String> headerlines = new HashMap<String, String>();
@@ -326,9 +326,12 @@ public class CsvConnection implements Connection
 		prop = info.getProperty(CsvDriver.QUOTECHAR);
 		if (prop != null)
 		{
-			if (prop.length() != 1)
+			if (prop.length() == 1)
+				quotechar = Character.valueOf(prop.charAt(0));
+			else if (prop.length() == 0)
+				quotechar = null;
+			else
 				throw new SQLException(CsvResources.getString("invalid") + " " + CsvDriver.QUOTECHAR + ": " + prop);
-			quotechar = prop.charAt(0);
 		}
 		// set the global headerline and headerline.tablename values.
 		if (info.getProperty(CsvDriver.HEADERLINE) != null)
@@ -982,7 +985,7 @@ public class CsvConnection implements Connection
 	 * 
 	 * @return current value for the quotechar property
 	 */
-	public char getQuotechar()
+	public Character getQuotechar()
 	{
 		return quotechar;
 	}

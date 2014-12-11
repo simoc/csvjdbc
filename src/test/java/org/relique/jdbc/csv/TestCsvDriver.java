@@ -3108,6 +3108,33 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testNoQuotechar() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("quotechar", "");
+		props.put("fileExtension", ".txt");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM uses_quotes");
+		assertTrue(results.next());
+		assertEquals("COLUMN1 is wrong", "1", results.getString(1));
+		assertEquals("COLUMN2 is wrong", "uno", results.getString(2));
+		assertEquals("COLUMN3 is wrong", "one", results.getString(3));
+		assertTrue(results.next());
+		assertEquals("COLUMN1 is wrong", "2", results.getString(1));
+		assertEquals("COLUMN2 is wrong", "a 'quote' (source unknown)", results.getString(2));
+		assertEquals("COLUMN3 is wrong", "two", results.getString(3));
+		assertTrue(results.next());
+		assertEquals("COLUMN1 is wrong", "3", results.getString(1));
+		assertEquals("COLUMN2 is wrong", "another \"quote\" (also unkown)", results.getString(2));
+		assertEquals("COLUMN3 is wrong", "three", results.getString(3));
+	}
+
+	@Test
 	public void testLongSeparator() throws SQLException
 	{
 		Properties props = new Properties();

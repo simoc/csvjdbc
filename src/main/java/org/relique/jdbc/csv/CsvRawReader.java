@@ -54,7 +54,7 @@ public class CsvRawReader
 	private String headerLine = "";
 	private boolean suppressHeaders = false;
 	private boolean isHeaderFixedWidth = true;
-	private char quoteChar = '"';
+	private Character quoteChar = Character.valueOf('"');
 	private boolean trimValues = true;
 	private String comment = null;
 	private boolean ignoreUnparseableLines;
@@ -85,7 +85,7 @@ public class CsvRawReader
 	 * @since
 	 */
 	public CsvRawReader(LineNumberReader in, String tableAlias, String separator,
-			boolean suppressHeaders, boolean isHeaderFixedWidth, char quoteChar, String comment,
+			boolean suppressHeaders, boolean isHeaderFixedWidth, Character quoteChar, String comment,
 			String headerLine, boolean trimHeaders, boolean trimValues,
 			int skipLeadingLines, boolean ignoreUnparseableLines,
 			boolean defectiveHeaders, int skipLeadingDataLines, String quoteStyle,
@@ -385,6 +385,11 @@ public class CsvRawReader
 			return s.substring(0, len);
 	}
 
+	private boolean isQuoteChar(char c)
+	{
+		return quoteChar != null && c == quoteChar.charValue();
+	}
+
 	/**
 	 * splits <b>line</b> into the String[] it contains.
 	 * Stuart Mottram added the code for handling line breaks in fields.
@@ -413,7 +418,7 @@ public class CsvRawReader
 			while (currentPos < line.length())
 			{
 				char currentChar = line.charAt(currentPos);
-				if (value.length() == 0 && currentChar == quoteChar
+				if (value.length() == 0 && isQuoteChar(currentChar)
 						&& !inQuotedString)
 				{
 					// acknowledge quoteChar only at beginning of value.
@@ -427,18 +432,18 @@ public class CsvRawReader
 					value.append(nextChar);
 					currentPos++;
 				}
-				else if (currentChar == quoteChar)
+				else if (isQuoteChar(currentChar))
 				{
 					char nextChar = line.charAt(currentPos + 1);
 					if (!inQuotedString)
 					{
 						// accepting the single quoteChar because the whole
 						// value is not quoted.
-						value.append(quoteChar);
+						value.append(quoteChar.charValue());
 					}
-					else if (nextChar == quoteChar)
+					else if (isQuoteChar(nextChar))
 					{
-						value.append(quoteChar);
+						value.append(quoteChar.charValue());
 						if ("SQL".equals(quoteStyle))
 						{
 							// doubled quoteChar in quoted strings collapse to

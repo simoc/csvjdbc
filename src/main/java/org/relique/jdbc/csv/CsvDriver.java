@@ -281,7 +281,7 @@ public class CsvDriver implements Driver
 		throws SQLException
 	{
 		String separator = DEFAULT_SEPARATOR;
-		char quoteChar = DEFAULT_QUOTECHAR;
+		Character quoteChar = Character.valueOf(DEFAULT_QUOTECHAR);
 		String quoteStyle = DEFAULT_QUOTE_STYLE;
 
 		if (resultSet instanceof CsvResultSet)
@@ -327,7 +327,8 @@ public class CsvDriver implements Driver
 				String value = resultSet.getString(i);
 				if (value != null)
 				{
-					value = addQuotes(value, separator, quoteChar, quoteStyle);
+					if (quoteChar != null)
+						value = addQuotes(value, separator, quoteChar.charValue(), quoteStyle);
 					out.print(value);
 				}
 			}
