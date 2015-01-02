@@ -500,30 +500,23 @@ public class StringConverter
 	{
 		private static final long serialVersionUID = -3037117163532338893L;
 		{
-			try
-			{
-				/*
-				 * Lookup from SQL type names to java class.
-				 */
-				put("string", Class.forName("java.lang.String"));
-				put("boolean", Class.forName("java.lang.Boolean"));
-				put("byte", Class.forName("java.lang.Byte"));
-				put("short", Class.forName("java.lang.Short"));
-				put("int", Class.forName("java.lang.Integer"));
-				put("integer", Class.forName("java.lang.Integer"));
-				put("long", Class.forName("java.lang.Long"));
-				put("float", Class.forName("java.lang.Float"));
-				put("double", Class.forName("java.lang.Double"));
-				put("bigdecimal", Class.forName("java.math.BigDecimal"));
-				put("date", Class.forName("java.sql.Date"));
-				put("time", Class.forName("java.sql.Time"));
-				put("timestamp", Class.forName("java.sql.Timestamp"));
-				put("asciistream", Class.forName("java.io.InputStream"));
-			}
-			catch (ClassNotFoundException e)
-			{
-				e.printStackTrace();
-			}
+			/*
+			 * Lookup from SQL type names to java class.
+			 */
+			put("string", java.lang.String.class);
+			put("boolean", java.lang.Boolean.class);
+			put("byte", java.lang.Byte.class);
+			put("short", java.lang.Short.class);
+			put("int", java.lang.Integer.class);
+			put("integer", java.lang.Integer.class);
+			put("long", java.lang.Long.class);
+			put("float", java.lang.Float.class);
+			put("double", java.lang.Double.class);
+			put("bigdecimal", java.math.BigDecimal.class);
+			put("date", java.sql.Date.class);
+			put("time", java.sql.Time.class);
+			put("timestamp", java.sql.Timestamp.class);
+			put("asciistream", java.io.InputStream.class);
 		}
 	};
 
