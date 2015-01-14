@@ -90,13 +90,13 @@ class BinaryOperation extends Expression
 			}
 			if (op == '+')
 				bil = bil.add(bir);
-			if (op == '-')
+			else if (op == '-')
 				bil = bil.subtract(bir);
-			if (op == '*')
+			else if (op == '*')
 				bil = bil.multiply(bir);
-			if (op == '/')
+			else if (op == '/')
 				bil = bil.divide(bir);
-			if (op == '%')
+			else if (op == '%')
 				bil = bil.remainder(bir);
 			if (isLongExpression)
 				return new Long(bil.toString());
