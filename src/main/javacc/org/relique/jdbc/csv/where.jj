@@ -227,6 +227,26 @@ TOKEN:
 }
 TOKEN:
 {
+	<CASE:"CASE">
+}
+TOKEN:
+{
+	<WHEN:"WHEN">
+}
+TOKEN:
+{
+	<THEN:"THEN">
+}
+TOKEN:
+{
+	<ELSE:"ELSE">
+}
+TOKEN:
+{
+	<END:"END">
+}
+TOKEN:
+{
 	<PLACEHOLDER:"?">
 }
 TOKEN:
@@ -954,6 +974,10 @@ Expression simpleExpression():
 	{
 		return new SQLUserFunction(t.image, args);
 	}
+	| arg = searchedCaseExpression()
+	{
+		return arg;
+	}
 	| arg = columnName()
 	{
 		return arg;
@@ -981,6 +1005,23 @@ Expression simpleExpression():
 	| <PLACEHOLDER>
 	{
 		return new Placeholder();
+	}
+}
+Expression searchedCaseExpression():
+{
+	List<Expression> conditions = new LinkedList<Expression>();
+	List<Expression> values = new LinkedList<Expression>();
+	Expression arg;
+	Expression arg2;
+	Expression arg3 = null;
+}
+{
+	<CASE> (<WHEN> arg = logicalOrExpression(){conditions.add(arg);}
+	<THEN> arg2 = binaryOperation(){values.add(arg2);})*
+	(<ELSE> arg3 = binaryOperation())?
+	<END>
+	{
+		return new SearchedCaseExpression(conditions, values, arg3);
 	}
 }
 Expression columnName():
