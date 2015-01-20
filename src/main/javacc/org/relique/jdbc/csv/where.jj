@@ -978,6 +978,10 @@ Expression simpleExpression():
 	{
 		return arg;
 	}
+	| arg = simpleCaseExpression()
+	{
+		return arg;
+	}
 	| arg = columnName()
 	{
 		return arg;
@@ -1022,6 +1026,25 @@ Expression searchedCaseExpression():
 	<END>
 	{
 		return new SearchedCaseExpression(conditions, values, arg3);
+	}
+}
+Expression simpleCaseExpression():
+{
+	List<Expression> switches = new LinkedList<Expression>();
+	List<Expression> values = new LinkedList<Expression>();
+	Expression arg;
+	Expression arg2;
+	Expression arg3;
+	Expression arg4 = null;
+}
+{
+	<CASE> arg = binaryOperation()
+	(<WHEN> arg2 = binaryOperation(){switches.add(arg2);}
+	<THEN> arg3 = binaryOperation(){values.add(arg3);})*
+	(<ELSE> arg4 = binaryOperation())?
+	<END>
+	{
+		return new SimpleCaseExpression(arg, switches, values, arg4);
 	}
 }
 Expression columnName():

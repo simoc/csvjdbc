@@ -790,6 +790,9 @@ public class TestSqlParser
 	@Test
 	public void testEvaluateCaseExpressions() throws ParseException, SQLException
 	{
+		/*
+		 * Test "searched case" expressions.
+		 */
 		ExpressionParser cs; 
 		cs = new ExpressionParser(new StringReader("CASE " +
 			"WHEN POSTCODE >= 2600 AND POSTCODE <= 2618 THEN 'ACT' " +
@@ -816,6 +819,36 @@ public class TestSqlParser
 		assertEquals(o.toString(), "");
 
 		cs = new ExpressionParser(new StringReader("CASE WHEN F=1 THEN '1st' WHEN F=2 THEN '2nd' END"));
+		cs.parseQueryEnvEntry();
+
+		env.put("F", Integer.valueOf(1));
+		o = cs.eval(env);
+		assertEquals(o.toString(), "1st");
+
+		env.put("F", Integer.valueOf(2));
+		o = cs.eval(env);
+		assertEquals(o.toString(), "2nd");
+
+		env.put("F", Integer.valueOf(3));
+		o = cs.eval(env);
+		assertEquals(o, null);
+
+		/*
+		 * Test "simple case" expressions.
+		 */
+		cs = new ExpressionParser(new StringReader("CASE UNITS WHEN 'KM' THEN X * 1000 ELSE X END"));
+		cs.parseQueryEnvEntry();
+
+		env.put("UNITS", "KM");
+		env.put("X", Integer.valueOf(3));
+		o = cs.eval(env);
+		assertEquals(o.toString(), "3000");
+
+		env.put("UNITS", "M");
+		o = cs.eval(env);
+		assertEquals(o.toString(), "3");
+
+		cs = new ExpressionParser(new StringReader("CASE F WHEN 1 THEN '1st' WHEN 2 THEN '2nd' END"));
 		cs.parseQueryEnvEntry();
 
 		env.put("F", Integer.valueOf(1));
