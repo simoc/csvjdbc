@@ -4292,6 +4292,29 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testDistinctWithAlias() throws SQLException
+	{
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select distinct S.job from sample5 S");
+
+		assertTrue(results.next());
+		assertEquals("Incorrect distinct value 1", "Piloto", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("Incorrect distinct value 2", "Project Manager", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("Incorrect distinct value 3", "Finance Manager", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("Incorrect distinct value 4", "Office Manager", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("Incorrect distinct value 5", "Office Employee", results.getString(1));
+		assertFalse(results.next());
+	}
+
+	@Test
 	public void testDistinctWithWhere() throws SQLException
 	{
 		Properties props = new Properties();
