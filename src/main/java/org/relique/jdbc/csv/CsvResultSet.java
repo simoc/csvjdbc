@@ -476,6 +476,16 @@ public class CsvResultSet implements ResultSet
 			}
 		}
 
+		if (this.distinctValues != null)
+		{
+			for (int i = 0; i < this.queryEnvironment.size(); i++)
+			{
+				Object[] o = this.queryEnvironment.get(i);
+				Expression expr = (Expression)o[1];
+				this.usedColumns.addAll(expr.usedColumns());
+			}
+		}
+
 		if (this.groupByColumns != null ||
 		this.orderByColumns != null || this.aggregateFunctions.size() > 0 ||
 			isScrollable())
