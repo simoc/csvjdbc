@@ -120,8 +120,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 	{
 		checkOpen();
 
-		// TODO Auto-generated method stub
-		return 0;
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": executeUpdate()");
 	}
 
 	@Override
@@ -167,8 +166,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setAsciiStream(int,InputStream,int)");
 	}
 
 	@Override
@@ -178,8 +176,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setAsciiStream(int,InputStream,long)");
 	}
 
 	@Override
@@ -207,8 +204,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setBinaryStream(int,InputStream,int)");
 	}
 
 	@Override
@@ -218,8 +214,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setBinaryStream(int,InputStream,long)");
 	}
 
 	@Override
@@ -247,8 +242,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setBlob(int,InputStream,long)");
 	}
 
 	@Override
@@ -275,8 +269,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setBytes(int,byte[])");
 	}
 
 	@Override
@@ -295,7 +288,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setCharacterStream(int,Reader,int)");
 
 	}
 
@@ -306,7 +299,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setAsciiStream(int,InputStream,long)");
 
 	}
 
@@ -334,8 +327,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setClob(int,Reader,long)");
 	}
 
 	@Override
@@ -353,8 +345,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setDate(int,Date,Calendar)");
 	}
 
 	@Override
@@ -410,8 +401,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setNCharacterStream(int,Reader,long)");
 	}
 
 	@Override
@@ -438,8 +428,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setNClob(int,Reader,long)");
 	}
 
 	@Override
@@ -448,8 +437,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setNString(int,String)");
 	}
 
 	@Override
@@ -458,8 +446,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setNull(int,int)");
 	}
 
 	@Override
@@ -468,8 +455,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setNull(int,int,String)");
 	}
 
 	@Override
@@ -487,8 +473,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setObject(int,Object,int)");
 	}
 
 	@Override
@@ -498,8 +483,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setObject(int,Object,int,int)");
 	}
 
 	@Override
@@ -562,8 +546,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setTime(int,Time,Calendar)");
 	}
 
 	@Override
@@ -582,8 +565,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setTimestamp(int,Timestamp,Calendar)");
 	}
 
 	@Override
@@ -603,7 +585,6 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		// TODO Auto-generated method stub
-
+		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setUnicodeStream(int,InputStream,int)");
 	}
 }
