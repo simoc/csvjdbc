@@ -54,6 +54,7 @@ public class CsvStatement implements Statement
 	protected List<SqlParser> multipleParsers = null;
 	private int maxRows = 0;
 	private int fetchSize = 1;
+	private int queryTimeout = Integer.MAX_VALUE;
 	private int fetchDirection = ResultSet.FETCH_FORWARD;
 	private boolean closed;
 
@@ -108,7 +109,7 @@ public class CsvStatement implements Statement
 	@Override
 	public void setQueryTimeout(int seconds) throws SQLException
 	{
-		throw new SQLException(CsvResources.getString("methodNotSupported") + ": setQueryTimeout(int)");
+		queryTimeout = seconds;
 	}
 
 	@Override
@@ -161,7 +162,7 @@ public class CsvStatement implements Statement
 	{
 		checkOpen();
 
-		return 0;
+		return queryTimeout;
 	}
 
 	@Override
