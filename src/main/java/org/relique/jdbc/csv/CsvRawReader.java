@@ -16,10 +16,8 @@
  */
 package org.relique.jdbc.csv;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.LineNumberReader;
-import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +44,7 @@ import org.relique.io.DataReader;
 public class CsvRawReader
 {
 	private LineNumberReader input;
+	private String tableName;
 	private String tableAlias;
 	private String[] columnNames;
 	private String[] fieldValues;
@@ -61,30 +60,7 @@ public class CsvRawReader
 	private String quoteStyle;
 	private ArrayList<int []> fixedWidthColumns;
 
-	/**
-	 * Insert the method's description here.
-	 * 
-	 * Creation date: (6-11-2001 15:02:42)
-	 * 
-	 * @param fileName
-	 *			  java.lang.String
-	 * @param separator
-	 *			  char
-	 * @param suppressHeaders
-	 *			  boolean
-	 * @param quoteChar
-	 *			  char
-	 * @param defectiveHeaders 
-	 * @param skipLeadingDataLines 
-	 * @exception java.lang.Exception
-	 *				  The exception description.
-	 * @throws SQLException
-	 * @throws IOException
-	 * @throws FileNotFoundException
-	 * @throws UnsupportedEncodingException
-	 * @since
-	 */
-	public CsvRawReader(LineNumberReader in, String tableAlias, String separator,
+	public CsvRawReader(LineNumberReader in, String tableName, String tableAlias, String separator,
 			boolean suppressHeaders, boolean isHeaderFixedWidth, Character quoteChar, String comment,
 			String headerLine, boolean trimHeaders, boolean trimValues,
 			int skipLeadingLines, boolean ignoreUnparseableLines,
@@ -92,6 +68,7 @@ public class CsvRawReader
 			ArrayList<int []> fixedWidthColumns)
 			throws IOException, SQLException
 	{
+		this.tableName = tableName;
 		this.tableAlias = tableAlias;
 		this.separator = separator;
 		this.suppressHeaders = suppressHeaders;
@@ -295,6 +272,11 @@ public class CsvRawReader
 			Arrays.fill(retval, DataReader.DEFAULT_COLUMN_SIZE);
 		}
 		return retval;
+	}
+
+	public String getTableName()
+	{
+		return tableName;
 	}
 
 	public String getTableAlias()

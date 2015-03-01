@@ -160,6 +160,8 @@ public class SqlParser
 				String key = cc.key;
 				if (tableAlias != null && key.startsWith(tableAlias + "."))
 					key = key.substring(tableAlias.length() + 1);
+				if (tableName != null && key.startsWith(tableName.toUpperCase() + "."))
+					key = key.substring(tableName.length() + 1);
 				environment.add(new Object[]{ key, cc.expression });
 			}
 		}

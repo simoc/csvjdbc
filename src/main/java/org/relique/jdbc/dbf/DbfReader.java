@@ -47,9 +47,10 @@ public class DbfReader extends DataReader
 	private Method fieldGetTypeMethod;
 	private Method fieldGetLengthMethod;
 	private Map<String, String> dbfTypeToSQLType;
+	private String upperTableName;
 	private String tableAlias;
 
-	public DbfReader(String path, String tableAlias, String charset) throws SQLException
+	public DbfReader(String path, String tableName, String tableAlias, String charset) throws SQLException
 	{
 		super();
 		try
@@ -96,6 +97,7 @@ public class DbfReader extends DataReader
 			recordCount = (Integer)tableGetRecordCountMethod.invoke(table, new Object[] {});
 			record = null;
 			rowNo = -1;
+			this.upperTableName = tableName.toUpperCase();
 			this.tableAlias = tableAlias;
 		}
 		catch (Exception e)
@@ -246,6 +248,7 @@ public class DbfReader extends DataReader
 				 */
 				fieldName = fieldName.toUpperCase();
 				result.put(fieldName, o);
+				result.put(upperTableName + "." + fieldName, o);
 				if (tableAlias != null)
 				{
 					/*

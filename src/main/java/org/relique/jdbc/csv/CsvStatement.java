@@ -350,7 +350,7 @@ public class CsvStatement implements Statement
 			{
 				if (connection.getExtension().equalsIgnoreCase(".dbf"))
 				{
-					reader = new DbfReader(fileName, parser.getTableAlias(), connection.getCharset());
+					reader = new DbfReader(fileName, tableName, parser.getTableAlias(), connection.getCharset());
 				}
 				else
 				{
@@ -402,22 +402,26 @@ public class CsvStatement implements Statement
 
 					String headerline = connection.getHeaderline(tableName);
 					CsvRawReader rawReader = new CsvRawReader(input,
-							parser.getTableAlias(), connection.getSeparator(),
-							connection.isSuppressHeaders(),
-							connection.isHeaderFixedWidth(),
-							connection.getQuotechar(),
-							connection.getCommentChar(), headerline,
-							connection.getTrimHeaders(),
-							connection.getTrimValues(),
-							connection.getSkipLeadingLines(),
-							connection.isIgnoreUnparseableLines(),
-							connection.isDefectiveHeaders(),
-							connection.getSkipLeadingDataLines(),
-							connection.getQuoteStyle(),
-							connection.getFixedWidthColumns());
+						tableName,
+						parser.getTableAlias(),
+						connection.getSeparator(),
+						connection.isSuppressHeaders(),
+						connection.isHeaderFixedWidth(),
+						connection.getQuotechar(),
+						connection.getCommentChar(),
+						headerline,
+						connection.getTrimHeaders(),
+						connection.getTrimValues(),
+						connection.getSkipLeadingLines(),
+						connection.isIgnoreUnparseableLines(),
+						connection.isDefectiveHeaders(),
+						connection.getSkipLeadingDataLines(),
+						connection.getQuoteStyle(),
+						connection.getFixedWidthColumns());
 					reader = new CsvReader(rawReader,
-							connection.getTransposedLines(),
-							connection.getTransposedFieldsToSkip(), headerline);
+						connection.getTransposedLines(),
+						connection.getTransposedFieldsToSkip(),
+						headerline);
 				}
 			}
 			catch (IOException e)

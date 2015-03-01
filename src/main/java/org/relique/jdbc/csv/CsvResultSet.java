@@ -269,6 +269,8 @@ public class CsvResultSet implements ResultSet
 		{
 			String columnName = columnNames[i].toUpperCase();
 			allReaderColumns.add(columnName);
+			if (tableName != null)
+				allReaderColumns.add(tableName.toUpperCase() + "." + columnName);
 			if (tableAlias != null)
 				allReaderColumns.add(tableAlias + "." + columnName);
 		}
@@ -725,13 +727,16 @@ public class CsvResultSet implements ResultSet
 							String columnName = o2.toString();
 							if (!groupingColumns.contains(columnName))
 							{
-								String tableAlias = this.reader.getTableAlias();
-								if (tableAlias == null || (!groupingColumns.contains(tableAlias + "." + columnName)))
+								if (tableName == null || (!groupingColumns.contains(tableName.toUpperCase() + "." + columnName)))
 								{
-									/*
-									 * GROUP BY must include all queried columns.
-									 */
-									throw new SQLException(CsvResources.getString("columnNotInGroupBy") + ": " + columnName);
+									String tableAlias = this.reader.getTableAlias();
+									if (tableAlias == null || (!groupingColumns.contains(tableAlias + "." + columnName)))
+									{
+										/*
+										 * GROUP BY must include all queried columns.
+										 */
+										throw new SQLException(CsvResources.getString("columnNotInGroupBy") + ": " + columnName);
+									}
 								}
 							}
 						}
@@ -1352,6 +1357,8 @@ public class CsvResultSet implements ResultSet
 				Object literal = StringConverter.getLiteralForTypeName(readerTypeNames[i]);
 				String columnName = readerColumnNames[i].toUpperCase();
 				env.put(columnName, literal);
+				if (tableName != null)
+					env.put(tableName.toUpperCase() + "." + columnName, literal);
 				if (tableAlias != null)
 					env.put(tableAlias + "." + columnName, literal);
 			}
