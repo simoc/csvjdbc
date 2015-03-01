@@ -3936,6 +3936,20 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testTableNameAsAlias() throws SQLException
+	{
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT sample.id FROM sample");
+
+		results.next();
+		assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
+	}
+
+	@Test
 	public void testTableAlias() throws SQLException
 	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
