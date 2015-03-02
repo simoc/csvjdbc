@@ -285,7 +285,11 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	@Override
 	public String getIdentifierQuoteString() throws SQLException
 	{
-		return " ";
+		/*
+		 * Identifiers enclosed in double-quotes will not be
+		 * interpreted as SQL.
+		 */
+		return "\"";
 	}
 
 	@Override
