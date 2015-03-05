@@ -31,8 +31,6 @@ public abstract class DataReader
 
 	abstract public String[] getColumnNames() throws SQLException;
 
-	abstract public Object getField(int i) throws SQLException;
-
 	abstract public void close() throws SQLException;
 
 	abstract public Map<String, Object> getEnvironment() throws SQLException;

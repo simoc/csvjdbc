@@ -205,8 +205,7 @@ public class CsvReader extends DataReader
 		return this.aliasedColumnNames;
 	}
 
-	@Override
-	public Object getField(int i) throws SQLException
+	private Object getField(int i) throws SQLException
 	{
 		if (isPlainReader())
 			return rawReader.getField(i);

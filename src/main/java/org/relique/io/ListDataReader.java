@@ -55,12 +55,6 @@ public class ListDataReader extends DataReader
 	}
 
 	@Override
-	public Object getField(int i) throws SQLException {
-		Object []o = columnValues.get(rowIndex);
-		return o[i];
-	}
-
-	@Override
 	public void close() throws SQLException
 	{
 	}

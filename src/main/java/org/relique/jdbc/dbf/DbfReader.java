@@ -153,12 +153,12 @@ public class DbfReader extends DataReader
 		return columnNames;
 	}
 
-	public Object getField(int i) throws SQLException
+	private Object getField(int i) throws SQLException
 	{
 		try
 		{
 			String []fieldNames = getColumnNames();
-			String fieldName = fieldNames[i - 1];
+			String fieldName = fieldNames[i];
 			Object result = recordGetTypedValueMethod.invoke(record, new Object[] {fieldName});
 			if(result instanceof String)
 				result = ((String) result).trim();
@@ -245,7 +245,7 @@ public class DbfReader extends DataReader
 			try
 			{
 				String fieldName = (String) fieldGetNameMethod.invoke(field, new Object[] {});
-				Object o = getField(i + 1);
+				Object o = getField(i);
 
 				/*
 				 * Convert column names to upper case because
