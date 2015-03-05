@@ -49,6 +49,7 @@ public class DbfReader extends DataReader
 	private Map<String, String> dbfTypeToSQLType;
 	private String upperTableName;
 	private String tableAlias;
+	private String[] columnNames = null;
 
 	public DbfReader(String path, String tableName, String tableAlias, String charset) throws SQLException
 	{
@@ -131,29 +132,33 @@ public class DbfReader extends DataReader
 
 	public String[] getColumnNames() throws SQLException
 	{
-		int columnCount = fields.size();
-		String[] result = new String[columnCount];
-		for(int i=0; i < columnCount; i++)
+		if (columnNames == null)
 		{
-			Object field = fields.get(i);
-			try
+			int columnCount = fields.size();
+			String[] result = new String[columnCount];
+			for(int i=0; i < columnCount; i++)
 			{
-				result[i] = (String) fieldGetNameMethod.invoke(field, new Object[] {});
+				Object field = fields.get(i);
+				try
+				{
+					result[i] = (String) fieldGetNameMethod.invoke(field, new Object[] {});
+				}
+				catch (Exception e)
+				{
+					throw new SQLException(CsvResources.getString("dansDbfError") + ": " + e);
+				}
 			}
-			catch (Exception e)
-			{
-				throw new SQLException(CsvResources.getString("dansDbfError") + ": " + e);
-			}
+			columnNames = result;
 		}
-		return result;
+		return columnNames;
 	}
 
 	public Object getField(int i) throws SQLException
 	{
-		Object field = fields.get(i - 1);
 		try
 		{
-			String fieldName = (String) fieldGetNameMethod.invoke(field, new Object[] {});
+			String []fieldNames = getColumnNames();
+			String fieldName = fieldNames[i - 1];
 			Object result = recordGetTypedValueMethod.invoke(record, new Object[] {fieldName});
 			if(result instanceof String)
 				result = ((String) result).trim();
