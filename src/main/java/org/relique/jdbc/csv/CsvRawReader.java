@@ -60,13 +60,23 @@ public class CsvRawReader
 	private String quoteStyle;
 	private ArrayList<int []> fixedWidthColumns;
 
-	public CsvRawReader(LineNumberReader in, String tableName, String tableAlias, String separator,
-			boolean suppressHeaders, boolean isHeaderFixedWidth, Character quoteChar, String comment,
-			String headerLine, boolean trimHeaders, boolean trimValues,
-			int skipLeadingLines, boolean ignoreUnparseableLines,
-			boolean defectiveHeaders, int skipLeadingDataLines, String quoteStyle,
-			ArrayList<int []> fixedWidthColumns)
-			throws IOException, SQLException
+	public CsvRawReader(LineNumberReader in,
+		String tableName,
+		String tableAlias,
+		String separator,
+		boolean suppressHeaders,
+		boolean isHeaderFixedWidth,
+		Character quoteChar,
+		String comment,
+		String headerLine,
+		boolean trimHeaders,
+		boolean trimValues,
+		int skipLeadingLines,
+		boolean ignoreUnparseableLines,
+		boolean defectiveHeaders,
+		int skipLeadingDataLines,
+		String quoteStyle,
+		ArrayList<int []> fixedWidthColumns) throws IOException, SQLException
 	{
 		this.tableName = tableName;
 		this.tableAlias = tableAlias;
@@ -82,7 +92,7 @@ public class CsvRawReader
 		this.quoteStyle = quoteStyle;
 		this.fixedWidthColumns = fixedWidthColumns;
 
-		for (int i=0; i<skipLeadingLines; i++)
+		for (int i = 0; i < skipLeadingLines; i++)
 		{
 			in.readLine();
 		}
@@ -138,14 +148,6 @@ public class CsvRawReader
 		}
 	}
 
-	/**
-	 *Description of the Method
-	 * 
-	 * @return Description of the Returned Value
-	 * @exception SQLException
-	 *				  Description of Exception
-	 * @since
-	 */
 	public boolean next() throws SQLException
 	{
 		fieldValues = new String[columnNames.length];
@@ -178,11 +180,6 @@ public class CsvRawReader
 		return true;
 	}
 
-	/**
-	 *Description of the Method
-	 * 
-	 * @since
-	 */
 	public void close()
 	{
 		try

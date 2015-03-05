@@ -361,18 +361,19 @@ public class CsvStatement implements Statement
 						CryptoFilter filter = connection.getDecryptingCodec();
 						if (connection.isIndexedFiles())
 						{
-							String fileNamePattern = parser.getTableName()
-									+ connection.getFileNamePattern()
-									+ connection.getExtension();
+							String fileNamePattern = parser.getTableName() +
+								connection.getFileNamePattern() +
+								connection.getExtension();
 							String[] nameParts = connection.getNameParts();
 							String dirName = connection.getPath();
 							in = new FileSetInputStream(dirName,
-									fileNamePattern, nameParts,
-									connection.getSeparator(),
-									connection.isFileTailPrepend(),
-									connection.isSuppressHeaders(), filter,
-									connection.getSkipLeadingDataLines()
-											+ connection.getTransposedLines());
+								fileNamePattern,
+								nameParts,
+								connection.getSeparator(),
+								connection.isFileTailPrepend(),
+								connection.isSuppressHeaders(),
+								filter,
+								connection.getSkipLeadingDataLines() + connection.getTransposedLines());
 						}
 						else if (filter == null)
 						{
@@ -442,13 +443,20 @@ public class CsvStatement implements Statement
 		CsvResultSet resultSet = null;
 		try
 		{
-			resultSet = new CsvResultSet(this, reader, tableName,
-					parser.getColumns(), parser.isDistinct(), this.resultSetType,
-					parser.getWhereClause(), parser.getGroupByColumns(),
-					parser.getHavingClause(), parser.getOrderByColumns(),
-					parser.getLimit(), parser.getOffset(),
-					connection.getColumnTypes(tableName),
-					connection.getSkipLeadingLines());
+			resultSet = new CsvResultSet(this,
+				reader,
+				tableName,
+				parser.getColumns(),
+				parser.isDistinct(),
+				this.resultSetType,
+				parser.getWhereClause(),
+				parser.getGroupByColumns(),
+				parser.getHavingClause(),
+				parser.getOrderByColumns(),
+				parser.getLimit(),
+				parser.getOffset(),
+				connection.getColumnTypes(tableName),
+				connection.getSkipLeadingLines());
 			lastResultSet = resultSet;
 		}
 		catch (ClassNotFoundException e)
