@@ -1101,8 +1101,7 @@ public class CsvConnection implements Connection
 	@Override
 	public boolean isValid(int timeout) throws SQLException
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return !closed;
 	}
 
 	@Override

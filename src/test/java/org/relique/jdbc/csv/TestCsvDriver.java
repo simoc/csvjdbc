@@ -3241,9 +3241,11 @@ public class TestCsvDriver
 	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath);
+		assertTrue(conn.isValid(0));
 		assertFalse(conn.isClosed());
 		conn.close();
 		assertTrue(conn.isClosed());
+		assertFalse(conn.isValid(0));
 
 		/*
 		 * Second close is ignored.
