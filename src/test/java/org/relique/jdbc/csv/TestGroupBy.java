@@ -231,6 +231,27 @@ public class TestGroupBy
 		assertFalse(results.next());
 	}
 
+	@Test
+	public void testGroupByCountNull() throws SQLException
+	{
+		Properties props = new Properties();
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select NAME, COUNT(NULLIF(SCORE, 'NA')) FROM scores GROUP BY NAME");
+		assertTrue(results.next());
+		assertEquals("The NAME is wrong", "Daniel", results.getString(1));
+		assertEquals("The COUNT is wrong", 2, results.getInt(2));
+		assertTrue(results.next());
+		assertEquals("The NAME is wrong", "Mark", results.getString(1));
+		assertEquals("The COUNT is wrong", 3, results.getInt(2));
+		assertTrue(results.next());
+		assertEquals("The NAME is wrong", "Maria", results.getString(1));
+		assertEquals("The COUNT is wrong", 1, results.getInt(2));
+		assertFalse(results.next());
+	}
+
 	/**
 	 * Compare two values for near equality, allowing for floating point round-off.
 	 */
