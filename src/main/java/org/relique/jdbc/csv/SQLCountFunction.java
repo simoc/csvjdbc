@@ -59,7 +59,14 @@ class SQLCountFunction extends AggregateFunction
 			}
 			else
 			{
-				retval = Integer.valueOf(groupRows.size());
+				int groupCounter = 0;
+				for (int i = 0; i < groupRows.size(); i++)
+				{
+					o = expression.eval((Map)groupRows.get(i));
+					if (o != null)
+						groupCounter++;
+				}
+				retval = Integer.valueOf(groupCounter);
 			}
 		}
 		else
