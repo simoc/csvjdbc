@@ -136,7 +136,7 @@ public class DbfReader extends DataReader
 		{
 			int columnCount = fields.size();
 			String[] result = new String[columnCount];
-			for(int i=0; i < columnCount; i++)
+			for (int i = 0; i < columnCount; i++)
 			{
 				Object field = fields.get(i);
 				try
@@ -200,7 +200,7 @@ public class DbfReader extends DataReader
 	public String[] getColumnTypes() throws SQLException
 	{
 		String[] result = new String[fields.size()];
-		for(int i=0; i<fields.size(); i++)
+		for (int i = 0; i < fields.size(); i++)
 		{
 			String dbfType = "";
 			try
@@ -221,7 +221,7 @@ public class DbfReader extends DataReader
 	public int[] getColumnSizes() throws SQLException
 	{
 		int[] result = new int[fields.size()];
-		for(int i=0; i<fields.size(); i++)
+		for (int i = 0; i < fields.size(); i++)
 		{
 			try
 			{
@@ -239,7 +239,7 @@ public class DbfReader extends DataReader
 	public Map<String, Object> getEnvironment() throws SQLException
 	{
 		Map<String, Object> result = new HashMap<String, Object>();
-		for(int i=0; i < fields.size(); i++)
+		for (int i = 0; i < fields.size(); i++)
 		{
 			Object field = fields.get(i);
 			try
