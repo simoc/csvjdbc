@@ -232,6 +232,27 @@ public class TestGroupBy
 	}
 
 	@Test
+	public void testGroupByCountStar() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "String,Integer");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select NAME, count(*) from scores group by NAME");
+		assertTrue(results.next());
+		assertEquals("The NAME is wrong", "Daniel", results.getString(1));
+		assertEquals("The COUNT is wrong", 3, results.getInt(2));
+		assertTrue(results.next());
+		assertEquals("The NAME is wrong", "Mark", results.getString(1));
+		assertEquals("The COUNT is wrong", 3, results.getInt(2));
+		assertTrue(results.next());
+		assertEquals("The NAME is wrong", "Maria", results.getString(1));
+		assertEquals("The COUNT is wrong", 3, results.getInt(2));
+	}
+
+	@Test
 	public void testGroupByCountNull() throws SQLException
 	{
 		Properties props = new Properties();
@@ -543,7 +564,7 @@ public class TestGroupBy
 			assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidHaving") + ": NAME", "" + e);
 		}
 	}
-	
+
 	@Test
 	public void testGroupByCountDistinct() throws SQLException
 	{
