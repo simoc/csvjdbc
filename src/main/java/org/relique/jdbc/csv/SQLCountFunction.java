@@ -60,11 +60,18 @@ class SQLCountFunction extends AggregateFunction
 			else
 			{
 				int groupCounter = 0;
-				for (int i = 0; i < groupRows.size(); i++)
+				if (expression instanceof AsteriskExpression)
 				{
-					o = expression.eval((Map)groupRows.get(i));
-					if (o != null)
-						groupCounter++;
+					groupCounter = groupRows.size();
+				}
+				else
+				{
+					for (int i = 0; i < groupRows.size(); i++)
+					{
+						o = expression.eval((Map)groupRows.get(i));
+						if (o != null)
+							groupCounter++;
+					}
 				}
 				retval = Integer.valueOf(groupCounter);
 			}
