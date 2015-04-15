@@ -122,16 +122,20 @@ public class FileSetInputStream extends InputStream
 
 		fileNames = new ArrayList<String>();
 		File root = new File(dirName);
-		String[] candidates = root.list();
+		File[] candidates = root.listFiles();
 
 		fileNameRE = Pattern.compile(fileNamePattern);
 
 		for (int i = 0; i < candidates.length; i++)
 		{
-			Matcher m = fileNameRE.matcher(candidates[i]);
-			if (m.matches())
+			if (candidates[i].isDirectory() == false)
 			{
-				fileNames.add(candidates[i]);
+				String candidateName = candidates[i].getName();
+				Matcher m = fileNameRE.matcher(candidateName);
+				if (m.matches())
+				{
+					fileNames.add(candidateName);
+				}
 			}
 		}
 		Collections.sort(fileNames);
