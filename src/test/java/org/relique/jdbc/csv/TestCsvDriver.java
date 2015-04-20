@@ -4636,6 +4636,7 @@ public class TestCsvDriver
 		props.put("function.BITCOUNT", "java.lang.Integer.bitCount(int i)");
 		props.put("function.PROPERTY", "java.lang.System.getProperty(String)");
 		props.put("function.RLIKE", "java.util.regex.Pattern.matches(String regex,CharSequence input)");
+		props.put("function.CURRENTTIMEMILLIS", "java.lang.System.currentTimeMillis()");
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
 		Statement stmt = conn.createStatement();
@@ -4665,6 +4666,13 @@ public class TestCsvDriver
 		assertTrue(results.next());
 		assertEquals("ID is wrong", "X234", results.getString(1));
 		assertFalse(results.next());
+
+		long t1 = System.currentTimeMillis();
+		results = stmt.executeQuery("SELECT CurrentTimeMillis()");
+		assertTrue(results.next());
+		long t = results.getLong(1);
+		long t2 = System.currentTimeMillis();
+		assertTrue("CurrentTimeMillis is wrong", t >= t1 && t <= t2);
 	}
 
 	@Test
