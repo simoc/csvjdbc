@@ -34,6 +34,18 @@ class SubQueryExpression extends Expression
 
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
+		/*
+		 * Evaluate sub-query that returns a single value.
+		 */
+		throw new SQLException(CsvResources.getString("subqueryNotSupported"));
+	}
+
+	public List<Object> evalList(Map<String, Object> env) throws SQLException
+	{
+		/*
+		 * Evaluate sub-query that returns a list of values for
+		 * SELECT ... WHERE X1 IN (SELECT X2 FROM ... )
+		 */
 		throw new SQLException(CsvResources.getString("subqueryNotSupported"));
 	}
 

@@ -26,21 +26,42 @@ import java.util.Map;
 class InExpression extends LogicalExpression
 {
 	Expression obj;
-	List<Expression> inList;
+	List<Expression> inList = null;
+	SubQueryExpression subQuery = null;
+
 	public InExpression(Expression obj, List<Expression> inList)
 	{
 		this.obj = obj;
 		this.inList = inList;
 	}
+	public InExpression(Expression obj, SubQueryExpression subQuery)
+	{
+		this.obj = obj;
+		this.subQuery = subQuery;
+	}
 	public boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		Comparable objValue = (Comparable)obj.eval(env);
-		for (Expression expr: inList)
+		if (inList != null)
 		{
-			Comparable exprValue = (Comparable)expr.eval(env);
-			Integer compared = RelopExpression.compare(objValue, exprValue, env);
-			if (compared != null && compared.intValue() == 0)
-				return true;
+			for (Expression expr: inList)
+			{
+				Comparable exprValue = (Comparable)expr.eval(env);
+				Integer compared = RelopExpression.compare(objValue, exprValue, env);
+				if (compared != null && compared.intValue() == 0)
+					return true;
+			}
+		}
+		else
+		{
+			List<Object> objList = subQuery.evalList(env);
+			for (Object o: objList)
+			{
+				Comparable exprValue = (Comparable)o;
+				Integer compared = RelopExpression.compare(objValue, exprValue, env);
+				if (compared != null && compared.intValue() == 0)
+					return true;
+			}
 		}
 		return false;
 	}
@@ -49,33 +70,55 @@ class InExpression extends LogicalExpression
 		StringBuilder sb = new StringBuilder();
 		sb.append("IN ");
 		sb.append(obj.toString());
-		sb.append(" (");
-		String delimiter = "";
-		for (Expression expr: inList)
+
+		if (inList != null)
 		{
-			sb.append(delimiter);
-			sb.append(expr.toString());
-			delimiter = ", ";
+			sb.append(" (");
+			String delimiter = "";
+			for (Expression expr: inList)
+			{
+				sb.append(delimiter);
+				sb.append(expr.toString());
+				delimiter = ", ";
+			}
+			sb.append(")");
 		}
-		sb.append(")");
+		else
+		{
+			sb.append(subQuery.toString());
+		}
 		return sb.toString();
 	}
 	public List<String> usedColumns()
 	{
 		List<String> result = new LinkedList<String>();
 		result.addAll(obj.usedColumns());
-		for (Expression expr: inList)
+		if (inList != null)
 		{
-			result.addAll(expr.usedColumns());
+			for (Expression expr: inList)
+			{
+				result.addAll(expr.usedColumns());
+			}
+		}
+		if (subQuery != null)
+		{
+			result.addAll(subQuery.usedColumns());
 		}
 		return result;
 	}
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
-		for (Expression expr: inList)
+		if (inList != null)
 		{
-			result.addAll(expr.aggregateFunctions());
+			for (Expression expr: inList)
+			{
+				result.addAll(expr.aggregateFunctions());
+			}
+		}
+		if (subQuery != null)
+		{
+			result.addAll(subQuery.aggregateFunctions());
 		}
 		return result;
 	}

@@ -726,6 +726,22 @@ Expression logicalUnaryExpression():
 		return arg;
 	}
 }
+LogicalExpression inListExpression(Expression arg):
+{
+	Expression arg2;
+	List<Expression> inEntries = new LinkedList<Expression>();
+	ParsedStatement parsedStatement;
+}
+{
+	arg2 = binaryOperation(){inEntries.add(arg2);}(<COMMA>arg2 = binaryOperation(){inEntries.add(arg2);})*
+	{
+		return new InExpression(arg, inEntries);
+	}
+	| parsedStatement = selectStatement()
+	{
+		return new InExpression(arg, new SubQueryExpression(parsedStatement));
+	}
+}
 Expression relationalExpression():
 {
 	Expression arg1, arg2;
@@ -733,7 +749,6 @@ Expression relationalExpression():
 	LogicalExpression expr;
 	String op;
 	boolean negate = false;
-	List<Expression> inEntries = new LinkedList<Expression>();
 }
 {
 	arg1 = binaryOperation()(op = relOp()arg2 = binaryOperation()
@@ -754,9 +769,8 @@ Expression relationalExpression():
 			expr = new NotExpression(expr);
 		arg1 = expr;
 	}
-	| <IN><OPENPARENTHESIS>arg2 = binaryOperation(){inEntries.add(arg2);}(<COMMA>arg2 = binaryOperation(){inEntries.add(arg2);})*<CLOSEPARENTHESIS>
+	| <IN><OPENPARENTHESIS>expr = inListExpression(arg1)<CLOSEPARENTHESIS>
 	{
-		expr = new InExpression(arg1, inEntries);
 		if (negate)
 			expr = new NotExpression(expr);
 		arg1 = expr;
