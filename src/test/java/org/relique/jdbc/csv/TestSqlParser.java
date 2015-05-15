@@ -412,6 +412,19 @@ public class TestSqlParser
 	}
 
 	@Test
+	public void testParsingWhereNotComparisons() throws ParseException, SQLException
+	{
+		SqlParser parser = new SqlParser();
+		Map<String, Object> env = new HashMap<String, Object>();
+		env.put("C", null);
+
+		parser.parse("SELECT * FROM test WHERE NOT c>1");
+		assertEquals(false, parser.getWhereClause().isTrue(env));
+		parser.parse("SELECT * FROM test WHERE NOT c BETWEEN 1 AND 10");
+		assertEquals(false, parser.getWhereClause().isTrue(env));
+	}
+
+	@Test
 	public void testParsingWhereEmptyString() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
