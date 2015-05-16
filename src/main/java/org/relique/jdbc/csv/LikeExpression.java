@@ -33,7 +33,7 @@ class LikeExpression extends LogicalExpression
 		this.arg2 = arg2;
 		this.escapeArg = escapeArg;
 	}
-	public boolean isTrue(Map<String, Object> env) throws SQLException
+	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		Object left = arg1.eval(env);
 		Object right = arg2.eval(env);
@@ -51,9 +51,9 @@ class LikeExpression extends LogicalExpression
 			}	
 		}
 
-		boolean result = false;
+		Boolean result = null;
 		if (left != null && right != null)
-			result = LikePattern.matches(right.toString(), escape, left.toString());
+			result = Boolean.valueOf(LikePattern.matches(right.toString(), escape, left.toString()));
 		return result;
 	}
 	public String toString()

@@ -32,22 +32,25 @@ class BetweenExpression extends LogicalExpression
 		this.left = left;
 		this.right = right;
 	}
-	public boolean isTrue(Map<String, Object> env) throws SQLException
+	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		Comparable leftValue = (Comparable)left.eval(env);
 		Comparable rightValue = (Comparable)right.eval(env);
 		Comparable objValue = (Comparable)obj.eval(env);
 		Integer comparedLeft = RelopExpression.compare(leftValue, objValue, env);
-		boolean result = false;
-		if (comparedLeft != null && comparedLeft.intValue() <= 0)
+		if (comparedLeft == null)
+			return null;
+		if (comparedLeft.intValue() <= 0)
 		{
 			Integer comparedRight = RelopExpression.compare(rightValue, objValue, env);
-			if (comparedRight != null && comparedRight.intValue() >= 0)
+			if (comparedRight == null)
+				return null;
+			if (comparedRight.intValue() >= 0)
 			{
-				result = true;
+				return Boolean.TRUE;
 			}
 		}
-		return result;
+		return Boolean.FALSE;
 	}
 	public String toString()
 	{

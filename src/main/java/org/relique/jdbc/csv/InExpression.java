@@ -39,9 +39,11 @@ class InExpression extends LogicalExpression
 		this.obj = obj;
 		this.subQuery = subQuery;
 	}
-	public boolean isTrue(Map<String, Object> env) throws SQLException
+	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		Comparable objValue = (Comparable)obj.eval(env);
+		if (objValue == null)
+			return null;
 		if (inList != null)
 		{
 			for (Expression expr: inList)
@@ -49,7 +51,7 @@ class InExpression extends LogicalExpression
 				Comparable exprValue = (Comparable)expr.eval(env);
 				Integer compared = RelopExpression.compare(objValue, exprValue, env);
 				if (compared != null && compared.intValue() == 0)
-					return true;
+					return Boolean.TRUE;
 			}
 		}
 		else
@@ -60,10 +62,10 @@ class InExpression extends LogicalExpression
 				Comparable exprValue = (Comparable)o;
 				Integer compared = RelopExpression.compare(objValue, exprValue, env);
 				if (compared != null && compared.intValue() == 0)
-					return true;
+					return Boolean.TRUE;
 			}
 		}
-		return false;
+		return Boolean.FALSE;
 	}
 	public String toString()
 	{

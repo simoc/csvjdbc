@@ -39,9 +39,15 @@ class NotExpression extends LogicalExpression
 	{
 		return isValid;
 	}
-	public boolean isTrue(Map<String, Object> env) throws SQLException
+	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
-		return !content.isTrue(env);
+		Boolean b = content.isTrue(env);
+		if (b == null)
+			return null;
+		else if (b.booleanValue())
+			return Boolean.FALSE;
+		else
+			return Boolean.TRUE;
 	}
 	public String toString()
 	{

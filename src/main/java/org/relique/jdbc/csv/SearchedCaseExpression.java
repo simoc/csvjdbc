@@ -47,7 +47,8 @@ class SearchedCaseExpression extends Expression
 			{
 				throw new SQLException(CsvResources.getString("caseNotLogical"));
 			}
-			if (((LogicalExpression)condition).isTrue(env))
+			Boolean b = ((LogicalExpression)condition).isTrue(env);
+			if (b != null && b.booleanValue())
 				return values.get(i).eval(env);
 		}
 		if (elseExpression != null)

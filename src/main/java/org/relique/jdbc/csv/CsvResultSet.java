@@ -541,7 +541,7 @@ public class CsvResultSet implements ResultSet
 					Map<String, Object> firstRow = new HashMap<String, Object>(values.get(0));
 					firstRow.put(AggregateFunction.GROUPING_COLUMN_NAME, values);
 
-					if (this.havingClause == null || this.havingClause.isTrue(firstRow))
+					if (this.havingClause == null || Boolean.TRUE.equals(this.havingClause.isTrue(firstRow)))
 						bufferedRecordEnvironments.add(firstRow);
 				}
 
@@ -872,14 +872,14 @@ public class CsvResultSet implements ResultSet
 				Map<String, Object> objectEnvironment = updateRecordEnvironment(thereWasAnAnswer);
 				while (thereWasAnAnswer)
 				{
-					if (whereClause == null || whereClause.isTrue(objectEnvironment))
+					if (whereClause == null || Boolean.TRUE.equals(whereClause.isTrue(objectEnvironment)))
 					{
 						/*
 						 * Check HAVING clause if no aggregate functions in query and
 						 * it is being processed just like SELECT DISTINCT.
 						 * In this case HAVING is exactly the same as a WHERE clause.
 						 */
-						if (this.distinctColumns == null || this.havingClause == null || this.havingClause.isTrue(objectEnvironment))
+						if (this.distinctColumns == null || this.havingClause == null || Boolean.TRUE.equals(this.havingClause.isTrue(objectEnvironment)))
 						{
 							if (distinctValues == null || addDistinctEnvironment(objectEnvironment))
 							{

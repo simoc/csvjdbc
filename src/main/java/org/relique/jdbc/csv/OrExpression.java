@@ -41,9 +41,24 @@ class OrExpression extends LogicalExpression
 	{
 		return isValid;
 	}
-	public boolean isTrue(Map<String, Object> env) throws SQLException
+	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
-		return left.isTrue(env) || right.isTrue(env);
+		Boolean leftIsTrue = left.isTrue(env);
+		if (leftIsTrue != null && leftIsTrue.booleanValue())
+		{
+			return Boolean.TRUE;
+		}
+		else
+		{
+			Boolean rightIsTrue = right.isTrue(env);
+			if (rightIsTrue != null && rightIsTrue.booleanValue())
+				return Boolean.TRUE;
+
+			if (leftIsTrue == null && rightIsTrue == null)
+				return null;
+			else
+				return Boolean.FALSE;
+		}
 	}
 	public String toString()
 	{

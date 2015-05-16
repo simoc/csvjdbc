@@ -38,9 +38,9 @@ class RelopExpression extends LogicalExpression
 		this.left = left;
 		this.right = right;
 	}
-	public boolean isTrue(Map<String, Object> env) throws SQLException
+	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
-		boolean result = false;
+		Boolean result = null;
 		Comparable leftValue = (Comparable)left.eval(env);
 		Comparable rightValue = (Comparable)right.eval(env);
 		Integer leftComparedToRightObj = compare(leftValue, rightValue,  env);
@@ -51,27 +51,27 @@ class RelopExpression extends LogicalExpression
 			{
 				if (op.equals("="))
 				{
-					result = leftComparedToRight == 0;
+					result = Boolean.valueOf(leftComparedToRight == 0);
 				}
 				else if (op.equals("<>") || op.equals("!="))
 				{
-					result = leftComparedToRight != 0;
+					result = Boolean.valueOf(leftComparedToRight != 0);
 				}
 				else if (op.equals(">"))
 				{
-					result = leftComparedToRight>0;
+					result = Boolean.valueOf(leftComparedToRight>0);
 				}
 				else if (op.equals("<"))
 				{
-					result = leftComparedToRight<0;
+					result = Boolean.valueOf(leftComparedToRight<0);
 				}
 				else if (op.equals("<=") || op.equals("=<"))
 				{
-					result = leftComparedToRight <= 0;
+					result = Boolean.valueOf(leftComparedToRight <= 0);
 				}
 				else if (op.equals(">=") || op.equals("=>"))
 				{
-					result = leftComparedToRight >= 0;
+					result = Boolean.valueOf(leftComparedToRight >= 0);
 				}
 			}
 		}

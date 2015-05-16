@@ -23,8 +23,13 @@ import java.util.Map;
 
 abstract class LogicalExpression extends Expression
 {
-	public boolean isTrue(Map<String, Object> env) throws SQLException
+	/**
+	 * Returns evaluation of expression using given environment.
+	 * @param env key, value pairs of environment.
+	 * @return TRUE or FALSE or null if evaluation contains SQL NULL.
+	 */
+	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
-		return false;
+		return Boolean.FALSE;
 	}
 }

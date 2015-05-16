@@ -355,17 +355,17 @@ public class TestSqlParser
 		parser.parse("SELECT * FROM test WHERE c=1");
 		env.clear();
 		env.put("C", new Integer("1"));
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 
 		parser.parse("SELECT * FROM test WHERE c='1'");
 		env.clear();
 		env.put("C", new String("1"));
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 
 		parser.parse("SELECT * FROM test WHERE c=1.0");
 		env.clear();
 		env.put("C", new Double("1.0"));
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 
 		parser.parse("SELECT * FROM test WHERE (A='20' OR B='AA') AND c=1");
 		LogicalExpression whereClause = parser.getWhereClause();
@@ -374,15 +374,15 @@ public class TestSqlParser
 		env.put("A", new String("20"));
 		env.put("B", new String("AA"));
 		env.put("C", new Integer("1"));
-		assertEquals(true, whereClause.isTrue(env));
+		assertEquals(Boolean.TRUE, whereClause.isTrue(env));
 		env.put("A", new Double("20"));
-		assertEquals(true, whereClause.isTrue(env));
+		assertEquals(Boolean.TRUE, whereClause.isTrue(env));
 		env.put("B", new String(""));
-		assertEquals(false, whereClause.isTrue(env));
+		assertEquals(Boolean.FALSE, whereClause.isTrue(env));
 		env.put("A", new String("20"));
-		assertEquals(true, whereClause.isTrue(env));
+		assertEquals(Boolean.TRUE, whereClause.isTrue(env));
 		env.put("C", new Integer("3"));
-		assertEquals(false, whereClause.isTrue(env));
+		assertEquals(Boolean.FALSE, whereClause.isTrue(env));
 	}
 
 	/**
@@ -396,32 +396,40 @@ public class TestSqlParser
 		env.put("C", new Integer("12"));
 
 		parser.parse("SELECT * FROM test WHERE c=1");
-		assertEquals(false, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.FALSE, parser.getWhereClause().isTrue(env));
 		parser.parse("SELECT * FROM test WHERE c<1");
-		assertEquals(false, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.FALSE, parser.getWhereClause().isTrue(env));
 		parser.parse("SELECT * FROM test WHERE c>1");
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 		parser.parse("SELECT * FROM test WHERE c<=1");
-		assertEquals(false, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.FALSE, parser.getWhereClause().isTrue(env));
 		parser.parse("SELECT * FROM test WHERE c>=1");
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 		parser.parse("SELECT * FROM test WHERE c<=12");
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 		parser.parse("SELECT * FROM test WHERE c>=12");
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 	}
 
 	@Test
-	public void testParsingWhereNotComparisons() throws ParseException, SQLException
+	public void testParsingWhereComparisonsNull() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
 		Map<String, Object> env = new HashMap<String, Object>();
 		env.put("C", null);
 
+		/*
+		 * Test that comparisons containing SQL NULL return null.
+		 */
+		parser.parse("SELECT * FROM test WHERE c>1");
+		assertEquals(null, parser.getWhereClause().isTrue(env));
+		parser.parse("SELECT * FROM test WHERE c BETWEEN 1 AND 10");
+		assertEquals(null, parser.getWhereClause().isTrue(env));
+
 		parser.parse("SELECT * FROM test WHERE NOT c>1");
-		assertEquals(false, parser.getWhereClause().isTrue(env));
+		assertEquals(null, parser.getWhereClause().isTrue(env));
 		parser.parse("SELECT * FROM test WHERE NOT c BETWEEN 1 AND 10");
-		assertEquals(false, parser.getWhereClause().isTrue(env));
+		assertEquals(null, parser.getWhereClause().isTrue(env));
 	}
 
 	@Test
@@ -432,7 +440,7 @@ public class TestSqlParser
 		env.put("C", new String(""));
 
 		parser.parse("SELECT * FROM test WHERE c=''");
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 	}
 
 	@Test
@@ -443,7 +451,7 @@ public class TestSqlParser
 		env.put("C", new String("it's"));
 
 		parser.parse("SELECT * FROM test WHERE c='it''s'");
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 	}
 
 	@Test
@@ -455,11 +463,11 @@ public class TestSqlParser
 		parser.parse("SELECT * FROM test WHERE c=1.0");
 		env.clear();
 		env.put("C", new Integer("1"));
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 		env.put("C", new Double("1"));
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 		env.put("C", new Float("1"));
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 	}
 
 	@Test
@@ -471,11 +479,11 @@ public class TestSqlParser
 		parser.parse("SELECT * FROM test WHERE c=-1.0");
 		env.clear();
 		env.put("C", new Integer("-1"));
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 		env.put("C", new Double("-1"));
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 		env.put("C", new Float("-1"));
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 	}
 
 	@Test
@@ -1067,6 +1075,6 @@ public class TestSqlParser
 		 */
 		parser.parse("SELECT * FROM test WHERE c LIKE '%\u0165\u0148\u011A%'");
 
-		assertEquals(true, parser.getWhereClause().isTrue(env));
+		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 	}
 }

@@ -36,7 +36,7 @@ class ParsedExpression extends LogicalExpression
 	{
 		return content.isValid();
 	}
-	public boolean isTrue(Map<String, Object> env) throws SQLException
+	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		if(!placeholders.isEmpty())
 		{

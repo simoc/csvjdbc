@@ -30,10 +30,13 @@ class IsNullExpression extends LogicalExpression
 	{
 		this.arg = arg;
 	}
-	public boolean isTrue(Map<String, Object> env) throws SQLException
+	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		Object o = arg.eval(env);
-		return (o == null);
+		if (o == null)
+			return Boolean.TRUE;
+		else
+			return Boolean.FALSE;
 	}
 	public String toString()
 	{
