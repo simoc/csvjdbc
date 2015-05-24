@@ -316,6 +316,23 @@ public class TestGroupBy
 	}
 
 	@Test
+	public void testGroupByStringAgg() throws SQLException
+	{
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select Job, string_agg(Name, ';') from sample4 GROUP BY Job");
+		assertTrue(results.next());
+		assertEquals("The Job is wrong", "Project Manager", results.getString(1));
+		assertEquals("The string_agg is wrong", "Juan Pablo Morales;Mauricio Hernandez;Felipe Grajales", results.getString(2));
+		assertTrue(results.next());
+		assertEquals("The Job is wrong", "Finance Manager", results.getString(1));
+		assertEquals("The string_agg is wrong", "Maria Cristina Lucero", results.getString(2));
+		assertFalse(results.next());
+	}
+
+	@Test
 	public void testGroupByOrderByCount() throws SQLException
 	{
 		Properties props = new Properties();

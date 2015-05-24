@@ -519,4 +519,21 @@ public class TestAggregateFunctions
 		stmt.close();
 		conn.close();
 	}
+
+	@Test
+	public void testStringAgg() throws SQLException
+	{
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select STRING_AGG(ID, ';') from sample");
+		assertTrue(results.next());
+		assertEquals("Incorrect STRING_AGG", "Q123;A123;B234;C456;D789;X234", results.getString(1));
+		assertFalse(results.next());
+
+		results.close();
+		stmt.close();
+		conn.close();
+	}
 }
