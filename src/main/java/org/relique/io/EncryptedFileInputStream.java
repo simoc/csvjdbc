@@ -59,10 +59,9 @@ public class EncryptedFileInputStream extends InputStream
 
 	public void close() throws IOException
 	{
-		if (in == null)
+		if (in != null)
 		{
-			return;
+			in.close();
 		}
-		in.close();
 	}
 }

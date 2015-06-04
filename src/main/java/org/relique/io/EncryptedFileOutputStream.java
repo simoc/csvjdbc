@@ -40,4 +40,10 @@ public class EncryptedFileOutputStream extends OutputStream
 		else
 			filter.write(out, b);
 	}
+
+	public void close() throws IOException
+	{
+		if (out != null)
+			out.close();
+	}
 }
