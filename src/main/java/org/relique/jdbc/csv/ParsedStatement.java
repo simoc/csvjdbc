@@ -18,6 +18,7 @@
  */
 package org.relique.jdbc.csv;
 
+import java.util.LinkedList;
 import java.util.List;
 
 class ParsedStatement
@@ -149,5 +150,81 @@ class ParsedStatement
 			sb.append(" OFFSET ").append(offset);
 		}
 		return sb.toString();
+	}
+
+	public List<String> usedColumns()
+	{
+		List<String> result = new LinkedList<String>();
+		if (queryEntries != null)
+		{
+			for (ParsedExpression parsedExpr : queryEntries)
+			{
+				QueryEnvEntry queryEnvEntry = (QueryEnvEntry)(parsedExpr.content);
+				List<String> columns = queryEnvEntry.expression.usedColumns();
+				result.addAll(columns);
+			}
+		}
+
+		if (whereClause != null)
+			result.addAll(whereClause.usedColumns());
+
+		if (groupByEntries != null)
+		{
+			for (ParsedExpression groupByExpr : groupByEntries)
+			{
+				result.addAll(groupByExpr.usedColumns());
+			}
+		}
+
+		if (havingClause != null)
+			result.addAll(havingClause.usedColumns());
+
+		if (orderByEntries != null)
+		{
+			for (ParsedExpression orderByExpr : orderByEntries)
+			{
+				result.addAll(orderByExpr.usedColumns());
+			}
+		}
+
+		return result;
+	}
+
+	public List<AggregateFunction> aggregateFunctions()
+	{
+		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		if (queryEntries != null)
+		{
+			for (ParsedExpression parsedExpr : queryEntries)
+			{
+				QueryEnvEntry queryEnvEntry = (QueryEnvEntry)(parsedExpr.content);
+				List<AggregateFunction> functions = queryEnvEntry.expression.aggregateFunctions();
+				result.addAll(functions);
+			}
+		}
+
+		if (whereClause != null)
+			result.addAll(whereClause.aggregateFunctions());
+
+		if (groupByEntries != null)
+		{
+			for (ParsedExpression groupByExpr : groupByEntries)
+			{
+				result.addAll(groupByExpr.aggregateFunctions());
+			}
+		}
+
+		if (havingClause != null)
+			result.addAll(havingClause.aggregateFunctions());
+
+		if (orderByEntries != null)
+		{
+			for (ParsedExpression orderByExpr : orderByEntries)
+			{
+				result.addAll(orderByExpr.aggregateFunctions());
+			}
+		}
+
+		return result;
 	}
 }
