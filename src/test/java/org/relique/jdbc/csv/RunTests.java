@@ -38,7 +38,8 @@ import org.junit.runners.Suite;
 	TestGroupBy.class,
 	TestLimitOffset.class,
 	TestFixedWidthFiles.class,
-	TestDoubleQuoting.class
+	TestDoubleQuoting.class,
+	TestSubQuery.class
 })
 
 /**

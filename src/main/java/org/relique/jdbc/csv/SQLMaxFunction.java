@@ -82,6 +82,10 @@ class SQLMaxFunction extends AggregateFunction
 		result.add(this);
 		return result;
 	}
+	public void resetAggregateFunctions()
+	{
+		this.max = null;
+	}
 	public void processRow(Map<String, Object> env) throws SQLException
 	{
 		/*

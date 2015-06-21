@@ -82,6 +82,10 @@ class SQLMinFunction extends AggregateFunction
 		result.add(this);
 		return result;
 	}
+	public void resetAggregateFunctions()
+	{
+		this.min = null;
+	}
 	public void processRow(Map<String, Object> env) throws SQLException
 	{
 		/*

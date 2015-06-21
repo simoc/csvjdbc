@@ -46,4 +46,11 @@ public abstract class Expression
 	{
 		return true;
 	}
+
+	/**
+	 * Reset aggregate function each time it is used in a subquery.
+	 */
+	public void resetAggregateFunctions()
+	{
+	}
 }

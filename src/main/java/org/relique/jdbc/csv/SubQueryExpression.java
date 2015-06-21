@@ -18,7 +18,9 @@
  */
 package org.relique.jdbc.csv;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +56,53 @@ class SubQueryExpression extends Expression
 		 * Evaluate sub-query that returns a list of values for
 		 * SELECT ... WHERE X1 IN (SELECT X2 FROM ... )
 		 */
-		throw new SQLException(CsvResources.getString("subqueryNotSupported"));
+		List<Object> retval = null;
+		CsvStatement statement = null;
+		ResultSet resultSet = null;
+
+		try
+		{
+			/*
+			 * Clear query expressions so that any aggregate functions are calculated
+			 * independently each time this SQL statement is executed.
+			 */
+			SqlParser sqlParser = new SqlParser();
+			for (ParsedExpression parsedExpr : parsedStatement.queryEntries)
+			{
+				parsedExpr.resetAggregateFunctions();
+			}
+
+			sqlParser.setParsedStatement(parsedStatement);
+
+			Expression expr = new ColumnName(CsvStatement.STATEMENT_COLUMN_NAME);
+			statement = (CsvStatement) expr.eval(env);
+
+			resultSet = statement.executeParsedQuery(sqlParser, env);
+			if (resultSet.getMetaData().getColumnCount() != 1)
+				throw new SQLException(CsvResources.getString("subqueryOneColumn"));
+			if (resultSet.next())
+			{
+				retval = new ArrayList<Object>();
+				retval.add(resultSet.getObject(1));
+				while (resultSet.next())
+				{
+					retval.add(resultSet.getObject(1));
+				}
+			}
+			else
+			{
+				/*
+				 * Return null if no record.
+				 */
+			}
+
+		}
+		finally
+		{
+			if (resultSet != null)
+				resultSet.close();
+		}
+		return retval;
 	}
 
 	public String toString()
@@ -67,10 +115,14 @@ class SubQueryExpression extends Expression
 	}
 	public List<String> usedColumns()
 	{
-		return new LinkedList<String>();
+		return parsedStatement.usedColumns();
 	}
 	public List<AggregateFunction> aggregateFunctions()
 	{
+		/*
+		 * Aggregate functions are internal to this sub-query SQL statement,
+		 * and not the parent SQL statement, so do not return them.
+		 */
 		return new LinkedList<AggregateFunction>();
 	}
 }

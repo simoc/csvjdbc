@@ -111,6 +111,12 @@ class SQLCountFunction extends AggregateFunction
 		result.add(this);
 		return result;
 	}
+	public void resetAggregateFunctions()
+	{
+		if (this.distinctValues != null)
+			this.distinctValues.clear();
+		this.counter = 0;
+	}
 	public void processRow(Map<String, Object> env) throws SQLException
 	{
 		if (expression instanceof AsteriskExpression)

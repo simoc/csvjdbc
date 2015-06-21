@@ -161,6 +161,13 @@ class SQLSumFunction extends AggregateFunction
 		result.add(this);
 		return result;
 	}
+	public void resetAggregateFunctions()
+	{
+		if (this.distinctValues != null)
+			this.distinctValues.clear();
+		this.sum = null;
+		this.counter = 0;
+	}
 	public void processRow(Map<String, Object> env) throws SQLException
 	{
 		/*

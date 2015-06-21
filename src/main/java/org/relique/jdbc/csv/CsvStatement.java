@@ -28,7 +28,9 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.relique.io.CryptoFilter;
 import org.relique.io.DataReader;
@@ -302,6 +304,15 @@ public class CsvStatement implements Statement
 	protected ResultSet executeParsedQuery(SqlParser parser)
 			throws SQLException
 	{
+		HashMap<String, Object> parentobjectEnvironment = new HashMap<String, Object>();
+		ResultSet resultSet = executeParsedQuery(parser, parentobjectEnvironment);
+		lastResultSet = resultSet;
+		return resultSet;
+	}
+
+	protected ResultSet executeParsedQuery(SqlParser parser, Map<String, Object> parentobjectEnvironment)
+			throws SQLException
+	{
 		String path = connection.getPath();
 		TableReader tableReader = connection.getTableReader();
 		if (path != null)
@@ -456,7 +467,8 @@ public class CsvStatement implements Statement
 				parser.getLimit(),
 				parser.getOffset(),
 				connection.getColumnTypes(tableName),
-				connection.getSkipLeadingLines());
+				connection.getSkipLeadingLines(),
+				parentobjectEnvironment);
 			lastResultSet = resultSet;
 		}
 		catch (ClassNotFoundException e)

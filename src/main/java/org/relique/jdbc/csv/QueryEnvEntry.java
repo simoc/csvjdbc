@@ -39,4 +39,8 @@ class QueryEnvEntry extends Expression
 	{
 		return key+": "+expression.toString();
 	}
+	public void resetAggregateFunctions()
+	{
+		expression.resetAggregateFunctions();
+	}
 }

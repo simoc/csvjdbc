@@ -76,6 +76,10 @@ class ParsedExpression extends LogicalExpression
 	{
 		return content.aggregateFunctions();
 	}
+	public void resetAggregateFunctions()
+	{
+		content.resetAggregateFunctions();
+	}
 	public int getPlaceholdersCount()
 	{
 		return Placeholder.nextIndex - 1;

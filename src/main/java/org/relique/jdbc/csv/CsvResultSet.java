@@ -97,6 +97,8 @@ public class CsvResultSet implements ResultSet
 
 	private Set<ArrayList<Object>> distinctValues;
 
+	private Map<String, Object> parentObjectEnvironment;
+
 	private Map<String, Object> recordEnvironment;
 
 	private List<String> usedColumns;
@@ -218,7 +220,8 @@ public class CsvResultSet implements ResultSet
 			int sqlLimit,
 			int sqlOffset,
 			String columnTypes,
-			int skipLeadingLines) throws ClassNotFoundException, SQLException
+			int skipLeadingLines,
+			Map<String, Object> parentObjectEnvironment) throws ClassNotFoundException, SQLException
 	{
 		this.statement = statement;
 		maxRows = statement.getMaxRows();
@@ -242,6 +245,7 @@ public class CsvResultSet implements ResultSet
 			this.orderByColumns = null;
 		if (isDistinct)
 			this.distinctValues = new HashSet<ArrayList<Object>>();
+		this.parentObjectEnvironment = parentObjectEnvironment;
 
 		String timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
 		String dateFormat = ((CsvConnection)statement.getConnection()).getDateFormat();
@@ -391,11 +395,18 @@ public class CsvResultSet implements ResultSet
 		{
 			Object[] o = this.queryEnvironment.get(i);
 			Expression expr = (Expression)o[1];
-			List<AggregateFunction> exprAggregateFunctions = expr.aggregateFunctions();
-			this.aggregateFunctions.addAll(exprAggregateFunctions);
-			for (AggregateFunction aggregateFunction : exprAggregateFunctions)
+
+			/*
+			 * Exclude aggregate functions in subquery as they do not affect this query.
+			 */
+			if (!(expr instanceof SubQueryExpression))
 			{
-				this.usedColumns.addAll(aggregateFunction.aggregateColumns());
+				List<AggregateFunction> exprAggregateFunctions = expr.aggregateFunctions();
+				this.aggregateFunctions.addAll(exprAggregateFunctions);
+				for (AggregateFunction aggregateFunction : exprAggregateFunctions)
+				{
+					this.usedColumns.addAll(aggregateFunction.aggregateColumns());
+				}
 			}
 		}
 
@@ -431,11 +442,20 @@ public class CsvResultSet implements ResultSet
 				if (o[1] != null)
 				{
 					Expression expr = (Expression)o[1];
-					List<String> exprUsedColumns = expr.usedColumns();
-					for (Object usedColumn : exprUsedColumns)
+					if (expr instanceof SubQueryExpression)
 					{
-						if (!allReaderColumns.contains(usedColumn))
-							throw new SQLException(CsvResources.getString("invalidColumnName") + ": " + usedColumn);
+						/*
+						 * Any invalid column names will be caught in the sub-query.
+						 */
+					}
+					else
+					{
+						List<String> exprUsedColumns = expr.usedColumns();
+						for (Object usedColumn : exprUsedColumns)
+						{
+							if (!allReaderColumns.contains(usedColumn))
+								throw new SQLException(CsvResources.getString("invalidColumnName") + ": " + usedColumn);
+						}
 					}
 				}
 				//TODO selected column aliases are allowed in WHERE clause (although this is invalid SQL) and unit tested in TestCsvDriver.testFieldAsAlias so add all aliases to list too.
@@ -449,10 +469,13 @@ public class CsvResultSet implements ResultSet
 		 */
 		if (!((CsvConnection)statement.getConnection()).isIndexedFiles())
 		{
-			for (Object usedColumn : this.usedColumns)
+			for (String usedColumn : this.usedColumns)
 			{
-				if (!allReaderColumns.contains(usedColumn))
+				if (allReaderColumns.contains(usedColumn) == false &&
+						parentObjectEnvironment.containsKey(usedColumn) == false)
+				{
 					throw new SQLException(CsvResources.getString("invalidColumnName") + ": " + usedColumn);
+				}
 			}
 
 			checkGroupBy();
@@ -463,10 +486,33 @@ public class CsvResultSet implements ResultSet
 				{
 					Expression expr = (Expression)o[1];
 					List<String> exprUsedColumns = new LinkedList<String>(expr.usedColumns());
-					for (AggregateFunction aggregatFunction : expr.aggregateFunctions())
+					if (expr instanceof SubQueryExpression)
 					{
-						exprUsedColumns.addAll(aggregatFunction.aggregateColumns());
+						/*
+						 * Differentiate which columns are from this table and which
+						 * columns are from the subquery table.
+						 * 
+						 * Go through all the columns and only add the ones that are defined
+						 * in this table.
+						 */
+						List<String> copy = new LinkedList<String>();
+						for (String usedColumn : exprUsedColumns)
+						{
+							if (allReaderColumns.contains(usedColumn.toUpperCase()))
+								copy.add(usedColumn);
+						}
+						exprUsedColumns = copy;
 					}
+
+					for (String usedColumn : exprUsedColumns)
+					{
+						if (allReaderColumns.contains(usedColumn) == false &&
+							parentObjectEnvironment.containsKey(usedColumn) == false)
+						{
+							throw new SQLException(CsvResources.getString("invalidColumnName") + ": " + usedColumn);
+						}
+					}
+
 					if (exprUsedColumns.isEmpty())
 					{
 						/*
@@ -936,6 +982,13 @@ public class CsvResultSet implements ResultSet
 			recordEnvironment = null;
 			return objectEnvironment;
 		}
+
+		/*
+		 * Set any parent environment first so it is overridden by current environment.
+		 */
+		objectEnvironment.put(CsvStatement.STATEMENT_COLUMN_NAME, this.statement);
+		objectEnvironment.putAll(this.parentObjectEnvironment);
+
 		for (int i = 0; i < queryEnvironment.size(); i++)
 		{
 			Object[] o = queryEnvironment.get(i);
@@ -947,10 +1000,8 @@ public class CsvResultSet implements ResultSet
 		{
 			String key = usedColumns.get(i);
 			key = key.toUpperCase();
-			if (!objectEnvironment.containsKey(key))
-			{
-				objectEnvironment.put(key, recordEnvironment.get(key));
-			}
+			if (recordEnvironment.containsKey(key))
+					objectEnvironment.put(key, recordEnvironment.get(key));
 		}
 
 		/*

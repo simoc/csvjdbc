@@ -17,6 +17,7 @@ package org.relique.jdbc.csv;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.relique.io.ListDataReader;
@@ -622,7 +623,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 				internalStatement = (CsvStatement) createdByConnection.createStatement();
 			retval = new CsvResultSet(internalStatement, reader, "",
 				queryEnvironment, false, ResultSet.TYPE_FORWARD_ONLY, null, null, null, null, -1, 0,
-				columnTypes, 0);
+				columnTypes, 0, new HashMap<String, Object>());
 		}
 		catch (ClassNotFoundException e)
 		{
