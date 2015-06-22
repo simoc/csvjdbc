@@ -320,4 +320,42 @@ public class TestSubQuery
 		rs1.close();
 		stmt.close();
 	}
+
+	@Test
+	public void testInSubQuery() throws SQLException
+	{
+		Properties props = new Properties();
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet rs1 = stmt.executeQuery("select NAME from sample5 where ID in (select ID from sample4)");
+		assertTrue(rs1.next());
+		assertEquals("The NAME is wrong", "Juan Pablo Morales", rs1.getString(1));
+		assertTrue(rs1.next());
+		assertEquals("The NAME is wrong", "Mauricio Hernandez", rs1.getString(1));
+		assertTrue(rs1.next());
+		assertEquals("The NAME is wrong", "Maria Cristina Lucero", rs1.getString(1));
+		assertTrue(rs1.next());
+		assertEquals("The NAME is wrong", "Felipe Grajales", rs1.getString(1));
+		assertFalse(rs1.next());
+
+		rs1.close();
+		stmt.close();
+	}
+
+	@Test
+	public void testInSubQueryNoMatch() throws SQLException
+	{
+		Properties props = new Properties();
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet rs1 = stmt.executeQuery("select NAME from sample5 where ID in (select AccountNo from Purchase where CampaignNo='XXXX')");
+		assertFalse(rs1.next());
+
+		rs1.close();
+		stmt.close();
+	}
 }

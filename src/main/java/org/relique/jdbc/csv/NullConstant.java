@@ -21,6 +21,7 @@ package org.relique.jdbc.csv;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class NullConstant extends Expression
 {
@@ -32,7 +33,7 @@ class NullConstant extends Expression
 	{
 		return "null";
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		return new LinkedList<String>();
 	}

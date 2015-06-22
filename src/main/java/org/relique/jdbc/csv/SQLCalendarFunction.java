@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class SQLCalendarFunction extends Expression
 {
@@ -88,10 +89,10 @@ class SQLCalendarFunction extends Expression
 	{
 		return functionName+"("+expression+")";
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
-		result.addAll(expression.usedColumns());
+		result.addAll(expression.usedColumns(availableColumns));
 		return result;
 	}
 	public List<AggregateFunction> aggregateFunctions()

@@ -20,6 +20,7 @@ package org.relique.jdbc.csv;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 class ParsedStatement
 {
@@ -152,7 +153,7 @@ class ParsedStatement
 		return sb.toString();
 	}
 
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
 		if (queryEntries != null)
@@ -160,30 +161,30 @@ class ParsedStatement
 			for (ParsedExpression parsedExpr : queryEntries)
 			{
 				QueryEnvEntry queryEnvEntry = (QueryEnvEntry)(parsedExpr.content);
-				List<String> columns = queryEnvEntry.expression.usedColumns();
+				List<String> columns = queryEnvEntry.expression.usedColumns(availableColumns);
 				result.addAll(columns);
 			}
 		}
 
 		if (whereClause != null)
-			result.addAll(whereClause.usedColumns());
+			result.addAll(whereClause.usedColumns(availableColumns));
 
 		if (groupByEntries != null)
 		{
 			for (ParsedExpression groupByExpr : groupByEntries)
 			{
-				result.addAll(groupByExpr.usedColumns());
+				result.addAll(groupByExpr.usedColumns(availableColumns));
 			}
 		}
 
 		if (havingClause != null)
-			result.addAll(havingClause.usedColumns());
+			result.addAll(havingClause.usedColumns(availableColumns));
 
 		if (orderByEntries != null)
 		{
 			for (ParsedExpression orderByExpr : orderByEntries)
 			{
-				result.addAll(orderByExpr.usedColumns());
+				result.addAll(orderByExpr.usedColumns(availableColumns));
 			}
 		}
 

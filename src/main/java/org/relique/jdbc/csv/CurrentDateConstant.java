@@ -21,6 +21,7 @@ package org.relique.jdbc.csv;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class CurrentDateConstant extends Expression
 {
@@ -37,7 +38,7 @@ class CurrentDateConstant extends Expression
 	{
 		return "CURRENT_DATE";
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		return new LinkedList<String>();
 	}

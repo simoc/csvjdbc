@@ -21,6 +21,7 @@ package org.relique.jdbc.csv;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 abstract class AggregateFunction extends Expression
 {
@@ -30,6 +31,6 @@ abstract class AggregateFunction extends Expression
 	 */
 	public static final String GROUPING_COLUMN_NAME = "@GROUPROWS";
 
-	public abstract List<String> aggregateColumns();
+	public abstract List<String> aggregateColumns(Set<String> availableColumns);
 	public abstract void processRow(Map<String, Object> env) throws SQLException;
 }

@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class InExpression extends LogicalExpression
 {
@@ -91,20 +92,20 @@ class InExpression extends LogicalExpression
 		}
 		return sb.toString();
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
-		result.addAll(obj.usedColumns());
+		result.addAll(obj.usedColumns(availableColumns));
 		if (inList != null)
 		{
 			for (Expression expr: inList)
 			{
-				result.addAll(expr.usedColumns());
+				result.addAll(expr.usedColumns(availableColumns));
 			}
 		}
 		if (subQuery != null)
 		{
-			result.addAll(subQuery.usedColumns());
+			result.addAll(subQuery.usedColumns(availableColumns));
 		}
 		return result;
 	}

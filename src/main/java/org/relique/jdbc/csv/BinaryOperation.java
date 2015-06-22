@@ -28,6 +28,7 @@ import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class BinaryOperation extends Expression
 {
@@ -256,11 +257,11 @@ class BinaryOperation extends Expression
 	{
 		return ""+operation+" "+left+" "+right;
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
-		result.addAll(left.usedColumns());
-		result.addAll(right.usedColumns());
+		result.addAll(left.usedColumns(availableColumns));
+		result.addAll(right.usedColumns(availableColumns));
 		return result;
 	}
 	public List<AggregateFunction> aggregateFunctions()

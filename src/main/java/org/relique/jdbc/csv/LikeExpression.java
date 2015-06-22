@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class LikeExpression extends LogicalExpression
 {
@@ -70,13 +71,13 @@ class LikeExpression extends LogicalExpression
 		}
 		return sb.toString();
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
-		result.addAll(arg1.usedColumns());
-		result.addAll(arg2.usedColumns());
+		result.addAll(arg1.usedColumns(availableColumns));
+		result.addAll(arg2.usedColumns(availableColumns));
 		if (escapeArg != null)
-			result.addAll(escapeArg.usedColumns());
+			result.addAll(escapeArg.usedColumns(availableColumns));
 		return result;
 	}
 	public List<AggregateFunction> aggregateFunctions()

@@ -21,6 +21,7 @@ package org.relique.jdbc.csv;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class ColumnName extends Expression
 {
@@ -37,7 +38,7 @@ class ColumnName extends Expression
 	{
 		return "["+columnName+"]";
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
 		result.add(columnName);

@@ -21,6 +21,7 @@ package org.relique.jdbc.csv;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class Placeholder extends Expression
 {
@@ -39,7 +40,7 @@ class Placeholder extends Expression
 	{
 		return "?";
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		return new LinkedList<String>();
 	}

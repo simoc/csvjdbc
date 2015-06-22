@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class SQLSubstringFunction extends Expression
 {
@@ -137,13 +138,13 @@ class SQLSubstringFunction extends Expression
 		sb.append(")");
 		return sb.toString();
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
-		result.addAll(expr.usedColumns());
-		result.addAll(startIndex.usedColumns());
+		result.addAll(expr.usedColumns(availableColumns));
+		result.addAll(startIndex.usedColumns(availableColumns));
 		if (len != null)
-			result.addAll(len.usedColumns());
+			result.addAll(len.usedColumns(availableColumns));
 		return result;
 	}
 	public List<AggregateFunction> aggregateFunctions()

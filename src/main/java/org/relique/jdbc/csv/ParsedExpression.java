@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class ParsedExpression extends LogicalExpression
 {
@@ -68,9 +69,9 @@ class ParsedExpression extends LogicalExpression
 	{
 		return content.toString();
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		return content.usedColumns();
+		return content.usedColumns(availableColumns);
 	}
 	public List<AggregateFunction> aggregateFunctions()
 	{

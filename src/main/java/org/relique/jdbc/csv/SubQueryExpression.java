@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class SubQueryExpression extends Expression
 {
@@ -40,8 +41,6 @@ class SubQueryExpression extends Expression
 		 * Evaluate sub-query that returns a single value.
 		 */
 		List<Object> subEval = evalList(env);
-		if (subEval == null)
-			return null;
 		int nRows = subEval.size();
 		if (nRows == 0)
 			return null;
@@ -56,7 +55,7 @@ class SubQueryExpression extends Expression
 		 * Evaluate sub-query that returns a list of values for
 		 * SELECT ... WHERE X1 IN (SELECT X2 FROM ... )
 		 */
-		List<Object> retval = null;
+		List<Object> retval = new ArrayList<Object>();
 		CsvStatement statement = null;
 		ResultSet resultSet = null;
 
@@ -80,22 +79,10 @@ class SubQueryExpression extends Expression
 			resultSet = statement.executeParsedQuery(sqlParser, env);
 			if (resultSet.getMetaData().getColumnCount() != 1)
 				throw new SQLException(CsvResources.getString("subqueryOneColumn"));
-			if (resultSet.next())
+			while (resultSet.next())
 			{
-				retval = new ArrayList<Object>();
 				retval.add(resultSet.getObject(1));
-				while (resultSet.next())
-				{
-					retval.add(resultSet.getObject(1));
-				}
 			}
-			else
-			{
-				/*
-				 * Return null if no record.
-				 */
-			}
-
 		}
 		finally
 		{
@@ -113,9 +100,20 @@ class SubQueryExpression extends Expression
 		sb.append(")");
 		return sb.toString();
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		return parsedStatement.usedColumns();
+		List<String> retval = new LinkedList<String>();
+		List<String> usedColumns = parsedStatement.usedColumns(availableColumns);
+		for (String column : usedColumns)
+		{
+			/*
+			 * Only return columns from parent SQL table, not those
+			 * from the sub-query table.
+			 */
+			if (availableColumns.contains(column))
+				retval.add(column);
+		}
+		return retval;
 	}
 	public List<AggregateFunction> aggregateFunctions()
 	{

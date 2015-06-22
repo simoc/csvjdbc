@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class SQLNullIfFunction extends Expression
 {
@@ -49,11 +50,11 @@ class SQLNullIfFunction extends Expression
 	{
 		return "NULLIF("+expression1+","+expression2+")";
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
-		result.addAll(expression1.usedColumns());
-		result.addAll(expression2.usedColumns());
+		result.addAll(expression1.usedColumns(availableColumns));
+		result.addAll(expression2.usedColumns(availableColumns));
 		return result;
 	}
 	public List<AggregateFunction> aggregateFunctions()

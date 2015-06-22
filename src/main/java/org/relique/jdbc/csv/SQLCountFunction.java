@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class SQLCountFunction extends AggregateFunction
 {
@@ -94,15 +95,15 @@ class SQLCountFunction extends AggregateFunction
 		sb.append(")");
 		return sb.toString();
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		return new LinkedList<String>();
 	}
-	public List<String> aggregateColumns()
+	public List<String> aggregateColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
 		if (!(expression instanceof AsteriskExpression))
-			result.addAll(expression.usedColumns());
+			result.addAll(expression.usedColumns(availableColumns));
 		return result;
 	}
 	public List<AggregateFunction> aggregateFunctions()

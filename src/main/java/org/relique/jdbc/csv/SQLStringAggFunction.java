@@ -26,6 +26,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class SQLStringAggFunction extends AggregateFunction
 {
@@ -93,16 +94,16 @@ class SQLStringAggFunction extends AggregateFunction
 		sb.append(")");
 		return sb.toString();
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
-		result.addAll(delimiter.usedColumns());
+		result.addAll(delimiter.usedColumns(availableColumns));
 		return result;
 	}
-	public List<String> aggregateColumns()
+	public List<String> aggregateColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
-		result.addAll(expression.usedColumns());
+		result.addAll(expression.usedColumns(availableColumns));
 		return result;
 	}
 	public List<AggregateFunction> aggregateFunctions()

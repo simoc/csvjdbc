@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class SQLUserFunction extends Expression
 {
@@ -198,12 +199,12 @@ class SQLUserFunction extends Expression
 		sb.append(")");
 		return sb.toString();
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
 		for (Expression expression : expressions)
 		{
-			result.addAll(expression.usedColumns());
+			result.addAll(expression.usedColumns(availableColumns));
 		}
 		return result;
 	}

@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class SimpleCaseExpression extends Expression
 {
@@ -72,22 +73,22 @@ class SimpleCaseExpression extends Expression
 		return sb.toString();
 	}
 
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
-		result.addAll(caseExpression.usedColumns());
+		result.addAll(caseExpression.usedColumns(availableColumns));
 		Iterator<Expression> it = switches.iterator();
 		while (it.hasNext())
 		{
-			result.addAll(it.next().usedColumns());
+			result.addAll(it.next().usedColumns(availableColumns));
 		}
 		it = values.iterator();
 		while (it.hasNext())
 		{
-			result.addAll(it.next().usedColumns());
+			result.addAll(it.next().usedColumns(availableColumns));
 		}
 		if (elseExpression != null)
-			result.addAll(elseExpression.usedColumns());
+			result.addAll(elseExpression.usedColumns(availableColumns));
 		return result;
 	}
 	

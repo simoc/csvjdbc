@@ -260,11 +260,6 @@ public class CsvResultSet implements ResultSet
 				((CsvReader) reader).setColumnTypes(columnTypes);
 		}
 
-		if (whereClause!= null)
-			this.usedColumns = new LinkedList<String>(whereClause.usedColumns());
-		else
-			this.usedColumns = new LinkedList<String>();
-
 		String[] columnNames = reader.getColumnNames();
 
 		String tableAlias = reader.getTableAlias();
@@ -278,6 +273,11 @@ public class CsvResultSet implements ResultSet
 			if (tableAlias != null)
 				allReaderColumns.add(tableAlias + "." + columnName);
 		}
+
+		if (whereClause!= null)
+			this.usedColumns = new LinkedList<String>(whereClause.usedColumns(allReaderColumns));
+		else
+			this.usedColumns = new LinkedList<String>();
 
 		if (!(this.resultSetType == TYPE_FORWARD_ONLY || this.resultSetType == TYPE_SCROLL_INSENSITIVE ||
 			this.resultSetType == TYPE_SCROLL_SENSITIVE))
@@ -343,10 +343,10 @@ public class CsvResultSet implements ResultSet
 		{
 			for (Expression expr : this.groupByColumns)
 			{
-				this.usedColumns.addAll(expr.usedColumns());
+				this.usedColumns.addAll(expr.usedColumns(allReaderColumns));
 			}
 			if (havingClause!= null)
-				this.usedColumns.addAll(havingClause.usedColumns());
+				this.usedColumns.addAll(havingClause.usedColumns(allReaderColumns));
 		}
 
 		/*
@@ -384,7 +384,7 @@ public class CsvResultSet implements ResultSet
 			for (Object []o : this.orderByColumns)
 			{
 				Expression expr = (Expression)o[1];
-				this.usedColumns.addAll(expr.usedColumns());
+				this.usedColumns.addAll(expr.usedColumns(allReaderColumns));
 			}
 		}
 
@@ -405,7 +405,7 @@ public class CsvResultSet implements ResultSet
 				this.aggregateFunctions.addAll(exprAggregateFunctions);
 				for (AggregateFunction aggregateFunction : exprAggregateFunctions)
 				{
-					this.usedColumns.addAll(aggregateFunction.aggregateColumns());
+					this.usedColumns.addAll(aggregateFunction.aggregateColumns(allReaderColumns));
 				}
 			}
 		}
@@ -421,7 +421,7 @@ public class CsvResultSet implements ResultSet
 				Object[] o = this.queryEnvironment.get(i);
 				if (o[1] != null)
 				{
-					allUsedColumns.addAll(((Expression)o[1]).usedColumns());
+					allUsedColumns.addAll(((Expression)o[1]).usedColumns(allReaderColumns));
 				}
 			}
 			if (allUsedColumns.size() > 0 && aggregateFunctions.size() > 0)
@@ -450,7 +450,7 @@ public class CsvResultSet implements ResultSet
 					}
 					else
 					{
-						List<String> exprUsedColumns = expr.usedColumns();
+						List<String> exprUsedColumns = expr.usedColumns(allReaderColumns);
 						for (Object usedColumn : exprUsedColumns)
 						{
 							if (!allReaderColumns.contains(usedColumn))
@@ -478,14 +478,14 @@ public class CsvResultSet implements ResultSet
 				}
 			}
 
-			checkGroupBy();
+			checkGroupBy(allReaderColumns);
 
 			if (this.orderByColumns != null)
 			{
 				for (Object []o : this.orderByColumns)
 				{
 					Expression expr = (Expression)o[1];
-					List<String> exprUsedColumns = new LinkedList<String>(expr.usedColumns());
+					List<String> exprUsedColumns = new LinkedList<String>(expr.usedColumns(allReaderColumns));
 					if (expr instanceof SubQueryExpression)
 					{
 						/*
@@ -530,7 +530,7 @@ public class CsvResultSet implements ResultSet
 			{
 				Object[] o = this.queryEnvironment.get(i);
 				Expression expr = (Expression)o[1];
-				this.usedColumns.addAll(expr.usedColumns());
+				this.usedColumns.addAll(expr.usedColumns(allReaderColumns));
 			}
 		}
 
@@ -726,13 +726,13 @@ public class CsvResultSet implements ResultSet
 	 * Check that all selected and ORDER BY columns also appear in any GROUP BY clause. 
 	 * @throws SQLException
 	 */
-	private void checkGroupBy() throws SQLException
+	private void checkGroupBy(Set<String> allReaderColumns) throws SQLException
 	{
 		if (this.groupByColumns != null)
 		{
 			for (Expression expr : this.groupByColumns)
 			{
-				List<String> exprUsedColumns = expr.usedColumns();
+				List<String> exprUsedColumns = expr.usedColumns(allReaderColumns);
 				if (exprUsedColumns.isEmpty())
 				{
 					/*
@@ -744,7 +744,7 @@ public class CsvResultSet implements ResultSet
 			ArrayList<String> groupingColumns = new ArrayList<String>();
 			for (Expression expr : this.groupByColumns)
 			{
-				groupingColumns.addAll(expr.usedColumns());
+				groupingColumns.addAll(expr.usedColumns(allReaderColumns));
 			}
 			ArrayList<String> queryEnvironmentColumns = new ArrayList<String>();
 			for (int i = 0; i < this.queryEnvironment.size(); i++)
@@ -754,7 +754,7 @@ public class CsvResultSet implements ResultSet
 				if (o[1] != null)
 				{
 					Expression expr = (Expression)o[1];
-					for (Object o2 : expr.usedColumns())
+					for (Object o2 : expr.usedColumns(allReaderColumns))
 					{
 						queryEnvironmentColumns.add(o2.toString());
 					}
@@ -768,7 +768,7 @@ public class CsvResultSet implements ResultSet
 					if (o[1] != null)
 					{
 						Expression expr = (Expression)o[1];
-						for (Object o2 : expr.usedColumns())
+						for (Object o2 : expr.usedColumns(allReaderColumns))
 						{
 							String columnName = o2.toString();
 							if (!groupingColumns.contains(columnName))
@@ -791,7 +791,7 @@ public class CsvResultSet implements ResultSet
 			}
 			if (this.havingClause != null)
 			{
-				for (String columnName : this.havingClause.usedColumns())
+				for (String columnName : this.havingClause.usedColumns(allReaderColumns))
 				{
 					if (!queryEnvironmentColumns.contains(columnName))
 					{
@@ -804,7 +804,7 @@ public class CsvResultSet implements ResultSet
 				for (Object []o : this.orderByColumns)
 				{
 					Expression expr = (Expression)o[1];
-					for (Object o2 : expr.usedColumns())
+					for (Object o2 : expr.usedColumns(allReaderColumns))
 					{
 						if (!queryEnvironmentColumns.contains(o2.toString()))
 							throw new SQLException(CsvResources.getString("orderByNotInGroupBy") + ": " + o2);
@@ -1402,16 +1402,24 @@ public class CsvResultSet implements ResultSet
 			/*
 			 * Create a record containing dummy values.
 			 */
+			HashSet<String> allReaderColumns = new HashSet<String>();
 			HashMap<String, Object> env = new HashMap<String, Object>();
 			for(int i=0; i<readerTypeNames.length; i++)
 			{
 				Object literal = StringConverter.getLiteralForTypeName(readerTypeNames[i]);
 				String columnName = readerColumnNames[i].toUpperCase();
 				env.put(columnName, literal);
+				allReaderColumns.add(columnName);
 				if (tableName != null)
+				{
 					env.put(tableName.toUpperCase() + "." + columnName, literal);
+					allReaderColumns.add(tableName.toUpperCase() + "." + columnName);
+				}
 				if (tableAlias != null)
+				{
 					env.put(tableAlias + "." + columnName, literal);
+					allReaderColumns.add(tableAlias + "." + columnName);
+				}
 			}
 			if (converter != null)
 				env.put(StringConverter.COLUMN_NAME, converter);
@@ -1434,7 +1442,7 @@ public class CsvResultSet implements ResultSet
 					int columnSize = DataReader.DEFAULT_COLUMN_SIZE;
 					if (expr instanceof ColumnName)
 					{
-						String usedColumn = expr.usedColumns().get(0);
+						String usedColumn = expr.usedColumns(allReaderColumns).get(0);
 						for (int k = 0; k < readerColumnNames.length; k++)
 						{
 							if (usedColumn.equalsIgnoreCase(readerColumnNames[k]))

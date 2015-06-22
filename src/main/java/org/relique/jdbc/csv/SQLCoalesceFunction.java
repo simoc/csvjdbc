@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 class SQLCoalesceFunction extends Expression
 {
@@ -60,13 +61,13 @@ class SQLCoalesceFunction extends Expression
 		sb.append(")");
 		return sb.toString();
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
 		Iterator<Expression> it = expressions.iterator();
 		while (it.hasNext())
 		{
-			result.addAll(it.next().usedColumns());
+			result.addAll(it.next().usedColumns(availableColumns));
 		}
 		return result;
 	}

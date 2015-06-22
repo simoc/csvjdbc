@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class BetweenExpression extends LogicalExpression
 {
@@ -56,12 +57,12 @@ class BetweenExpression extends LogicalExpression
 	{
 		return "B "+obj+" "+left+" "+right;
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
-		result.addAll(obj.usedColumns());
-		result.addAll(left.usedColumns());
-		result.addAll(right.usedColumns());
+		result.addAll(obj.usedColumns(availableColumns));
+		result.addAll(left.usedColumns(availableColumns));
+		result.addAll(right.usedColumns(availableColumns));
 		return result;
 	}
 	public List<AggregateFunction> aggregateFunctions()

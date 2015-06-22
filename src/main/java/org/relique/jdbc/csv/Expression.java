@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class Expression
 {
@@ -27,10 +28,11 @@ public abstract class Expression
 	{
 		return null;
 	}
-	public List<String> usedColumns()
+	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		return null;
 	}
+
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		return new LinkedList<AggregateFunction>();
