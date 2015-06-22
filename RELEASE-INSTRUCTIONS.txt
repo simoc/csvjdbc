@@ -20,12 +20,7 @@ ant jar test
 
 5. Check that the ant test step above does not report failing unit tests
 
-6. Build source code archives
-
-cd ..
-./pack-sources.sh
-
-7. Upload to Sourceforge web site (replace simoc and 1.0-16 with values
+6. Upload to Sourceforge web site (replace simoc and 1.0-16 with values
 for this release).
 
 sftp simoc,csvjdbc@frs.sourceforge.net
@@ -33,13 +28,11 @@ cd /home/frs/project/c/cs/csvjdbc/CsvJdbc
 mkdir 1.0-16
 cd 1.0-16
 put target/csvjdbc-1.0-16.jar
-put dist/csvjdbc-sources.tar.gz csvjdbc-sources-1.0.16.tar.gz
-put dist/csvjdbc-sources-full.tar.gz csvjdbc-sources-full-1.0-16.tar.gz
 
-8.  Check that XML <project><version> tag in file pom.xml is the
+7.  Check that XML <project><version> tag in file pom.xml is the
 version number we are creating. If not, update it and commit.
 
-9. Check that you have a $HOME/.m2/settings.xml file like (replace
+8. Check that you have a $HOME/.m2/settings.xml file like (replace
 simoc with your Sourceforge username):
 
 <settings>
@@ -53,22 +46,22 @@ simoc with your Sourceforge username):
  </servers>
 </settings>
 
-10. Maven deploy to SourceForge
+9. Maven deploy to SourceForge
 
 mvn deploy (you are prompted your SourceForge login password)
 
-11. Tag release (replace 1.0-16 with the value for this release)
+10. Tag release (replace 1.0-16 with the value for this release)
 
 git tag -a -m 'CsvJdbc version 1.0-16' v1.0-16
 git push origin v1.0-16
 
-12. Update Tracker tickets from 'Pending' to 'Closed' with a comment
+11. Update Tracker tickets from 'Pending' to 'Closed' with a comment
 that they are included in release 1.0-16.
 
-13. Create a README.txt file listing the changed Tracker tickets and
+12. Create a README.txt file listing the changed Tracker tickets and
 upload to 1.0-16 directory, as in Step 7.
 
-14. Upload new index.html if it has changed since last release.
+13. Upload new index.html if it has changed since last release.
 
 cd csvjdbc-website/www
 sftp simoc@web.sourceforge.net
