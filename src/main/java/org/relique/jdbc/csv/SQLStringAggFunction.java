@@ -112,6 +112,11 @@ class SQLStringAggFunction extends AggregateFunction
 		result.add(this);
 		return result;
 	}
+	public void resetAggregateFunctions()
+	{
+		distinctAggregateValues.clear();
+		aggregateValues.clear();
+	}
 	public void processRow(Map<String, Object> env) throws SQLException
 	{
 		/*
