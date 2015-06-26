@@ -34,8 +34,8 @@ public class SqlParser
 	/**
 	 * The name of the table
 	 */
-	private String tableName;
-	private String tableAlias;
+	private List<String> tableNames;
+	private List<String> tableAliases;
 
 	/**
 	 * Description of the Field
@@ -70,14 +70,14 @@ public class SqlParser
 	 * 
 	 * @return The tableName value
 	 */
-	public String getTableName()
+	public List<String> getTableNames()
 	{
-		return tableName;
+		return tableNames;
 	}
 
-	public String getTableAlias()
+	public List<String> getTableAliases()
 	{
-		return tableAlias;
+		return tableAliases;
 	}
 
 	/**
@@ -95,8 +95,8 @@ public class SqlParser
 	 */
 	public void parse(String sql) throws SQLException, ParseException
 	{
-		tableName = null;
-		tableAlias = null;
+		tableNames = new ArrayList<String>();
+		tableAliases = new ArrayList<String>();
 
 		// Ensure last line of SQL statement ends with newline so we can
 		// correctly skip single-line comments.
@@ -130,12 +130,12 @@ public class SqlParser
 		this.limit = parsedStatement.limit;
 		this.offset = parsedStatement.offset;
 
-		if (parsedStatement.tableEntries.size() > 1)
-			throw new SQLException(CsvResources.getString("joinNotSupported"));
-		if (parsedStatement.tableEntries.size() > 0)
+		this.tableNames = new ArrayList<String>();
+		this.tableAliases = new ArrayList<String>();
+		for (ParsedTable parsedTable : parsedStatement.tableEntries)
 		{
-			tableName = parsedStatement.tableEntries.get(0).getTableName();
-			tableAlias = parsedStatement.tableEntries.get(0).getTableAlias();
+			tableNames.add(parsedTable.getTableName());
+			tableAliases.add(parsedTable.getTableAlias());
 		}
 
 		this.environment = new ArrayList<Object[]>();
@@ -158,10 +158,19 @@ public class SqlParser
 				}
 
 				String key = cc.key;
-				if (tableAlias != null && key.startsWith(tableAlias + "."))
-					key = key.substring(tableAlias.length() + 1);
-				if (tableName != null && key.startsWith(tableName.toUpperCase() + "."))
-					key = key.substring(tableName.length() + 1);
+				for (int i = 0; i < tableNames.size(); i++)
+				{
+					if (tableAliases.get(i) != null && key.startsWith(tableAliases.get(i) + "."))
+					{
+						key = key.substring(tableAliases.get(i).length() + 1);
+						break;
+					}
+					if (tableNames.get(i) != null && key.startsWith(tableNames.get(i).toUpperCase() + "."))
+					{
+						key = key.substring(tableNames.get(i).length() + 1);
+						break;
+					}
+				}
 				environment.add(new Object[]{ key, cc.expression });
 			}
 		}

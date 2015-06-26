@@ -313,18 +313,27 @@ public class CsvStatement implements Statement
 	protected ResultSet executeParsedQuery(SqlParser parser, Map<String, Object> parentobjectEnvironment)
 			throws SQLException
 	{
+		if (parser.getTableNames().size() > 1)
+			throw new SQLException(CsvResources.getString("joinNotSupported"));
+		String tableName = null;
+		if (parser.getTableNames().size() > 0)
+			tableName = parser.getTableNames().get(0);
+		String tableAlias = null;
+		if (parser.getTableAliases().size() > 0)
+			tableAlias = parser.getTableAliases().get(0);
+
 		String path = connection.getPath();
 		TableReader tableReader = connection.getTableReader();
 		if (path != null)
 			CsvDriver.writeLog("Connection Path: " + path);
 		else
 			CsvDriver.writeLog("Connection TableReader: " + tableReader.getClass().getName());
-		CsvDriver.writeLog("Parser Table Name: " + parser.getTableName());
+		CsvDriver.writeLog("Parser Table Name: " + tableName);
 		CsvDriver.writeLog("Connection Extension: " + connection.getExtension());
 
 		DataReader reader = null;
 		String fileName = null;
-		String tableName = parser.getTableName();
+
 		if (tableName == null)
 		{
 			/*
@@ -361,7 +370,7 @@ public class CsvStatement implements Statement
 			{
 				if (connection.getExtension().equalsIgnoreCase(".dbf"))
 				{
-					reader = new DbfReader(fileName, tableName, parser.getTableAlias(), connection.getCharset());
+					reader = new DbfReader(fileName, tableName, tableAlias, connection.getCharset());
 				}
 				else
 				{
@@ -372,7 +381,7 @@ public class CsvStatement implements Statement
 						CryptoFilter filter = connection.getDecryptingCodec();
 						if (connection.isIndexedFiles())
 						{
-							String fileNamePattern = parser.getTableName() +
+							String fileNamePattern = tableName +
 								connection.getFileNamePattern() +
 								connection.getExtension();
 							String[] nameParts = connection.getNameParts();
@@ -415,7 +424,7 @@ public class CsvStatement implements Statement
 					String headerline = connection.getHeaderline(tableName);
 					CsvRawReader rawReader = new CsvRawReader(input,
 						tableName,
-						parser.getTableAlias(),
+						tableAlias,
 						connection.getSeparator(),
 						connection.isSuppressHeaders(),
 						connection.isHeaderFixedWidth(),
