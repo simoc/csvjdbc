@@ -358,4 +358,46 @@ public class TestSubQuery
 		rs1.close();
 		stmt.close();
 	}
+
+	@Test
+	public void testExistsSubQuery() throws SQLException
+	{
+		Properties props = new Properties();
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet rs1 = stmt.executeQuery("select EXTRA_FIELD from sample where exists (select 1 from sample2 where sample2.id=sample.id)");
+		assertTrue(rs1.next());
+		assertEquals("The EXTRA_FIELD is wrong", "A", rs1.getString(1));
+		assertFalse(rs1.next());
+
+		rs1.close();
+		stmt.close();
+	}
+
+	@Test
+	public void testNotExistsSubQuery() throws SQLException
+	{
+		Properties props = new Properties();
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet rs1 = stmt.executeQuery("select EXTRA_FIELD from sample where not exists (select 1 from sample2 where sample2.id=sample.id)");
+		assertTrue(rs1.next());
+		assertEquals("The EXTRA_FIELD is wrong", "F", rs1.getString(1));
+		assertTrue(rs1.next());
+		assertEquals("The EXTRA_FIELD is wrong", "B", rs1.getString(1));
+		assertTrue(rs1.next());
+		assertEquals("The EXTRA_FIELD is wrong", "C", rs1.getString(1));
+		assertTrue(rs1.next());
+		assertEquals("The EXTRA_FIELD is wrong", "E", rs1.getString(1));
+		assertTrue(rs1.next());
+		assertEquals("The EXTRA_FIELD is wrong", "G", rs1.getString(1));
+		assertFalse(rs1.next());
+
+		rs1.close();
+		stmt.close();
+	}
 }

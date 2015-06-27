@@ -227,6 +227,10 @@ TOKEN:
 }
 TOKEN:
 {
+	<EXISTS:"EXISTS">
+}
+TOKEN:
+{
 	<CASE:"CASE">
 }
 TOKEN:
@@ -719,11 +723,17 @@ Expression logicalAndExpression():
 Expression logicalUnaryExpression():
 {
 	Expression arg;
+	ParsedStatement parsedStatement;
 }
 {
 	<NOT>arg = logicalUnaryExpression()
 	{
 		return new NotExpression(arg);
+	}
+	| <EXISTS><OPENPARENTHESIS>parsedStatement = selectStatement()<CLOSEPARENTHESIS>
+	{
+		arg = new ExistsExpression(new SubQueryExpression(parsedStatement));
+		return arg;
 	}
 	| arg = relationalExpression()
 	{
