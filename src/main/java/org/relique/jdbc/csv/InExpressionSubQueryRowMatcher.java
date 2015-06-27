@@ -19,36 +19,27 @@
 package org.relique.jdbc.csv;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-class ExistsExpression extends LogicalExpression
+public class InExpressionSubQueryRowMatcher implements SubQueryRowMatcher
 {
-	SubQueryExpression subQuery = null;
+	private Map<String, Object> env;
+	private Comparable objValue;
 
-	public ExistsExpression(SubQueryExpression subQuery)
+	public InExpressionSubQueryRowMatcher(Map<String, Object> env, Comparable objValue)
 	{
-		this.subQuery = subQuery;
+		this.env = env;
+		this.objValue = objValue;
 	}
-	public Boolean isTrue(Map<String, Object> env) throws SQLException
+
+	public boolean matches(Object expr) throws SQLException
 	{
-		boolean matches = subQuery.evalList(env, new ExistsExpressionSubQueryRowMatcher());
-		return Boolean.valueOf(matches);
-	}
-	public String toString()
-	{
-		StringBuilder sb = new StringBuilder();
-		sb.append("EXISTS ");
-		sb.append(subQuery.toString());
-		return sb.toString();
-	}
-	public List<String> usedColumns(Set<String> availableColumns)
-	{
-		return subQuery.usedColumns(availableColumns);
-	}
-	public List<AggregateFunction> aggregateFunctions()
-	{
-		return subQuery.aggregateFunctions();
+		/*
+		 * Does this row from the sub-query match the IN expression value
+		 * from the outer/parent SQL statement?
+		 */
+		Comparable exprValue = (Comparable)expr;
+		Integer compared = RelopExpression.compare(objValue, exprValue, env);
+		return (compared != null && compared.intValue() == 0);
 	}
 }

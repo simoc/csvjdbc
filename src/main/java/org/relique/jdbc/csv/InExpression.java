@@ -57,14 +57,8 @@ class InExpression extends LogicalExpression
 		}
 		else
 		{
-			List<Object> objList = subQuery.evalList(env);
-			for (Object o: objList)
-			{
-				Comparable exprValue = (Comparable)o;
-				Integer compared = RelopExpression.compare(objValue, exprValue, env);
-				if (compared != null && compared.intValue() == 0)
-					return Boolean.TRUE;
-			}
+			boolean matches = subQuery.evalList(env, new InExpressionSubQueryRowMatcher(env, objValue));
+			return Boolean.valueOf(matches);
 		}
 		return Boolean.FALSE;
 	}

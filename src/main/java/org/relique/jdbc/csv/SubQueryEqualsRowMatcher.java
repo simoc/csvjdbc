@@ -19,36 +19,24 @@
 package org.relique.jdbc.csv;
 
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.ArrayList;
 
-class ExistsExpression extends LogicalExpression
+public class SubQueryEqualsRowMatcher implements SubQueryRowMatcher
 {
-	SubQueryExpression subQuery = null;
+	ArrayList<Object> values = new ArrayList<Object>();
 
-	public ExistsExpression(SubQueryExpression subQuery)
+	public boolean matches(Object expr) throws SQLException
 	{
-		this.subQuery = subQuery;
+		/*
+		 * Save all rows so we can check that only one row matches (parent/outer
+		 * SQL statement will fail if sub-query returns more than one row).
+		 */
+		values.add(expr);
+		return false;
 	}
-	public Boolean isTrue(Map<String, Object> env) throws SQLException
+	
+	public ArrayList<Object> getValues()
 	{
-		boolean matches = subQuery.evalList(env, new ExistsExpressionSubQueryRowMatcher());
-		return Boolean.valueOf(matches);
-	}
-	public String toString()
-	{
-		StringBuilder sb = new StringBuilder();
-		sb.append("EXISTS ");
-		sb.append(subQuery.toString());
-		return sb.toString();
-	}
-	public List<String> usedColumns(Set<String> availableColumns)
-	{
-		return subQuery.usedColumns(availableColumns);
-	}
-	public List<AggregateFunction> aggregateFunctions()
-	{
-		return subQuery.aggregateFunctions();
+		return values;
 	}
 }

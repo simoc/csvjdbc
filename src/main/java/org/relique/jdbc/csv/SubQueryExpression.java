@@ -40,22 +40,27 @@ class SubQueryExpression extends Expression
 		/*
 		 * Evaluate sub-query that returns a single value.
 		 */
-		List<Object> subEval = evalList(env);
-		int nRows = subEval.size();
+		SubQueryEqualsRowMatcher rowMatcher = new SubQueryEqualsRowMatcher();
+		evalList(env, rowMatcher);
+		List<Object> rowMatcherValues = rowMatcher.getValues();
+		int nRows = rowMatcherValues.size();
 		if (nRows == 0)
 			return null;
 		if (nRows > 1)
 			throw new SQLException(CsvResources.getString("subqueryOneRow"));
-		return subEval.get(0);
+		return rowMatcherValues.get(0);
 	}
 
-	public List<Object> evalList(Map<String, Object> env) throws SQLException
+	public boolean evalList(Map<String, Object> env, SubQueryRowMatcher rowMatcher) throws SQLException
 	{
 		/*
-		 * Evaluate sub-query that returns a list of values for
+		 * Evaluate sub-query that matches against a single value or list of values for:
+		 * SELECT X1, (SELECT X2 FROM ... ) FROM ...
+		 * SELECT ... WHERE X1 = (SELECT X2 FROM ... )
 		 * SELECT ... WHERE X1 IN (SELECT X2 FROM ... )
+		 * SELECT ... WHERE EXISTS (SELECT X2 FROM ... )
 		 */
-		List<Object> retval = new ArrayList<Object>();
+		boolean matches = false;
 		CsvStatement statement = null;
 		ResultSet resultSet = null;
 
@@ -79,9 +84,15 @@ class SubQueryExpression extends Expression
 			resultSet = statement.executeParsedQuery(sqlParser, env);
 			if (resultSet.getMetaData().getColumnCount() != 1)
 				throw new SQLException(CsvResources.getString("subqueryOneColumn"));
-			while (resultSet.next())
+
+			/*
+			 * Go through sub-query ResultSet sequentially until we find a row
+			 * that causes outer/parent SQL statement to be evaluated to true or false.
+			 */
+			while (matches == false && resultSet.next())
 			{
-				retval.add(resultSet.getObject(1));
+				Object o = resultSet.getObject(1);
+				matches = rowMatcher.matches(o);
 			}
 		}
 		finally
@@ -89,9 +100,8 @@ class SubQueryExpression extends Expression
 			if (resultSet != null)
 				resultSet.close();
 		}
-		return retval;
+		return matches;
 	}
-
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
