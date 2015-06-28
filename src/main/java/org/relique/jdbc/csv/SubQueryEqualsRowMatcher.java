@@ -28,11 +28,16 @@ public class SubQueryEqualsRowMatcher implements SubQueryRowMatcher
 	public boolean matches(Object expr) throws SQLException
 	{
 		/*
-		 * Save all rows so we can check that only one row matches (parent/outer
-		 * SQL statement will fail if sub-query returns more than one row).
+		 * For WHERE X = (SELECT ...) type sub-query we expect a
+		 * maximum of one matching row.  Stop if we get more than
+		 * one row, so parent/out SQL statement can throw an
+		 * SQLException.
 		 */
 		values.add(expr);
-		return false;
+		if (values.size() > 1)
+			return true;
+		else
+			return false;
 	}
 	
 	public ArrayList<Object> getValues()
