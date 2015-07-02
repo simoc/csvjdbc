@@ -2708,6 +2708,27 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testNonParseableMultiline() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("headerline", "COUNTRY,ADDRESS");
+		props.put("suppressHeaders", "true");
+		props.put("ignoreNonParseableLines", "True");
+		props.put("fileExtension", ".txt");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM embassies");
+
+		assertTrue(results.next());
+		assertEquals("Germany", results.getString(1));
+		assertTrue(results.next());
+		assertEquals("United Kingdom", results.getString(1));
+		assertFalse(results.next());
+	}
+
+	@Test
 	public void testNonParseableLogging() throws SQLException
 	{
 		Properties props = new Properties();
