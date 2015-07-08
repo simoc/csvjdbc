@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.Vector;
 
@@ -59,6 +60,8 @@ public class CsvRawReader
 	private boolean ignoreUnparseableLines;
 	private String quoteStyle;
 	private ArrayList<int []> fixedWidthColumns;
+	private LinkedList<String> readAheadLines;
+	private boolean readingAhead;
 
 	public CsvRawReader(LineNumberReader in,
 		String tableName,
@@ -91,6 +94,8 @@ public class CsvRawReader
 		this.ignoreUnparseableLines = ignoreUnparseableLines;
 		this.quoteStyle = quoteStyle;
 		this.fixedWidthColumns = fixedWidthColumns;
+		this.readAheadLines = new LinkedList<String>();
+		this.readingAhead = false;
 
 		for (int i = 0; i < skipLeadingLines; i++)
 		{
@@ -184,6 +189,7 @@ public class CsvRawReader
 	{
 		try
 		{
+			readAheadLines.clear();
 			input.close();
 			firstLineBuffer = null;
 		}
@@ -202,11 +208,21 @@ public class CsvRawReader
 	 */
 	protected String getNextDataLine() throws IOException
 	{
-		String tmp = input.readLine();
+		String tmp;
+		if (readAheadLines.isEmpty() == false)
+			tmp = readAheadLines.removeFirst();
+		else
+			tmp = input.readLine();
+
 		if (comment != null && tmp != null)
 		{
 			while (tmp != null && (tmp.length() == 0 || tmp.startsWith(comment)))
-				tmp = input.readLine();
+			{
+				if (readAheadLines.isEmpty() == false)
+					tmp = readAheadLines.removeFirst();
+				else
+					tmp = input.readLine();
+			}
 			// set it to 0: we don't skip data lines, only pre-header lines...
 			comment = null;
 		}
@@ -216,13 +232,25 @@ public class CsvRawReader
 			{
 				do
 				{
+					/*
+					 * Method parseLine() reads more lines to get the complete record
+					 * for multi-line records.
+					 * 
+					 * Remember all the lines we read ahead so we can use them again as
+					 * the next lines before reading from the file again.
+					 */
+					readingAhead = true;
 					int fieldsCount = parseLine(tmp, true).length;
 					if (columnNames != null && columnNames.length == fieldsCount)
 						break; // we are satisfied
 					if (columnNames == null && fieldsCount != 1)
 						break; // also good enough - hopefully
 					CsvDriver.writeLog("Ignoring row " + input.getLineNumber() + " Line=" + tmp);
-					tmp = input.readLine();
+
+					if (readAheadLines.isEmpty() == false)
+						tmp = readAheadLines.removeFirst();
+					else
+						tmp = input.readLine();
 				}
 				while (tmp != null);
 			}
@@ -230,6 +258,10 @@ public class CsvRawReader
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+			finally
+			{
+				readingAhead = false;
 			}
 		}
 		return tmp;
@@ -506,7 +538,26 @@ public class CsvRawReader
 				value = new StringBuilder(value.substring(0, value.length() - 1));
 				try
 				{
-					String additionalLine = input.readLine();
+					String additionalLine;
+					if (readingAhead)
+					{
+						additionalLine = input.readLine();
+
+						/*
+						 * Remember each line we read ahead -- we may have to re-read
+						 * these lines later.
+						 */
+						if (additionalLine != null)
+							readAheadLines.addLast(additionalLine);
+					}
+					else
+					{
+						if (readAheadLines.isEmpty() == false)
+							additionalLine = readAheadLines.removeFirst();
+						else
+							additionalLine = input.readLine();
+					}
+
 					if (additionalLine == null)
 					{
 						throw new SQLException(CsvResources.getString("eofInQuotes") + ": " +
