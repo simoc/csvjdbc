@@ -58,6 +58,7 @@ public class CsvRawReader
 	private boolean trimValues = true;
 	private String comment = null;
 	private boolean ignoreUnparseableLines;
+	private String missingValue;
 	private String quoteStyle;
 	private ArrayList<int []> fixedWidthColumns;
 	private LinkedList<String> readAheadLines;
@@ -76,6 +77,7 @@ public class CsvRawReader
 		boolean trimValues,
 		int skipLeadingLines,
 		boolean ignoreUnparseableLines,
+		String missingValue,
 		boolean defectiveHeaders,
 		int skipLeadingDataLines,
 		String quoteStyle,
@@ -92,6 +94,7 @@ public class CsvRawReader
 		this.trimValues = trimValues;
 		this.input = in;
 		this.ignoreUnparseableLines = ignoreUnparseableLines;
+		this.missingValue = missingValue;
 		this.quoteStyle = quoteStyle;
 		this.fixedWidthColumns = fixedWidthColumns;
 		this.readAheadLines = new LinkedList<String>();
@@ -181,7 +184,20 @@ public class CsvRawReader
 			e.printStackTrace();
 			throw new SQLException(e.toString());
 		}
-		fieldValues = parseLine(dataLine, trimValues);
+		String []parsedFieldValues = parseLine(dataLine, trimValues);
+		if (parsedFieldValues.length < fieldValues.length && missingValue != null)
+		{
+			/*
+			 * Add missingValue elements to make array as long as expected.
+			 */
+			System.arraycopy(parsedFieldValues, 0, fieldValues, 0, parsedFieldValues.length);
+			for (int i = parsedFieldValues.length; i < fieldValues.length; i++)
+				fieldValues[i] = missingValue;
+		}
+		else
+		{
+			fieldValues = parsedFieldValues;
+		}
 		return true;
 	}
 
@@ -226,7 +242,7 @@ public class CsvRawReader
 			// set it to 0: we don't skip data lines, only pre-header lines...
 			comment = null;
 		}
-		if(ignoreUnparseableLines && tmp != null)
+		if(ignoreUnparseableLines && tmp != null && missingValue == null)
 		{
 			try
 			{

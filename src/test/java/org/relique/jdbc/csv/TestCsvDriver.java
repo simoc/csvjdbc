@@ -2758,6 +2758,37 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testMissingValue() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("separator", ":");
+		props.put("fileExtension", ".log");
+		props.put("missingValue", "$$");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt
+				.executeQuery("SELECT * FROM recording-2015-06-28");
+
+		assertTrue(results.next());
+		assertEquals("2015-01-01", results.getString(1));
+		assertEquals("start", results.getString(2));
+		assertEquals("$$", results.getString(3));
+		assertEquals("$$", results.getString(4));
+		assertTrue(results.next());
+		assertEquals("2015-01-02", results.getString(1));
+		assertEquals("new", results.getString(2));
+		assertEquals("event", results.getString(3));
+		assertEquals("$$", results.getString(4));
+		assertTrue(results.next());
+		assertEquals("2015-01-03", results.getString(1));
+		assertEquals("repeat", results.getString(2));
+		assertEquals("previous", results.getString(3));
+		assertEquals("100", results.getString(4));
+		assertFalse(results.next());
+	}
+
+	@Test
 	public void testBadColumnValues() throws SQLException
 	{
 		Properties props = new Properties();

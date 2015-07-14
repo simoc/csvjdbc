@@ -119,6 +119,8 @@ public class CsvConnection implements Connection
 
 	private boolean ignoreUnparseableLines;
 
+	private String missingValue;
+
 	private boolean fileTailPrepend;
 
 	private CryptoFilter decryptingFilter;
@@ -512,6 +514,8 @@ public class CsvConnection implements Connection
 		setIgnoreUnparseableLines(Boolean.parseBoolean(info.getProperty(
 			CsvDriver.IGNORE_UNPARSEABLE_LINES,
 			CsvDriver.DEFAULT_IGNORE_UNPARSEABLE_LINES)));
+		setMissingValue(info.getProperty(CsvDriver.MISSING_VALUE,
+				CsvDriver.DEFAULT_MISSING_VALUE));
 	}
 
 	/**
@@ -1274,6 +1278,16 @@ public class CsvConnection implements Connection
 	public void setIgnoreUnparseableLines(boolean ignoreUnparseableLines)
 	{
 		this.ignoreUnparseableLines = ignoreUnparseableLines;
+	}
+
+	public String getMissingValue()
+	{
+		return missingValue;
+	}
+
+	public void setMissingValue(String missingValue)
+	{
+		this.missingValue = missingValue;
 	}
 
 	public void setFileTailPrepend(boolean fileTailPrepend)

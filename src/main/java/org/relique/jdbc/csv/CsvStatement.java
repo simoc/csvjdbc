@@ -435,6 +435,7 @@ public class CsvStatement implements Statement
 						connection.getTrimValues(),
 						connection.getSkipLeadingLines(),
 						connection.isIgnoreUnparseableLines(),
+						connection.getMissingValue(),
 						connection.isDefectiveHeaders(),
 						connection.getSkipLeadingDataLines(),
 						connection.getQuoteStyle(),
