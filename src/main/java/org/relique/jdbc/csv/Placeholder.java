@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * A place holder for a parameter in a prepared statement.
+ */
 class Placeholder extends Expression
 {
 	public static int nextIndex = 1;
@@ -44,4 +47,4 @@ class Placeholder extends Expression
 	{
 		return new LinkedList<String>();
 	}
-}  
+}
