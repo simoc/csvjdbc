@@ -31,14 +31,7 @@ package org.relique.jdbc.csv;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
-import java.sql.Timestamp;
-import java.math.BigInteger;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.Calendar;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
 
