@@ -185,9 +185,6 @@ public class CsvConnection implements Connection
 		HashMap<String, String> retval = new HashMap<String, String>();
 		for (Object o : info.keySet())
 		{
-			// Iterator<String> it = info.keySet().iterator();
-			// while (it.hasNext()) {
-			// String key = (String)it.next();
 			String key = o.toString();
 			if (key.startsWith(prefix))
 			{
