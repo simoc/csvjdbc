@@ -552,7 +552,7 @@ public class CsvResultSet implements ResultSet
 			maxRows = 0;
 			limit = -1;
 			ArrayList<ArrayList<Object>> groupOrder = new ArrayList<ArrayList<Object>>();
-			HashMap<ArrayList<Object>, ArrayList<Map<String, Object>>> groups = new HashMap<ArrayList<Object>, ArrayList<Map<String, Object>>>();
+			Map<ArrayList<Object>, ArrayList<Map<String, Object>>> groups = new MinimumMemoryMap<ArrayList<Object>, ArrayList<Map<String, Object>>>();
 			try
 			{
 				while (next())
@@ -584,7 +584,7 @@ public class CsvResultSet implements ResultSet
 					 * reference to all the rows in that group so we can
 					 * later calculate any aggregate functions for each group.
 					 */
-					Map<String, Object> firstRow = new HashMap<String, Object>(values.get(0));
+					Map<String, Object> firstRow = new MinimumMemoryMap<String, Object>(values.get(0));
 					firstRow.put(AggregateFunction.GROUPING_COLUMN_NAME, values);
 
 					if (this.havingClause == null || Boolean.TRUE.equals(this.havingClause.isTrue(firstRow)))
@@ -976,7 +976,7 @@ public class CsvResultSet implements ResultSet
 
 	private Map<String, Object> updateRecordEnvironment(boolean thereWasAnAnswer) throws SQLException
 	{
-		HashMap<String, Object> objectEnvironment = new HashMap<String, Object>();
+		Map<String, Object> objectEnvironment = new MinimumMemoryMap<String, Object>();
 		if(!thereWasAnAnswer)
 		{
 			recordEnvironment = null;

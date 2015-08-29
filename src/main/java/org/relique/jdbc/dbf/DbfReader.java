@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.relique.io.DataReader;
 import org.relique.jdbc.csv.CsvResources;
+import org.relique.jdbc.csv.MinimumMemoryMap;
 
 public class DbfReader extends DataReader
 {
@@ -238,7 +239,13 @@ public class DbfReader extends DataReader
 
 	public Map<String, Object> getEnvironment() throws SQLException
 	{
-		Map<String, Object> result = new HashMap<String, Object>();
+		int initialSize = fields.size() * 2;
+		if (tableAlias != null)
+			initialSize += fields.size();
+		if (initialSize == 0)
+			initialSize = 1;
+
+		Map<String, Object> result = new MinimumMemoryMap<String, Object>(initialSize);
 		for (int i = 0; i < fields.size(); i++)
 		{
 			Object field = fields.get(i);
