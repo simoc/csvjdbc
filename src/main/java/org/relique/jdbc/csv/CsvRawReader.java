@@ -44,6 +44,9 @@ import org.relique.io.DataReader;
 
 public class CsvRawReader
 {
+	private static final String EMPTY_STRING = "";
+	private static final String ZERO_STRING = "0";
+
 	private LineNumberReader input;
 	private String tableName;
 	private String tableAlias;
@@ -63,6 +66,7 @@ public class CsvRawReader
 	private ArrayList<int []> fixedWidthColumns;
 	private LinkedList<String> readAheadLines;
 	private boolean readingAhead;
+	private String[] previousFieldValues = null;
 
 	public CsvRawReader(LineNumberReader in,
 		String tableName,
@@ -158,6 +162,11 @@ public class CsvRawReader
 
 	public boolean next() throws SQLException
 	{
+		/*
+		 * Remember String values from previous row so we can reuse them
+		 * if they occur in this row too.
+		 */
+		previousFieldValues = fieldValues;
 		fieldValues = new String[columnNames.length];
 		String dataLine = null;
 		try
@@ -417,6 +426,41 @@ public class CsvRawReader
 		return quoteChar != null && c == quoteChar.charValue();
 	}
 
+	private String createStringValue(StringBuilder columnValue, int columnIndex)
+	{
+		String s;
+
+		/*
+		 * Optimise for the two most frequent values in CSV files to avoid
+		 * creating unnecessary String objects.
+		 */
+		int len = columnValue.length();
+		if (len == 0)
+		{
+			s = EMPTY_STRING;
+		}
+		else if (len == 1 && columnValue.charAt(0) == '0')
+		{
+			s = ZERO_STRING;
+		}
+		else
+		{
+			s = columnValue.toString();
+			if (previousFieldValues != null && previousFieldValues.length > columnIndex)
+			{
+				if (previousFieldValues[columnIndex] != null && previousFieldValues[columnIndex].equals(s))
+				{
+					/*
+					 * Reuse String from previous row with same value to reduce number of
+					 * allocated java.lang.String objects.
+					 */
+					s = previousFieldValues[columnIndex];
+				}
+			}
+		}
+		return s;
+	}
+
 	/**
 	 * splits <b>line</b> into the String[] it contains.
 	 * Stuart Mottram added the code for handling line breaks in fields.
@@ -496,7 +540,7 @@ public class CsvRawReader
 								": " + orgLine);
 						}
 
-						values.add(value.toString());
+						values.add(createStringValue(value, values.size()));
 						value.setLength(0);
 						inQuotedString = false;
 						currentPos += separator.length();
@@ -514,11 +558,11 @@ public class CsvRawReader
 						{
 							if (trimValues)
 							{
-								values.add(rtrim(value.toString()));
+								values.add(rtrim(createStringValue(value, values.size())));
 							}
 							else
 							{
-								values.add(value.toString());
+								values.add(createStringValue(value, values.size()));
 							}
 							value.setLength(0);
 
