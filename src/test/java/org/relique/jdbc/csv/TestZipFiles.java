@@ -64,8 +64,8 @@ public class TestZipFiles
 		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
-		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
-		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));  
+		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 
 	@Test
