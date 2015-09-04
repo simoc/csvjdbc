@@ -1075,6 +1075,15 @@ public class CsvResultSet implements ResultSet
 	{
 		isClosed = true;
 		reader.close();
+
+		/*
+		 * Ensure that long row lists for this query can now be GC'ed
+		 * even if the application still has a reference to this ResultSet.
+		 */
+		distinctValues = null;
+		parentObjectEnvironment = null;
+		bufferedRecordEnvironments = null;
+		recordEnvironment = null;
 	}
 
 	@Override
