@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * SQL parser using JavaCC syntax definition file where.jj.
- * 
+ *
  * @author Jonathan Ackerman
  * @author Juan Pablo Morales
  * @author Mario Frasca
@@ -67,7 +67,7 @@ public class SqlParser
 
 	/**
 	 * Gets the tableName attribute of the SqlParser object
-	 * 
+	 *
 	 * @return The tableName value
 	 */
 	public List<String> getTableNames()
@@ -82,7 +82,7 @@ public class SqlParser
 
 	/**
 	 * Gets the columnNames attribute of the SqlParser object
-	 * 
+	 *
 	 * @return The columnNames value
 	 */
 	public List<Object[]> getColumns()
