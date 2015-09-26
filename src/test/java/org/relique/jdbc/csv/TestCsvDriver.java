@@ -2344,6 +2344,34 @@ public class TestCsvDriver
 		assertEquals("The substring is wrong", "", results.getString(3));
 	}
 
+	/**
+	 * Compare two values for near equality, allowing for floating point round-off.
+	 */
+	private boolean fuzzyEquals(double a, double b)
+	{
+		return (a == b || Math.round(a * 1000) == Math.round(b * 1000));
+	}
+
+	@Test
+	public void testAbsFunction() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Byte,Short,Integer,Long,Float,Double,BigDecimal");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("select ABS(C2) as R1, ABS(C5) as R2, ABS('-123456') as R3 from numeric");
+		assertTrue(results.next());
+		assertEquals("R1 is wrong", 1010, results.getInt(1));
+		assertTrue("R2 is wrong", fuzzyEquals(results.getDouble(2), 3.14));
+		assertTrue("R3 is wrong", fuzzyEquals(results.getDouble(3), 123456));
+		assertTrue(results.next());
+		assertEquals("R1 is wrong", 15, results.getInt(1));
+		assertTrue("R2 is wrong", fuzzyEquals(results.getDouble(2), 0.0));
+		assertFalse(results.next());
+	}
+
 	@Test
 	public void testRoundFunction() throws SQLException
 	{
