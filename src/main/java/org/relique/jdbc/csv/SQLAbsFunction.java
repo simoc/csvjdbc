@@ -58,14 +58,14 @@ class SQLAbsFunction extends Expression
 						i = -i;
 					retval = Integer.valueOf(i);
 				}
-				else if (retval instanceof Integer)
+				else if (o instanceof Integer)
 				{
 					int i = ((Integer)o).intValue();
 					if (i < 0)
 						i = -i;
 					retval = Integer.valueOf(i);
 				}
-				else if (retval instanceof Long)
+				else if (o instanceof Long)
 				{
 					long l = ((Long)o).intValue();
 					if (l < 0)
