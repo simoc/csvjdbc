@@ -163,4 +163,10 @@ public class MinimumMemoryMap<K, V> implements Map<K, V>
 		}
 		return entrySet;
 	}
+
+	@Override
+	public String toString()
+	{
+		return entrySet().toString();
+	}
 }
