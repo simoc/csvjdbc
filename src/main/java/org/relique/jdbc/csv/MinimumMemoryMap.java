@@ -19,6 +19,8 @@ package org.relique.jdbc.csv;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -26,8 +28,8 @@ import java.util.Set;
 /**
  * Array based implementation of the Map interface.
  * This implementation uses the minimum amount of memory to
- * store keys and values. However, inserts and lookups
- * take linear time O(N).
+ * store keys and values. Keys are kept in sorted order, so
+ * time for inserts and lookups is O(log2(N)).
  */
 public class MinimumMemoryMap<K, V> implements Map<K, V>
 {
@@ -72,10 +74,74 @@ public class MinimumMemoryMap<K, V> implements Map<K, V>
 		return keys.isEmpty();
 	}
 
+	private class KeyHashCodeComparator implements Comparator<K>
+	{
+		public int compare(K key1, K key2)
+		{
+			int hashCode1 = (key1 != null) ? key1.hashCode() : 0;
+			int hashCode2 = (key2 != null) ? key2.hashCode() : 0;
+			if (hashCode1 == hashCode2)
+				return 0;
+			if (hashCode1 < hashCode2)
+				return -1;
+			else
+				return 1;
+		}
+	}
+
+	private KeyHashCodeComparator keyHashCodeComparator = new KeyHashCodeComparator();
+
+	private int binarySearch(ArrayList<K> keys, K key)
+	{
+		int index = Collections.binarySearch(keys, key, keyHashCodeComparator);
+		if (index >= 0)
+		{
+			/*
+			 * It is possible though unlikely, that two keys have the same hashCode.
+			 * Check that object found really is equal to the key.
+			 */
+			if (keys.get(index).equals(key))
+				return index;
+
+			/*
+			 * If previous or following entries have the same hashCode then
+			 * check if they equal the key.
+			 */
+			int prevIndex = index - 1;
+			while (prevIndex >= 0)
+			{
+				K prevKey = keys.get(prevIndex);
+				if (key.hashCode() != prevKey.hashCode())
+					break;
+				if (prevKey.equals(key))
+					return prevIndex;
+				prevIndex--;
+			}
+			int nextIndex = index + 1;
+			while (nextIndex < keys.size())
+			{
+				K nextKey = keys.get(nextIndex);
+				if (key.hashCode() != nextKey.hashCode())
+					break;
+				if (nextKey.equals(key))
+					return nextIndex;
+				nextIndex++;
+			}
+
+			/*
+			 * Return negative index indicating key not found.
+			 */
+			index++;
+			index = -index;
+		}
+		return index;
+	}
+
 	@Override
 	public boolean containsKey(Object key)
 	{
-		return keys.contains(key);
+		int index = binarySearch(keys, (K)key);
+		return (index >= 0);
 	}
 
 	@Override
@@ -87,7 +153,7 @@ public class MinimumMemoryMap<K, V> implements Map<K, V>
 	@Override
 	public V get(Object key)
 	{
-		int index = keys.indexOf(key);
+		int index = binarySearch(keys, (K)key);
 		if (index >= 0)
 			return values.get(index);
 		else
@@ -98,7 +164,7 @@ public class MinimumMemoryMap<K, V> implements Map<K, V>
 	public V put(K key, V value)
 	{
 		V previousValue = null;
-		int index = keys.indexOf(key);
+		int index = binarySearch(keys, key);
 		if (index >= 0)
 		{
 			previousValue = values.get(index);
@@ -106,8 +172,13 @@ public class MinimumMemoryMap<K, V> implements Map<K, V>
 		}
 		else
 		{
-			keys.add(key);
-			values.add(value);
+			/*
+			 * Binary search returned the position for insertion.
+			 */
+			index = -index;
+			index--;
+			keys.add(index, key);
+			values.add(index, value);
 		}
 		return previousValue;
 	}
@@ -116,7 +187,7 @@ public class MinimumMemoryMap<K, V> implements Map<K, V>
 	public V remove(Object key)
 	{
 		V removedValue = null;
-		int index = keys.indexOf(key);
+		int index = binarySearch(keys, (K)key);
 		if (index >= 0)
 		{
 			removedValue = values.get(index);
