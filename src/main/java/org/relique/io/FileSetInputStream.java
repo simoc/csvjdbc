@@ -73,9 +73,10 @@ public class FileSetInputStream extends InputStream
 	 * @param prepend
 	 *            whether the extra fields should precede the ones from the file
 	 *            content.
-	 * @param headerless 
-	 * @param skipLeadingDataLines 
-	 * @throws IOException
+	 * @param headerless if true, then there is no header on first line of file.
+	 * @param filter filter for decoding bytes read from file.
+	 * @param skipLeadingDataLines number of lines to skip at start of file before header line.
+	 * @throws IOException if a file cannot be opened or read.
 	 */
 	public FileSetInputStream(String dirName, String fileNamePattern,
 			String[] fieldsInName, String separator, boolean prepend,

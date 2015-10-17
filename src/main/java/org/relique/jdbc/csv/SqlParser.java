@@ -27,7 +27,6 @@ import java.util.List;
  * @author Jonathan Ackerman
  * @author Juan Pablo Morales
  * @author Mario Frasca
- * @created 25 November 2001
  */
 public class SqlParser
 {
