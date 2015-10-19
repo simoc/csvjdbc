@@ -196,16 +196,20 @@ public class CsvResultSet implements ResultSet
 	 * @param statement Statement that produced this ResultSet
 	 * @param reader Helper class that performs the actual file reads
 	 * @param tableName Table referenced by the Statement
-	 * @param typeNames Array of available columns for referenced table
+	 * @param queryEnvironment each query expression in the Statement.
+	 * @param isDistinct true if Statement contains DISTINCT keyword.
+	 * @param resultSetType indicates whether ResultSet be scrollable.
 	 * @param whereClause expression for the SQL where clause.
 	 * @param groupByColumns expressions for SQL GROUP BY clause.
+	 * @param havingClause expression for SQL HAVING clause.s
 	 * @param orderByColumns expressions for SQL ORDER BY clause.
 	 * @param sqlLimit maximum number of rows set with SQL LIMIT clause.
 	 * @param sqlOffset number of rows to skip with SQL OFFSET clause.
 	 * @param columnTypes A comma-separated string specifying the type of the i-th column of the database table (not of the result).
-	 * @param whereColumnName the name of the column, needed late by a select *
-	 * @throws ClassNotFoundException in case the typed columns fail
-	 * @throws SQLException 
+	 * @param skipLeadingLines number of lines to skip at start of file.
+	 * @param parentObjectEnvironment environment for current row in parent of sub-queries.
+	 * @throws ClassNotFoundException in case the typed columns fail.
+	 * @throws SQLException if executing the SQL statement fails.
 	 */
 	protected CsvResultSet(CsvStatement statement,
 			DataReader reader,

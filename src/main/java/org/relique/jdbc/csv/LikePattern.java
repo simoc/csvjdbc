@@ -34,7 +34,7 @@ public class LikePattern
 	/**
 	 * 
 	 * @param likePattern an SQL LIKE pattern including % and _ characters.
-	 * @param SQL ESCAPE character, or empty string for no escaping.
+	 * @param escape SQL ESCAPE character, or empty string for no escaping.
 	 * @param input string to be matched.
 	 * @return true if input string matches LIKE pattern.
 	 */

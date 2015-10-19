@@ -39,7 +39,6 @@ import org.relique.io.DataReader;
  * @author Tomasz Skutnik
  * @author Christoph Langer
  * @author Chetan Gupta
- * @created 25 November 2001
  */
 
 public class CsvRawReader
@@ -229,7 +228,7 @@ public class CsvRawReader
 	 *		   columns. An amount of column is considered correct if it matches
 	 *		   columnNames or if no columnNames is given and the amount is more
 	 *		   than 1.
-	 * @throws IOException
+	 * @throws IOException if reading next line fails.
 	 */
 	protected String getNextDataLine() throws IOException
 	{
@@ -298,10 +297,9 @@ public class CsvRawReader
 	}
 
 	/**
-	 *Gets the columnNames attribute of the CsvReader object
+	 * Gets the columnNames attribute of the CsvReader object.
 	 * 
-	 * @return The columnNames value
-	 * @since
+	 * @return The columnNames value.
 	 */
 	public String[] getColumnNames()
 	{
@@ -347,11 +345,10 @@ public class CsvRawReader
 	 * Get the value of the column at the specified index, 0 based.
 	 * 
 	 * @param columnIndex
-	 *			  Description of Parameter
-	 * @return The column value
-	 * @since
+	 *			  Description of Parameter.
+	 * @return The column value.
 	 */
-	public String getField(int columnIndex) throws SQLException
+	public String getField(int columnIndex)
 	{
 		if (columnIndex >= fieldValues.length)
 		{

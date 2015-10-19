@@ -90,7 +90,10 @@ public class SqlParser
 	}
 
 	/**
-	 * Parses SQL statement
+	 * Parses SQL statement.
+	 * @param sql SQL statement to parse.
+	 * @throws ParseException if SQL statement cannot be parsed.
+	 * @throws SQLException if SQL statement is not valid.
 	 */
 	public void parse(String sql) throws SQLException, ParseException
 	{

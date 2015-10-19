@@ -26,6 +26,7 @@ public interface SubQueryRowMatcher
 	 * Called with value for each row of sub-query, to determine whether outer/parent SQL expression is evaluated.
 	 * @param expr value for current row.
 	 * @return true if value completes SQL sub-query evaluation and sub-query should stop.
+	 * @throws SQLException if there is an error evaluating the expression.
 	 */
 	public boolean matches(Object expr) throws SQLException;
 }

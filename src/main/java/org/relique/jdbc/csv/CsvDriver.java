@@ -277,7 +277,7 @@ public class CsvDriver implements Driver
 	 * @param resultSet JDBC ResultSet to write.
 	 * @param out open stream to write to.
 	 * @param writeHeaderLine if true, the column names are written as first line.
-	 * @throws SQLException
+	 * @throws SQLException if writing to CSV file fails.
 	 */
 	public static void writeToCsv(ResultSet resultSet, PrintStream out, boolean writeHeaderLine)
 		throws SQLException

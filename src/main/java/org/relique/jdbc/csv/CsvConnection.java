@@ -524,7 +524,7 @@ public class CsvConnection implements Connection
 	 *            set of properties containing custom options
 	 * @param urlProperties
 	 *            part of connection URL containing connection properties.
-	 * @throws SQLException
+	 * @throws SQLException if connection cannot be created.
 	 */
 	protected CsvConnection(String path, Properties info, String urlProperties)
 		throws SQLException
@@ -555,7 +555,7 @@ public class CsvConnection implements Connection
 	 *            set of properties containing custom options.
 	 * @param urlProperties
 	 *            part of connection URL containing connection properties.
-	 * @throws SQLException
+	 * @throws SQLException if connection cannot be created.
 	 */
 	protected CsvConnection(TableReader tableReader, Properties info,
 		String urlProperties) throws SQLException
@@ -1012,9 +1012,9 @@ public class CsvConnection implements Connection
 	}
 
 	/**
-	 * accessor method for defectiveHeaders property
+	 * Accessor method for defectiveHeaders property.
 	 * 
-	 * @return
+	 * @return true if defective headers.
 	 */
 	protected boolean isDefectiveHeaders()
 	{
@@ -1022,9 +1022,9 @@ public class CsvConnection implements Connection
 	}
 
 	/**
-	 * accessor method for defectiveHeaders property
+	 * Accessor method for skipLeadingDataLines property.
 	 * 
-	 * @return
+	 * @return number of leading data lines to skip.
 	 */
 	protected int getSkipLeadingDataLines()
 	{
@@ -1391,6 +1391,7 @@ public class CsvConnection implements Connection
 	 * suffix).
 	 * 
 	 * @return list of table names.
+	 * @throws SQLException if getting list of table names fails.
 	 */
 	public List<String> getTableNames() throws SQLException
 	{
