@@ -151,25 +151,6 @@ public class CsvConnection implements Connection
 	}
 
 	/**
-	 * Creates a new CsvConnection that takes the supplied path
-	 * 
-	 * @param path
-	 *            directory where the CSV files are located
-	 */
-	protected CsvConnection(String path)
-	{
-		init();
-
-		// validate argument(s)
-		if (path == null || path.length() == 0)
-		{
-			throw new IllegalArgumentException(CsvResources.getString("noPath"));
-		}
-		this.path = path;
-		this.urlProperties = "";
-	}
-
-	/**
 	 * Create a table of all properties with keys that start with a given
 	 * prefix.
 	 * 
