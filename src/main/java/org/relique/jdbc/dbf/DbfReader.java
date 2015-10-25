@@ -63,7 +63,7 @@ public class DbfReader extends DataReader
 		} 
 		catch (ClassNotFoundException e)
 		{
-			throw new SQLException(CsvResources.getString("noDansDbf") + ": " + e);
+			throw new DbfClassNotFoundException(CsvResources.getString("noDansDbf") + ": " + e);
 		}
 		try
 		{
