@@ -325,11 +325,11 @@ public class StringConverter
 	}
 
 	/**
-	 * transforms the date string into its equivalent ISO8601
+	 * transforms the date string into its equivalent ISO8601.
 	 * 
-	 * @param date
-	 * @param format
-	 * @return
+	 * @param date date to convert.
+	 * @param format format of date.
+	 * @return date in ISO8601 format.
 	 */
 	private String makeISODate(String date, String format)
 	{

@@ -464,7 +464,7 @@ public class CsvRawReader
 	 * 
 	 * @param line the line to parse
 	 * @param trimValues tells whether to remove leading and trailing spaces
-	 * @return
+	 * @return line split into fields.
 	 * @throws SQLException
 	 */
 	private String[] parseCsvLine(String line, boolean trimValues)

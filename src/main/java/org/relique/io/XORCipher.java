@@ -87,9 +87,8 @@ public class XORCipher implements CryptoFilter
 	 * <p/>
 	 * Note that ^ is the symbol for XOR (and not the mathematical power)
 	 * 
-	 * @param org
-	 *            is the original value
-	 * @return
+	 * @param org original value.
+	 * @return scrambled value.
 	 */
 	private int scrambleInt(int org)
 	{
@@ -110,9 +109,8 @@ public class XORCipher implements CryptoFilter
 	 * <p/>
 	 * Note that ^ is the symbol for XOR (and not the mathematical power)
 	 * 
-	 * @param org
-	 *            is the original byte array
-	 * @return
+	 * @param org original byte array.
+	 * @return scrambled byte array.
 	 */
 	private void scrambleArray(byte[] org)
 	{
