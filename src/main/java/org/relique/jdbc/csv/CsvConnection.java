@@ -141,6 +141,8 @@ public class CsvConnection implements Connection
 
 	private HashMap<String, Method> sqlFunctions = new HashMap<String, Method>();
 
+	private int savepointCounter = 0;
+
 	/**
 	 * Set defaults for connection.
 	 */
@@ -864,25 +866,27 @@ public class CsvConnection implements Connection
 	@Override
 	public void releaseSavepoint(Savepoint savePoint) throws SQLException
 	{
-		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.releaseSavepoint(Savepoint)");
+		checkOpen();
 	}
 
 	@Override
 	public void rollback(Savepoint savePoint) throws SQLException
 	{
-		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.rollback(Savepoint)");
+		checkOpen();
 	}
 
 	@Override
 	public Savepoint setSavepoint() throws SQLException
 	{
-		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.setSavepoint()");
+		checkOpen();
+		return new CsvSavepoint(savepointCounter++);
 	}
 
 	@Override
-	public Savepoint setSavepoint(String str) throws SQLException
+	public Savepoint setSavepoint(String name) throws SQLException
 	{
-		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.setSavepoint(String)");
+		checkOpen();
+		return new CsvSavepoint(name);
 	}
 
 	// ---------------------------------------------------------------------

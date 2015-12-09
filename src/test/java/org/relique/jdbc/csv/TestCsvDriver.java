@@ -41,6 +41,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -4787,6 +4788,32 @@ public class TestCsvDriver
 		catch (SQLException e)
 		{
 			assertTrue(e.getMessage().contains(CsvResources.getString("noFunctionMethod")));
+		}
+	}
+
+	@Test
+	public void testSavepoints() throws SQLException
+	{
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Savepoint savepoint1 = conn.setSavepoint();
+		savepoint1.getSavepointId();
+		conn.rollback(savepoint1);
+		Savepoint savepoint2 = conn.setSavepoint("name1");
+		String name = savepoint2.getSavepointName();
+		assertEquals("Incorrect Savepoint name", "name1", name);
+		conn.rollback(savepoint2);
+		conn.close();
+
+		try
+		{
+			conn.setSavepoint();
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertTrue(e.getMessage().contains(CsvResources.getString("closedConnection")));
 		}
 	}
 }
