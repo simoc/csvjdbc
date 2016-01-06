@@ -725,6 +725,38 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testColumnTypesInferDateTimeFromData() throws SQLException,
+			ParseException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "");
+		props.put("dateFormat", "dd-MMM-yy");
+		props.put("timeFormat", "hh:mm:ss.SSS aa");
+		if (!Locale.getDefault().equals(Locale.US))
+		{
+			/*
+			 * Ensure that test passes when running on non-English language computers.
+			 */
+			props.put("locale", Locale.US.toString());
+		}
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT ID, D, T "
+				+ "FROM sunil_date_time");
+
+		assertTrue(results.next());
+		ResultSetMetaData metadata = results.getMetaData();
+		assertEquals("type of column 1 is incorrect", Types.INTEGER, metadata
+				.getColumnType(1));
+		assertEquals("type of column 2 is incorrect", Types.DATE, metadata
+				.getColumnType(2));
+		assertEquals("type of column 3 is incorrect", Types.TIME, metadata
+				.getColumnType(3));
+	}
+
+	@Test
 	public void testColumnTypesInferBeforeNext() throws SQLException,
 			ParseException
 	{
