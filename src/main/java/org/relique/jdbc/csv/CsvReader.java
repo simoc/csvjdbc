@@ -334,11 +334,11 @@ public class CsvReader extends DataReader
 				{
 					typeName = "Timestamp";
 				}
-				else if (value.equals(("" + converter.parseDate(value) + "          ").substring(0, 10)))
+				else if (converter.parseDate(value) != null)
 				{
 					typeName = "Date";
 				}
-				else if (value.equals(("" + converter.parseTime(value) + "        ").substring(0, 8)))
+				else if (converter.parseTime(value) != null)
 				{
 					typeName = "Time";
 				}
