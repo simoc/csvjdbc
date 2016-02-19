@@ -508,11 +508,15 @@ TOKEN:
  */
 <IN_TABLE> TOKEN:
 {
-	<TABLENAME:(~[" ", "\t", "\r", "\n", ";", ",", ")"])+> : DEFAULT
+	<TABLENAME:(~[" ", "\t", "\r", "\n", ";", ",", "(", ")"])+> : DEFAULT
 }
 <IN_TABLE> TOKEN:
 {
 	<QUOTEDTABLENAME:"\""(~["\""])+"\""> : DEFAULT
+}
+<IN_TABLE> TOKEN:
+{
+	<DERIVEDTABLEOPENPARENTHESIS:"("> : DEFAULT
 }
 /*
  * See http://www.engr.mun.ca/~theo/JavaCC-FAQ/javacc-faq-moz.htm
@@ -537,11 +541,16 @@ ParsedTable firstTableEntry():
 	String tableName;
 	String tableAlias = null;
 	Token t;
+	ParsedStatement derivedTableStatement;
 }
 {
 	(t=<QUOTEDTABLENAME>|t=<TABLENAME>){tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?
 	{
 		return new ParsedTable(tableName, tableAlias);
+	}
+	| <DERIVEDTABLEOPENPARENTHESIS> derivedTableStatement = selectStatement() <CLOSEPARENTHESIS>((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?
+	{
+		return new ParsedTable(derivedTableStatement, tableAlias);
 	}
 }
 LogicalExpression onEntry():
@@ -559,33 +568,49 @@ LogicalExpression onEntry():
 		return new RelopExpression(op, left, right);
 	}
 }
-ParsedTable joinedTableEntry():
+ParsedTable tableEntry():
 {
 	String tableName;
 	String tableAlias = null;
-	LogicalExpression joinClause;
+	ParsedStatement derivedTableStatement;
 	Token t;
 }
 {
-	(<COMMA>|(<CROSS><JOIN>))t=<NAME>{tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?
+	t=<NAME>{tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?
 	{
-		return new ParsedTable(JoinType.CROSS, null, tableName, tableAlias);
+		return new ParsedTable(tableName, tableAlias);
 	}
-	| (<INNER>)?<JOIN>t=<NAME>{tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?<ON>joinClause = onEntry()
+	| <OPENPARENTHESIS> derivedTableStatement = selectStatement() <CLOSEPARENTHESIS>((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?
 	{
-		return new ParsedTable(JoinType.INNER, joinClause, tableName, tableAlias);
+		return new ParsedTable(derivedTableStatement, tableAlias);
 	}
-	| <LEFT>(<OUTER>)?<JOIN>t=<NAME>{tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?<ON>joinClause = onEntry()
+}
+ParsedTable joinedTableEntry():
+{
+	LogicalExpression joinClause;
+	Token t;
+	ParsedTable joinedTable;
+}
+{
+	(<COMMA>|(<CROSS><JOIN>))joinedTable = tableEntry()
 	{
-		return new ParsedTable(JoinType.LEFT_OUTER, joinClause, tableName, tableAlias);
+		return new ParsedTable(JoinType.CROSS, null, joinedTable);
 	}
-	| <RIGHT>(<OUTER>)?<JOIN>t=<NAME>{tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?<ON>joinClause = onEntry()
+	| (<INNER>)?<JOIN>joinedTable = tableEntry()<ON>joinClause = onEntry()
 	{
-		return new ParsedTable(JoinType.RIGHT_OUTER, joinClause, tableName, tableAlias);
+		return new ParsedTable(JoinType.INNER, joinClause, joinedTable);
 	}
-	| <FULL>(<OUTER>)?<JOIN>t=<NAME>{tableName = StringConverter.removeQuotes(t.image);}((<AS>)?t=<NAME>{tableAlias = StringConverter.removeQuotes(t.image).toUpperCase();})?<ON>joinClause = onEntry()
+	| <LEFT>(<OUTER>)?<JOIN>joinedTable = tableEntry()<ON>joinClause = onEntry()
 	{
-		return new ParsedTable(JoinType.FULL_OUTER, joinClause, tableName, tableAlias);
+		return new ParsedTable(JoinType.LEFT_OUTER, joinClause, joinedTable);
+	}
+	| <RIGHT>(<OUTER>)?<JOIN>joinedTable = tableEntry()<ON>joinClause = onEntry()
+	{
+		return new ParsedTable(JoinType.RIGHT_OUTER, joinClause, joinedTable);
+	}
+	| <FULL>(<OUTER>)?<JOIN>joinedTable = tableEntry()<ON>joinClause = onEntry()
+	{
+		return new ParsedTable(JoinType.FULL_OUTER, joinClause, joinedTable);
 	}
 }
 ParsedExpression groupByEntry():

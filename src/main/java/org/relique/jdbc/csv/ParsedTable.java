@@ -24,6 +24,7 @@ class ParsedTable
 	private LogicalExpression joinClause; 
 	private String tableName;
 	private String tableAlias;
+	private ParsedStatement derivedTableStatement;
 
 	public ParsedTable(String tableName, String tableAlias)
 	{
@@ -40,6 +41,23 @@ class ParsedTable
 		this.joinClause = joinClause;
 		this.tableName = tableName;
 		this.tableAlias = tableAlias;
+	}
+
+	public ParsedTable(ParsedStatement parsedStatement, String tableAlias)
+	{
+		this.derivedTableStatement = parsedStatement;
+		this.tableAlias = tableAlias;
+	}
+
+	public ParsedTable(JoinType joinType, LogicalExpression joinClause, ParsedTable joinedTable)
+	{
+		this.joinType = joinType;
+		this.joinClause = joinClause;
+		if (joinedTable.isDerivedTable())
+			this.derivedTableStatement = joinedTable.getDerivedTableStatement();
+		else
+			this.tableName = joinedTable.getTableName();
+		this.tableAlias = joinedTable.getTableAlias();
 	}
 
 	public JoinType getJoinType()
@@ -60,5 +78,15 @@ class ParsedTable
 	public String getTableAlias()
 	{
 		return tableAlias;
+	}
+
+	public boolean isDerivedTable()
+	{
+		return derivedTableStatement != null;
+	}
+
+	public ParsedStatement getDerivedTableStatement()
+	{
+		return derivedTableStatement;
 	}
 }

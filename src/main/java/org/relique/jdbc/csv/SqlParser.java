@@ -136,6 +136,13 @@ public class SqlParser
 		this.tableAliases = new ArrayList<String>();
 		for (ParsedTable parsedTable : parsedStatement.tableEntries)
 		{
+			if (parsedTable.isDerivedTable())
+			{
+				/*
+				 * Queries from derived tables not supported yet.
+				 */
+				throw new SQLException(CsvResources.getString("derivedTableNotSupported"));
+			}
 			tableNames.add(parsedTable.getTableName());
 			tableAliases.add(parsedTable.getTableAlias());
 		}

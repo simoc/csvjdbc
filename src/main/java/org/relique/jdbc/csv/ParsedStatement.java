@@ -90,7 +90,16 @@ class ParsedStatement
 						sb.append(" FULL OUTER JOIN");
 				}
 				sb.append(" ");
-				sb.append(parsedTable.getTableName());
+				if (parsedTable.isDerivedTable())
+				{
+					sb.append("(");
+					sb.append(parsedTable.getDerivedTableStatement().toString());
+					sb.append(")");
+				}
+				else
+				{
+					sb.append(parsedTable.getTableName());
+				}
 				String tableAlias = parsedTable.getTableAlias();
 				if (tableAlias != null)
 				{

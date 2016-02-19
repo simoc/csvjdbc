@@ -400,4 +400,25 @@ public class TestSubQuery
 		rs1.close();
 		stmt.close();
 	}
+
+	@Test
+	public void testDerivedTable() throws SQLException
+	{
+		Properties props = new Properties();
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+		Statement stmt = conn.createStatement();
+
+		try
+		{
+			ResultSet rs1 = stmt.executeQuery("SELECT ID FROM (SELECT ID FROM sample) AS X");
+			if (rs1.next())
+				rs1.getString(1);
+			fail("Should raise a java.sqlSQLException");
+		}
+		catch (SQLException e)
+		{
+			assertTrue(e.getMessage().contains(CsvResources.getString("derivedTableNotSupported")));
+		}
+	}
 }
