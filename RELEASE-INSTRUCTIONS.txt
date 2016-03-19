@@ -20,46 +20,45 @@ ant jar test
 
 5. Check that the ant test step above does not report failing unit tests
 
-6. Upload to Sourceforge web site (replace simoc and 1.0-16 with values
+6. Upload to Sourceforge web site (replace simoc and 1.0-29 with values
 for this release).
 
 sftp simoc,csvjdbc@frs.sourceforge.net
 cd /home/frs/project/c/cs/csvjdbc/CsvJdbc
-mkdir 1.0-16
-cd 1.0-16
-put target/csvjdbc-1.0-16.jar
+mkdir 1.0-29
+cd 1.0-29
+put target/csvjdbc-1.0-29.jar
 
-7.  Check that XML <project><version> tag in file pom.xml is the
-version number we are creating. If not, update it and commit.
+7.  Check that XML <project><version> tag in file pom.xml is the version
+number we are creating plus "-SNAPSHOT" suffix. If not, update it and
+commit.
 
-8. Check that you have a $HOME/.m2/settings.xml file like (replace
-simoc with your Sourceforge username):
+8. Check that you have a $HOME/.m2/settings.xml file containing
+the following XML tags, as described in
+http://central.sonatype.org/pages/apache-maven.html
+and that the GPG profile contains a GPG key created using steps in
+http://central.sonatype.org/pages/working-with-pgp-signatures.html
 
-<settings>
- <servers>
-  <server>
-   <id>csvjdbc.sourceforge.net</id>
-    <username>simoc,csvjdbc</username>
-    <filePermissions>775</filePermissions>
-    <directoryPermissions>775</directoryPermissions>
-  </server>
- </servers>
-</settings>
+<server><id>git.code.sf.net</id> ...
+<server><id>ossrh</id> ...
+<profile><id>ossrh</id> ... contains GPG profile
 
-9. Maven deploy to SourceForge
+9. Maven deploy to Maven Central
 
-mvn deploy (you are prompted your SourceForge login password)
+mvn release:clean release:prepare
+(accept defaults at prompts for CsvJdbc version, git tag, next CsvJdbc
+version number).
+mvn release:perform
 
-10. Tag release (replace 1.0-16 with the value for this release)
-
-git tag -a -m 'CsvJdbc version 1.0-16' v1.0-16
-git push origin v1.0-16
+10. Login to Nexus Repository Manager https://oss.sonatype.org/
+and close and release the deployment manually, as described at
+http://central.sonatype.org/pages/releasing-the-deployment.html
 
 11. Update Tracker tickets from 'Pending' to 'Closed' with a comment
-that they are included in release 1.0-16.
+that they are included in release 1.0-29.
 
-12. Create a README.txt file listing the changed Tracker tickets and
-upload to 1.0-16 directory, as in Step 7.
+12. Create a README.md file listing the changed Tracker tickets and
+upload to 1.0-29 directory, as in Step 7.
 
 13. Upload new index.html if it has changed since last release.
 
