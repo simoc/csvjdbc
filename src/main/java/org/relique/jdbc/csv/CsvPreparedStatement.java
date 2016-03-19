@@ -87,7 +87,14 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 	@Override
 	public boolean execute() throws SQLException
 	{
-		throw new SQLException(CsvResources.getString("methodNotSupported") + ": execute()");
+		checkOpen();
+
+		CsvDriver.writeLog("CsvPreparedStatement:executeQuery() - sql= " + templateQuery);
+
+		ResultSet resultSet = executeQuery();
+		lastResultSet = resultSet;
+
+		return true;
 	}
 
 	@Override
@@ -96,7 +103,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 
 		checkOpen();
 
-		CsvDriver.writeLog("CsvStatement:executeQuery() - sql= " + templateQuery);
+		CsvDriver.writeLog("CsvPreparedStatement:executeQuery() - sql= " + templateQuery);
 
 		/*
 		 * Close any previous ResultSet, as required by JDBC.

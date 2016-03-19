@@ -20,6 +20,7 @@ package org.relique.jdbc.csv;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -330,6 +331,27 @@ public class TestPrepareStatement
 		assertTrue(results.next());
 		assertEquals("column ID is wrong", 41, results.getInt("ID"));
 		assertFalse(results.next());
+		results.close();
+	}
+
+	@Test
+	public void testExecute() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("extension", ".csv");
+		props.put("columnTypes", "Int,String,String,Timestamp,String");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+		String queryString = "SELECT * FROM sample5 where id = ?";
+		PreparedStatement prepstmt = conn.prepareStatement(queryString);
+
+		prepstmt.setInt(1, 2);
+		assertTrue(prepstmt.execute());
+		ResultSet results = prepstmt.getResultSet();
+		assertNotNull("ResultSet is null", results);
+		assertTrue(results.next());
+		assertEquals("column Job is wrong", "Finance Manager", results.getString("Job"));
+		assertFalse(results.next());
+		assertFalse(prepstmt.getMoreResults());
 		results.close();
 	}
 }
