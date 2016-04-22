@@ -558,8 +558,6 @@ public class TestCsvDriver
 				+ filePath);
 		DatabaseMetaData metadata = conn.getMetaData();
 		ResultSet results = metadata.getSchemas();
-		assertTrue(results.next());
-		assertEquals("Wrong schema", "PUBLIC", results.getString(1));
 		assertFalse(results.next());
 	}
 
