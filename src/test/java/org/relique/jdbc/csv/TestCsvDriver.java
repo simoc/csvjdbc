@@ -562,6 +562,23 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testDatabaseMetadataColumns() throws SQLException
+	{
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+		DatabaseMetaData metadata = conn.getMetaData();
+		ResultSet results = metadata.getColumns(null, null, "C D", null);
+		assertTrue(results.next());
+		assertEquals("Wrong table name", "C D", results.getString("TABLE_NAME"));
+		assertEquals("Wrong column name", "A", results.getString("COLUMN_NAME"));
+		assertTrue(results.next());
+		assertEquals("Wrong table name", "C D", results.getString("TABLE_NAME"));
+		assertEquals("Wrong column name", "B", results.getString("COLUMN_NAME"));
+		results.close();
+		conn.close();
+	}
+
+	@Test
 	public void testDatabaseMetadataProcedures() throws SQLException
 	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
