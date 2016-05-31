@@ -136,19 +136,18 @@ public class CsvDriver implements Driver
 			String[] split = urlProperties.substring(1).split("&");
 			for (int i = 0; i < split.length; i++)
 			{
-				String[] property = split[i].split("=");
+				int equalsIndex = split[i].indexOf("=");
+				if (equalsIndex <= 0)
+					throw new SQLException(CsvResources.getString("invalidProperty") + ": " + split[i]);
+				int lastEqualsIndex = split[i].lastIndexOf("=");
+				if (lastEqualsIndex != equalsIndex)
+					throw new SQLException(CsvResources.getString("invalidProperty") + ": " + split[i]);
+
 				try
 				{
-					if (property.length == 2)
-					{
-						String key = URLDecoder.decode(property[0], "UTF-8");
-						String value = URLDecoder.decode(property[1], "UTF-8");
-						info.setProperty(key, value);
-					}
-					else
-					{
-						throw new SQLException(CsvResources.getString("invalidProperty") + ": " + split[i]);
-					}
+					String key = URLDecoder.decode(split[i].substring(0, equalsIndex), "UTF-8");
+					String value = URLDecoder.decode(split[i].substring(equalsIndex + 1), "UTF-8");
+					info.setProperty(key, value);
 				}
 				catch (UnsupportedEncodingException e)
 				{
