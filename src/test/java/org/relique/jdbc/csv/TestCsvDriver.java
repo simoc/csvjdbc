@@ -4395,6 +4395,26 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testEmptyPropertyInURL() throws SQLException
+	{
+		Properties props = new Properties();
+
+		/*
+		 * Use same directory name logic as in CsvDriver.connect.
+		 */
+		String path = filePath;
+		if (!path.endsWith(File.separator))
+			path += File.separator;
+		String url = "jdbc:relique:csv:" + path + "?separator=;&fileExtension=";
+		Connection conn = DriverManager.getConnection(url, props);
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+		assertTrue(results.next());
+		assertEquals("The ID is wrong", "Q123", results.getString("ID"));
+	}
+
+	@Test
 	public void testLiteralWithUnicode() throws SQLException
 	{
 		Properties props = new Properties();
