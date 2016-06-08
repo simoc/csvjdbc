@@ -96,8 +96,11 @@ public class LikePattern
 				/*
 				 * Cache compiled regular expression because we will probably be
 				 * using the same one again and again.
+				 *
+				 * DOTALL flag required so that dots in regular expression match
+				 * any newline character in input string.
 				 */
-				p = Pattern.compile(regex.toString());
+				p = Pattern.compile(regex.toString(), Pattern.DOTALL);
 				compiledRegexs.put(likePattern, p);
 			}
 			retval = p.matcher(input).matches();
