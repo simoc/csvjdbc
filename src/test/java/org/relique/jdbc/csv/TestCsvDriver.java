@@ -1443,6 +1443,26 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testWhereWithLikeMultiLine() throws SQLException
+	{
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet results = stmt
+				.executeQuery("select N from nikesh where Message like '%SSL%'");
+
+		assertTrue(results.next());
+		assertEquals("N is wrong", 1, results.getInt(1));
+		assertTrue(results.next());
+		assertEquals("N is wrong", 2, results.getInt(1));
+		assertTrue(results.next());
+		assertEquals("N is wrong", 4, results.getInt(1));
+		assertFalse(results.next());
+	}
+
+	@Test
 	public void testWhereWithUnselectedColumn() throws SQLException
 	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
