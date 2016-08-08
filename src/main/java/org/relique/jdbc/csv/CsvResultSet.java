@@ -1417,12 +1417,14 @@ public class CsvResultSet implements ResultSet
 			 */
 			HashSet<String> allReaderColumns = new HashSet<String>();
 			HashMap<String, Object> env = new HashMap<String, Object>();
+			Map<String, String> originalColumnNames = new HashMap();
 			for(int i=0; i<readerTypeNames.length; i++)
 			{
 				Object literal = StringConverter.getLiteralForTypeName(readerTypeNames[i]);
 				String columnName = readerColumnNames[i].toUpperCase();
 				env.put(columnName, literal);
 				allReaderColumns.add(columnName);
+				originalColumnNames.put(columnName, readerColumnNames[i]);
 				if (tableName != null)
 				{
 					env.put(tableName.toUpperCase() + "." + columnName, literal);
@@ -1441,7 +1443,8 @@ public class CsvResultSet implements ResultSet
 			for(int i=0; i<columnCount; i++)
 			{
 				Object[] o = queryEnvironment.get(i);
-				columnNames[i] = (String)o[0];
+				columnNames[i] = originalColumnNames.getOrDefault(((String)o[0]).toUpperCase(), (String)o[0]);
+				//TODO: The suggested title is usually specified by the SQL AS clause.
 				columnLabels[i] = columnNames[i];
 
 				/*
