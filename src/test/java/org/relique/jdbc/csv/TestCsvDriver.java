@@ -529,8 +529,8 @@ public class TestCsvDriver
 
 		assertEquals("name of column 1 is incorrect", "XID", metadata.getColumnName(1));
 		assertEquals("label of column 1 is incorrect", "XID", metadata.getColumnLabel(1));
-		assertEquals("name of column 2 is incorrect", "NAME", metadata.getColumnName(2));
-		assertEquals("label of column 2 is incorrect", "NAME", metadata.getColumnLabel(2));
+		assertEquals("name of column 2 is incorrect", "Name", metadata.getColumnName(2));
+		assertEquals("label of column 2 is incorrect", "Name", metadata.getColumnLabel(2));
 		assertEquals("name of column 3 is incorrect", "DEPT", metadata.getColumnName(3));
 		assertEquals("label of column 3 is incorrect", "DEPT", metadata.getColumnLabel(3));
 
@@ -1880,13 +1880,13 @@ public class TestCsvDriver
 				"test"));
 
 		assertEquals("Incorrect Column Name 1", metadata.getColumnName(1),
-				"LOCATION");
+				"location");
 		assertEquals("Incorrect Column Name 2", metadata.getColumnName(2),
-				"STATION");
+				"Station");
 		assertEquals("Incorrect Column Name 3", metadata.getColumnName(3),
-				"DATUM");
+				"Datum");
 		assertEquals("Incorrect Column Name 4", metadata.getColumnName(4),
-				"TIJD");
+				"Tijd");
 
 		assertTrue(results.next());
 		for (int i = 1; i < 12; i++)
@@ -1939,15 +1939,15 @@ public class TestCsvDriver
 				"test"));
 
 		assertEquals("Incorrect Column Name 1", metadata.getColumnName(1),
-				"LOCATION");
+				"location");
 		assertEquals("Incorrect Column Name 1", metadata.getColumnName(2),
-				"FILE_DATE");
+				"file_date");
 		assertEquals("Incorrect Column Name 1", metadata.getColumnName(3),
-				"DATUM");
+				"Datum");
 		assertEquals("Incorrect Column Name 2", metadata.getColumnName(4),
-				"TIJD");
+				"Tijd");
 		assertEquals("Incorrect Column Name 3", metadata.getColumnName(5),
-				"STATION");
+				"Station");
 
 		assertTrue(results.next());
 		for (int i = 1; i < 12; i++)
