@@ -1442,6 +1442,17 @@ public class CsvResultSet implements ResultSet
 			{
 				Object[] o = queryEnvironment.get(i);
 				columnNames[i] = (String)o[0];
+				for (int j = 0; j < readerColumnNames.length; j++)
+				{
+					if (columnNames[i].equalsIgnoreCase(readerColumnNames[j]))
+					{
+						/*
+						 * Use original case of column name in CSV file.
+						 */
+						columnNames[i] = readerColumnNames[j];
+						break;
+					}
+				}
 				columnLabels[i] = columnNames[i];
 
 				/*
