@@ -155,8 +155,8 @@ public class CsvReader extends DataReader
 	{
 		if (upperColumnNames == null)
 		{
-                        String columnNames[] = getColumnNames();
-			upperColumnNames = new String[ columnNames.length ];
+			String columnNames[] = getColumnNames();
+			upperColumnNames = new String[columnNames.length];
 			for (int i = 0; i < upperColumnNames.length; i++)
 				upperColumnNames[i] = columnNames[i].toUpperCase();
 		}
