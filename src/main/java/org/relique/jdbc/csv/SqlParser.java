@@ -160,13 +160,13 @@ public class SqlParser
 				/*
 				 * A logical expression such as A > 5 is not allowed as a query expression.
 				 */
-				if ((cc.expression instanceof LogicalExpression) ||
-					(cc.expression.isValid() == false))
+				if ((cc.getExpression() instanceof LogicalExpression) ||
+					(cc.getExpression().isValid() == false))
 				{
 					throw new SQLException("invalidQueryExpression");
 				}
 
-				String key = cc.key;
+				String key = cc.getKey();
 				for (int i = 0; i < tableNames.size(); i++)
 				{
 					if (tableAliases.get(i) != null && key.startsWith(tableAliases.get(i) + "."))
@@ -180,7 +180,7 @@ public class SqlParser
 						break;
 					}
 				}
-				environment.add(new Object[]{ key, cc.expression });
+				environment.add(new Object[]{ key, cc.getExpression() });
 			}
 		}
 

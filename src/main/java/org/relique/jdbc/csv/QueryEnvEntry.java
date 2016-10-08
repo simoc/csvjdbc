@@ -23,22 +23,35 @@ import java.util.Map;
 
 class QueryEnvEntry extends Expression
 {
-	String key;
-	Expression expression;
+	private String key;
+	private Expression expression;
 
 	public QueryEnvEntry(String fieldName, Expression exp)
 	{
 		this.key = fieldName.toUpperCase();
 		this.expression = exp;
 	}
+
+	public Expression getExpression()
+	{
+		return expression;
+	}
+
+	public String getKey()
+	{
+		return key;
+	}
+
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		return expression.eval(env);
 	}
+
 	public String toString()
 	{
 		return key+": "+expression.toString();
 	}
+
 	public void resetAggregateFunctions()
 	{
 		expression.resetAggregateFunctions();

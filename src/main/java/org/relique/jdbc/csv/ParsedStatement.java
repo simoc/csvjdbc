@@ -64,7 +64,7 @@ class ParsedStatement
 			sb.append(separator);
 			separator = ", ";
 			QueryEnvEntry queryEnvEntry = (QueryEnvEntry)(expr.content);
-			sb.append(queryEnvEntry.expression.toString());
+			sb.append(queryEnvEntry.getExpression().toString());
 		}
 		if (tableEntries != null)
 		{
@@ -170,7 +170,7 @@ class ParsedStatement
 			for (ParsedExpression parsedExpr : queryEntries)
 			{
 				QueryEnvEntry queryEnvEntry = (QueryEnvEntry)(parsedExpr.content);
-				List<String> columns = queryEnvEntry.expression.usedColumns(availableColumns);
+				List<String> columns = queryEnvEntry.getExpression().usedColumns(availableColumns);
 				result.addAll(columns);
 			}
 		}
@@ -208,7 +208,7 @@ class ParsedStatement
 			for (ParsedExpression parsedExpr : queryEntries)
 			{
 				QueryEnvEntry queryEnvEntry = (QueryEnvEntry)(parsedExpr.content);
-				List<AggregateFunction> functions = queryEnvEntry.expression.aggregateFunctions();
+				List<AggregateFunction> functions = queryEnvEntry.getExpression().aggregateFunctions();
 				result.addAll(functions);
 			}
 		}
