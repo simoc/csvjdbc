@@ -25,19 +25,28 @@ import java.util.Set;
 
 class ColumnName extends Expression
 {
-	String columnName;
+	private String columnName;
+
 	public ColumnName(String columnName)
 	{
 		this.columnName = columnName.toUpperCase();
 	}
+
+	public String getColumnName()
+	{
+		return columnName;
+	}
+
 	public Object eval(Map<String, Object> env)
 	{
 		return env.get(columnName);
 	}
+
 	public String toString()
 	{
 		return "["+columnName+"]";
 	}
+
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();

@@ -700,9 +700,9 @@ ParsedExpression queryEnvEntry():
 	(expression = binaryOperation()((<AS>)?alias = columnAlias())?
 	{
 		if (alias != null)
-			result = new QueryEnvEntry(((ColumnName)alias).columnName, expression);
+			result = new QueryEnvEntry(((ColumnName)alias).getColumnName(), expression);
 		else if (expression instanceof ColumnName)
-			result = new QueryEnvEntry(((ColumnName)expression).columnName, expression);
+			result = new QueryEnvEntry(((ColumnName)expression).getColumnName(), expression);
 		else
 			result = new QueryEnvEntry(expression.toString(), expression);
 		return new ParsedExpression(result);
