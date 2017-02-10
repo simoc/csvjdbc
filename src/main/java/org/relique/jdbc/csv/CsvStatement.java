@@ -57,6 +57,7 @@ public class CsvStatement implements Statement
 	private int maxRows = 0;
 	private int fetchSize = 1;
 	private int queryTimeout = Integer.MAX_VALUE;
+	private long timeoutMillis = Long.MAX_VALUE;
 	private int fetchDirection = ResultSet.FETCH_FORWARD;
 	private boolean closed;
 
@@ -287,6 +288,8 @@ public class CsvStatement implements Statement
 			lastResultSet = null;
 			multipleParsers = null;
 		}
+
+		setTimeoutMillis();
 
 		SqlParser parser = new SqlParser();
 		try
@@ -524,6 +527,26 @@ public class CsvStatement implements Statement
 		checkOpen();
 	}
 
+	/**
+	 * Set timestamp at which current query will throw an SQLTimeoutException.
+	 */
+	protected void setTimeoutMillis()
+	{
+		if (queryTimeout == 0 || queryTimeout == Integer.MAX_VALUE)
+			timeoutMillis = Long.MAX_VALUE;
+		else
+			timeoutMillis = System.currentTimeMillis() + queryTimeout * 1000;
+	}
+
+	/**
+	 * Get timestamp at which current query will throw an SQLTimeoutException.
+	 * @return timestamp in milliseconds, or MAX_VALUE if no timeout.
+	 */
+	public long getTimeoutMillis()
+	{
+		return timeoutMillis;
+	}
+
 	@Override
 	public boolean execute(String sql) throws SQLException
 	{
@@ -542,6 +565,8 @@ public class CsvStatement implements Statement
 			lastResultSet = null;
 			multipleParsers = null;
 		}
+
+		setTimeoutMillis();
 
 		/*
 		 * Execute one or more SQL statements.

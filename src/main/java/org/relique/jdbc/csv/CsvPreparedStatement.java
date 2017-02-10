@@ -91,6 +91,8 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 
 		CsvDriver.writeLog("CsvPreparedStatement:executeQuery() - sql= " + templateQuery);
 
+		setTimeoutMillis();
+
 		ResultSet resultSet = executeQuery();
 		lastResultSet = resultSet;
 
@@ -117,6 +119,8 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		{
 			lastResultSet = null;
 		}
+
+		setTimeoutMillis();
 
 		parser.setPlaceholdersValues(parameters);
 		return executeParsedQuery(parser);

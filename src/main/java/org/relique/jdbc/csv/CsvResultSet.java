@@ -34,6 +34,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.sql.SQLTimeoutException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Statement;
@@ -869,12 +870,22 @@ public class CsvResultSet implements ResultSet
 			throw new SQLException(CsvResources.getString("closedResultSet"));
 	}
 
+	private void checkTimeout() throws SQLTimeoutException
+	{
+		if (statement.getTimeoutMillis() != Long.MAX_VALUE)
+		{
+			if (System.currentTimeMillis() >= statement.getTimeoutMillis())
+				throw new SQLTimeoutException();
+		}
+	}
+
 	@Override
 	public boolean next() throws SQLException
 	{
 		boolean thereWasAnAnswer;
 
 		checkOpen();
+		checkTimeout();
 
 		if ((this.groupByColumns != null ||
 		this.aggregateFunctions.size() > 0 ||
