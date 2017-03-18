@@ -60,6 +60,7 @@ public class CsvStatement implements Statement
 	private long timeoutMillis = Long.MAX_VALUE;
 	private int fetchDirection = ResultSet.FETCH_FORWARD;
 	private boolean closed;
+	protected boolean cancelled;
 
 	protected int resultSetType = ResultSet.TYPE_SCROLL_INSENSITIVE;
 
@@ -290,6 +291,7 @@ public class CsvStatement implements Statement
 		}
 
 		setTimeoutMillis();
+		cancelled = false;
 
 		SqlParser parser = new SqlParser();
 		try
@@ -515,10 +517,21 @@ public class CsvStatement implements Statement
 		}
 	}
 
+	public boolean isCancelled() throws SQLException
+	{
+		return cancelled;
+	}
+
 	@Override
 	public void cancel() throws SQLException
 	{
-		throw new SQLException(CsvResources.getString("methodNotSupported") + ": Statement.cancel()");
+		/*
+		 * JDBC documentation states that this method may be called
+		 * from a different thread to other JDBC calls.
+		 * Just set a flag here, so that the next JDBC call will
+		 * trigger the statement to close, avoiding any race condition.
+		 */
+		cancelled = true;
 	}
 
 	@Override
@@ -567,6 +580,7 @@ public class CsvStatement implements Statement
 		}
 
 		setTimeoutMillis();
+		cancelled = false;
 
 		/*
 		 * Execute one or more SQL statements.

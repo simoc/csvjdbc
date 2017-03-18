@@ -3457,6 +3457,30 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testStatementCancelled() throws SQLException
+	{
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath);
+		Statement stmt = conn.createStatement();
+
+		try
+		{
+			ResultSet results = stmt.executeQuery("SELECT * FROM sample");
+			stmt.cancel();
+			results.next();
+			fail("expected exception java.sql.SQLException: Statement cancelled");
+		}
+		catch (SQLException e)
+		{
+			assertEquals("wrong exception and/or exception text!",
+					"java.sql.SQLException: " + CsvResources.getString("statementCancelled"),
+					"" + e);
+		}
+
+		conn.close();
+	}
+
+	@Test
 	public void testTrimValues() throws SQLException
 	{
 		Properties props = new Properties();

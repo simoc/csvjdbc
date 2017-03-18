@@ -887,6 +887,12 @@ public class CsvResultSet implements ResultSet
 		checkOpen();
 		checkTimeout();
 
+		/*
+		 * Has query been cancelled by another thread?
+		 */
+		if (statement.isCancelled())
+			throw new SQLException(CsvResources.getString("statementCancelled"));
+
 		if ((this.groupByColumns != null ||
 		this.aggregateFunctions.size() > 0 ||
 			this.orderByColumns != null || isScrollable()) &&
