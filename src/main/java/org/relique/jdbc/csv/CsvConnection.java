@@ -42,13 +42,17 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.concurrent.Executor;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.relique.io.CryptoFilter;
 import org.relique.io.TableReader;
@@ -1389,6 +1393,19 @@ public class CsvConnection implements Connection
 					return name.endsWith(extension);
 				}
 			});
+
+			Pattern fileNameRE = null;
+			if (indexedFiles)
+			{
+				/*
+				 * Accept any filenames that match the fileTailPattern that was
+				 * configured for this connection.
+				 */
+				fileNameRE = Pattern.compile("(.+)" + fileNamePattern);
+			}
+
+			HashSet<String> indexedTableNames = new HashSet<String>();
+
 			for (int i = 0; i < matchingFiles.length; i++)
 			{
 				if (matchingFiles[i].isFile() && matchingFiles[i].canRead())
@@ -1396,9 +1413,29 @@ public class CsvConnection implements Connection
 					String filename = matchingFiles[i].getName();
 					String tableName = filename.substring(0,
 						filename.length() - extension.length());
-					tableNames.add(tableName);
+
+					if (indexedFiles)
+					{
+						Matcher m = fileNameRE.matcher(tableName);
+						if (m.matches())
+						{
+							/*
+							 * We want only the first part of the filename, before
+							 * the fileTailPattern.
+							 *
+							 * We use a java.util.Set so that each indexed table name
+							 * is added only one time, despite comprising of several files.
+							 */
+							indexedTableNames.add(m.group(1));
+						}
+					}
+					else
+					{
+						tableNames.add(tableName);
+					}
 				}
 			}
+			tableNames.addAll(indexedTableNames);
 		}
 		else
 		{
@@ -1409,6 +1446,11 @@ public class CsvConnection implements Connection
 			if (list != null)
 				tableNames = list;
 		}
+
+		/*
+		 * Ensure tables are always reported in the same order.
+		 */
+		Collections.sort(tableNames);
 		return tableNames;
 	}
 }

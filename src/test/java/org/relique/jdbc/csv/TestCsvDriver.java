@@ -579,6 +579,28 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testDatabaseMetadataColumnsWithIndexedFiles() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("fileExtension", ".txt");
+		props.put("fileTailPattern", "-([0-9]{3})-([0-9]{8})");
+		props.put("fileTailParts", "location,file_date");
+		props.put("indexedFiles", "True");
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		DatabaseMetaData metadata = conn.getMetaData();
+		ResultSet results = metadata.getColumns(null, null, "test", null);
+		assertTrue(results.next());
+		assertEquals("Wrong table name", "test", results.getString("TABLE_NAME"));
+		assertEquals("Wrong column name", "Datum", results.getString("COLUMN_NAME"));
+		assertTrue(results.next());
+		assertEquals("Wrong table name", "test", results.getString("TABLE_NAME"));
+		assertEquals("Wrong column name", "Tijd", results.getString("COLUMN_NAME"));
+		results.close();
+		conn.close();
+	}
+
+	@Test
 	public void testDatabaseMetadataProcedures() throws SQLException
 	{
 		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
