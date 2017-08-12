@@ -28,6 +28,7 @@ import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,7 @@ public class StringConverter
 	private Pattern timestampPattern;
 	private SimpleDateFormat timestampFormat;
 	private SimpleDateFormat simpleDateFormat;
+	private int currentYear;
 
 	public StringConverter(String dateformat, String timeformat, String timestampformat,
 		String timeZoneName)
@@ -133,6 +135,8 @@ public class StringConverter
 
 		TimeZone timeZone = TimeZone.getTimeZone(timeZoneName);
 		calendar = new GregorianCalendar();
+		calendar.setTimeInMillis(System.currentTimeMillis());
+		currentYear = calendar.get(Calendar.YEAR);
 		calendar.clear();
 		calendar.setTimeZone(timeZone);
 		if (timestampformat != null && timestampformat.length() > 0)
@@ -338,6 +342,7 @@ public class StringConverter
 		int dpos = format.indexOf('d');
 		int mpos = format.indexOf('m');
 		int ypos = format.indexOf('y');
+		int ylen = 4;
 
 		int day = 1, month = 1, year = 1;
 		if (dpos > mpos)
@@ -370,7 +375,10 @@ public class StringConverter
 		part = Pattern.compile("y+");
 		m = part.matcher(format);
 		if (m.find())
+		{
+			ylen = m.end() - m.start();
 			format = format.replace(m.group(), "([0-9]{" + (m.end() - m.start()) + ",4})");
+		}
 
 		format = format + ".*";
 
@@ -380,6 +388,20 @@ public class StringConverter
 		{
 			// and return the groups in ISO8601 format.
 			String yearGroup = m.group(year);
+			if (yearGroup.length() == 2 && ylen == 2)
+			{
+				// Parsed year only contains two digits. Determine full year including
+				// century using same logic as java.text.SimpleDateFormat:
+				// select century that is less than 20 years in the future and
+				// less than 80 years in the past.
+				int century = currentYear / 100;
+				int proposedYear = (century * 100) + Integer.parseInt(yearGroup);
+				if (proposedYear - currentYear > 20)
+					proposedYear -= 100;
+				if (currentYear - proposedYear > 80)
+					proposedYear += 100;
+				yearGroup = String.format("%04d", proposedYear);
+			}
 			String monthGroup = m.group(month);
 			if (monthGroup.length() < 2)
 				monthGroup = "0" + monthGroup;
