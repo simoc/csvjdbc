@@ -447,6 +447,69 @@ public class StringConverter
 		}
 	}
 
+	/**
+	 * Create date string in format accepted by method {@link #parseDate(String) parseDate}.
+	 * @param d date to format.
+	 * @return formatted date.
+	 */
+	public String formatDate(Date d)
+	{
+		String formatted = null;
+
+		if (d != null)
+		{
+			if (simpleDateFormat != null)
+			{
+				formatted = simpleDateFormat.format(d);
+			}
+			else
+			{
+				formatted = dateFormat.toLowerCase();
+				Calendar gregorianCalendar = new GregorianCalendar();
+				gregorianCalendar.setTime(d);
+
+				// use regular expressions to replace in day, month, year in format string
+				Pattern part;
+				Matcher m;
+
+				part = Pattern.compile("d+");
+				m = part.matcher(formatted);
+				if (m.find())
+				{
+					int patternLength = m.end() - m.start();
+					String dayOfMonth = Integer.toString(gregorianCalendar.get(Calendar.DAY_OF_MONTH));
+					while (dayOfMonth.length() < patternLength)
+						dayOfMonth = "0" + dayOfMonth;
+					formatted = formatted.replace(m.group(), dayOfMonth);
+				}
+				part = Pattern.compile("m+");
+				m = part.matcher(formatted);
+				if (m.find())
+				{
+					int patternLength = m.end() - m.start();
+					String month = Integer.toString(gregorianCalendar.get(Calendar.MONTH) + 1);
+					while (month.length() < patternLength)
+						month = "0" + month;
+					formatted = formatted.replace(m.group(), month);
+				}
+				part = Pattern.compile("y+");
+				m = part.matcher(formatted);
+				if (m.find())
+				{
+					int patternLength = m.end() - m.start();
+					int fullYear = gregorianCalendar.get(Calendar.YEAR);
+					if (patternLength == 2)
+						fullYear = fullYear % 100;
+					String year = Integer.toString(fullYear);
+					while (year.length() < patternLength)
+						year = "0" + year;
+					formatted = formatted.replace(m.group(), year);
+				}
+			}
+		}
+		return formatted;
+	}
+
 	public Time parseTime(String str)
 	{
 		try
@@ -473,6 +536,22 @@ public class StringConverter
 		{
 			return null;
 		}
+	}
+
+	/**
+	 * Create time string in format accepted by method {@link #parseTime(String) parseTime}.
+	 * @param t time to format.
+	 * @return formatted time.
+	 */
+	public String formatTime(Time t)
+	{
+		String formatted = null;
+
+		if (t != null)
+		{
+			formatted = simpleTimeFormat.format(t);
+		}
+		return formatted;
 	}
 
 	public Timestamp parseTimestamp(String str)
@@ -511,6 +590,36 @@ public class StringConverter
 		{
 		}
 		return result;
+	}
+
+	/**
+	 * Create timestamp string in format accepted by method {@link #parseTimestamp(String) parseTimestamp}.
+	 * @param timestamp timestamp to format.
+	 * @return formatted timestamp.
+	 */
+	public String formatTimestamp(Timestamp timestamp)
+	{
+		String formatted = null;
+
+		if (timestamp != null)
+		{
+			if (timestampFormat != null)
+			{
+				formatted = timestampFormat.format(timestamp);
+			}
+			else
+			{
+				calendar.setTime(timestamp);
+				int year = calendar.get(Calendar.YEAR);
+				int month = calendar.get(Calendar.MONTH) + 1;
+				int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+				int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+				int minutes = calendar.get(Calendar.MINUTE);
+				int seconds = calendar.get(Calendar.SECOND);
+				formatted = String.format("%04d-%02d-%02d %02d:%02d:%02d", year, month, dayOfMonth, hourOfDay, minutes, seconds);
+			}
+		}
+		return formatted;
 	}
 
 	public InputStream parseAsciiStream(String str)

@@ -4767,6 +4767,65 @@ public class TestCsvDriver
 	}
 	
 	@Test
+	public void testWriteToCsvWithDates() throws SQLException, UnsupportedEncodingException, IOException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,Date,Time,Timestamp");
+		props.put("dateFormat", "dd-MMM-yy");
+		props.put("timeFormat", "hh:mm:ss.SSS aa");
+		props.put("timestampFormat", "yyyy-MM-dd'T'HH:mm:ss.SSS");
+		if (!Locale.getDefault().equals(Locale.US))
+		{
+			/*
+			 * Ensure that test passes when running on non-English language computers.
+			 */
+			props.put("locale", Locale.US.toString());
+		}
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM sunil_date_time");
+		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+		PrintStream printStream = new PrintStream(byteStream);
+
+		/*
+		 * Check that writing ResultSet to CSV file generates exactly the same CSV file
+		 * that the query was originally read from.
+		 */
+		boolean writeHeaderLine = true;
+		CsvDriver.writeToCsv(results, printStream, writeHeaderLine);
+
+		BufferedReader reader1 = null;
+		BufferedReader reader2 = null;
+		try
+		{
+			reader1 = new BufferedReader(new FileReader(filePath + File.separator + "sunil_date_time.csv"));
+			reader2 = new BufferedReader(new StringReader(byteStream.toString("US-ASCII")));
+			String line1 = reader1.readLine();
+			String line2 = reader2.readLine();
+
+			while (line1 != null || line2 != null)
+			{
+				assertTrue("line1 is null", line1 != null);
+				assertTrue("line2 is null", line2 != null);
+				assertTrue("lines do not match", line1.equalsIgnoreCase(line2));
+				line1 = reader1.readLine();
+				line2 = reader2.readLine();
+			}
+			assertNull("line1 not empty", line1);
+			assertNull("line2 not empty", line2);
+		}
+		finally
+		{
+			if (reader1 != null)
+				reader1.close();
+			if (reader2 != null)
+				reader2.close();
+		}
+	}
+
+	@Test
 	public void testBooleanConversion() throws SQLException,
 			ParseException
 	{

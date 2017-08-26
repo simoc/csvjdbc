@@ -16,14 +16,26 @@
  */
 package org.relique.jdbc.csv;
 
-import java.net.URLDecoder;
-import java.sql.*;
-import java.util.Properties;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.DriverPropertyInfo;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.Locale;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.relique.io.TableReader;
@@ -284,6 +296,11 @@ public class CsvDriver implements Driver
 		String separator = DEFAULT_SEPARATOR;
 		Character quoteChar = Character.valueOf(DEFAULT_QUOTECHAR);
 		String quoteStyle = DEFAULT_QUOTE_STYLE;
+		String dateFormat = DEFAULT_DATE_FORMAT;
+		String timeFormat = DEFAULT_TIME_FORMAT;
+		String timestampFormat = DEFAULT_TIMESTAMP_FORMAT;
+		String timeZoneName = DEFAULT_TIME_ZONE_NAME;
+		Locale locale = null;
 
 		if (resultSet instanceof CsvResultSet)
 		{
@@ -295,7 +312,14 @@ public class CsvDriver implements Driver
 			separator = csvConnection.getSeparator();
 			quoteChar = csvConnection.getQuotechar();
 			quoteStyle = csvConnection.getQuoteStyle();
+			dateFormat = csvConnection.getDateFormat();
+			timeFormat = csvConnection.getTimeFormat();
+			timestampFormat = csvConnection.getTimestampFormat();
+			timeZoneName = csvConnection.getTimeZoneName();
+			locale = csvConnection.getLocale();
 		}
+
+		StringConverter converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZoneName, locale);
 
 		ResultSetMetaData meta = null;
 		int columnCount = 0;
@@ -325,7 +349,34 @@ public class CsvDriver implements Driver
 			{
 				if (i > 1)
 					out.print(separator);
-				String value = resultSet.getString(i);
+				String value = null;
+
+				/*
+				 * Use same dateFormat, timeFormat and timestampFormat for output as the input CSV file.
+				 */
+				int columnType = meta.getColumnType(i);
+				if (columnType == Types.DATE)
+				{
+					Date d = resultSet.getDate(i);
+					if (d != null)
+						value = converter.formatDate(d);
+				}
+				else if (columnType == Types.TIME)
+				{
+					Time t = resultSet.getTime(i);
+					if (t != null)
+						value = converter.formatTime(t);
+				}
+				else if (columnType == Types.TIMESTAMP)
+				{
+					Timestamp timestamp = resultSet.getTimestamp(i);
+					if (timestamp != null)
+						value = converter.formatTimestamp(timestamp);
+				}
+				else
+				{
+					value = resultSet.getString(i);
+				}
 				if (value != null)
 				{
 					if (quoteChar != null)
