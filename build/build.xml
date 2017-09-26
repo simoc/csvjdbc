@@ -36,7 +36,7 @@
   <!-- =================================================================== -->
   <property name="TALK" value="false" />
   <property name="name" value="csvjdbc"/>
-  <property name="rel" value="1.0-32"/>
+  <property name="rel" value="1.0-33"/>
   <property name="rel.name" value="${name}-${rel}"/>
   <property name="build.dir" value="../build"/>
   <property name="src.dir" value="../src"/>
