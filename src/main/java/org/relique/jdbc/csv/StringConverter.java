@@ -78,7 +78,7 @@ public class StringConverter
 			 * SimpleDateFormat parsing required?
 			 */
 			// TODO prefer to use SimpleDateFormat for everything but existing regex not 100% compatible
-			String upper = dateformat.toUpperCase();
+			String upper = dateformat.toUpperCase(Locale.US);
 			boolean useSimpleDateFormat = false;
 			if (upper.contains("MMM"))
 			{
@@ -338,7 +338,7 @@ public class StringConverter
 	private String makeISODate(String date, String format)
 	{
 		// first memorize the original order of the groups.
-		format = format.toLowerCase();
+		format = format.toLowerCase(Locale.US);
 		int dpos = format.indexOf('d');
 		int mpos = format.indexOf('m');
 		int ypos = format.indexOf('y');
@@ -464,7 +464,7 @@ public class StringConverter
 			}
 			else
 			{
-				formatted = dateFormat.toLowerCase();
+				formatted = dateFormat.toLowerCase(Locale.US);
 				Calendar gregorianCalendar = new GregorianCalendar();
 				gregorianCalendar.setTime(d);
 
@@ -690,7 +690,7 @@ public class StringConverter
 
 	public Class<?> forSQLName(String sqlTypeName)
 	{
-		sqlTypeName = sqlTypeName.toLowerCase();
+		sqlTypeName = sqlTypeName.toLowerCase(Locale.US);
 		return forSQLNameMap.get(sqlTypeName);
 	}
 
@@ -704,7 +704,7 @@ public class StringConverter
 	public static Object getLiteralForTypeName(String sqlTypeName)
 	{
 		Object retval = null;
-		sqlTypeName = sqlTypeName.toLowerCase();
+		sqlTypeName = sqlTypeName.toLowerCase(Locale.US);
 		if (sqlTypeName.equals("string"))
 			retval = "";
 		else if (sqlTypeName.equals("boolean"))
