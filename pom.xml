@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.sourceforge.csvjdbc</groupId>
   <artifactId>csvjdbc</artifactId>
-  <version>1.0.34-SNAPSHOT</version>
+  <version>1.0.34</version>
   <packaging>jar</packaging>
   <name>CsvJdbc</name>
   <description>a Java JDBC driver for reading comma-separated-value files</description>
@@ -18,7 +18,7 @@
 
   <scm>
     <connection>scm:git:ssh://git.code.sf.net/p/csvjdbc/code</connection>
-    <tag>HEAD</tag>
+    <tag>csvjdbc-1.0.34</tag>
     <url>http://sourceforge.net/p/csvjdbc/_list/git</url>
   </scm>
 
