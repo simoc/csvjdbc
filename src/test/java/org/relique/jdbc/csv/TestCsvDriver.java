@@ -2728,6 +2728,28 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testSkippingUtf8ByteOrderMark() throws SQLException, ParseException
+	{
+		Properties props = new Properties();
+		props.put("charset", "UTF-8");
+
+		/*
+		 * Check that the 3 byte Byte Order Mark at start of file is skipped.
+		 */
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM utf8_bom");
+
+		assertTrue(results.next());
+		ResultSetMetaData metadata = results.getMetaData();
+		assertEquals("name of column 1 is incorrect", "foo", metadata.getColumnName(1));
+		assertEquals("name of column 2 is incorrect", "bar", metadata.getColumnName(2));
+		assertEquals("Incorrect value 1", "1", results.getString(1));
+		assertEquals("Incorrect value 2", "3", results.getString(2));
+	}
+
+	@Test
 	public void testSkippingLeadingLines() throws SQLException
 	{
 		Properties props = new Properties();

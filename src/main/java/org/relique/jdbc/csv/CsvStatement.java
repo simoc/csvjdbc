@@ -426,6 +426,32 @@ public class CsvStatement implements Statement
 						input = new LineNumberReader(tableReader.getReader(this, tableName));
 					}
 
+					String charset = connection.getCharset();
+					if (charset != null)
+					{
+						if (charset.equalsIgnoreCase("UTF-8"))
+						{
+							/*
+							 * Microsoft Windows programs write the Byte Order Mark
+							 * (BOM) 0xEF 0xBB 0xBF at the start of UTF-8 text files.
+							 *
+							 * Java does not support this and returns these three
+							 * bytes as first bytes in the file, so we have to skip
+							 * them manually, if they exist.
+							 */
+							input.mark(1);
+							int bom = input.read();
+							if (bom != 0xFEFF)
+							{
+								/*
+								 * First character is not a BOM,
+								 * so reset back to start of file.
+								 */
+								input.reset();
+							}
+						}
+					}
+
 					String headerline = connection.getHeaderline(tableName);
 					CsvRawReader rawReader = new CsvRawReader(input,
 						tableName,
