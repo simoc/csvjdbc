@@ -305,6 +305,14 @@ public class CsvConnection implements Connection
 		if (info.getProperty(CsvDriver.SEPARATOR) != null)
 		{
 			separator = info.getProperty(CsvDriver.SEPARATOR);
+
+			// Tab character is a commonly used separator.
+			// Accept tab expanded to two characters '\\' and '\t'. This
+			// occurs if user types properties into a GUI text field,
+			// instead of writing them as Java source code.
+			if (separator.equals("\\t"))
+				separator = "\t";
+
 			if (separator.length() == 0)
 				throw new SQLException(CsvResources.getString("invalid") + " " + CsvDriver.SEPARATOR + ": " + separator);
 		}
