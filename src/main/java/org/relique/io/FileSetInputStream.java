@@ -222,6 +222,13 @@ public class FileSetInputStream extends InputStream
 				doingTail = true;
 				return readFromTail();
 			}
+			if (lookahead == -1 && ch != '\n' && ch != -1)
+			{
+				// If last line of file does not end with a newline,
+				// then add a newline, so prepended fields for the
+				// next file begin on a new line.
+				lookahead = '\n';
+			}
 		}
 		else
 		{

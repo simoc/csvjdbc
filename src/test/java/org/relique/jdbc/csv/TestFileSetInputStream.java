@@ -19,6 +19,7 @@
 
 package org.relique.jdbc.csv;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -213,6 +214,39 @@ public class TestFileSetInputStream
 		{
 			if (inputRef != null)
 				inputRef.close();
+			if (inputTest != null)
+				inputTest.close();
+		}
+	}
+
+	@Test
+	public void testGlueAsLeadingLastLineNoNewline() throws IOException
+	{
+		BufferedReader inputTest = null;
+
+		try
+		{
+			String separator = ",";
+
+			// Test CSV files with no '\n' on last line
+			inputTest = new BufferedReader(new InputStreamReader(
+				new FileSetInputStream(filePath,
+						"petr-([0-9]{3})-([0-9]{3}).csv", new String[] {
+								"part1", "part2" }, separator, true, true, null, 0)));
+
+			String lineTest = inputTest.readLine();
+			while (lineTest != null)
+			{
+				// Files have no special characters, so we can simply split on separator
+				String []columns = lineTest.split(separator);
+				// CSV file contains two columns, plus two extra columns from filename
+				int expectedColumns = 4;
+				assertEquals("Expected number of columns", expectedColumns, columns.length);
+				lineTest = inputTest.readLine();
+			}
+		}
+		finally
+		{
 			if (inputTest != null)
 				inputTest.close();
 		}
