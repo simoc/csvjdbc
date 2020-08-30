@@ -667,9 +667,9 @@ public class TestCsvDriver
 				+ "FROM sample5 WHERE Job = 'Project Manager'");
 
 		assertTrue(results.next());
-		assertEquals("Integer column ID is wrong", new Integer(1), results
+		assertEquals("Integer column ID is wrong", Integer.valueOf(1), results
 				.getObject("id"));
-		assertEquals("Integer column 1 is wrong", new Integer(1), results
+		assertEquals("Integer column 1 is wrong", Integer.valueOf(1), results
 				.getObject(1));
 		java.sql.Date shouldBe = java.sql.Date.valueOf("2001-01-02");
 		assertEquals("Date column Start is wrong", shouldBe, results
@@ -693,9 +693,9 @@ public class TestCsvDriver
 				+ "FROM sample5 WHERE Job = 'Project Manager'");
 
 		assertTrue(results.next());
-		assertEquals("Integer column ID is wrong", new Integer(1), results
+		assertEquals("Integer column ID is wrong", Integer.valueOf(1), results
 				.getObject("id"));
-		assertEquals("Integer column 1 is wrong", new Integer(1), results
+		assertEquals("Integer column 1 is wrong", Integer.valueOf(1), results
 				.getObject(1));
 		java.sql.Date shouldBe = java.sql.Date.valueOf("2001-01-02");
 		assertEquals("Date column Start is wrong", shouldBe, results
@@ -720,9 +720,9 @@ public class TestCsvDriver
 
 		assertTrue(results.next());
 		DateFormat dfp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		assertEquals("Integer column ID is wrong", new Integer(1), results
+		assertEquals("Integer column ID is wrong", Integer.valueOf(1), results
 				.getObject("id"));
-		assertEquals("Integer column 1 is wrong", new Integer(1), results
+		assertEquals("Integer column 1 is wrong", Integer.valueOf(1), results
 				.getObject(1));
 		assertEquals("Date column Start is wrong", dfp.parse(results
 				.getString("start")), results.getObject("start"));
@@ -950,7 +950,7 @@ public class TestCsvDriver
 		String target = "2001-01-02 12:30:00";
 		assertEquals("the start time is wrong", target, toUTC.format(results
 				.getObject("start")));
-		assertEquals("The ID is wrong", new Integer(1), results.getObject("id"));
+		assertEquals("The ID is wrong", Integer.valueOf(1), results.getObject("id"));
 		assertEquals("The Name is wrong", "Juan Pablo Morales", results
 				.getObject("name"));
 	}
@@ -970,7 +970,7 @@ public class TestCsvDriver
 		Statement stmt = conn.createStatement();
 		ResultSet results = stmt.executeQuery("SELECT * from sample5");
 		assertTrue(results.next());
-		assertEquals("The sample5 ID is wrong", new Integer(41), results.getObject("id"));
+		assertEquals("The sample5 ID is wrong", Integer.valueOf(41), results.getObject("id"));
 		assertEquals("The sample5 Job is wrong", "Piloto", results.getObject("job"));
 		results.close();
 		results = stmt.executeQuery("SELECT ID,EXTRA_FIELD from sample");
@@ -982,7 +982,7 @@ public class TestCsvDriver
 		// column types are inferred from data.
 		results = stmt.executeQuery("SELECT C2, 'X' as X from numeric");
 		assertTrue(results.next());
-		assertEquals("The numeric C2 is wrong", new Integer(-1010), results.getObject(1));
+		assertEquals("The numeric C2 is wrong", Integer.valueOf(-1010), results.getObject(1));
 		assertEquals("The numeric X is wrong", "X", results.getObject(2));
 	}
 
@@ -2680,11 +2680,11 @@ public class TestCsvDriver
 		assertEquals("comment", metadata.getColumnName(4));
 
 		assertTrue(results.next());
-		assertEquals(new Integer(1), results.getObject(2));
+		assertEquals(Integer.valueOf(1), results.getObject(2));
 		assertTrue(results.next());
-		assertEquals(new Integer(2), results.getObject(2));
+		assertEquals(Integer.valueOf(2), results.getObject(2));
 		assertTrue(results.next());
-		assertEquals(new Integer(3), results.getObject(2));
+		assertEquals(Integer.valueOf(3), results.getObject(2));
 		assertFalse(results.next());
 	}
 
@@ -2768,11 +2768,11 @@ public class TestCsvDriver
 		assertEquals("comment", metadata.getColumnName(4));
 
 		assertTrue(results.next());
-		assertEquals(new Integer(1), results.getObject(2));
+		assertEquals(Integer.valueOf(1), results.getObject(2));
 		assertTrue(results.next());
-		assertEquals(new Integer(2), results.getObject(2));
+		assertEquals(Integer.valueOf(2), results.getObject(2));
 		assertTrue(results.next());
-		assertEquals(new Integer(3), results.getObject(2));
+		assertEquals(Integer.valueOf(3), results.getObject(2));
 		assertFalse(results.next());
 	}
 
@@ -3016,16 +3016,16 @@ public class TestCsvDriver
 		results = stmt.executeQuery("SELECT * FROM varlen1");
 		assertTrue(results.next());
 		assertEquals("007", results.getObject("Station"));
-		assertEquals(new Double("26.54"), results.getObject("P003"));
+		assertEquals(Double.valueOf("26.54"), results.getObject("P003"));
 		assertTrue(results.next());
 		assertEquals("007", results.getObject("Station"));
-		assertEquals(new Double("26.54"), results.getObject("P003"));
+		assertEquals(Double.valueOf("26.54"), results.getObject("P003"));
 		assertTrue(results.next());
 		assertEquals("007", results.getObject("Station"));
-		assertEquals(new Double("26.54"), results.getObject("P003"));
+		assertEquals(Double.valueOf("26.54"), results.getObject("P003"));
 		assertTrue(results.next());
 		assertEquals("001", results.getObject("Station"));
-		assertEquals(new Double("26.55"), results.getObject("P003"));
+		assertEquals(Double.valueOf("26.55"), results.getObject("P003"));
 		assertFalse(results.next());
 
 		results = stmt.executeQuery("SELECT * FROM varlen2");
@@ -3690,9 +3690,9 @@ public class TestCsvDriver
 				.getObject(1)));
 		assertEquals("1 is wrong", "2010-02-21 00:00:00", toUTC.format(results
 				.getObject("COLUMN1")));
-		assertEquals("2 is wrong", new Double(21), results.getObject(2));
-		assertEquals("3 is wrong", new Double(20), results.getObject(3));
-		assertEquals("4 is wrong", new Double(24), results.getObject(4));
+		assertEquals("2 is wrong", Double.valueOf(21), results.getObject(2));
+		assertEquals("3 is wrong", Double.valueOf(20), results.getObject(3));
+		assertEquals("4 is wrong", Double.valueOf(24), results.getObject(4));
 
 	}
 
@@ -3718,10 +3718,10 @@ public class TestCsvDriver
 		results = stmt.executeQuery("SELECT * FROM varlen1");
 		assertTrue(results.next());
 		assertEquals("007", results.getObject("Station"));
-		assertEquals(new Double("26.54"), results.getObject("P003"));
+		assertEquals(Double.valueOf("26.54"), results.getObject("P003"));
 		assertTrue(results.next());
 		assertEquals("001", results.getObject("Station"));
-		assertEquals(new Double("26.55"), results.getObject("P003"));
+		assertEquals(Double.valueOf("26.55"), results.getObject("P003"));
 		assertFalse(results.next());
 	}
 
@@ -4125,9 +4125,9 @@ public class TestCsvDriver
 		assertTrue(results.next());
 		assertTrue(results.next());
 		assertTrue(results.next()); // Mackie Messer
-		assertEquals(new Double(34.1), results.getObject(3));
+		assertEquals(Double.valueOf(34.1), results.getObject(3));
 		assertTrue(results.next()); // Polly Peachum
-		assertEquals(new Double(30.5), results.getObject(3));
+		assertEquals(Double.valueOf(30.5), results.getObject(3));
 	}
 
 	@Test

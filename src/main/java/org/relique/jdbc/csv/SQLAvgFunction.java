@@ -33,7 +33,7 @@ class SQLAvgFunction extends SQLSumFunction
 		if (o != null)
 		{
 			double average = ((Number)o).doubleValue() / counter;
-			o = new Double(average);
+			o = Double.valueOf(average);
 		}
 		return o;
 	}

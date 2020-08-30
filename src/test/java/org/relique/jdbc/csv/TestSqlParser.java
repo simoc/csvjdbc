@@ -354,7 +354,7 @@ public class TestSqlParser
 
 		parser.parse("SELECT * FROM test WHERE c=1");
 		env.clear();
-		env.put("C", new Integer("1"));
+		env.put("C", Integer.valueOf("1"));
 		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 
 		parser.parse("SELECT * FROM test WHERE c='1'");
@@ -364,7 +364,7 @@ public class TestSqlParser
 
 		parser.parse("SELECT * FROM test WHERE c=1.0");
 		env.clear();
-		env.put("C", new Double("1.0"));
+		env.put("C", Double.valueOf("1.0"));
 		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 
 		parser.parse("SELECT * FROM test WHERE (A='20' OR B='AA') AND c=1");
@@ -373,15 +373,15 @@ public class TestSqlParser
 		env.clear();
 		env.put("A", new String("20"));
 		env.put("B", new String("AA"));
-		env.put("C", new Integer("1"));
+		env.put("C", Integer.valueOf("1"));
 		assertEquals(Boolean.TRUE, whereClause.isTrue(env));
-		env.put("A", new Double("20"));
+		env.put("A", Double.valueOf("20"));
 		assertEquals(Boolean.TRUE, whereClause.isTrue(env));
 		env.put("B", new String(""));
 		assertEquals(Boolean.FALSE, whereClause.isTrue(env));
 		env.put("A", new String("20"));
 		assertEquals(Boolean.TRUE, whereClause.isTrue(env));
-		env.put("C", new Integer("3"));
+		env.put("C", Integer.valueOf("3"));
 		assertEquals(Boolean.FALSE, whereClause.isTrue(env));
 	}
 
@@ -393,7 +393,7 @@ public class TestSqlParser
 	{
 		SqlParser parser = new SqlParser();
 		Map<String, Object> env = new HashMap<String, Object>();
-		env.put("C", new Integer("12"));
+		env.put("C", Integer.valueOf("12"));
 
 		parser.parse("SELECT * FROM test WHERE c=1");
 		assertEquals(Boolean.FALSE, parser.getWhereClause().isTrue(env));
@@ -462,11 +462,11 @@ public class TestSqlParser
 
 		parser.parse("SELECT * FROM test WHERE c=1.0");
 		env.clear();
-		env.put("C", new Integer("1"));
+		env.put("C", Integer.valueOf("1"));
 		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
-		env.put("C", new Double("1"));
+		env.put("C", Double.valueOf("1"));
 		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
-		env.put("C", new Float("1"));
+		env.put("C", Float.valueOf("1"));
 		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 	}
 
@@ -478,11 +478,11 @@ public class TestSqlParser
 
 		parser.parse("SELECT * FROM test WHERE c=-1.0");
 		env.clear();
-		env.put("C", new Integer("-1"));
+		env.put("C", Integer.valueOf("-1"));
 		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
-		env.put("C", new Double("-1"));
+		env.put("C", Double.valueOf("-1"));
 		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
-		env.put("C", new Float("-1"));
+		env.put("C", Float.valueOf("-1"));
 		assertEquals(Boolean.TRUE, parser.getWhereClause().isTrue(env));
 	}
 
@@ -579,12 +579,12 @@ public class TestSqlParser
 		cs = new ExpressionParser(new StringReader("A+b AS result"));
 		cs.parseQueryEnvEntry();
 		Map<String, Object> env = new HashMap<String, Object>();
-		env.put("A", new Integer(1));
+		env.put("A", Integer.valueOf(1));
 
-		env.put("B", new Integer(1));
-		assertEquals((Object)(new Integer("2")), cs.eval(env));
-		env.put("A", new Double(1));
-		assertEquals((Object)(new Double("2")), cs.eval(env));
+		env.put("B", Integer.valueOf(1));
+		assertEquals((Object)(Integer.valueOf("2")), cs.eval(env));
+		env.put("A", Double.valueOf(1));
+		assertEquals((Object)(Double.valueOf("2")), cs.eval(env));
 		env.put("A", new String("1"));
 		// string concatenation because one of the arguments is a string
 		assertEquals("11", ""+cs.eval(env));
@@ -601,7 +601,7 @@ public class TestSqlParser
 		env.put("A", "Hello");
 		env.put("B", "World");
 		assertEquals("HelloWorld", cs.eval(env));
-		env.put("B", new Integer(100));
+		env.put("B", Integer.valueOf(100));
 		assertEquals("Hello100", cs.eval(env));
 	}
 
@@ -615,16 +615,16 @@ public class TestSqlParser
 
 		Map<String, Object> env = new HashMap<String, Object>();
 
-		env.put("A", new Integer(4));
-		env.put("B", new Integer(3));
-		assertEquals((Object)(new Integer("1")), cs.eval(env));
+		env.put("A", Integer.valueOf(4));
+		env.put("B", Integer.valueOf(3));
+		assertEquals((Object)(Integer.valueOf("1")), cs.eval(env));
 
-		env.put("A", new Integer(-3));
-		env.put("B", new Integer(2));
-		assertEquals((Object)(new Integer("-1")), cs.eval(env));
+		env.put("A", Integer.valueOf(-3));
+		env.put("B", Integer.valueOf(2));
+		assertEquals((Object)(Integer.valueOf("-1")), cs.eval(env));
 
-		env.put("A", new Integer(4));
-		env.put("B", new Integer(0));
+		env.put("A", Integer.valueOf(4));
+		env.put("B", Integer.valueOf(0));
 		try
 		{
 			cs.eval(env);
@@ -635,17 +635,17 @@ public class TestSqlParser
 			
 		}
 
-		env.put("A", new Double(5));
-		env.put("B", new Double(3));
-		assertEquals((Object)(new Double("2")), cs.eval(env));
+		env.put("A", Double.valueOf(5));
+		env.put("B", Double.valueOf(3));
+		assertEquals((Object)(Double.valueOf("2")), cs.eval(env));
 
-		env.put("A", new Double(8.8));
-		env.put("B", new Double(3.3));
-		assertEquals((Object)(new Double("2.2")), cs.eval(env));
+		env.put("A", Double.valueOf(8.8));
+		env.put("B", Double.valueOf(3.3));
+		assertEquals((Object)(Double.valueOf("2.2")), cs.eval(env));
 
-		env.put("A", new Double(-5));
-		env.put("B", new Double(3));
-		assertEquals((Object)(new Double("-2")), cs.eval(env));
+		env.put("A", Double.valueOf(-5));
+		env.put("B", Double.valueOf(3));
+		assertEquals((Object)(Double.valueOf("-2")), cs.eval(env));
 	}
 
 	@Test
@@ -655,29 +655,29 @@ public class TestSqlParser
 		cs = new ExpressionParser(new StringReader("a-b AS result"));
 		cs.parseQueryEnvEntry();
 		Map<String, Object> env = new HashMap<String, Object>();
-		env.put("A", new Integer(5));
+		env.put("A", Integer.valueOf(5));
 
-		env.put("B", new Integer(1));
-		assertEquals((Object)(new Integer("4")), cs.eval(env));
-		env.put("B", new Double(1));
-		assertEquals((Object)(new Double("4")), cs.eval(env));
+		env.put("B", Integer.valueOf(1));
+		assertEquals((Object)(Integer.valueOf("4")), cs.eval(env));
+		env.put("B", Double.valueOf(1));
+		assertEquals((Object)(Double.valueOf("4")), cs.eval(env));
 
 		cs = new ExpressionParser(new StringReader("a*b AS result"));
 		cs.parseQueryEnvEntry();
 
-		env.put("B", new Integer(1));
-		assertEquals((Object)(new Integer("5")), cs.eval(env));
-		env.put("B", new Double(1));
-		assertEquals((Object)(new Double("5")), cs.eval(env));
+		env.put("B", Integer.valueOf(1));
+		assertEquals((Object)(Integer.valueOf("5")), cs.eval(env));
+		env.put("B", Double.valueOf(1));
+		assertEquals((Object)(Double.valueOf("5")), cs.eval(env));
 		
 		cs = new ExpressionParser(new StringReader("a/b AS result"));
 		cs.parseQueryEnvEntry();
-		env.put("B", new Integer(2));
-		assertEquals((Object)(new Integer("2")), cs.eval(env));
-		env.put("B", new Double(2));
-		assertEquals((Object)(new Double("2.5")), cs.eval(env));
+		env.put("B", Integer.valueOf(2));
+		assertEquals((Object)(Integer.valueOf("2")), cs.eval(env));
+		env.put("B", Double.valueOf(2));
+		assertEquals((Object)(Double.valueOf("2.5")), cs.eval(env));
 
-		env.put("B", new Double(0));
+		env.put("B", Double.valueOf(0));
 		try
 		{
 			cs.eval(env);
@@ -695,20 +695,20 @@ public class TestSqlParser
 		cs = new ExpressionParser(new StringReader("A+1 AS result"));
 		cs.parseQueryEnvEntry();
 		Map<String, Object> env = new HashMap<String, Object>();
-		env.put("A", new Short("1"));
+		env.put("A", Short.valueOf("1"));
 		Object o = cs.eval(env);
 		assertEquals(o.toString(), "2");
 
 		cs = new ExpressionParser(new StringReader("A+B AS result"));
 		cs.parseQueryEnvEntry();		
-		env.put("A", new Short("3"));
-		env.put("B", new Short("4"));
+		env.put("A", Short.valueOf("3"));
+		env.put("B", Short.valueOf("4"));
 		o = cs.eval(env);
 		assertEquals(o.toString(), "7");
 		
 		cs = new ExpressionParser(new StringReader("A/2 AS result"));
 		cs.parseQueryEnvEntry();		
-		env.put("A", new Short("25"));
+		env.put("A", Short.valueOf("25"));
 		o = cs.eval(env);
 		assertEquals(o.toString(), "12");
 	}
@@ -720,31 +720,31 @@ public class TestSqlParser
 		cs = new ExpressionParser(new StringReader("A+5678678678 AS result"));
 		cs.parseQueryEnvEntry();
 		Map<String, Object> env = new HashMap<String, Object>();
-		env.put("A", new Integer("1"));
+		env.put("A", Integer.valueOf("1"));
 		Object o = cs.eval(env);
 		assertEquals(o.toString(), "5678678679");
 
 		cs = new ExpressionParser(new StringReader("A-50000000000 AS result"));
 		cs.parseQueryEnvEntry();		
-		env.put("A", new Long("120000000000"));
+		env.put("A", Long.valueOf("120000000000"));
 		o = cs.eval(env);
 		assertEquals(o.toString(), "70000000000");
 
 		cs = new ExpressionParser(new StringReader("A*5000000000 AS result"));
 		cs.parseQueryEnvEntry();		
-		env.put("A", new Integer("3"));
+		env.put("A", Integer.valueOf("3"));
 		o = cs.eval(env);
 		assertEquals(o.toString(), "15000000000");
 
 		cs = new ExpressionParser(new StringReader("A*10000L AS result"));
 		cs.parseQueryEnvEntry();		
-		env.put("A", new Integer("1000000"));
+		env.put("A", Integer.valueOf("1000000"));
 		o = cs.eval(env);
 		assertEquals(o.toString(), "10000000000");
 
 		cs = new ExpressionParser(new StringReader("A/10 AS result"));
 		cs.parseQueryEnvEntry();		
-		env.put("A", new Long("-1234567891230"));
+		env.put("A", Long.valueOf("-1234567891230"));
 		o = cs.eval(env);
 		assertEquals(o.toString(), "-123456789123");
 	}
@@ -786,14 +786,14 @@ public class TestSqlParser
 		cs.parseQueryEnvEntry();
 		env.put("EXPIRYDATE", Date.valueOf("2011-11-24"));
 		o = cs.eval(env);
-		assertEquals(o, new Integer(23));
+		assertEquals(o, Integer.valueOf(23));
 
 		cs = new ExpressionParser(new StringReader("ENDDATE - STARTDATE + 1 as result"));
 		cs.parseQueryEnvEntry();
 		env.put("STARTDATE", Date.valueOf("2011-11-22"));
 		env.put("ENDDATE", Date.valueOf("2011-11-24"));
 		o = cs.eval(env);
-		assertEquals(o, new Integer(3));
+		assertEquals(o, Integer.valueOf(3));
 	}
 
 	@Test

@@ -85,7 +85,7 @@ class RelopExpression extends LogicalExpression
 		try
 		{
 			if (leftValue != null && rightValue != null)
-				leftComparedToRightObj = new Integer(leftValue.compareTo(rightValue));
+				leftComparedToRightObj = Integer.valueOf(leftValue.compareTo(rightValue));
 		}
 		catch (ClassCastException e)
 		{
@@ -106,7 +106,7 @@ class RelopExpression extends LogicalExpression
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					Date date = sc.parseDate(rightValue.toString());
 					if (date != null)
-						leftComparedToRightObj = new Integer(leftValue.compareTo(date));
+						leftComparedToRightObj = Integer.valueOf(leftValue.compareTo(date));
 				}
 				else if (rightValue instanceof Date)
 				{
@@ -114,7 +114,7 @@ class RelopExpression extends LogicalExpression
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					Date date = sc.parseDate(leftValue.toString());
 					if (date != null)
-						leftComparedToRightObj = new Integer(date.compareTo((Date)rightValue));
+						leftComparedToRightObj = Integer.valueOf(date.compareTo((Date)rightValue));
 				}
 				else if (leftValue instanceof Time)
 				{
@@ -122,7 +122,7 @@ class RelopExpression extends LogicalExpression
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					Time time = sc.parseTime(rightValue.toString());
 					if (time != null)
-						leftComparedToRightObj = new Integer(leftValue.compareTo(time));
+						leftComparedToRightObj = Integer.valueOf(leftValue.compareTo(time));
 				}
 				else if (rightValue instanceof Time)
 				{
@@ -130,7 +130,7 @@ class RelopExpression extends LogicalExpression
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					Time time = sc.parseTime(leftValue.toString());
 					if (time != null)
-						leftComparedToRightObj = new Integer(time.compareTo((Time)rightValue));
+						leftComparedToRightObj = Integer.valueOf(time.compareTo((Time)rightValue));
 				}
 				else if (leftValue instanceof Timestamp)
 				{
@@ -138,7 +138,7 @@ class RelopExpression extends LogicalExpression
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					Timestamp timestamp = sc.parseTimestamp(rightValue.toString());
 					if (timestamp != null)
-						leftComparedToRightObj = new Integer(leftValue.compareTo(timestamp));
+						leftComparedToRightObj = Integer.valueOf(leftValue.compareTo(timestamp));
 				}
 				else if (rightValue instanceof Timestamp)
 				{
@@ -146,7 +146,7 @@ class RelopExpression extends LogicalExpression
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
 					Timestamp timestamp = sc.parseTimestamp(leftValue.toString());
 					if (timestamp != null)
-						leftComparedToRightObj = new Integer(timestamp.compareTo((Timestamp)rightValue));
+						leftComparedToRightObj = Integer.valueOf(timestamp.compareTo((Timestamp)rightValue));
 				}
 				else if (leftValue instanceof Boolean)
 				{
@@ -163,9 +163,9 @@ class RelopExpression extends LogicalExpression
 				}
 				else
 				{
-					Double leftDouble = new Double(((Number)leftValue).toString());
-					Double rightDouble = new Double(((Number)rightValue).toString());
-					leftComparedToRightObj = new Integer(leftDouble.compareTo(rightDouble));
+					Double leftDouble = Double.valueOf(((Number)leftValue).toString());
+					Double rightDouble = Double.valueOf(((Number)rightValue).toString());
+					leftComparedToRightObj = Integer.valueOf(leftDouble.compareTo(rightDouble));
 				}
 			}
 		}

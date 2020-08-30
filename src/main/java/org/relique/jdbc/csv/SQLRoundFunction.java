@@ -40,7 +40,7 @@ class SQLRoundFunction extends Expression
 			{
 				try
 				{
-					retval = new Double(retval.toString());
+					retval = Double.valueOf(retval.toString());
 				}
 				catch(NumberFormatException e)
 				{
@@ -51,15 +51,15 @@ class SQLRoundFunction extends Expression
 			{
 				if (retval instanceof Short)
 				{
-					retval = new Integer(((Short)retval).intValue());
+					retval = Integer.valueOf(((Short)retval).intValue());
 				}
 				else if (!(retval instanceof Integer || retval instanceof Long))
 				{
 					double d = ((Number)retval).doubleValue();
 					if (d < Integer.MIN_VALUE || d > Integer.MAX_VALUE)
-						retval = new Double(Math.round(d));
+						retval = Double.valueOf(Math.round(d));
 					else
-						retval = new Integer((int)Math.round(d));
+						retval = Integer.valueOf((int)Math.round(d));
 				}
 			}
 		}

@@ -100,9 +100,9 @@ class BinaryOperation extends Expression
 			else if (op == '%')
 				bil = bil.remainder(bir);
 			if (isLongExpression)
-				return new Long(bil.toString());
+				return Long.valueOf(bil.toString());
 			else
-				return new Integer(bil.toString());
+				return Integer.valueOf(bil.toString());
 		}
 		catch (ClassCastException e)
 		{
@@ -120,16 +120,16 @@ class BinaryOperation extends Expression
 			Number rightN = (Number)rightEval;
 			BigDecimal bdr = new BigDecimal(rightN.toString());
 			if (op == '+')
-				return new Double(bdl.add(bdr).toString());
+				return Double.valueOf(bdl.add(bdr).toString());
 			if (op == '-')
-				return new Double(bdl.subtract(bdr).toString());
+				return Double.valueOf(bdl.subtract(bdr).toString());
 			if (op == '*')
-				return new Double(bdl.multiply(bdr).toString());
+				return Double.valueOf(bdl.multiply(bdr).toString());
 			MathContext mc = new MathContext("precision=14 roundingMode=HALF_UP");
 			if (op == '/')
-				return new Double(bdl.divide(bdr, mc.getPrecision(), mc.getRoundingMode()).toString());
+				return Double.valueOf(bdl.divide(bdr, mc.getPrecision(), mc.getRoundingMode()).toString());
 			if (op == '%')
-				return new Double(bdl.remainder(bdr, mc).toString());
+				return Double.valueOf(bdl.remainder(bdr, mc).toString());
 		}
 		catch (ClassCastException e)
 		{
@@ -216,7 +216,7 @@ class BinaryOperation extends Expression
 				{
 					long nMillis = ((Date)leftEval).getTime() - ((Date)(rightEval)).getTime();
 					long nDays = (nMillis + MILLISECONDS_PER_DAY / 2) / MILLISECONDS_PER_DAY;
-					return new Integer((int)nDays);
+					return Integer.valueOf((int)nDays);
 				}
 			}
 		}
