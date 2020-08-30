@@ -367,7 +367,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		checkOpen();
 		checkParameterIndex(parameterIndex);
 
-		this.parameters[parameterIndex] = new Double(x);
+		this.parameters[parameterIndex] = Double.valueOf(x);
 
 	}
 

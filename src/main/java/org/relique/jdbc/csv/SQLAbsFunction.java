@@ -41,7 +41,7 @@ class SQLAbsFunction extends Expression
 			{
 				try
 				{
-					o = new Double(o.toString());
+					o = Double.valueOf(o.toString());
 				}
 				catch(NumberFormatException e)
 				{
@@ -77,7 +77,7 @@ class SQLAbsFunction extends Expression
 					double d = ((Number)o).doubleValue();
 					if (d < 0)
 						d = -d;
-					retval = new Double(d);
+					retval = Double.valueOf(d);
 				}
 			}
 		}

@@ -163,22 +163,22 @@ public class CsvResultSetMetaData implements ResultSetMetaData
 		private static final long serialVersionUID = -8819579540085202365L;
 
 		{
-			put("String", new Integer(Types.VARCHAR));
-			put("Boolean", new Integer(Types.BOOLEAN));
-			put("Byte", new Integer(Types.TINYINT));
-			put("Short", new Integer(Types.SMALLINT));
-			put("Int", new Integer(Types.INTEGER));
-			put("Integer", new Integer(Types.INTEGER));
-			put("Long", new Integer(Types.BIGINT));
-			put("Float", new Integer(Types.FLOAT));
-			put("Double", new Integer(Types.DOUBLE));
-			put("BigDecimal", new Integer(Types.DECIMAL));
-			put("Date", new Integer(Types.DATE));
-			put("Time", new Integer(Types.TIME));
-			put("Timestamp", new Integer(Types.TIMESTAMP));
-			put("Blob", new Integer(Types.BLOB));
-			put("Clob", new Integer(Types.CLOB));
-			put("expression", new Integer(Types.BLOB));
+			put("String", Integer.valueOf(Types.VARCHAR));
+			put("Boolean", Integer.valueOf(Types.BOOLEAN));
+			put("Byte", Integer.valueOf(Types.TINYINT));
+			put("Short", Integer.valueOf(Types.SMALLINT));
+			put("Int", Integer.valueOf(Types.INTEGER));
+			put("Integer", Integer.valueOf(Types.INTEGER));
+			put("Long", Integer.valueOf(Types.BIGINT));
+			put("Float", Integer.valueOf(Types.FLOAT));
+			put("Double", Integer.valueOf(Types.DOUBLE));
+			put("BigDecimal", Integer.valueOf(Types.DECIMAL));
+			put("Date", Integer.valueOf(Types.DATE));
+			put("Time", Integer.valueOf(Types.TIME));
+			put("Timestamp", Integer.valueOf(Types.TIMESTAMP));
+			put("Blob", Integer.valueOf(Types.BLOB));
+			put("Clob", Integer.valueOf(Types.CLOB));
+			put("expression", Integer.valueOf(Types.BLOB));
 		}
 	};
 
