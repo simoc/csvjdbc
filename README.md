@@ -64,3 +64,11 @@ public class DemoDriver
   }
 }
 ```
+
+## Documentation
+
+Full documentation for CsvJdbc is found [here](doc.md).
+
+## Developing
+
+Read the [instructions](develop.md) for compiling CsvJdbc.
