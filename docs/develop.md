@@ -1,20 +1,20 @@
-##Building From Source
+## Building From Source
 
 To checkout and build the latest source code from the
-[CsvJdbc git repository](http://sourceforge.net/p/csvjdbc/code/ci/master/tree/),
+[CsvJdbc git repository](https://github.com/simoc/csvjdbc.git),
 use the following commands ([git](http://git-scm.com/) and
 [Maven](http://maven.apache.org/) must first be installed).
 
     cd $HOME
     mkdir workspace1
     cd workspace1
-    git clone git://git.code.sf.net/p/csvjdbc/code csvjdbc
+    git clone https://github.com/simoc/csvjdbc.git csvjdbc
     cd csvjdbc
     mvn install
     cd target
     dir csvjdbc*.jar
 
-##Working With Eclipse
+## Working With Eclipse
 
 1. Start Eclipse with workspace `workspace1`
 2. Install the JavaCC Eclipse Plug-in from the Help ->
@@ -24,7 +24,7 @@ File -> New -> Java Project
 4. Open `src/main/javacc/org/relique/jdbc/csv/where.jj` in the Eclipse
 Editor and then select menu option JavaCC -> Compile with javacc
 
-##Maven Project Usage
+## Maven Project Usage
 
 CsvJdbc is available at [Maven Central](http://search.maven.org/).
 To include CsvJdbc in a [Maven](http://maven.apache.org/) project,
@@ -41,22 +41,18 @@ add the following lines to the `pom.xml` file.
         </dependency>
       </dependencies>
 
-##Contributing
+## Contributing
 
 A change to CsvJdbc must first be entered as a
-[Bug](http://sourceforge.net/p/csvjdbc/bugs/)
-or
-[Feature Request](http://sourceforge.net/p/csvjdbc/feature-requests/)
+[Issue](https://github.com/simoc/csvjdbc/issues)
 before starting development.
-The change will then be accepted or not
+A [Pull Request](https://github.com/simoc/csvjdbc/pulls)
+for an issue will then be accepted or not
 accepted by a CsvJdbc administrator.
 
 Completed changes must be provided as a [git](http://www.git-scm.com)
 pull request and include
 a unit test to test the changed functionality.
 
-Label *easy* is used to identify existing
-[Easy Bugs](https://sourceforge.net/p/csvjdbc/bugs/search/?q=labels%3Aeasy)
-and
-[Easy Feature Requests](https://sourceforge.net/p/csvjdbc/feature-requests/search/?q=labels%3Aeasy)
-that are suitable for new developers.
+Label *good first issue* is used to identify existing
+issues that are suitable for new developers.
