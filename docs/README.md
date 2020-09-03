@@ -73,4 +73,5 @@ Full documentation for CsvJdbc is found [here](doc.md).
 
 ## Developing
 
-Read the [instructions](develop.md) for compiling CsvJdbc.
+Read the instructions for [compiling](develop.md) CsvJdbc
+and for [releasing](release.md) CsvJdbc.
