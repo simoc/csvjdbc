@@ -10,7 +10,18 @@ java -version
 
 must be 1.6.
 
-* Checkout (replace `simoc` with your SourceForge username)
+* Checkout from GitHub
+
+Push all changes from GitHub git repository to SourceForge repository
+(replace `simoc` with your GitHub and SourceForge usernames).
+
+```
+git clone https://github.com/simoc/csvjdbc.git csvjdbc-github
+cd csvjdbc-github
+git push ssh://simoc@git.code.sf.net/p/csvjdbc/code master
+```
+
+* Checkout from SourceForge
 
 ```
 git clone ssh://simoc@git.code.sf.net/p/csvjdbc/code csvjdbc-code
