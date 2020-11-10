@@ -398,7 +398,8 @@ public class CsvStatement implements Statement
 								connection.isFileTailPrepend(),
 								connection.isSuppressHeaders(),
 								filter,
-								connection.getSkipLeadingDataLines() + connection.getTransposedLines());
+								connection.getSkipLeadingDataLines() + connection.getTransposedLines(),
+								connection.getCharset());
 						}
 						else if (filter == null)
 						{
