@@ -73,7 +73,7 @@ public class TestFileSetInputStream
 			inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ",", false, false, null, 0)));
+								"location", "file_date" }, ",", false, false, null, 0, null)));
 
 			Set<String> refSet = new HashSet<String>();
 			Set<String> testSet = new HashSet<String>();
@@ -114,7 +114,7 @@ public class TestFileSetInputStream
 			inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ",", true, false, null, 0)));
+								"location", "file_date" }, ",", true, false, null, 0, null)));
 
 			Set<String> refSet = new HashSet<String>();
 			Set<String> testSet = new HashSet<String>();
@@ -155,7 +155,7 @@ public class TestFileSetInputStream
 			inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"headerless-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ",", true, true, null, 0)));
+								"location", "file_date" }, ",", true, true, null, 0, null)));
 
 			Set<String> refSet = new HashSet<String>();
 			Set<String> testSet = new HashSet<String>();
@@ -194,7 +194,7 @@ public class TestFileSetInputStream
 			inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"empty-([0-9]+).txt", new String[] {
-							"EMPTY_ID"}, ",", false, false, null, 0)));
+							"EMPTY_ID"}, ",", false, false, null, 0, null)));
 
 			Set<String> refSet = new HashSet<String>();
 			Set<String> testSet = new HashSet<String>();
@@ -232,7 +232,7 @@ public class TestFileSetInputStream
 			inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"petr-([0-9]{3})-([0-9]{3}).csv", new String[] {
-								"part1", "part2" }, separator, true, true, null, 0)));
+								"part1", "part2" }, separator, true, true, null, 0, null)));
 
 			String lineTest = inputTest.readLine();
 			while (lineTest != null)
@@ -257,7 +257,7 @@ public class TestFileSetInputStream
 	{
 		FileSetInputStream in = new FileSetInputStream(filePath,
 					"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-					"location", "file_date"}, ",", false, false, null, 0);
+					"location", "file_date"}, ",", false, false, null, 0, null);
 
 		in.read();
 		in.read();
@@ -270,6 +270,33 @@ public class TestFileSetInputStream
 		catch (IOException e)
 		{
 			assertTrue(("" + e).contains("IOException"));
+		}
+	}
+
+	@Test
+	public void testFileSetCharsetUtf16le() throws IOException
+	{
+		BufferedReader in = null;
+
+		try
+		{
+			String charset = "UTF-16LE";
+			in = new BufferedReader(new InputStreamReader(
+					new FileSetInputStream(filePath,
+						"utf16le_(\\d+).txt", new String[] {
+						"date"}, "|", false, false, null, 0, charset), charset));
+
+			String line = in.readLine();
+			assertEquals("Col1|Col2|Some third|4th|date", line);
+			line = in.readLine();
+			assertEquals("1|01.10.2018|-4,4|1111|01102018", line);
+			line = in.readLine();
+			assertEquals("2|04.11.2020|-2,2|2222|04112020", line);
+		}
+		finally
+		{
+			if (in != null)
+				in.close();
 		}
 	}
 }

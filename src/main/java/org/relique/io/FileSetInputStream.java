@@ -53,10 +53,12 @@ public class FileSetInputStream extends InputStream
 	private String dataTail;
 	private boolean prepend;
 	private int lookahead = '\n';
+	private int lookahead2 = -1;
 	private boolean doingTail;
 	private int currentLineLength;
 	private CryptoFilter filter;
 	private int skipLeadingDataLines;
+	private String charset;
 	private boolean isClosed = false;
 
 	/**
@@ -80,12 +82,14 @@ public class FileSetInputStream extends InputStream
 	 */
 	public FileSetInputStream(String dirName, String fileNamePattern,
 			String[] fieldsInName, String separator, boolean prepend,
-			boolean headerless, CryptoFilter filter, int skipLeadingDataLines)
+			boolean headerless, CryptoFilter filter, int skipLeadingDataLines,
+			String charset)
 			throws IOException
 	{
 		this.dirName = dirName;
 		this.filter = filter;
 		this.skipLeadingDataLines = skipLeadingDataLines;
+		this.charset = charset;
 		if (!headerless)
 			this.skipLeadingDataLines++;
 		
@@ -153,6 +157,12 @@ public class FileSetInputStream extends InputStream
 			tail = dataTail;
 		currentFile = new EncryptedFileInputStream(dirName + currentFileName, filter);
 		lookahead = currentFile.read();
+		if (lookahead == 0xFF && charset != null && charset.equals("UTF-16LE"))
+		{
+			// Skip any 0xFFFE Byte Order Mark at start of UTF-16LE file.
+			currentFile.read();
+			lookahead = currentFile.read();
+		}
 		doingTail = prepend;
 		if (doingTail)
 			pos = 1;
@@ -200,7 +210,9 @@ public class FileSetInputStream extends InputStream
 		{
 			ch = readFromTail();
 			if (ch != -1)
+			{
 				return ch;
+			}
 			doingTail = false;
 			currentLineLength = 0;
 		}
@@ -209,10 +221,35 @@ public class FileSetInputStream extends InputStream
 		ch = lookahead;
 		do
 		{
-			lookahead = currentFile.read();
+			if (lookahead2 != -1)
+			{
+				lookahead = lookahead2;
+				lookahead2 = -1;
+			}
+			else
+			{
+				lookahead = currentFile.read();
+			}
 			// we ignore \r, which breaks things on files created with MacOS9
+			if (lookahead == '\r')
+			{
+				if (charset != null && charset.equals("UTF-16LE"))
+				{
+					// Skip '\r' and '\0' for UTF-16LE charset.
+					int skip = currentFile.read();
+					if (skip != 0)
+					{
+						// Next char is some other valid UTF-16LE character,
+						// not a carriage return, so we need to keep
+						// it for later.
+						lookahead2 = skip;
+						break;
+					}
+				}
+			}
 		}
 		while (lookahead == '\r');
+
 		// if we met a line border we have to output the lead/tail
 		if (prepend)
 		{
@@ -220,7 +257,8 @@ public class FileSetInputStream extends InputStream
 			if (ch == '\n' && !(lookahead == '\n' || lookahead == -1))
 			{
 				doingTail = true;
-				return readFromTail();
+				ch = readFromTail();
+				return ch;
 			}
 			if (lookahead == -1 && ch != '\n' && ch != -1)
 			{
@@ -236,7 +274,15 @@ public class FileSetInputStream extends InputStream
 			if (currentLineLength > 0 && (ch == '\n' || ch == -1))
 			{
 				doingTail = true;
-				return readFromTail();
+				if (ch == '\n' && lookahead == 0 &&
+					charset != null && charset.equals("UTF-16LE"))
+				{
+					// Skip '\n' and '\0' for UTF-16LE charset.
+					lookahead = currentFile.read();
+				}
+
+				ch = readFromTail();
+				return ch;
 			}
 		}
 		if (ch < 0)
@@ -263,6 +309,17 @@ public class FileSetInputStream extends InputStream
 				do
 				{
 					ch2 = currentFile.read();
+
+					if (ch2 == '\n' && charset != null && charset.equals("UTF-16LE"))
+					{
+						// Skip '\n' and '\0' for UTF-16LE charset.
+						int skip = currentFile.read();
+						if (skip != 0)
+						{
+							// Next char is not a newline, so keep reading.
+							ch2 = 0;
+						}
+					}
 				}
 				while (ch2 != '\n' && ch2 != -1);
 			}
@@ -270,7 +327,15 @@ public class FileSetInputStream extends InputStream
 			if (doingTail)
 				pos = 1;
 			lookahead = currentFile.read();
-			return read();
+			if (lookahead == 0xFF && skipLeadingDataLines == 0 &&
+				charset != null && charset.equals("UTF-16LE"))
+			{
+				// Skip any 0xFFFE Byte Order Mark at start of UTF-16LE file.
+				currentFile.read();
+				lookahead = currentFile.read();
+			}
+			ch = read();
+			return ch;
 		}
 		currentLineLength++;
 		return ch;
@@ -309,10 +374,19 @@ public class FileSetInputStream extends InputStream
 		return tail;
 	}
 
-	private int readFromTail()
+	private int readFromTail() throws IOException
 	{
-		if (pos < tail.length())
-			return tail.charAt(pos++);
+		if (charset != null && charset.equals("UTF-16LE"))
+		{
+			byte []b = tail.getBytes(charset);
+			if (pos < b.length)
+				return b[pos++];
+		}
+		else
+		{
+			if (pos < tail.length())
+				return tail.charAt(pos++);
+		}
 		pos = 0;
 		if (readingHeader)
 		{
