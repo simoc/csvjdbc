@@ -756,7 +756,7 @@ public class TestSqlParser
 		cs = new ExpressionParser(new StringReader("CURRENT_DATE AS now"));
 		cs.parseQueryEnvEntry();
 		Map<String, Object> env = new HashMap<String, Object>();
-		env.put(StringConverter.COLUMN_NAME, new StringConverter("yyyy-mm-dd", "HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "UTC"));
+		env.put(StringConverter.COLUMN_NAME, new StringConverter("yyyy-mm-dd", "HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "UTC", false));
 
 		// Protect against unlikely situation of test running over date change at midnight.
 		String date1 = new Date(System.currentTimeMillis()).toString();

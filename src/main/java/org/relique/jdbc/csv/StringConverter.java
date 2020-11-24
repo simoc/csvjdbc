@@ -27,6 +27,12 @@ import java.sql.Types;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -55,66 +61,78 @@ public class StringConverter
 	private SimpleDateFormat simpleDateFormat;
 	private int currentYear;
 
+	// Alternative Java 8 classes for parsing and formatting dates, times, timestamps.
+	DateTimeFormatter dateFormatter;
+	DateTimeFormatter timeFormatter;
+	DateTimeFormatter timestampFormatter;
+
 	public StringConverter(String dateformat, String timeformat, String timestampformat,
-		String timeZoneName)
+		String timeZoneName, boolean useDateTimeFormatter)
 	{
-		init(dateformat, timeformat, timestampformat, timeZoneName, null);
+		init(dateformat, timeformat, timestampformat, timeZoneName, null, useDateTimeFormatter);
 	}
 
 	public StringConverter(String dateformat, String timeformat, String timestampformat,
-		String timeZoneName, Locale locale)
+		String timeZoneName, Locale locale, boolean useDateTimeFormatter)
 	{
-		init(dateformat, timeformat, timestampformat, timeZoneName, locale);
+		init(dateformat, timeformat, timestampformat, timeZoneName, locale, useDateTimeFormatter);
 	}
 
 	private void init(String dateformat, String timeformat, String timestampformat,
-		String timeZoneName, Locale locale)
+		String timeZoneName, Locale locale, boolean useDateTimeFormatter)
 	{
 		dateFormat = dateformat;
 		if (dateformat != null)
 		{
-			/*
-			 * Can date be parsed with a simple regular expression, or is the full
-			 * SimpleDateFormat parsing required?
-			 */
-			// TODO prefer to use SimpleDateFormat for everything but existing regex not 100% compatible
-			String upper = dateformat.toUpperCase(Locale.US);
-			boolean useSimpleDateFormat = false;
-			if (upper.contains("MMM"))
+			if (useDateTimeFormatter)
 			{
-				/*
-				 * Dates contain named months -- we need to use a SimpleDateFormat to parse them.
-				 */
-				useSimpleDateFormat = true;
+				dateFormatter = createFormatter(dateFormat, locale, timeZoneName);
 			}
 			else
 			{
-				for (int i = 0; i < upper.length(); i++)
-				{
-					char c = upper.charAt(i);
-					if (Character.isLetter(c) && c != 'D' && c != 'M' && c != 'Y')
-					{
-						/*
-						 * Dates are not just a straightforward format with days, months,
-						 * years -- we need to use a SimpleDateFormat to parse them.
-						 */
-						useSimpleDateFormat = true;
-					}
-				}
-			}
-			if (useSimpleDateFormat)
-			{
 				/*
-				 * Use Java API for parsing dates.
+				 * Can date be parsed with a simple regular expression, or is the full
+				 * SimpleDateFormat parsing required?
 				 */
-				if (locale != null)
+				// TODO prefer to use SimpleDateFormat for everything but existing regex not 100% compatible
+				String upper = dateformat.toUpperCase(Locale.US);
+				boolean useSimpleDateFormat = false;
+				if (upper.contains("MMM"))
 				{
-					DateFormatSymbols symbols = DateFormatSymbols.getInstance(locale);
-					simpleDateFormat = new SimpleDateFormat(dateformat, symbols);
+					/*
+					 * Dates contain named months -- we need to use a SimpleDateFormat to parse them.
+					 */
+					useSimpleDateFormat = true;
 				}
 				else
 				{
-					simpleDateFormat = new SimpleDateFormat(dateformat);
+					for (int i = 0; i < upper.length(); i++)
+					{
+						char c = upper.charAt(i);
+						if (Character.isLetter(c) && c != 'D' && c != 'M' && c != 'Y')
+						{
+							/*
+							 * Dates are not just a straightforward format with days, months,
+							 * years -- we need to use a SimpleDateFormat to parse them.
+							 */
+							useSimpleDateFormat = true;
+						}
+					}
+				}
+				if (useSimpleDateFormat)
+				{
+					/*
+					 * Use Java API for parsing dates.
+					 */
+					if (locale != null)
+					{
+						DateFormatSymbols symbols = DateFormatSymbols.getInstance(locale);
+						simpleDateFormat = new SimpleDateFormat(dateformat, symbols);
+					}
+					else
+					{
+						simpleDateFormat = new SimpleDateFormat(dateformat);
+					}
 				}
 			}
 		}
@@ -123,48 +141,77 @@ public class StringConverter
 		 * Use Java API for parsing times.
 		 */
 		timeFormat = timeformat;
-		if (locale != null)
+		if (useDateTimeFormatter)
 		{
-			DateFormatSymbols symbols = DateFormatSymbols.getInstance(locale);
-			simpleTimeFormat = new SimpleDateFormat(timeformat, symbols);
+			timeFormatter = createFormatter(timeFormat, locale, timeZoneName);
 		}
 		else
 		{
-			simpleTimeFormat = new SimpleDateFormat(timeformat);
-		}
-
-		TimeZone timeZone = TimeZone.getTimeZone(timeZoneName);
-		calendar = new GregorianCalendar();
-		calendar.setTimeInMillis(System.currentTimeMillis());
-		currentYear = calendar.get(Calendar.YEAR);
-		calendar.clear();
-		calendar.setTimeZone(timeZone);
-		if (timestampformat != null && timestampformat.length() > 0)
-		{
-			/*
-			 * Use Java API for parsing dates and times.
-			 */
 			if (locale != null)
 			{
 				DateFormatSymbols symbols = DateFormatSymbols.getInstance(locale);
-				timestampFormat = new SimpleDateFormat(timestampformat, symbols);
+				simpleTimeFormat = new SimpleDateFormat(timeformat, symbols);
 			}
 			else
 			{
-				timestampFormat = new SimpleDateFormat(timestampformat);
+				simpleTimeFormat = new SimpleDateFormat(timeformat);
 			}
-			timestampFormat.setTimeZone(timeZone);
+		}
+
+		if (useDateTimeFormatter)
+		{
+			if (timestampformat == null)
+				timestampformat = "yyyy-MM-dd HH:mm:ss";
+			timestampFormatter = createFormatter(timestampformat, locale, timeZoneName);
 		}
 		else
 		{
-			/*
-			 * Parse timestamps using a fixed regular expression.
-			 */
-			timestampPattern = Pattern
-				.compile("([0-9][0-9][0-9][0-9])-([0-9]?[0-9])-([0-9]?[0-9])[ T]([0-9]?[0-9]):([0-9]?[0-9]):([0-9]?[0-9]).*");
+			TimeZone timeZone = TimeZone.getTimeZone(timeZoneName);
+			calendar = new GregorianCalendar();
+			calendar.setTimeInMillis(System.currentTimeMillis());
+			currentYear = calendar.get(Calendar.YEAR);
+			calendar.clear();
+			calendar.setTimeZone(timeZone);
+			if (timestampformat != null && timestampformat.length() > 0)
+			{
+				/*
+				 * Use Java API for parsing dates and times.
+				 */
+				if (locale != null)
+				{
+					DateFormatSymbols symbols = DateFormatSymbols.getInstance(locale);
+					timestampFormat = new SimpleDateFormat(timestampformat, symbols);
+				}
+				else
+				{
+					timestampFormat = new SimpleDateFormat(timestampformat);
+				}
+				timestampFormat.setTimeZone(timeZone);
+			}
+			else
+			{
+				/*
+				 * Parse timestamps using a fixed regular expression.
+				 */
+				timestampPattern = Pattern
+					.compile("([0-9][0-9][0-9][0-9])-([0-9]?[0-9])-([0-9]?[0-9])[ T]([0-9]?[0-9]):([0-9]?[0-9]):([0-9]?[0-9]).*");
+			}
 		}
 	}
 
+	private DateTimeFormatter createFormatter(String pattern, Locale locale, String timeZoneName)
+	{
+		DateTimeFormatter formatter;
+		DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder();
+		builder.parseCaseInsensitive();
+		builder.appendPattern(pattern);
+		if (locale != null)
+			formatter = builder.toFormatter(locale);
+		else
+			formatter = builder.toFormatter();
+		return formatter.withZone(ZoneId.of(timeZoneName));
+	}
+	
 	public String parseString(String str)
 	{
 		return str;
@@ -424,6 +471,11 @@ public class StringConverter
 			Date sqlResult = null;
 			if (str != null && str.length() > 0)
 			{
+				if (dateFormatter != null)
+				{
+					LocalDate localDate = LocalDate.parse(str, dateFormatter);
+					return Date.valueOf(localDate);
+				}
 				if (simpleDateFormat != null)
 				{
 					java.util.Date parsedDate = simpleDateFormat.parse(str);
@@ -458,7 +510,11 @@ public class StringConverter
 
 		if (d != null)
 		{
-			if (simpleDateFormat != null)
+			if (dateFormatter != null)
+			{
+				formatted = d.toLocalDate().format(dateFormatter);
+			}
+			else if (simpleDateFormat != null)
 			{
 				formatted = simpleDateFormat.format(d);
 			}
@@ -515,16 +571,24 @@ public class StringConverter
 		try
 		{
 			Time sqlResult = null;
-			if (str != null && str.length() > 0)
+			if (timeFormatter != null)
 			{
-				str = str.trim();
-				while (str.length() < timeFormat.length())
+				LocalTime localTime = LocalTime.parse(str, timeFormatter);
+				sqlResult = Time.valueOf(localTime);
+			}
+			else
+			{
+				if (str != null && str.length() > 0)
 				{
-					str = "0" + str;
-				} 
-				java.util.Date parsedDate = simpleTimeFormat.parse(str);
-				long millis = parsedDate.getTime();
-				sqlResult = new Time(millis);
+					str = str.trim();
+					while (str.length() < timeFormat.length())
+					{
+						str = "0" + str;
+					} 
+					java.util.Date parsedDate = simpleTimeFormat.parse(str);
+					long millis = parsedDate.getTime();
+					sqlResult = new Time(millis);
+				}
 			}
 			return sqlResult;
 		}
@@ -549,7 +613,14 @@ public class StringConverter
 
 		if (t != null)
 		{
-			formatted = simpleTimeFormat.format(t);
+			if (timeFormatter != null)
+			{
+				formatted = t.toLocalTime().format(timeFormatter);
+			}
+			else
+			{
+				formatted = simpleTimeFormat.format(t);
+			}
 		}
 		return formatted;
 	}
@@ -561,7 +632,12 @@ public class StringConverter
 		{
 			if (str != null && str.length() > 0)
 			{
-				if (timestampFormat != null)
+				if (timestampFormatter != null)
+				{
+					LocalDateTime localDateTime = LocalDateTime.parse(str, timestampFormatter);
+					result = Timestamp.valueOf(localDateTime);
+				}
+				else if (timestampFormat != null)
 				{
 					java.util.Date date = timestampFormat.parse(str);
 					result = new Timestamp(date.getTime());
@@ -603,7 +679,11 @@ public class StringConverter
 
 		if (timestamp != null)
 		{
-			if (timestampFormat != null)
+			if (timestampFormatter != null)
+			{
+				formatted = timestamp.toLocalDateTime().format(timestampFormatter);
+			}
+			else if (timestampFormat != null)
 			{
 				formatted = timestampFormat.format(timestamp);
 			}

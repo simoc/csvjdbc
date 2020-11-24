@@ -52,7 +52,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateFixedSize()
 	{
-		StringConverter sc = new StringConverter("dd-mm-yyyy", "", "", "");
+		StringConverter sc = new StringConverter("dd-mm-yyyy", "", "", "", false);
 		
 		Date got, expect;
 
@@ -68,7 +68,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateVariableSize()
 	{
-		StringConverter sc = new StringConverter("m-d-yyyy", "", "", "");
+		StringConverter sc = new StringConverter("m-d-yyyy", "", "", "", false);
 
 		Date got, expect;
 
@@ -84,7 +84,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateVariableSizeYMD()
 	{
-		StringConverter sc = new StringConverter("yyyy-m-d", "", "", "");
+		StringConverter sc = new StringConverter("yyyy-m-d", "", "", "", false);
 
 		Date got, expect;
 
@@ -100,7 +100,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateVariableSizeMYD()
 	{
-		StringConverter sc = new StringConverter("m-yyyy-d", "", "", "");
+		StringConverter sc = new StringConverter("m-yyyy-d", "", "", "", false);
 
 		Date got, expect;
 
@@ -116,7 +116,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateNamedMonth()
 	{
-		StringConverter sc = new StringConverter("dd-MMM-yyyy", "", "", "", Locale.ENGLISH);
+		StringConverter sc = new StringConverter("dd-MMM-yyyy", "", "", "", Locale.ENGLISH, false);
 
 		Date got, expect;
 
@@ -132,7 +132,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateNamedDay()
 	{
-		StringConverter sc = new StringConverter("EEE, MMM d, yyyy", "", "", "", Locale.ENGLISH);
+		StringConverter sc = new StringConverter("EEE, MMM d, yyyy", "", "", "", Locale.ENGLISH, false);
 
 		Date got, expect;
 
@@ -148,7 +148,7 @@ public class TestStringConverter
 	@Test
 	public void testParseTimeMilliseconds()
 	{
-		StringConverter sc = new StringConverter("", "HH:mm:ss.SSS", "", "", Locale.ENGLISH);
+		StringConverter sc = new StringConverter("", "HH:mm:ss.SSS", "", "", Locale.ENGLISH, false);
 
 		Time got, expect;
 
@@ -163,7 +163,7 @@ public class TestStringConverter
 	public void testParseTimestampWithTimeZoneGuadeloupe()
 	{
 		// Guadeloupe lies 4 hours behind UTC, no daylight savings
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "America/Guadeloupe");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "America/Guadeloupe", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -177,7 +177,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneYakutsk()
 	{
 		// in January Yakutsk lies 9 hours ahead of UTC
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "Asia/Yakutsk");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "Asia/Yakutsk", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -192,7 +192,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneSantiago()
 	{
 		// in January Santiago lies 3 hours behind of UTC
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "America/Santiago");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "America/Santiago", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -207,7 +207,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneAthens()
 	{
 		// in January Athens lies 2 hours ahead of UTC
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "Europe/Athens");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "Europe/Athens", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -222,7 +222,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneDefaultJanuary()
 	{
 		// defaulting to UTC
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -233,7 +233,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneDefaultJuly()
 	{
 		// defaulting to UTC
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-07-01 12:00:00");
@@ -244,7 +244,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneUTCJanuary()
 	{
 		// explicit UTC
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "UTC");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "UTC", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -255,7 +255,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneUTCJuly()
 	{
 		// explicit UTC
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "UTC");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "UTC", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-07-01 12:00:00");
@@ -266,7 +266,7 @@ public class TestStringConverter
 	public void testParseTimestampWithFormat()
 	{
 		// explicit UTC
-		StringConverter sc = new StringConverter("", "", "dd-MMM-yy hh.mm.ss.000000 aa", "UTC");
+		StringConverter sc = new StringConverter("", "", "dd-MMM-yy hh.mm.ss.000000 aa", "UTC", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("25-NOV-13 01.29.07.000000 PM");
