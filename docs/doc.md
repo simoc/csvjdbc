@@ -1,7 +1,7 @@
 ## Features
 
 CsvJdbc accepts all types of CSV files defined by
-[RFC 4180](http://tools.ietf.org/html/rfc4180).
+[RFC 4180](https://tools.ietf.org/html/rfc4180).
 
 CsvJdbc accepts only SQL SELECT queries from a single table and does
 not support INSERT, UPDATE, DELETE or CREATE statements.
@@ -348,7 +348,7 @@ These properties are:
 + default: Java default
 + Defines the character set name of the files being read, such as `UTF-16`.
 See the Java
-[Charset](http://docs.oracle.com/javase/7/docs/api/java/nio/charset/Charset.html)
+[Charset](https://docs.oracle.com/javase/7/docs/api/java/nio/charset/Charset.html)
 documentation for a list of available character set names.
 
 ### columnTypes
@@ -542,8 +542,11 @@ from the first line of the file.
 + type: String
 + default: `yyyy-MM-dd HH:mm:ss`, `HH:mm:ss`, `yyyy-MM-dd`
 + Defines the format from which columns of type Timestamp, Time and Date are parsed. See the Java
-[SimpleDateFormat](http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html)
-documentation for date and timestamp patterns.
+[SimpleDateFormat](https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html)
+documentation for date and timestamp patterns,
+or
+[DateTimeFormatter](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html)
+when property `useDateTimeFormatter` is set to `true`.
 
 ### timeZoneName
 + type: String
@@ -563,6 +566,16 @@ name in the header line. Column names inside quotes are not trimmed.
 + default: `False`
 + If True, leading and trailing whitespace is trimmed from each column
 value in the file. Column values inside quotes are not trimmed.
+
+### useDateTimeFormatter
++ type: Boolean
++ default: `False`
++ If True, Java class
+[DateTimeFormatter](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html)
+(that was new in Java 8)
+is used to parse and format timestamps, times and dates instead
+of the older class
+[SimpleDateFormat](https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html).
 
 The following example code shows how some of these properties are used. 
 
