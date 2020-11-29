@@ -48,6 +48,7 @@ import java.sql.Types;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -3872,10 +3873,13 @@ public class TestCsvDriver
 		results = stmt.executeQuery("SELECT T FROM yogesh_de");
 		assertTrue(results.next());
 		Timestamp got = results.getTimestamp(1);
-		assertEquals("2013-10-25 13:29:07", got.toLocalDateTime().format(toUTCDateTimeFormatter));
+		LocalDateTime gotLocalDateTimeUTC = LocalDateTime.ofInstant(got.toInstant(), ZoneId.of("UTC"));
+		// Expect formatted UTC timestamps to be identical to UTC timestamps read from file
+		assertEquals("2013-10-25 13:29:07", gotLocalDateTimeUTC.format(toUTCDateTimeFormatter));
 		assertTrue(results.next());
 		got = results.getTimestamp(1);
-		assertEquals("2013-12-06 11:52:21", got.toLocalDateTime().format(toUTCDateTimeFormatter));
+		gotLocalDateTimeUTC = LocalDateTime.ofInstant(got.toInstant(), ZoneId.of("UTC"));
+		assertEquals("2013-12-06 11:52:21", gotLocalDateTimeUTC.format(toUTCDateTimeFormatter));
 	}
 
 	@Test

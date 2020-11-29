@@ -31,7 +31,6 @@ import java.util.TimeZone;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.relique.jdbc.csv.StringConverter;
 
 /**
  * This class is used to test the SqlParser class.
@@ -271,5 +270,48 @@ public class TestStringConverter
 
 		got = sc.parseTimestamp("25-NOV-13 01.29.07.000000 PM");
 		assertEquals("2013-11-25 13:29:07", toUTC.format(got));
+	}
+
+	@Test
+	public void testUseDateTimeFormatter()
+	{
+		// Test parsing and formatting using java.time.DateTimeFormatter
+		StringConverter sc = new StringConverter("dd-LLLL-yyyy", "HH:mm", "yyyy-MM-dd HH:mm:ss.SSS", "UTC", true);
+
+		Date gotDate = sc.parseDate("25-OCTOBER-2020");
+		Date expectDate = java.sql.Date.valueOf("2020-10-25");
+		assertEquals(expectDate, gotDate);
+
+		Time gotTime = sc.parseTime("19:51");
+		Time expectTime = java.sql.Time.valueOf("19:51:00");
+		assertEquals(expectTime, gotTime);
+
+		Timestamp gotTimestamp = sc.parseTimestamp("2019-09-04 13:45:48.616");
+		assertEquals("2019-09-04 13:45:48", toUTC.format(gotTimestamp));
+
+		String gotFormatted = sc.formatTimestamp(gotTimestamp);
+		assertEquals("2019-09-04 13:45:48.616", gotFormatted);
+	}
+
+	@Test
+	public void testUseDateTimeFormatterWithTimeZoneMontreal()
+	{
+		// Test parsing and formatting using java.time.DateTimeFormatter
+		StringConverter sc = new StringConverter("dd LLLL yyyy", "HH:mm:ss", "dd.MM.yyyy HH:mm:ss", "America/Montreal", Locale.CANADA_FRENCH, true);
+
+		Date gotDate = sc.parseDate("31 janvier 2020");
+		Date expectDate = java.sql.Date.valueOf("2020-01-31");
+		assertEquals(expectDate, gotDate);
+
+		Time gotTime = sc.parseTime("07:31:59");
+		Time expectTime = java.sql.Time.valueOf("07:31:59");
+		assertEquals(expectTime, gotTime);
+
+		// in November Montreal lies 5 hours behind UTC
+		Timestamp gotTimestamp = sc.parseTimestamp("29.11.2020 06:02:00");
+		assertEquals("2020-11-29 11:02:00", toUTC.format(gotTimestamp));
+
+		String gotFormatted = sc.formatTimestamp(gotTimestamp);
+		assertEquals("29.11.2020 06:02:00", gotFormatted);
 	}
 }

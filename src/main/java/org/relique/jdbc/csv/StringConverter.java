@@ -31,6 +31,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
@@ -634,8 +635,8 @@ public class StringConverter
 			{
 				if (timestampFormatter != null)
 				{
-					LocalDateTime localDateTime = LocalDateTime.parse(str, timestampFormatter);
-					result = Timestamp.valueOf(localDateTime);
+					ZonedDateTime zonedDateTime = ZonedDateTime.parse(str, timestampFormatter);
+					result = Timestamp.from(zonedDateTime.toInstant());
 				}
 				else if (timestampFormat != null)
 				{
@@ -681,7 +682,8 @@ public class StringConverter
 		{
 			if (timestampFormatter != null)
 			{
-				formatted = timestamp.toLocalDateTime().format(timestampFormatter);
+				LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp.toInstant(), timestampFormatter.getZone());
+				formatted = localDateTime.format(timestampFormatter);
 			}
 			else if (timestampFormat != null)
 			{
