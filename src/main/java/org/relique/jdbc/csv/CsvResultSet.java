@@ -257,7 +257,8 @@ public class CsvResultSet implements ResultSet
 		String timestampFormat = ((CsvConnection)statement.getConnection()).getTimestampFormat();
 		String timeZone = ((CsvConnection)statement.getConnection()).getTimeZoneName();
 		Locale locale = ((CsvConnection)statement.getConnection()).getLocale();
-		this.converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZone, locale);
+		boolean useDateTimeFormatter = ((CsvConnection)statement.getConnection()).getUseDateTimeFormatter();
+		this.converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZone, locale, useDateTimeFormatter);
 		if (reader instanceof CsvReader)
 		{
 			((CsvReader) reader).setConverter(converter);

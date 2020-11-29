@@ -117,6 +117,7 @@ public class CsvConnection implements Connection
 	private String timeFormat;
 	private String timeZoneName;
 	private Locale locale = null;
+	private boolean useDateTimeFormatter = CsvDriver.DEFAULT_USE_DATE_TIME_FORMATTER;
 	private String commentChar;
 
 	private int skipLeadingLines = 0;
@@ -386,7 +387,7 @@ public class CsvConnection implements Connection
 					"String").split(",");
 				String[] parameterStrings = info.getProperty("cryptoFilterParameters",
 					"").split(",");
-				StringConverter converter = new StringConverter("", "", "", "", null);
+				StringConverter converter = new StringConverter("", "", "", "", null, false);
 				Class<?>[] parameterClasses = new Class[parameterStrings.length];
 				Object[] parameterValues = new Object[parameterStrings.length];
 				for (int i = 0; i < parameterStrings.length; i++)
@@ -479,6 +480,10 @@ public class CsvConnection implements Connection
 			CsvDriver.DEFAULT_TIME_FORMAT));
 		setTimeZoneName(info.getProperty(CsvDriver.TIME_ZONE_NAME,
 			CsvDriver.DEFAULT_TIME_ZONE_NAME));
+		if (info.getProperty(CsvDriver.USE_DATE_TIME_FORMATTER) != null)
+		{
+			setUseDateTimeFormatter(Boolean.parseBoolean(info.getProperty(CsvDriver.USE_DATE_TIME_FORMATTER)));
+		}
 		if (info.getProperty(CsvDriver.LOCALE) != null)
 		{
 			prop = info.getProperty(CsvDriver.LOCALE);
@@ -590,6 +595,16 @@ public class CsvConnection implements Connection
 	public Locale getLocale()
 	{
 		return locale;
+	}
+
+	public void setUseDateTimeFormatter(boolean flag)
+	{
+		useDateTimeFormatter = flag;
+	}
+
+	public boolean getUseDateTimeFormatter()
+	{
+		return useDateTimeFormatter;
 	}
 
     private void checkOpen() throws SQLException
