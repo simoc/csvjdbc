@@ -8,7 +8,7 @@ Use the following steps to create a CsvJdbc release.
 java -version
 ```
 
-must be 1.6.
+must be 8.
 
 * Checkout from GitHub
 

@@ -48,6 +48,9 @@ import java.sql.Types;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -69,6 +72,7 @@ public class TestCsvDriver
 {
 	private static String filePath;
 	private static DateFormat toUTC;
+	private static DateTimeFormatter toUTCDateTimeFormatter;
 
 	@BeforeClass
 	public static void setUp()
@@ -89,6 +93,7 @@ public class TestCsvDriver
 		}
 		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));  
+		toUTCDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("UTC"));
 	}
 
 	@Test
@@ -3853,7 +3858,9 @@ public class TestCsvDriver
 	{
 		Properties props = new Properties();
 		props.put("timeZoneName", "UTC");
-		props.put("timestampFormat", "dd-MMM-yy hh:mm:ss.SSS aa");
+		// A pattern in java.time.format.DateTimeFormatter format
+		props.put("timestampFormat", "dd-LLL-yy HH:mm:ss.SSS");
+		props.put("useDateTimeFormatter", "true");
 		props.put("columnTypes", "Int,Timestamp");
 		props.put("locale", Locale.GERMANY.toString());
 
@@ -3866,10 +3873,13 @@ public class TestCsvDriver
 		results = stmt.executeQuery("SELECT T FROM yogesh_de");
 		assertTrue(results.next());
 		Timestamp got = results.getTimestamp(1);
-		assertEquals("2013-10-25 13:29:07", toUTC.format(got));
+		LocalDateTime gotLocalDateTimeUTC = LocalDateTime.ofInstant(got.toInstant(), ZoneId.of("UTC"));
+		// Expect formatted UTC timestamps to be identical to UTC timestamps read from file
+		assertEquals("2013-10-25 13:29:07", gotLocalDateTimeUTC.format(toUTCDateTimeFormatter));
 		assertTrue(results.next());
 		got = results.getTimestamp(1);
-		assertEquals("2013-12-06 11:52:21", toUTC.format(got));
+		gotLocalDateTimeUTC = LocalDateTime.ofInstant(got.toInstant(), ZoneId.of("UTC"));
+		assertEquals("2013-12-06 11:52:21", gotLocalDateTimeUTC.format(toUTCDateTimeFormatter));
 	}
 
 	@Test

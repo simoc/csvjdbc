@@ -31,7 +31,6 @@ import java.util.TimeZone;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.relique.jdbc.csv.StringConverter;
 
 /**
  * This class is used to test the SqlParser class.
@@ -52,7 +51,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateFixedSize()
 	{
-		StringConverter sc = new StringConverter("dd-mm-yyyy", "", "", "");
+		StringConverter sc = new StringConverter("dd-mm-yyyy", "", "", "", false);
 		
 		Date got, expect;
 
@@ -68,7 +67,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateVariableSize()
 	{
-		StringConverter sc = new StringConverter("m-d-yyyy", "", "", "");
+		StringConverter sc = new StringConverter("m-d-yyyy", "", "", "", false);
 
 		Date got, expect;
 
@@ -84,7 +83,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateVariableSizeYMD()
 	{
-		StringConverter sc = new StringConverter("yyyy-m-d", "", "", "");
+		StringConverter sc = new StringConverter("yyyy-m-d", "", "", "", false);
 
 		Date got, expect;
 
@@ -100,7 +99,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateVariableSizeMYD()
 	{
-		StringConverter sc = new StringConverter("m-yyyy-d", "", "", "");
+		StringConverter sc = new StringConverter("m-yyyy-d", "", "", "", false);
 
 		Date got, expect;
 
@@ -116,7 +115,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateNamedMonth()
 	{
-		StringConverter sc = new StringConverter("dd-MMM-yyyy", "", "", "", Locale.ENGLISH);
+		StringConverter sc = new StringConverter("dd-MMM-yyyy", "", "", "", Locale.ENGLISH, false);
 
 		Date got, expect;
 
@@ -132,7 +131,7 @@ public class TestStringConverter
 	@Test
 	public void testParseDateNamedDay()
 	{
-		StringConverter sc = new StringConverter("EEE, MMM d, yyyy", "", "", "", Locale.ENGLISH);
+		StringConverter sc = new StringConverter("EEE, MMM d, yyyy", "", "", "", Locale.ENGLISH, false);
 
 		Date got, expect;
 
@@ -148,7 +147,7 @@ public class TestStringConverter
 	@Test
 	public void testParseTimeMilliseconds()
 	{
-		StringConverter sc = new StringConverter("", "HH:mm:ss.SSS", "", "", Locale.ENGLISH);
+		StringConverter sc = new StringConverter("", "HH:mm:ss.SSS", "", "", Locale.ENGLISH, false);
 
 		Time got, expect;
 
@@ -163,7 +162,7 @@ public class TestStringConverter
 	public void testParseTimestampWithTimeZoneGuadeloupe()
 	{
 		// Guadeloupe lies 4 hours behind UTC, no daylight savings
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "America/Guadeloupe");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "America/Guadeloupe", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -177,7 +176,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneYakutsk()
 	{
 		// in January Yakutsk lies 9 hours ahead of UTC
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "Asia/Yakutsk");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "Asia/Yakutsk", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -192,7 +191,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneSantiago()
 	{
 		// in January Santiago lies 3 hours behind of UTC
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "America/Santiago");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "America/Santiago", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -207,7 +206,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneAthens()
 	{
 		// in January Athens lies 2 hours ahead of UTC
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "Europe/Athens");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "Europe/Athens", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -222,7 +221,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneDefaultJanuary()
 	{
 		// defaulting to UTC
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -233,7 +232,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneDefaultJuly()
 	{
 		// defaulting to UTC
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-07-01 12:00:00");
@@ -244,7 +243,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneUTCJanuary()
 	{
 		// explicit UTC
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "UTC");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "UTC", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
@@ -255,7 +254,7 @@ public class TestStringConverter
 	public void testParseDateWithTimeZoneUTCJuly()
 	{
 		// explicit UTC
-		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "UTC");
+		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "UTC", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("2010-07-01 12:00:00");
@@ -266,10 +265,53 @@ public class TestStringConverter
 	public void testParseTimestampWithFormat()
 	{
 		// explicit UTC
-		StringConverter sc = new StringConverter("", "", "dd-MMM-yy hh.mm.ss.000000 aa", "UTC");
+		StringConverter sc = new StringConverter("", "", "dd-MMM-yy hh.mm.ss.000000 aa", "UTC", false);
 		Timestamp got;
 
 		got = sc.parseTimestamp("25-NOV-13 01.29.07.000000 PM");
 		assertEquals("2013-11-25 13:29:07", toUTC.format(got));
+	}
+
+	@Test
+	public void testUseDateTimeFormatter()
+	{
+		// Test parsing and formatting using java.time.DateTimeFormatter
+		StringConverter sc = new StringConverter("dd-LLLL-yyyy", "HH:mm", "yyyy-MM-dd HH:mm:ss.SSS", "UTC", true);
+
+		Date gotDate = sc.parseDate("25-OCTOBER-2020");
+		Date expectDate = java.sql.Date.valueOf("2020-10-25");
+		assertEquals(expectDate, gotDate);
+
+		Time gotTime = sc.parseTime("19:51");
+		Time expectTime = java.sql.Time.valueOf("19:51:00");
+		assertEquals(expectTime, gotTime);
+
+		Timestamp gotTimestamp = sc.parseTimestamp("2019-09-04 13:45:48.616");
+		assertEquals("2019-09-04 13:45:48", toUTC.format(gotTimestamp));
+
+		String gotFormatted = sc.formatTimestamp(gotTimestamp);
+		assertEquals("2019-09-04 13:45:48.616", gotFormatted);
+	}
+
+	@Test
+	public void testUseDateTimeFormatterWithTimeZoneMontreal()
+	{
+		// Test parsing and formatting using java.time.DateTimeFormatter
+		StringConverter sc = new StringConverter("dd LLLL yyyy", "HH:mm:ss", "dd.MM.yyyy HH:mm:ss", "America/Montreal", Locale.CANADA_FRENCH, true);
+
+		Date gotDate = sc.parseDate("31 janvier 2020");
+		Date expectDate = java.sql.Date.valueOf("2020-01-31");
+		assertEquals(expectDate, gotDate);
+
+		Time gotTime = sc.parseTime("07:31:59");
+		Time expectTime = java.sql.Time.valueOf("07:31:59");
+		assertEquals(expectTime, gotTime);
+
+		// in November Montreal lies 5 hours behind UTC
+		Timestamp gotTimestamp = sc.parseTimestamp("29.11.2020 06:02:00");
+		assertEquals("2020-11-29 11:02:00", toUTC.format(gotTimestamp));
+
+		String gotFormatted = sc.formatTimestamp(gotTimestamp);
+		assertEquals("29.11.2020 06:02:00", gotFormatted);
 	}
 }

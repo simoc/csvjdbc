@@ -58,6 +58,7 @@ public class CsvDriver implements Driver
 	public static final String DEFAULT_TIMESTAMP_FORMAT = null;
 	public static final String DEFAULT_DATE_FORMAT = "YYYY-MM-DD";
 	public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
+	public static final boolean DEFAULT_USE_DATE_TIME_FORMATTER = false;
 	public static final String DEFAULT_COMMENT_CHAR = null;
 	public static final String DEFAULT_SKIP_LEADING_LINES = null;
 	public static final String DEFAULT_IGNORE_UNPARSEABLE_LINES = "False";
@@ -80,6 +81,7 @@ public class CsvDriver implements Driver
 	public static final String DATE_FORMAT = "dateFormat";
 	public static final String TIME_FORMAT = "timeFormat";
 	public static final String LOCALE = "locale";
+	public static final String USE_DATE_TIME_FORMATTER = "useDateTimeFormatter";
 	public static final String COMMENT_CHAR = "commentChar";
 	public static final String SKIP_LEADING_LINES = "skipLeadingLines";
 	public static final String IGNORE_UNPARSEABLE_LINES = "ignoreNonParseableLines";
@@ -300,6 +302,7 @@ public class CsvDriver implements Driver
 		String timeFormat = DEFAULT_TIME_FORMAT;
 		String timestampFormat = DEFAULT_TIMESTAMP_FORMAT;
 		String timeZoneName = DEFAULT_TIME_ZONE_NAME;
+		boolean useDateTimeFormatter = DEFAULT_USE_DATE_TIME_FORMATTER;
 		Locale locale = null;
 
 		if (resultSet instanceof CsvResultSet)
@@ -317,9 +320,10 @@ public class CsvDriver implements Driver
 			timestampFormat = csvConnection.getTimestampFormat();
 			timeZoneName = csvConnection.getTimeZoneName();
 			locale = csvConnection.getLocale();
+			useDateTimeFormatter = csvConnection.getUseDateTimeFormatter();
 		}
 
-		StringConverter converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZoneName, locale);
+		StringConverter converter = new StringConverter(dateFormat, timeFormat, timestampFormat, timeZoneName, locale, useDateTimeFormatter);
 
 		ResultSetMetaData meta = null;
 		int columnCount = 0;
