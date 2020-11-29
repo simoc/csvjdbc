@@ -3859,7 +3859,7 @@ public class TestCsvDriver
 		Properties props = new Properties();
 		props.put("timeZoneName", "UTC");
 		// A pattern in java.time.format.DateTimeFormatter format
-		props.put("timestampFormat", "dd-LLL-yy hh:mm:ss.SSS a");
+		props.put("timestampFormat", "dd-LLL-yy HH:mm:ss.SSS");
 		props.put("useDateTimeFormatter", "true");
 		props.put("columnTypes", "Int,Timestamp");
 		props.put("locale", Locale.GERMANY.toString());
