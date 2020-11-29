@@ -89,7 +89,7 @@ queries, CsvJdbc holds only one record at a time in memory.
 
 ## Dependencies
 
-CsvJdbc requires Java version 1.6, or later. For reading DBF files,
+CsvJdbc requires Java version 8, or later. For reading DBF files,
 [DANS DBF Library](http://dans-dbf-lib.sourceforge.net/)
 must be downloaded and included in the CLASSPATH. 
 
