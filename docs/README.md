@@ -1,6 +1,6 @@
 # CsvJdbc
 
-[![Build Status](https://travis-ci.org/simoc/csvjdbc.svg?branch=master)](https://travis-ci.org/simoc/csvjdbc)
+![Java CI](https://github.com/simoc/csvjdbc/workflows/Java%20CI/badge.svg)
 
 A Java database driver for reading comma-separated-value files.
 

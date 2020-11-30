@@ -1,3 +1,0 @@
-language: java
-dist: focal
-install: mvn install -DskipTests=true -Dgpg.skip=true -Dmaven.javadoc.skip=true
