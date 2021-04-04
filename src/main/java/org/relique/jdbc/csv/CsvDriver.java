@@ -34,6 +34,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -137,6 +138,13 @@ public class CsvDriver implements Driver
 		if (!url.startsWith(URL_PREFIX))
 		{
 			return null;
+		}
+
+		Enumeration<Object> keys = info.keys();
+		while (keys.hasMoreElements())
+		{
+			String key = keys.nextElement().toString();
+			writeLog("CsvDriver:connect() - property " + key + "=" + info.getProperty(key));
 		}
 
 		// strip any properties from end of URL and set them as additional
