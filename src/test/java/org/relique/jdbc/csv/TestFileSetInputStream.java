@@ -62,19 +62,14 @@ public class TestFileSetInputStream
 	@Test
 	public void testGlueAsTrailing() throws IOException
 	{
-		BufferedReader inputRef = null;
-		BufferedReader inputTest = null;
-
-		try
-		{
-			inputRef = new BufferedReader(new InputStreamReader(
+		try (BufferedReader inputRef = new BufferedReader(new InputStreamReader(
 				new FileInputStream(filePath + "test-glued-trailing.txt")));
 
-			inputTest = new BufferedReader(new InputStreamReader(
+			BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ",", false, false, null, 0, null)));
-
+								"location", "file_date" }, ",", false, false, null, 0, null))))
+		{
 			Set<String> refSet = new HashSet<String>();
 			Set<String> testSet = new HashSet<String>();
 			inputRef.readLine();
@@ -90,32 +85,20 @@ public class TestFileSetInputStream
 			while (lineRef != null && lineTest != null);
 			assertTrue("refSet contains testSet", refSet.containsAll(testSet));
 			assertTrue("testSet contains refSet", testSet.containsAll(refSet));
-		}
-		finally
-		{
-			if (inputRef != null)
-				inputRef.close();
-			if (inputTest != null)
-				inputTest.close();
 		}
 	}
 
 	@Test
 	public void testGlueAsLeading() throws IOException
 	{
-		BufferedReader inputRef = null;
-		BufferedReader inputTest = null;
-
-		try
-		{
-			inputRef = new BufferedReader(new InputStreamReader(
+		try (BufferedReader inputRef = new BufferedReader(new InputStreamReader(
 				new FileInputStream(filePath + "test-glued-leading.txt")));
 
-			inputTest = new BufferedReader(new InputStreamReader(
+			BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ",", true, false, null, 0, null)));
-
+								"location", "file_date" }, ",", true, false, null, 0, null))))
+		{
 			Set<String> refSet = new HashSet<String>();
 			Set<String> testSet = new HashSet<String>();
 			inputRef.readLine();
@@ -132,31 +115,19 @@ public class TestFileSetInputStream
 			assertTrue("refSet contains testSet", refSet.containsAll(testSet));
 			assertTrue("testSet contains refSet", testSet.containsAll(refSet));
 		}
-		finally
-		{
-			if (inputRef != null)
-				inputRef.close();
-			if (inputTest != null)
-				inputTest.close();
-		}
 	}
 
 	@Test
 	public void testGlueAsLeadingHeaderless() throws IOException
 	{
-		BufferedReader inputRef = null;
-		BufferedReader inputTest = null;
-
-		try
-		{
-			inputRef = new BufferedReader(new InputStreamReader(
+		try (BufferedReader inputRef = new BufferedReader(new InputStreamReader(
 				new FileInputStream(filePath + "headerless-glued-leading.txt")));
 
-			inputTest = new BufferedReader(new InputStreamReader(
+			BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"headerless-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ",", true, true, null, 0, null)));
-
+								"location", "file_date" }, ",", true, true, null, 0, null))))
+		{
 			Set<String> refSet = new HashSet<String>();
 			Set<String> testSet = new HashSet<String>();
 			String lineRef, lineTest;
@@ -170,32 +141,20 @@ public class TestFileSetInputStream
 			while (lineRef != null && lineTest != null);
 			assertTrue("refSet contains testSet", refSet.containsAll(testSet));
 			assertTrue("testSet contains refSet", testSet.containsAll(refSet));
-		}
-		finally
-		{
-			if (inputRef != null)
-				inputRef.close();
-			if (inputTest != null)
-				inputTest.close();
 		}
 	}
 
 	@Test
 	public void testGlueAsEmpty() throws IOException
 	{
-		BufferedReader inputRef = null;
-		BufferedReader inputTest = null;
-
-		try
-		{
-			inputRef = new BufferedReader(new InputStreamReader(
+		try (BufferedReader inputRef = new BufferedReader(new InputStreamReader(
 				new FileInputStream(filePath + "empty-glued.txt")));
 
-			inputTest = new BufferedReader(new InputStreamReader(
+			BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"empty-([0-9]+).txt", new String[] {
-							"EMPTY_ID"}, ",", false, false, null, 0, null)));
-
+							"EMPTY_ID"}, ",", false, false, null, 0, null))))
+		{
 			Set<String> refSet = new HashSet<String>();
 			Set<String> testSet = new HashSet<String>();
 			String lineRef, lineTest;
@@ -210,30 +169,19 @@ public class TestFileSetInputStream
 			assertTrue("refSet contains testSet", refSet.containsAll(testSet));
 			assertTrue("testSet contains refSet", testSet.containsAll(refSet));
 		}
-		finally
-		{
-			if (inputRef != null)
-				inputRef.close();
-			if (inputTest != null)
-				inputTest.close();
-		}
 	}
 
 	@Test
 	public void testGlueAsLeadingLastLineNoNewline() throws IOException
 	{
-		BufferedReader inputTest = null;
+		String separator = ",";
 
-		try
-		{
-			String separator = ",";
-
-			// Test CSV files with no '\n' on last line
-			inputTest = new BufferedReader(new InputStreamReader(
+		// Test CSV files with no '\n' on last line
+		try (BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"petr-([0-9]{3})-([0-9]{3}).csv", new String[] {
-								"part1", "part2" }, separator, true, true, null, 0, null)));
-
+								"part1", "part2" }, separator, true, true, null, 0, null))))
+		{
 			String lineTest = inputTest.readLine();
 			while (lineTest != null)
 			{
@@ -245,58 +193,45 @@ public class TestFileSetInputStream
 				lineTest = inputTest.readLine();
 			}
 		}
-		finally
-		{
-			if (inputTest != null)
-				inputTest.close();
-		}
 	}
-	
+
 	@Test
 	public void testFileSetInputStreamClose() throws IOException
 	{
-		FileSetInputStream in = new FileSetInputStream(filePath,
+		try (FileSetInputStream in = new FileSetInputStream(filePath,
 					"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-					"location", "file_date"}, ",", false, false, null, 0, null);
-
-		in.read();
-		in.read();
-		in.close();
-		try
+					"location", "file_date"}, ",", false, false, null, 0, null))
 		{
 			in.read();
-			fail("expected exception java.io.IOException");
-		}
-		catch (IOException e)
-		{
-			assertTrue(("" + e).contains("IOException"));
+			in.read();
+			in.close();
+			try
+			{
+				in.read();
+				fail("expected exception java.io.IOException");
+			}
+			catch (IOException e)
+			{
+				assertTrue(("" + e).contains("IOException"));
+			}
 		}
 	}
 
 	@Test
 	public void testFileSetCharsetUtf16le() throws IOException
 	{
-		BufferedReader in = null;
-
-		try
-		{
-			String charset = "UTF-16LE";
-			in = new BufferedReader(new InputStreamReader(
+		String charset = "UTF-16LE";
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(
 					new FileSetInputStream(filePath,
 						"utf16le_(\\d+).txt", new String[] {
-						"date"}, "|", false, false, null, 0, charset), charset));
-
+						"date"}, "|", false, false, null, 0, charset), charset)))
+		{
 			String line = in.readLine();
 			assertEquals("Col1|Col2|Some third|4th|date", line);
 			line = in.readLine();
 			assertEquals("1|01.10.2018|-4,4|1111|01102018", line);
 			line = in.readLine();
 			assertEquals("2|04.11.2020|-2,2|2222|04112020", line);
-		}
-		finally
-		{
-			if (in != null)
-				in.close();
 		}
 	}
 }
