@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.Date;
@@ -209,7 +210,7 @@ public class CsvDriver implements Driver
 					throw new SQLException(CsvResources.getString("interfaceNotImplemented") +
 						": " + TableReader.class.getName() + ": " + className);
 				}
-				Object tableReaderInstance = clazz.newInstance();
+				Object tableReaderInstance = clazz.getConstructor().newInstance();
 				connection = new CsvConnection((TableReader)tableReaderInstance, info, urlProperties);
 			}
 			catch (ClassNotFoundException e)
@@ -221,6 +222,14 @@ public class CsvDriver implements Driver
 				throw new SQLException(e);
 			}
 			catch (InstantiationException e)
+			{
+				throw new SQLException(e);
+			}
+			catch (InvocationTargetException e)
+			{
+				throw new SQLException(e);
+			}
+			catch (NoSuchMethodException e)
 			{
 				throw new SQLException(e);
 			}

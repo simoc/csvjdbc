@@ -41,7 +41,6 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -843,26 +842,24 @@ public class CsvResultSet implements ResultSet
 
 	private void sortRows(int sqlOffset) throws SQLException
 	{
-		Map<String, Object> []allRows = new Map[bufferedRecordEnvironments.size()];
-		for (int i = 0; i < allRows.length; i++)
-			allRows[i] = bufferedRecordEnvironments.get(i);
+		ArrayList<Map<String, Object>> allRows = new ArrayList<Map<String, Object>>(bufferedRecordEnvironments);
 		bufferedRecordEnvironments.clear();
 		try
 		{
-			Arrays.sort(allRows, new OrderByComparator());
+			allRows.sort(new OrderByComparator());
 		}
 		catch (OrderByException e)
 		{
 			throw new SQLException(e.getMessage());
 		}
-		int rowLimit = allRows.length;
+		int rowLimit = allRows.size();
 		if (maxRows != 0 && maxRows < rowLimit)
 			rowLimit = maxRows;
 		if (limit >= 0 && sqlOffset + limit < rowLimit)
 			rowLimit = sqlOffset + limit;
 
 		for (int i = sqlOffset; i < rowLimit; i++)
-			bufferedRecordEnvironments.add(allRows[i]);
+			bufferedRecordEnvironments.add(allRows.get(i));
 	}
 
 	private void checkOpen() throws SQLException

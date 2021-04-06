@@ -1139,13 +1139,13 @@ Expression numericConstant():
 		}
 		try
 		{
-			value = new Long(digits);
+			value = Long.valueOf(digits);
 			if (isLong == false && value.longValue() >= Integer.MIN_VALUE && value.longValue() <= Integer.MAX_VALUE)
 				value = Integer.valueOf(value.intValue());
 		}
 		catch (NumberFormatException e)
 		{
-			value = new Double(digits);
+			value = Double.valueOf(digits);
 		}
 		return new NumericConstant(value);
 	}

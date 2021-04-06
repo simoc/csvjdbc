@@ -32,12 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.relique.jdbc.csv.Expression;
-import org.relique.jdbc.csv.ExpressionParser;
-import org.relique.jdbc.csv.MultipleSqlParser;
-import org.relique.jdbc.csv.ParseException;
-import org.relique.jdbc.csv.SqlParser;
-import org.relique.jdbc.csv.StringConverter;
 
 /**
  * This class is used to test the SqlParser class.

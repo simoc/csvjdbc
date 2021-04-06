@@ -57,8 +57,6 @@ import java.util.TimeZone;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.relique.jdbc.csv.CsvDriver;
-import org.relique.jdbc.csv.CsvResultSet;
 
 /**
  * This class is used to test the CsvJdbc driver.
