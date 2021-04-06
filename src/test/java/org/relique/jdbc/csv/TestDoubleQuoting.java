@@ -49,7 +49,7 @@ public class TestDoubleQuoting
 		try
 		{
 			Class.forName("org.relique.jdbc.csv.CsvDriver");
-		} 
+		}
 		catch (ClassNotFoundException e)
 		{
 			fail("Driver is not in the CLASSPATH -> " + e);
@@ -61,65 +61,64 @@ public class TestDoubleQuoting
 	{
 		Properties props = new Properties();
 
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+			Statement stmt = conn.createStatement();
 
-		ResultSet rs1 = stmt.executeQuery("SELECT * FROM \"C D\"");
-		assertTrue(rs1.next());
-
-		rs1.close();
-		stmt.close();
+			ResultSet rs1 = stmt.executeQuery("SELECT * FROM \"C D\""))
+		{
+			assertTrue(rs1.next());
+		}
 	}
-	
+
 	@Test
 	public void testQuotedColumnNames() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Integer,Integer,Integer,Integer,Integer");
 
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+			Statement stmt = conn.createStatement();
 
-		ResultSet rs1 = stmt.executeQuery("SELECT \"A\", \"B\" + 100, \"[A]\", \"A-B\", \"A B\" FROM \"C D\"");
-		assertEquals("Column name A is wrong", "A", rs1.getMetaData().getColumnName(1));
+			ResultSet rs1 = stmt.executeQuery("SELECT \"A\", \"B\" + 100, \"[A]\", \"A-B\", \"A B\" FROM \"C D\""))
+		{
+			assertEquals("Column name A is wrong", "A", rs1.getMetaData().getColumnName(1));
 
-		assertEquals("Column name [A] is wrong", "[A]", rs1.getMetaData().getColumnName(3));
-		assertEquals("Column name A-B is wrong", "A-B", rs1.getMetaData().getColumnName(4));
-		assertEquals("Column name A B is wrong", "A B", rs1.getMetaData().getColumnName(5));
-		assertTrue(rs1.next());
-		assertEquals("The A is wrong", 1, rs1.getInt("A"));
-		assertEquals("The [A] is wrong", 3, rs1.getInt("[A]"));
-		assertEquals("The A-B is wrong", 4, rs1.getInt("A-B"));
-		assertEquals("The A-B is wrong", 5, rs1.getInt("A B"));
-		assertTrue(rs1.next());
-		assertEquals("The A is wrong", 6, rs1.getInt(1));
-		assertEquals("The B + 100 is wrong", 7 + 100, rs1.getInt(2));
-		assertEquals("The [A] is wrong", 8, rs1.getInt(3));
-		assertEquals("The A-B is wrong", 9, rs1.getInt(4));
-		assertEquals("The A-B is wrong", 10, rs1.getInt(5));
-		rs1.close();
-		stmt.close();
+			assertEquals("Column name [A] is wrong", "[A]", rs1.getMetaData().getColumnName(3));
+			assertEquals("Column name A-B is wrong", "A-B", rs1.getMetaData().getColumnName(4));
+			assertEquals("Column name A B is wrong", "A B", rs1.getMetaData().getColumnName(5));
+			assertTrue(rs1.next());
+			assertEquals("The A is wrong", 1, rs1.getInt("A"));
+			assertEquals("The [A] is wrong", 3, rs1.getInt("[A]"));
+			assertEquals("The A-B is wrong", 4, rs1.getInt("A-B"));
+			assertEquals("The A-B is wrong", 5, rs1.getInt("A B"));
+			assertTrue(rs1.next());
+			assertEquals("The A is wrong", 6, rs1.getInt(1));
+			assertEquals("The B + 100 is wrong", 7 + 100, rs1.getInt(2));
+			assertEquals("The [A] is wrong", 8, rs1.getInt(3));
+			assertEquals("The A-B is wrong", 9, rs1.getInt(4));
+			assertEquals("The A-B is wrong", 10, rs1.getInt(5));
+		}
 	}
-	
+
 	@Test
 	public void testQuotedTableAlias() throws SQLException
 	{
 		Properties props = new Properties();
-
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
-
-		Statement stmt = conn.createStatement();
-
 		String alias = "\"http://www.google.com\"";
-		ResultSet rs1 = stmt.executeQuery("SELECT " + alias + ".ID, " + alias + ".\"EXTRA_FIELD\" " +
-				"FROM sample AS " + alias);
-		assertTrue(rs1.next());
-		assertEquals("The ID is wrong", "Q123", rs1.getString(1));
-		assertEquals("The EXTRA_FIELD is wrong", "F", rs1.getString(2));
 
-		rs1.close();
-		stmt.close();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+			Statement stmt = conn.createStatement();
+
+
+			ResultSet rs1 = stmt.executeQuery("SELECT " + alias + ".ID, " + alias + ".\"EXTRA_FIELD\" " +
+				"FROM sample AS " + alias))
+		{
+			assertTrue(rs1.next());
+			assertEquals("The ID is wrong", "Q123", rs1.getString(1));
+			assertEquals("The EXTRA_FIELD is wrong", "F", rs1.getString(2));
+		}
 	}
 }
