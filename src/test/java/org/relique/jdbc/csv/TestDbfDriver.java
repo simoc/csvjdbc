@@ -47,7 +47,7 @@ import org.relique.jdbc.dbf.DbfClassNotFoundException;
 
 /**
  * This class is used to test the CsvJdbc driver.
- * 
+ *
  * @author Mario Frasca
  */
 public class TestDbfDriver
@@ -72,13 +72,13 @@ public class TestDbfDriver
 		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
-		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
-		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));  
+		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 
 	/**
 	 * This creates several sentences with where and tests they work
-	 * 
+	 *
 	 * @throws SQLException
 	 */
 	@Test
@@ -89,29 +89,31 @@ public class TestDbfDriver
 			Properties props = new Properties();
 			props.put("fileExtension", ".dbf");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+			try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 					+ filePath, props);
 
-			Statement stmt = conn.createStatement();
+				Statement stmt = conn.createStatement();
 
-			ResultSet results = stmt
-					.executeQuery("SELECT * FROM sample");
-			assertTrue(results.next());
-			assertEquals("The name is wrong", "Gianni", results
-					.getString("Name"));
-			assertTrue(results.next());
-			assertEquals("The name is wrong", "Reinout", results
-					.getString("Name"));
-			assertTrue(results.next());
-			assertEquals("The name is wrong", "Alex", results
-					.getString("Name"));
-			assertTrue(results.next());
-			assertEquals("The name is wrong", "Gianni", results
-					.getString("Name"));
-			assertTrue(results.next());
-			assertEquals("The name is wrong", "Mario", results
-					.getString("Name"));
-			assertFalse(results.next());
+				ResultSet results = stmt
+					.executeQuery("SELECT * FROM sample"))
+			{
+				assertTrue(results.next());
+				assertEquals("The name is wrong", "Gianni", results
+						.getString("Name"));
+				assertTrue(results.next());
+				assertEquals("The name is wrong", "Reinout", results
+						.getString("Name"));
+				assertTrue(results.next());
+				assertEquals("The name is wrong", "Alex", results
+						.getString("Name"));
+				assertTrue(results.next());
+				assertEquals("The name is wrong", "Gianni", results
+						.getString("Name"));
+				assertTrue(results.next());
+				assertEquals("The name is wrong", "Mario", results
+						.getString("Name"));
+				assertFalse(results.next());
+			}
 		}
 		catch (DbfClassNotFoundException e)
 		{
@@ -130,29 +132,31 @@ public class TestDbfDriver
 			Properties props = new Properties();
 			props.put("fileExtension", ".dbf");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+			try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 					+ filePath, props);
 
-			Statement stmt = conn.createStatement();
+				Statement stmt = conn.createStatement();
 
-			ResultSet results = stmt
-					.executeQuery("SELECT * FROM sample WHERE key = 'op'");
-			assertTrue(results.next());
-			assertEquals("The name is wrong", "Gianni", results
-					.getString("Name"));
-			assertEquals("The name is wrong", "debian", results
-					.getString("value"));
-			assertTrue(results.next());
-			assertEquals("The name is wrong", "Reinout", results
-					.getString("Name"));
-			assertEquals("The name is wrong", "ubuntu", results
-					.getString("value"));
-			assertTrue(results.next());
-			assertEquals("The name is wrong", "Alex", results
-					.getString("Name"));
-			assertEquals("The name is wrong", "windows", results
-					.getString("value"));
-			assertFalse(results.next());
+				ResultSet results = stmt
+					.executeQuery("SELECT * FROM sample WHERE key = 'op'"))
+			{
+				assertTrue(results.next());
+				assertEquals("The name is wrong", "Gianni", results
+						.getString("Name"));
+				assertEquals("The name is wrong", "debian", results
+						.getString("value"));
+				assertTrue(results.next());
+				assertEquals("The name is wrong", "Reinout", results
+						.getString("Name"));
+				assertEquals("The name is wrong", "ubuntu", results
+						.getString("value"));
+				assertTrue(results.next());
+				assertEquals("The name is wrong", "Alex", results
+						.getString("Name"));
+				assertEquals("The name is wrong", "windows", results
+						.getString("value"));
+				assertFalse(results.next());
+			}
 		}
 		catch (DbfClassNotFoundException e)
 		{
@@ -171,24 +175,26 @@ public class TestDbfDriver
 			Properties props = new Properties();
 			props.put("fileExtension", ".dbf");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+			try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 					+ filePath, props);
 
-			Statement stmt = conn.createStatement();
+				Statement stmt = conn.createStatement();
 
-			ResultSet results = stmt
-					.executeQuery("SELECT * FROM sample WHERE key = 'todo'");
-			assertTrue(results.next());
-			assertEquals("The name is wrong", "Gianni", results
-					.getString("Name"));
-			assertEquals("The name is wrong", "none", results
-					.getString("value"));
-			assertTrue(results.next());
-			assertEquals("The name is wrong", "Mario", results
-					.getString("Name"));
-			assertEquals("The name is wrong", "sleep", results
-					.getString("value"));
-			assertFalse(results.next());
+				ResultSet results = stmt
+					.executeQuery("SELECT * FROM sample WHERE key = 'todo'"))
+			{
+				assertTrue(results.next());
+				assertEquals("The name is wrong", "Gianni", results
+						.getString("Name"));
+				assertEquals("The name is wrong", "none", results
+						.getString("value"));
+				assertTrue(results.next());
+				assertEquals("The name is wrong", "Mario", results
+						.getString("Name"));
+				assertEquals("The name is wrong", "sleep", results
+						.getString("value"));
+				assertFalse(results.next());
+			}
 		}
 		catch (DbfClassNotFoundException e)
 		{
@@ -202,18 +208,17 @@ public class TestDbfDriver
 	@Test
 	public void testWhereWithIsNull() throws SQLException
 	{
-		try
-		{
-			Properties props = new Properties();
-			props.put("fileExtension", ".dbf");
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
-					+ filePath, props);
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
 
 			Statement stmt = conn.createStatement();
 
 			ResultSet results = stmt
-					.executeQuery("SELECT * FROM fox_samp WHERE COWNNAME IS NULL");
+				.executeQuery("SELECT * FROM fox_samp WHERE COWNNAME IS NULL"))
+		{
 			assertFalse(results.next());
 		}
 		catch (DbfClassNotFoundException e)
@@ -228,18 +233,17 @@ public class TestDbfDriver
 	@Test
 	public void testTypedColumns() throws SQLException
 	{
-		try
-		{
-			Properties props = new Properties();
-			props.put("fileExtension", ".dbf");
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 					+ filePath, props);
 
 			Statement stmt = conn.createStatement();
 
 			ResultSet results = stmt
-					.executeQuery("SELECT * FROM fox_samp");
+					.executeQuery("SELECT * FROM fox_samp"))
+		{
 			assertTrue(results.next());
 			ResultSetMetaData metadata = results.getMetaData();
 
@@ -262,16 +266,15 @@ public class TestDbfDriver
 	@Test
 	public void testMemoColumn() throws SQLException
 	{
-		try
-		{
-			Properties props = new Properties();
-			props.put("fileExtension", ".dbf");
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
 			Statement stmt = conn.createStatement();
 
-			ResultSet results = stmt.executeQuery("SELECT NOTE FROM xbase");
+			ResultSet results = stmt.executeQuery("SELECT NOTE FROM xbase"))
+		{
 			assertTrue(results.next());
 			assertEquals("The NOTE is wrong", "This is a memo fore record no one", results.getString(1));
 			assertTrue(results.next());
@@ -292,16 +295,15 @@ public class TestDbfDriver
 	@Test
 	public void testFloatColumn() throws SQLException
 	{
-		try
-		{
-			Properties props = new Properties();
-			props.put("fileExtension", ".dbf");
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
 			Statement stmt = conn.createStatement();
 
-			ResultSet results = stmt.executeQuery("SELECT * FROM d");
+			ResultSet results = stmt.executeQuery("SELECT * FROM d"))
+		{
 			assertTrue(results.next());
 			long l = Math.round(7.63 * 1000);
 			assertEquals("The floatfield is wrong", l, Math.round(results.getDouble(1) * 1000));
@@ -319,18 +321,17 @@ public class TestDbfDriver
 	@Test
 	public void testColumnDisplaySizes() throws SQLException
 	{
-		try
-		{
-			Properties props = new Properties();
-			props.put("fileExtension", ".dbf");
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 					+ filePath, props);
 
 			Statement stmt = conn.createStatement();
 
 			ResultSet results = stmt
-					.executeQuery("SELECT * FROM fox_samp");
+					.executeQuery("SELECT * FROM fox_samp"))
+		{
 			assertTrue(results.next());
 			ResultSetMetaData metadata = results.getMetaData();
 
@@ -350,15 +351,13 @@ public class TestDbfDriver
 	@Test
 	public void testDatabaseMetadataTables() throws SQLException
 	{
-		try
-		{
-			Properties props = new Properties();
-			props.put("fileExtension", ".dbf");
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 					+ filePath, props);
-			DatabaseMetaData metadata = conn.getMetaData();
-			ResultSet results = metadata.getTables(null, null, "%", null);
+			ResultSet results = conn.getMetaData().getTables(null, null, "%", null))
+		{
 			Set<String> target = new HashSet<String>();
 			target.add("sample");
 			target.add("fox_samp");
@@ -389,21 +388,18 @@ public class TestDbfDriver
 			return;
 		}
 	}
-	
+
 	@Test
 	public void testDatabaseMetadataTablesPattern() throws SQLException
 	{
-		try
-		{
-			Properties props = new Properties();
-			props.put("fileExtension", ".dbf");
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 					+ filePath, props);
-			DatabaseMetaData metadata = conn.getMetaData();
 			// Get tables matching only this pattern
-			ResultSet results = metadata.getTables(null, null, "x%", new String[]{"TABLE"});
-
+			ResultSet results = conn.getMetaData().getTables(null, null, "x%", new String[]{"TABLE"}))
+		{
 			assertTrue(results.next());
 			assertEquals("Incorrect table name", "xbase", results.getString("TABLE_NAME"));
 			assertFalse(results.next());
@@ -420,15 +416,13 @@ public class TestDbfDriver
 	@Test
 	public void testDatabaseMetadataColumns() throws SQLException
 	{
-		try
-		{
-			Properties props = new Properties();
-			props.put("fileExtension", ".dbf");
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 					+ filePath, props);
-			DatabaseMetaData metadata = conn.getMetaData();
-			ResultSet results = metadata.getColumns(null, null, "sample", "%");
+			ResultSet results = conn.getMetaData().getColumns(null, null, "sample", "%"))
+		{
 			assertTrue(results.next());
 			assertEquals("Incorrect table name", "sample", results.getString("TABLE_NAME"));
 			assertEquals("Incorrect column name", "NAME", results.getString("COLUMN_NAME"));
@@ -450,15 +444,13 @@ public class TestDbfDriver
 	@Test
 	public void testDatabaseMetadataColumnsPattern() throws SQLException
 	{
-		try
-		{
-			Properties props = new Properties();
-			props.put("fileExtension", ".dbf");
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
-					+ filePath, props);
-			DatabaseMetaData metadata = conn.getMetaData();
-			ResultSet results = metadata.getColumns(null, null, "x%", "M%");
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+			ResultSet results = conn.getMetaData().getColumns(null, null, "x%", "M%"))
+		{
 			assertTrue(results.next());
 			assertEquals("Incorrect table name", "xbase", results.getString("TABLE_NAME"));
 			assertEquals("Incorrect column name", "MSG", results.getString("COLUMN_NAME"));
@@ -479,23 +471,22 @@ public class TestDbfDriver
 	@Test
 	public void testGetNumeric() throws SQLException
 	{
-		try
-		{
-			Properties props = new Properties();
-			props.put("fileExtension", ".dbf");
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
 			Statement stmt = conn.createStatement();
 
-			ResultSet results = stmt.executeQuery("SELECT * FROM fox_samp");
+			ResultSet results = stmt.executeQuery("SELECT * FROM fox_samp"))
+		{
 			assertTrue(results.next());
 			assertEquals("The NCOUNTYCOD is wrong", 33, results.getByte("NCOUNTYCOD"));
 			assertEquals("The NCOUNTYCOD is wrong", 33, results.getShort("NCOUNTYCOD"));
 			assertEquals("The NTAXYEAR is wrong", 2011, results.getInt("NTAXYEAR"));
 			assertEquals("The NNOTFCV is wrong", 0, results.getLong("NNOTFCV"));
 			assertEquals("The NASSASSRAT is wrong", 7250, Math.round(results.getFloat("NASSASSRAT") * 1000));
-			assertEquals("The NASSASSRAT is wrong", 7250, Math.round(results.getDouble("NASSASSRAT") * 1000));		
+			assertEquals("The NASSASSRAT is wrong", 7250, Math.round(results.getDouble("NASSASSRAT") * 1000));
 			assertFalse(results.next());
 		}
 		catch (DbfClassNotFoundException e)
@@ -506,20 +497,19 @@ public class TestDbfDriver
 			return;
 		}
 	}
-	
+
 	@Test
 	public void testGetDate() throws SQLException
 	{
-		try
-		{
-			Properties props = new Properties();
-			props.put("fileExtension", ".dbf");
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
 			Statement stmt = conn.createStatement();
 
-			ResultSet results = stmt.executeQuery("SELECT DASSDATE FROM fox_samp");
+			ResultSet results = stmt.executeQuery("SELECT DASSDATE FROM fox_samp"))
+		{
 			assertTrue(results.next());
 			assertEquals("The DASSDATE is wrong", Date.valueOf("2012-12-25"), results.getDate(1));
 		}
@@ -531,20 +521,19 @@ public class TestDbfDriver
 			return;
 		}
 	}
-	
+
 	@Test
 	public void testGetTimestamp() throws SQLException
 	{
-		try
-		{
-			Properties props = new Properties();
-			props.put("fileExtension", ".dbf");
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
 			Statement stmt = conn.createStatement();
 
-			ResultSet results = stmt.executeQuery("SELECT DASSDATE FROM fox_samp");
+			ResultSet results = stmt.executeQuery("SELECT DASSDATE FROM fox_samp"))
+		{
 			assertTrue(results.next());
 			assertEquals("The DASSDATE is wrong", Timestamp.valueOf("2012-12-25 00:00:00"),
 					results.getTimestamp(1));
@@ -557,21 +546,20 @@ public class TestDbfDriver
 			return;
 		}
 	}
-	
+
 	@Test
 	public void testCharset() throws SQLException
 	{
-		try
-		{
-			Properties props = new Properties();
-			props.put("fileExtension", ".dbf");
-			props.put("charset", "ISO-8859-1");
+		Properties props = new Properties();
+		props.put("fileExtension", ".dbf");
+		props.put("charset", "ISO-8859-1");
 
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
 			Statement stmt = conn.createStatement();
 
-			ResultSet results = stmt.executeQuery("SELECT HOTELNAME FROM hotel");
+			ResultSet results = stmt.executeQuery("SELECT HOTELNAME FROM hotel"))
+		{
 			assertTrue(results.next());
 			assertEquals("The HOTELNAME is wrong", "M\u00DCNCHEN HOTEL", results.getString(1));
 			assertTrue(results.next());
