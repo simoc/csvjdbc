@@ -3498,9 +3498,8 @@ public class TestCsvDriver
 		Properties props = new Properties();
 		props.put("quotechar", "()");
 
-		try
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"	+ filePath, props))
 		{
-			DriverManager.getConnection("jdbc:relique:csv:"	+ filePath, props);
 			fail("expected exception java.sql.SQLException");
 		}
 		catch (SQLException e)
@@ -4703,9 +4702,8 @@ public class TestCsvDriver
 	@Test
 	public void testTableReaderWithBadReader() throws SQLException
 	{
-		try
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" + TestCsvDriver.class.getName()))
 		{
-			DriverManager.getConnection("jdbc:relique:csv:class:" + TestCsvDriver.class.getName());
 			fail("Should raise a java.sqlSQLException");
 		}
 		catch (SQLException e)
@@ -5271,9 +5269,8 @@ public class TestCsvDriver
 		Properties props = new Properties();
 		props.put("function.BAD", "java.lang.Math.bad(double)");
 
-		try
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props))
 		{
-			DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 			fail("Should raise a java.sqlSQLException");
 		}
 		catch (SQLException e)
