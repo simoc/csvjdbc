@@ -46,7 +46,7 @@ import org.relique.io.XORCipher;
 
 /**
  * This class is used to test the CsvJdbc driver.
- * 
+ *
  * @author Jonathan Ackerman
  * @author JD Evora
  * @author Chetan Gupta
@@ -86,21 +86,19 @@ public class TestCryptoFilter
 				String destination = filePath
 						+ System.getProperty("file.separator") + "scrambled_"
 						+ i + ".txt";
-				FileInputStream fis;
-				fis = new FileInputStream(source);
-				BufferedInputStream in = new BufferedInputStream(fis);
-				FileOutputStream fos = new FileOutputStream(destination);
-				BufferedOutputStream out = new BufferedOutputStream(fos);
-				byte[] buffer = new byte[sampleLength];
-				int len = 0;
-				while ((len = in.read(buffer)) >= 0)
+
+				try (FileInputStream fis = new FileInputStream(source);
+					BufferedInputStream in = new BufferedInputStream(fis);
+					FileOutputStream fos = new FileOutputStream(destination);
+					BufferedOutputStream out = new BufferedOutputStream(fos))
 				{
-					out.write(buffer, 0, len);
+					byte[] buffer = new byte[sampleLength];
+					int len = 0;
+					while ((len = in.read(buffer)) >= 0)
+					{
+						out.write(buffer, 0, len);
+					}
 				}
-				in.close();
-				fis.close();
-				out.close();
-				fos.close();
 			}
 		}
 		catch (IOException e)
@@ -121,7 +119,7 @@ public class TestCryptoFilter
 			File file = new File(testFile);
 			assertTrue(file.delete());
 		}
-	}	
+	}
 
 	/**
 	 * using a wrong codec will cause an exception.
@@ -134,9 +132,9 @@ public class TestCryptoFilter
 		props.put("cryptoFilterClassName", "org.relique.io.NotACodec");
 		props.put("cryptoFilterParameterTypes", "String");
 		props.put("cryptoFilterParameters", "@0y");
-		try
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props))
 		{
-			DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 			fail("managed to initialize not existing CryptoFilter");
 		}
 		catch (SQLException e)
@@ -154,24 +152,25 @@ public class TestCryptoFilter
 		props.put("cryptoFilterClassName", "org.relique.io.XORCipher");
 		props.put("cryptoFilterParameterTypes", "String");
 		props.put("cryptoFilterParameters", "gaius vipsanius agrippa");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
-
-		Statement stmt = conn.createStatement();
-
-		ResultSet results = stmt.executeQuery("SELECT * FROM scrambled");
-		assertTrue(results.next());
-		assertEquals("The key is wrong", "1", results.getString("key"));
-		assertEquals("The value is wrong", "uno", results.getString("value"));
-		assertTrue(results.next());
-		assertEquals("The key is wrong", "2", results.getString("key"));
-		assertEquals("The value is wrong", "due", results.getString("value"));
-		assertTrue(results.next());
-		assertEquals("The key is wrong", "3", results.getString("key"));
-		assertEquals("The value is wrong", "tre", results.getString("value"));
-		assertTrue(!results.next());
+			Statement stmt = conn.createStatement();
+			ResultSet results = stmt.executeQuery("SELECT * FROM scrambled"))
+		{
+			assertTrue(results.next());
+			assertEquals("The key is wrong", "1", results.getString("key"));
+			assertEquals("The value is wrong", "uno", results.getString("value"));
+			assertTrue(results.next());
+			assertEquals("The key is wrong", "2", results.getString("key"));
+			assertEquals("The value is wrong", "due", results.getString("value"));
+			assertTrue(results.next());
+			assertEquals("The key is wrong", "3", results.getString("key"));
+			assertEquals("The value is wrong", "tre", results.getString("value"));
+			assertTrue(!results.next());
+		}
 	}
-	
+
 	/**
 	 * wrong key: behave as if the file was empty.
 	 * @throws SQLException
@@ -184,13 +183,14 @@ public class TestCryptoFilter
 		props.put("cryptoFilterClassName", "org.relique.io.XORCipher");
 		props.put("cryptoFilterParameterTypes", "String");
 		props.put("cryptoFilterParameters", "marcus junius brutus");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
-
-		Statement stmt = conn.createStatement();
-
-		ResultSet results = stmt.executeQuery("SELECT * FROM scrambled");
-		assertFalse(results.next());		
+			Statement stmt = conn.createStatement();
+			ResultSet results = stmt.executeQuery("SELECT * FROM scrambled"))
+		{
+			assertFalse(results.next());
+		}
 	}
 
 	/**
@@ -210,19 +210,20 @@ public class TestCryptoFilter
 		boolean generating_input_file = false;
 		if(generating_input_file)
 		{
-			EncryptedFileOutputStream out = null;
 			try
 			{
 				File f = new File(filePath, "scrambled_trailing.txt");
 				String filename = f.getAbsolutePath();
 				CryptoFilter cip = new XORCipher(new String("gaius vipsanius agrippa"));;
-				out = new EncryptedFileOutputStream(filename, cip );
-				out.write((new String("key,value\n")).getBytes());
-				out.write((new String("1,uno\n")).getBytes());
-				out.write((new String("\n")).getBytes());
-				out.write((new String("2,due\n")).getBytes());
-				out.write((new String("3,tre\n")).getBytes());
-				out.write((new String("\n")).getBytes());
+				try (EncryptedFileOutputStream out = new EncryptedFileOutputStream(filename, cip ))
+				{
+					out.write((new String("key,value\n")).getBytes());
+					out.write((new String("1,uno\n")).getBytes());
+					out.write((new String("\n")).getBytes());
+					out.write((new String("2,due\n")).getBytes());
+					out.write((new String("3,tre\n")).getBytes());
+					out.write((new String("\n")).getBytes());
+				}
 			}
 			catch (FileNotFoundException e)
 			{
@@ -232,35 +233,24 @@ public class TestCryptoFilter
 			{
 				e.printStackTrace();
 			}
-			finally
-			{
-				try
-				{
-					if (out != null)
-						out.close();
-				}
-				catch (IOException e)
-				{
-				}
-			}
 		}
-		
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
-
-		Statement stmt = conn.createStatement();
-
-		ResultSet results = stmt.executeQuery("SELECT * FROM scrambled_trailing");
-		assertTrue(results.next());
-		assertEquals("The key is wrong", "1", results.getString("key"));
-		assertEquals("The value is wrong", "uno", results.getString("value"));
-		assertTrue(results.next());
-		assertEquals("The key is wrong", "2", results.getString("key"));
-		assertEquals("The value is wrong", "due", results.getString("value"));
-		assertTrue(results.next());
-		assertEquals("The key is wrong", "3", results.getString("key"));
-		assertEquals("The value is wrong", "tre", results.getString("value"));
-		assertTrue(!results.next());
+			Statement stmt = conn.createStatement();
+			ResultSet results = stmt.executeQuery("SELECT * FROM scrambled_trailing"))
+		{
+			assertTrue(results.next());
+			assertEquals("The key is wrong", "1", results.getString("key"));
+			assertEquals("The value is wrong", "uno", results.getString("value"));
+			assertTrue(results.next());
+			assertEquals("The key is wrong", "2", results.getString("key"));
+			assertEquals("The value is wrong", "due", results.getString("value"));
+			assertTrue(results.next());
+			assertEquals("The key is wrong", "3", results.getString("key"));
+			assertEquals("The value is wrong", "tre", results.getString("value"));
+			assertTrue(!results.next());
+		}
 	}
 
 	@Test
@@ -271,30 +261,35 @@ public class TestCryptoFilter
 		props.put("cryptoFilterClassName", "org.relique.io.XORCipher");
 		props.put("cryptoFilterParameterTypes", "String");
 		props.put("cryptoFilterParameters", "gaius vipsanius agrippa");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
+			Statement stmt = conn.createStatement())
+		{
+			try (ResultSet results = stmt.executeQuery("SELECT * FROM scrambled"))
+			{
+				assertTrue(results.next());
+				assertEquals("The key is wrong", "1", results.getString("key"));
+				assertEquals("The value is wrong", "uno", results.getString("value"));
+				assertTrue(results.next());
+				assertEquals("The key is wrong", "2", results.getString("key"));
+				assertEquals("The value is wrong", "due", results.getString("value"));
+			}
 
-		Statement stmt = conn.createStatement();
-
-		ResultSet results = stmt.executeQuery("SELECT * FROM scrambled");
-		assertTrue(results.next());
-		assertEquals("The key is wrong", "1", results.getString("key"));
-		assertEquals("The value is wrong", "uno", results.getString("value"));
-		assertTrue(results.next());
-		assertEquals("The key is wrong", "2", results.getString("key"));
-		assertEquals("The value is wrong", "due", results.getString("value"));
-
-		results = stmt.executeQuery("SELECT * FROM scrambled");
-		assertTrue(results.next());
-		assertEquals("The key is wrong", "1", results.getString("key"));
-		assertEquals("The value is wrong", "uno", results.getString("value"));
-		assertTrue(results.next());
-		assertEquals("The key is wrong", "2", results.getString("key"));
-		assertEquals("The value is wrong", "due", results.getString("value"));
-		assertTrue(results.next());
-		assertEquals("The key is wrong", "3", results.getString("key"));
-		assertEquals("The value is wrong", "tre", results.getString("value"));
-		assertTrue(!results.next());
+			try (ResultSet results = stmt.executeQuery("SELECT * FROM scrambled"))
+			{
+				assertTrue(results.next());
+				assertEquals("The key is wrong", "1", results.getString("key"));
+				assertEquals("The value is wrong", "uno", results.getString("value"));
+				assertTrue(results.next());
+				assertEquals("The key is wrong", "2", results.getString("key"));
+				assertEquals("The value is wrong", "due", results.getString("value"));
+				assertTrue(results.next());
+				assertEquals("The key is wrong", "3", results.getString("key"));
+				assertEquals("The value is wrong", "tre", results.getString("value"));
+				assertTrue(!results.next());
+			}
+		}
 	}
 
 	@Test
@@ -304,15 +299,12 @@ public class TestCryptoFilter
 		// dependent, this test will cause random regressions just because the
 		// load on the server performing the test might happen to be heavier
 		// during one function and lighter during the other!
-		
-		// creating variables - to be initialized later.
-		Properties props = null;
-		Connection conn = null;
-		Statement stmt = null;
-		ResultSet rset = null;
 
+		// creating variables - to be initialized later.
 		long timeNoEncrypt = 0;
 		long timeEncrypt = 0;
+		long noEncryptStartMillis = 0;
+		long encryptStartMillis = 0;
 
 		int encryptCount = 0;
 		int noEncryptCount = 0;
@@ -321,19 +313,23 @@ public class TestCryptoFilter
 		for (int i = 0; i < 2; i++)
 		{
 			// encrypted
-			props = new Properties();
+			Properties props = new Properties();
 			props.put("fileExtension", ".txt");
 			props.put("cryptoFilterClassName", "org.relique.io.XORCipher");
 			props.put("cryptoFilterParameterTypes", "String");
 			props.put("cryptoFilterParameters", "gaius vipsanius agrippa");
-			Connection connEncr = DriverManager.getConnection("jdbc:relique:csv:"
+
+			try (Connection connEncr = DriverManager.getConnection("jdbc:relique:csv:"
 					+ filePath, props);
-			stmt = connEncr.createStatement();
-			long encryptStartMillis = System.currentTimeMillis();
-			rset = stmt.executeQuery("SELECT * FROM speedtest_decypher");
-			while (rset.next())
-				encryptCount++;
-			connEncr.close();
+				Statement stmt = connEncr.createStatement())
+			{
+				encryptStartMillis = System.currentTimeMillis();
+				try (ResultSet rset = stmt.executeQuery("SELECT * FROM speedtest_decypher"))
+				{
+					while (rset.next())
+						encryptCount++;
+				}
+			}
 			long encryptEndMillis = System.currentTimeMillis();
 
 			timeEncrypt += encryptEndMillis - encryptStartMillis;
@@ -341,16 +337,20 @@ public class TestCryptoFilter
 			// non encrypted
 			props = new Properties();
 			props.put("fileExtension", ".csv");
-			conn = DriverManager.getConnection("jdbc:relique:csv:"
+
+			try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 					+ filePath, props);
-			stmt = conn.createStatement();
-			long noEncryptStartMillis = System.currentTimeMillis();
-			rset = stmt.executeQuery("SELECT * FROM speedtest_decypher");
-			while (rset.next())
-				noEncryptCount++;
-			conn.close();
+				Statement stmt = conn.createStatement())
+			{
+				noEncryptStartMillis = System.currentTimeMillis();
+				try (ResultSet rset = stmt.executeQuery("SELECT * FROM speedtest_decypher"))
+				{
+					while (rset.next())
+						noEncryptCount++;
+				}
+			}
 			long noEncryptEndMillis = System.currentTimeMillis();
-			
+
 			timeNoEncrypt += noEncryptEndMillis - noEncryptStartMillis;
 		}
 
@@ -372,22 +372,21 @@ public class TestCryptoFilter
 		props.put("cryptoFilterParameterTypes", "String");
 		props.put("cryptoFilterParameters", "gaius vipsanius agrippa");
 
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
 				+ filePath, props);
-		Statement stmt = conn.createStatement();
-
-		for (int i = 0; i < testSize; i++)
+			Statement stmt = conn.createStatement())
 		{
-			ResultSet results = stmt.executeQuery("SELECT * FROM scrambled_" + i);
-			assertTrue(results.next());
-			while (results.next())
+			for (int i = 0; i < testSize; i++)
 			{
-				// nothing really
+				try (ResultSet results = stmt.executeQuery("SELECT * FROM scrambled_" + i))
+				{
+					assertTrue(results.next());
+					while (results.next())
+					{
+						// nothing really
+					}
+				}
 			}
-			results.close();
 		}
-
-		stmt.close();
-		conn.close();
 	}
 }
