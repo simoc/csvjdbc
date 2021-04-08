@@ -71,11 +71,13 @@ public class TestZipFiles
 	@Test
 	public void testConnectionName() throws SQLException
 	{
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
-			+ filePath + File.separator + TEST_ZIP_FILENAME_1);
-		String url = conn.getMetaData().getURL();
-		assertTrue(url.startsWith("jdbc:relique:csv:zip:"));
-		assertTrue(url.endsWith(TEST_ZIP_FILENAME_1));
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
+			+ filePath + File.separator + TEST_ZIP_FILENAME_1))
+		{
+			String url = conn.getMetaData().getURL();
+			assertTrue(url.startsWith("jdbc:relique:csv:zip:"));
+			assertTrue(url.endsWith(TEST_ZIP_FILENAME_1));
+		}
 	}
 
 	@Test
@@ -84,65 +86,65 @@ public class TestZipFiles
 		Properties props = new Properties();
 		props.put("columnTypes", "Short,String,String,Short,Short,Short");
 
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
 			+ filePath + File.separator + TEST_ZIP_FILENAME_1, props);
-
-		Statement stmt = conn.createStatement();
-
-		ResultSet results = stmt.executeQuery("SELECT * FROM medals2004");
-		assertTrue(results.next());
-		assertEquals("The YEAR is wrong", 2004, results.getShort(1));
-		assertEquals("The COUNTRY is wrong", "United States", results.getString(2));
-		assertEquals("The CODE is wrong", "USA", results.getString(3));
-		assertEquals("The GOLD is wrong", 36, results.getShort(4));
-		assertTrue(results.next());
-		assertEquals("The YEAR is wrong", 2004, results.getShort(1));
-		assertEquals("The COUNTRY is wrong", "China", results.getString(2));
-		assertEquals("The CODE is wrong", "CHN", results.getString(3));
-		assertEquals("The GOLD is wrong", 32, results.getShort(4));
+			Statement stmt = conn.createStatement();
+			ResultSet results = stmt.executeQuery("SELECT * FROM medals2004"))
+		{
+			assertTrue(results.next());
+			assertEquals("The YEAR is wrong", 2004, results.getShort(1));
+			assertEquals("The COUNTRY is wrong", "United States", results.getString(2));
+			assertEquals("The CODE is wrong", "USA", results.getString(3));
+			assertEquals("The GOLD is wrong", 36, results.getShort(4));
+			assertTrue(results.next());
+			assertEquals("The YEAR is wrong", 2004, results.getShort(1));
+			assertEquals("The COUNTRY is wrong", "China", results.getString(2));
+			assertEquals("The CODE is wrong", "CHN", results.getString(3));
+			assertEquals("The GOLD is wrong", 32, results.getShort(4));
+		}
 	}
 	
 	@Test
 	public void testListTables() throws SQLException
 	{
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
 			+ filePath + File.separator + TEST_ZIP_FILENAME_1);
-
-		ResultSet results = conn.getMetaData().getTables(null, null, "%", null);
-		assertTrue(results.next());
-		assertEquals("The TABLE_NAME is wrong", "medals2004", results.getString("TABLE_NAME"));
-		assertTrue(results.next());
-		assertEquals("The TABLE_NAME is wrong", "medals2008", results.getString("TABLE_NAME"));
-		assertFalse(results.next());
+			ResultSet results = conn.getMetaData().getTables(null, null, "%", null))
+		{
+			assertTrue(results.next());
+			assertEquals("The TABLE_NAME is wrong", "medals2004", results.getString("TABLE_NAME"));
+			assertTrue(results.next());
+			assertEquals("The TABLE_NAME is wrong", "medals2008", results.getString("TABLE_NAME"));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
 	public void testBadTableNameFails() throws SQLException
 	{
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
 			+ filePath + File.separator + TEST_ZIP_FILENAME_1);
-
-		Statement stmt = conn.createStatement();
-
-		try
+			Statement stmt = conn.createStatement())
 		{
-			stmt.executeQuery("SELECT * FROM abc");
-			fail("Query should fail");
-		}
-		catch (SQLException e)
-		{
-			String message = "" + e;
-			assertTrue(message.startsWith("java.sql.SQLException: " + CsvResources.getString("tableNotFound") + ":"));
+			try
+			{
+				stmt.executeQuery("SELECT * FROM abc");
+				fail("Query should fail");
+			}
+			catch (SQLException e)
+			{
+				String message = "" + e;
+				assertTrue(message.startsWith("java.sql.SQLException: " + CsvResources.getString("tableNotFound") + ":"));
+			}
 		}
 	}
 
 	@Test
 	public void testBadZipFileFails() throws SQLException
 	{
-		try
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
+				+ filePath + File.separator + "abc" + TEST_ZIP_FILENAME_1))
 		{
-			DriverManager.getConnection("jdbc:relique:csv:zip:"
-				+ filePath + File.separator + "abc" + TEST_ZIP_FILENAME_1);
 			fail("Connection should fail");
 		}
 		catch (SQLException e)
@@ -160,18 +162,18 @@ public class TestZipFiles
 		props.put("charset", "ISO-8859-1");
 		props.put("fileExtension", ".txt");
 
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
 			+ filePath + File.separator + TEST_ZIP_FILENAME_2, props);
-
-		Statement stmt = conn.createStatement();
-
-		ResultSet results = stmt.executeQuery("SELECT * FROM iso8859-1");
-		assertTrue(results.next());
-		assertEquals("ISO8859-1 encoding is wrong", "K\u00D8BENHAVN", results.getString(1));
-		assertTrue(results.next());
-		assertEquals("ISO8859-1 encoding is wrong", "100\u00B0", results.getString(1));
-		assertTrue(results.next());
-		assertEquals("ISO8859-1 encoding is wrong", "\u00A9 Copyright", results.getString(1));
+			Statement stmt = conn.createStatement();
+			ResultSet results = stmt.executeQuery("SELECT * FROM iso8859-1"))
+		{
+			assertTrue(results.next());
+			assertEquals("ISO8859-1 encoding is wrong", "K\u00D8BENHAVN", results.getString(1));
+			assertTrue(results.next());
+			assertEquals("ISO8859-1 encoding is wrong", "100\u00B0", results.getString(1));
+			assertTrue(results.next());
+			assertEquals("ISO8859-1 encoding is wrong", "\u00A9 Copyright", results.getString(1));
+		}
 	}
 
 	@Test
@@ -182,18 +184,18 @@ public class TestZipFiles
 		props.put("charset", "UTF-8");
 		props.put("fileExtension", ".txt");
 
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
 			+ filePath + File.separator + TEST_ZIP_FILENAME_2, props);
-
-		Statement stmt = conn.createStatement();
-
-		ResultSet results = stmt.executeQuery("SELECT * FROM utf-8");
-		assertTrue(results.next());
-		assertEquals("UTF-8 encoding is wrong", "K\u00D8BENHAVN", results.getString(1));
-		assertTrue(results.next());
-		assertEquals("UTF-8 encoding is wrong", "100\u00B0", results.getString(1));
-		assertTrue(results.next());
-		assertEquals("UTF-8 encoding is wrong", "\u00A9 Copyright", results.getString(1));
+			Statement stmt = conn.createStatement();
+			ResultSet results = stmt.executeQuery("SELECT * FROM utf-8"))
+		{
+			assertTrue(results.next());
+			assertEquals("UTF-8 encoding is wrong", "K\u00D8BENHAVN", results.getString(1));
+			assertTrue(results.next());
+			assertEquals("UTF-8 encoding is wrong", "100\u00B0", results.getString(1));
+			assertTrue(results.next());
+			assertEquals("UTF-8 encoding is wrong", "\u00A9 Copyright", results.getString(1));
+		}
 	}
 
 	@Test
@@ -204,17 +206,17 @@ public class TestZipFiles
 		props.put("charset", "UTF-16");
 		props.put("fileExtension", ".txt");
 
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
 			+ filePath + File.separator + TEST_ZIP_FILENAME_2, props);
-
-		Statement stmt = conn.createStatement();
-
-		ResultSet results = stmt.executeQuery("SELECT * FROM utf-16");
-		assertTrue(results.next());
-		assertEquals("UTF-16 encoding is wrong", "K\u00D8BENHAVN", results.getString(1));
-		assertTrue(results.next());
-		assertEquals("UTF-16 encoding is wrong", "100\u00B0", results.getString(1));
-		assertTrue(results.next());
-		assertEquals("UTF-16 encoding is wrong", "\u00A9 Copyright", results.getString(1));
+			Statement stmt = conn.createStatement();
+			ResultSet results = stmt.executeQuery("SELECT * FROM utf-16"))
+		{
+			assertTrue(results.next());
+			assertEquals("UTF-16 encoding is wrong", "K\u00D8BENHAVN", results.getString(1));
+			assertTrue(results.next());
+			assertEquals("UTF-16 encoding is wrong", "100\u00B0", results.getString(1));
+			assertTrue(results.next());
+			assertEquals("UTF-16 encoding is wrong", "\u00A9 Copyright", results.getString(1));
+		}
 	}
 }

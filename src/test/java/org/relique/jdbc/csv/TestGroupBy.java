@@ -63,8 +63,8 @@ public class TestGroupBy
 		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
-		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
-		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));  
+		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 
 	@Test
@@ -76,21 +76,24 @@ public class TestGroupBy
 		props.put("fileExtension", ".txt");
 		props.put("commentChar", "#");
 		props.put("columnTypes", "Date,Integer,Integer,Integer,Integer,Double");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt
-				.executeQuery("select TO_BLZ from transactions group by TO_BLZ");
-		assertTrue(results.next());
-		assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
-		assertTrue(results.next());
-		assertEquals("The TO_BLZ is wrong", 10010424, results.getInt("TO_BLZ"));
-		assertTrue(results.next());
-		assertEquals("The TO_BLZ is wrong", 10020400, results.getInt("TO_BLZ"));
-		assertTrue(results.next());
-		assertEquals("The TO_BLZ is wrong", 10010010, results.getInt("TO_BLZ"));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt
+				.executeQuery("select TO_BLZ from transactions group by TO_BLZ"))
+		{
+			assertTrue(results.next());
+			assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
+			assertTrue(results.next());
+			assertEquals("The TO_BLZ is wrong", 10010424, results.getInt("TO_BLZ"));
+			assertTrue(results.next());
+			assertEquals("The TO_BLZ is wrong", 10020400, results.getInt("TO_BLZ"));
+			assertTrue(results.next());
+			assertEquals("The TO_BLZ is wrong", 10010010, results.getInt("TO_BLZ"));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
@@ -103,34 +106,37 @@ public class TestGroupBy
 		props.put("commentChar", "#");
 		props.put("columnTypes", "Date,Integer,Integer,Integer,Integer,Double");
 		props.put("dateFormat", "dd-mm-yyyy");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt
-				.executeQuery("select TRANS_DATE, TO_BLZ from transactions group by TRANS_DATE, TO_BLZ");
-		assertTrue(results.next());
-		assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-19"), results.getDate("TRANS_DATE"));
-		assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
-		assertTrue(results.next());
-		assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-21"), results.getDate("TRANS_DATE"));
-		assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
-		assertTrue(results.next());
-		assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-21"), results.getDate("TRANS_DATE"));
-		assertEquals("The TO_BLZ is wrong", 10010424, results.getInt("TO_BLZ"));
-		assertTrue(results.next());
-		assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-24"), results.getDate("TRANS_DATE"));
-		assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
-		assertTrue(results.next());
-		assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-27"), results.getDate("TRANS_DATE"));
-		assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
-		assertTrue(results.next());
-		assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-28"), results.getDate("TRANS_DATE"));
-		assertEquals("The TO_BLZ is wrong", 10020400, results.getInt("TO_BLZ"));
-		assertTrue(results.next());
-		assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-31"), results.getDate("TRANS_DATE"));
-		assertEquals("The TO_BLZ is wrong", 10010010, results.getInt("TO_BLZ"));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt
+				.executeQuery("select TRANS_DATE, TO_BLZ from transactions group by TRANS_DATE, TO_BLZ"))
+		{
+			assertTrue(results.next());
+			assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-19"), results.getDate("TRANS_DATE"));
+			assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
+			assertTrue(results.next());
+			assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-21"), results.getDate("TRANS_DATE"));
+			assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
+			assertTrue(results.next());
+			assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-21"), results.getDate("TRANS_DATE"));
+			assertEquals("The TO_BLZ is wrong", 10010424, results.getInt("TO_BLZ"));
+			assertTrue(results.next());
+			assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-24"), results.getDate("TRANS_DATE"));
+			assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
+			assertTrue(results.next());
+			assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-27"), results.getDate("TRANS_DATE"));
+			assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
+			assertTrue(results.next());
+			assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-28"), results.getDate("TRANS_DATE"));
+			assertEquals("The TO_BLZ is wrong", 10020400, results.getInt("TO_BLZ"));
+			assertTrue(results.next());
+			assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-31"), results.getDate("TRANS_DATE"));
+			assertEquals("The TO_BLZ is wrong", 10010010, results.getInt("TO_BLZ"));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
@@ -138,32 +144,38 @@ public class TestGroupBy
 	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt.executeQuery("select ID from empty-2 GROUP BY ID");
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt.executeQuery("select ID from empty-2 GROUP BY ID"))
+		{
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
 	public void testGroupByAllDifferent() throws SQLException
 	{
 		Properties props = new Properties();
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt.executeQuery("select ID from sample4 GROUP BY ID");
-		assertTrue(results.next());
-		assertEquals("The ID is wrong", "01", results.getString("ID"));
-		assertTrue(results.next());
-		assertEquals("The ID is wrong", "02", results.getString("ID"));
-		assertTrue(results.next());
-		assertEquals("The ID is wrong", "03", results.getString("ID"));
-		assertTrue(results.next());
-		assertEquals("The ID is wrong", "04", results.getString("ID"));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt.executeQuery("select ID from sample4 GROUP BY ID"))
+		{
+			assertTrue(results.next());
+			assertEquals("The ID is wrong", "01", results.getString("ID"));
+			assertTrue(results.next());
+			assertEquals("The ID is wrong", "02", results.getString("ID"));
+			assertTrue(results.next());
+			assertEquals("The ID is wrong", "03", results.getString("ID"));
+			assertTrue(results.next());
+			assertEquals("The ID is wrong", "04", results.getString("ID"));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
@@ -171,34 +183,40 @@ public class TestGroupBy
 	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Timestamp");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt.executeQuery("select Job from sample5 WHERE ID >= 5 GROUP BY Job");
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Piloto", results.getString("Job"));
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Office Manager", results.getString("Job"));
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Office Employee", results.getString("Job"));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt.executeQuery("select Job from sample5 WHERE ID >= 5 GROUP BY Job"))
+		{
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Piloto", results.getString("Job"));
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Office Manager", results.getString("Job"));
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Office Employee", results.getString("Job"));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
 	public void testGroupByOrderBy() throws SQLException
 	{
 		Properties props = new Properties();
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt.executeQuery("select Job from sample4 GROUP BY Job ORDER BY Job");
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt.executeQuery("select Job from sample4 GROUP BY Job ORDER BY Job"))
+		{
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
@@ -210,25 +228,28 @@ public class TestGroupBy
 		props.put("fileExtension", ".txt");
 		props.put("commentChar", "#");
 		props.put("columnTypes", "Date,Integer,Integer,Integer,Integer,Double");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt
-				.executeQuery("select TO_BLZ, COUNT(TO_BLZ) AS N from transactions group by TO_BLZ");
-		assertTrue(results.next());
-		assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
-		assertEquals("The COUNT is wrong", 5, results.getInt("N"));
-		assertTrue(results.next());
-		assertEquals("The TO_BLZ is wrong", 10010424, results.getInt("TO_BLZ"));
-		assertEquals("The COUNT is wrong", 2, results.getInt("N"));
-		assertTrue(results.next());
-		assertEquals("The TO_BLZ is wrong", 10020400, results.getInt("TO_BLZ"));
-		assertEquals("The COUNT is wrong", 1, results.getInt("N"));
-		assertTrue(results.next());
-		assertEquals("The TO_BLZ is wrong", 10010010, results.getInt("TO_BLZ"));
-		assertEquals("The COUNT is wrong", 1, results.getInt("N"));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt
+				.executeQuery("select TO_BLZ, COUNT(TO_BLZ) AS N from transactions group by TO_BLZ"))
+		{
+			assertTrue(results.next());
+			assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
+			assertEquals("The COUNT is wrong", 5, results.getInt("N"));
+			assertTrue(results.next());
+			assertEquals("The TO_BLZ is wrong", 10010424, results.getInt("TO_BLZ"));
+			assertEquals("The COUNT is wrong", 2, results.getInt("N"));
+			assertTrue(results.next());
+			assertEquals("The TO_BLZ is wrong", 10020400, results.getInt("TO_BLZ"));
+			assertEquals("The COUNT is wrong", 1, results.getInt("N"));
+			assertTrue(results.next());
+			assertEquals("The TO_BLZ is wrong", 10010010, results.getInt("TO_BLZ"));
+			assertEquals("The COUNT is wrong", 1, results.getInt("N"));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
@@ -236,41 +257,47 @@ public class TestGroupBy
 	{
 		Properties props = new Properties();
 		props.put("columnTypes", "String,Integer");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt.executeQuery("select NAME, count(*) from scores group by NAME");
-		assertTrue(results.next());
-		assertEquals("The NAME is wrong", "Daniel", results.getString(1));
-		assertEquals("The COUNT is wrong", 3, results.getInt(2));
-		assertTrue(results.next());
-		assertEquals("The NAME is wrong", "Mark", results.getString(1));
-		assertEquals("The COUNT is wrong", 3, results.getInt(2));
-		assertTrue(results.next());
-		assertEquals("The NAME is wrong", "Maria", results.getString(1));
-		assertEquals("The COUNT is wrong", 3, results.getInt(2));
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt.executeQuery("select NAME, count(*) from scores group by NAME"))
+		{
+			assertTrue(results.next());
+			assertEquals("The NAME is wrong", "Daniel", results.getString(1));
+			assertEquals("The COUNT is wrong", 3, results.getInt(2));
+			assertTrue(results.next());
+			assertEquals("The NAME is wrong", "Mark", results.getString(1));
+			assertEquals("The COUNT is wrong", 3, results.getInt(2));
+			assertTrue(results.next());
+			assertEquals("The NAME is wrong", "Maria", results.getString(1));
+			assertEquals("The COUNT is wrong", 3, results.getInt(2));
+		}
 	}
 
 	@Test
 	public void testGroupByCountNull() throws SQLException
 	{
 		Properties props = new Properties();
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt.executeQuery("select NAME, COUNT(NULLIF(SCORE, 'NA')) FROM scores GROUP BY NAME");
-		assertTrue(results.next());
-		assertEquals("The NAME is wrong", "Daniel", results.getString(1));
-		assertEquals("The COUNT is wrong", 2, results.getInt(2));
-		assertTrue(results.next());
-		assertEquals("The NAME is wrong", "Mark", results.getString(1));
-		assertEquals("The COUNT is wrong", 3, results.getInt(2));
-		assertTrue(results.next());
-		assertEquals("The NAME is wrong", "Maria", results.getString(1));
-		assertEquals("The COUNT is wrong", 1, results.getInt(2));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt.executeQuery("select NAME, COUNT(NULLIF(SCORE, 'NA')) FROM scores GROUP BY NAME"))
+		{
+			assertTrue(results.next());
+			assertEquals("The NAME is wrong", "Daniel", results.getString(1));
+			assertEquals("The COUNT is wrong", 2, results.getInt(2));
+			assertTrue(results.next());
+			assertEquals("The NAME is wrong", "Mark", results.getString(1));
+			assertEquals("The COUNT is wrong", 3, results.getInt(2));
+			assertTrue(results.next());
+			assertEquals("The NAME is wrong", "Maria", results.getString(1));
+			assertEquals("The COUNT is wrong", 1, results.getInt(2));
+			assertFalse(results.next());
+		}
 	}
 
 	/**
@@ -290,96 +317,110 @@ public class TestGroupBy
 		props.put("fileExtension", ".txt");
 		props.put("commentChar", "#");
 		props.put("columnTypes", "Date,Integer,Integer,Integer,Integer,Double");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt
-				.executeQuery("select TO_BLZ, MIN(AMOUNT) AS MIN_AMOUNT, MAX(AMOUNT) AS MAX_AMOUNT from transactions group by TO_BLZ");
-		assertTrue(results.next());
-		assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
-		assertTrue("The MIN_AMOUNT is wrong", fuzzyEquals(21.23, results.getDouble("MIN_AMOUNT")));
-		assertTrue("The MAX_AMOUNT is wrong", fuzzyEquals(250.00, results.getDouble("MAX_AMOUNT")));
-		assertTrue(results.next());
-		assertEquals("The TO_BLZ is wrong", 10010424, results.getInt("TO_BLZ"));
-		assertTrue("The MIN_AMOUNT is wrong", fuzzyEquals(460.00, results.getDouble("MIN_AMOUNT")));
-		assertTrue("The MAX_AMOUNT is wrong", fuzzyEquals(999.00, results.getDouble("MAX_AMOUNT")));
-		assertTrue(results.next());
-		assertEquals("The TO_BLZ is wrong", 10020400, results.getInt("TO_BLZ"));
-		assertTrue("The MIN_AMOUNT is wrong", fuzzyEquals(1012.74, results.getDouble("MIN_AMOUNT")));
-		assertTrue("The MAX_AMOUNT is wrong", fuzzyEquals(1012.74, results.getDouble("MAX_AMOUNT")));
-		assertTrue(results.next());
-		assertEquals("The TO_BLZ is wrong", 10010010, results.getInt("TO_BLZ"));
-		assertTrue("The MIN_AMOUNT is wrong", fuzzyEquals(7.23, results.getDouble("MIN_AMOUNT")));
-		assertTrue("The MAX_AMOUNT is wrong", fuzzyEquals(7.23, results.getDouble("MAX_AMOUNT")));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt
+				.executeQuery("select TO_BLZ, MIN(AMOUNT) AS MIN_AMOUNT, MAX(AMOUNT) AS MAX_AMOUNT from transactions group by TO_BLZ"))
+		{
+			assertTrue(results.next());
+			assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
+			assertTrue("The MIN_AMOUNT is wrong", fuzzyEquals(21.23, results.getDouble("MIN_AMOUNT")));
+			assertTrue("The MAX_AMOUNT is wrong", fuzzyEquals(250.00, results.getDouble("MAX_AMOUNT")));
+			assertTrue(results.next());
+			assertEquals("The TO_BLZ is wrong", 10010424, results.getInt("TO_BLZ"));
+			assertTrue("The MIN_AMOUNT is wrong", fuzzyEquals(460.00, results.getDouble("MIN_AMOUNT")));
+			assertTrue("The MAX_AMOUNT is wrong", fuzzyEquals(999.00, results.getDouble("MAX_AMOUNT")));
+			assertTrue(results.next());
+			assertEquals("The TO_BLZ is wrong", 10020400, results.getInt("TO_BLZ"));
+			assertTrue("The MIN_AMOUNT is wrong", fuzzyEquals(1012.74, results.getDouble("MIN_AMOUNT")));
+			assertTrue("The MAX_AMOUNT is wrong", fuzzyEquals(1012.74, results.getDouble("MAX_AMOUNT")));
+			assertTrue(results.next());
+			assertEquals("The TO_BLZ is wrong", 10010010, results.getInt("TO_BLZ"));
+			assertTrue("The MIN_AMOUNT is wrong", fuzzyEquals(7.23, results.getDouble("MIN_AMOUNT")));
+			assertTrue("The MAX_AMOUNT is wrong", fuzzyEquals(7.23, results.getDouble("MAX_AMOUNT")));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
 	public void testGroupByStringAgg() throws SQLException
 	{
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
 
-		Statement stmt = conn.createStatement();
+			Statement stmt = conn.createStatement();
 
-		ResultSet results = stmt.executeQuery("select Job, string_agg(Name, ';') from sample4 GROUP BY Job");
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Project Manager", results.getString(1));
-		assertEquals("The string_agg is wrong", "Juan Pablo Morales;Mauricio Hernandez;Felipe Grajales", results.getString(2));
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Finance Manager", results.getString(1));
-		assertEquals("The string_agg is wrong", "Maria Cristina Lucero", results.getString(2));
-		assertFalse(results.next());
+			ResultSet results = stmt.executeQuery("select Job, string_agg(Name, ';') from sample4 GROUP BY Job"))
+		{
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Project Manager", results.getString(1));
+			assertEquals("The string_agg is wrong", "Juan Pablo Morales;Mauricio Hernandez;Felipe Grajales", results.getString(2));
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Finance Manager", results.getString(1));
+			assertEquals("The string_agg is wrong", "Maria Cristina Lucero", results.getString(2));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
 	public void testGroupByOrderByCount() throws SQLException
 	{
 		Properties props = new Properties();
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt.executeQuery("select Job, COUNT(Job) C from sample4 GROUP BY Job ORDER BY C DESC");
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
-		assertEquals("The COUNT is wrong", 3, results.getInt("C"));
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
-		assertEquals("The COUNT is wrong", 1, results.getInt("C"));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt.executeQuery("select Job, COUNT(Job) C from sample4 GROUP BY Job ORDER BY C DESC"))
+		{
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
+			assertEquals("The COUNT is wrong", 3, results.getInt("C"));
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
+			assertEquals("The COUNT is wrong", 1, results.getInt("C"));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
 	public void testGroupByColumnNumber() throws SQLException
 	{
 		Properties props = new Properties();
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt.executeQuery("select Job from sample4 GROUP BY 1");
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt.executeQuery("select Job from sample4 GROUP BY 1"))
+		{
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
 	public void testGroupByTableAlias() throws SQLException
 	{
 		Properties props = new Properties();
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt.executeQuery("select Job from sample4 T GROUP BY T.Job");
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt.executeQuery("select Job from sample4 T GROUP BY T.Job"))
+		{
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
@@ -392,52 +433,57 @@ public class TestGroupBy
 		props.put("commentChar", "#");
 		props.put("columnTypes", "Date,Integer,Integer,Integer,Integer,Double");
 		props.put("dateFormat", "dd-mm-yyyy");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt
-				.executeQuery("select FROM_ACCT + '/' + FROM_BLZ as KEY from transactions group by KEY");
-		assertTrue(results.next());
-		assertEquals("The KEY is wrong", "3670345/10010010", results.getString("KEY"));
-		assertTrue(results.next());
-		assertEquals("The KEY is wrong", "97540210/10020500", results.getString("KEY"));
-		assertTrue(results.next());
-		assertEquals("The KEY is wrong", "58340576/10010010", results.getString("KEY"));
-		assertTrue(results.next());
-		assertEquals("The KEY is wrong", "2340529/10020200", results.getString("KEY"));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt
+				.executeQuery("select FROM_ACCT + '/' + FROM_BLZ as KEY from transactions group by KEY"))
+		{
+			assertTrue(results.next());
+			assertEquals("The KEY is wrong", "3670345/10010010", results.getString("KEY"));
+			assertTrue(results.next());
+			assertEquals("The KEY is wrong", "97540210/10020500", results.getString("KEY"));
+			assertTrue(results.next());
+			assertEquals("The KEY is wrong", "58340576/10010010", results.getString("KEY"));
+			assertTrue(results.next());
+			assertEquals("The KEY is wrong", "2340529/10020200", results.getString("KEY"));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
 	public void testGroupByWithLiteral() throws SQLException
 	{
 		Properties props = new Properties();
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt.executeQuery("select Job + '/' C1, 7 C2 from sample4 GROUP BY Job");
-		assertTrue(results.next());
-		assertEquals("The C1 is wrong", "Project Manager/", results.getString("C1"));
-		assertEquals("The C2 is wrong", "7", results.getString("C2"));
-		assertTrue(results.next());
-		assertEquals("The C1 is wrong", "Finance Manager/", results.getString("C1"));
-		assertEquals("The C2 is wrong", "7", results.getString("C2"));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt.executeQuery("select Job + '/' C1, 7 C2 from sample4 GROUP BY Job"))
+		{
+			assertTrue(results.next());
+			assertEquals("The C1 is wrong", "Project Manager/", results.getString("C1"));
+			assertEquals("The C2 is wrong", "7", results.getString("C2"));
+			assertTrue(results.next());
+			assertEquals("The C1 is wrong", "Finance Manager/", results.getString("C1"));
+			assertEquals("The C2 is wrong", "7", results.getString("C2"));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
 	public void testGroupByWithBadColumnName() throws SQLException
-	{		
-		try
-		{
-			Properties props = new Properties();
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+	{
+		Properties props = new Properties();
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
 			Statement stmt = conn.createStatement();
-
-			stmt.executeQuery("SELECT Id FROM sample group by XXXX");
+			ResultSet results = stmt.executeQuery("SELECT Id FROM sample group by XXXX"))
+		{
 			fail("Should raise a java.sqlSQLException");
 		}
 		catch (SQLException e)
@@ -448,15 +494,14 @@ public class TestGroupBy
 
 	@Test
 	public void testSelectUngroupedColumn() throws SQLException
-	{		
-		try
-		{
-			Properties props = new Properties();
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+	{
+		Properties props = new Properties();
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
 			Statement stmt = conn.createStatement();
-
-			stmt.executeQuery("SELECT Id FROM sample4 group by Job");
+			ResultSet results = stmt.executeQuery("SELECT Id FROM sample4 group by Job"))
+		{
 			fail("Should raise a java.sqlSQLException");
 		}
 		catch (SQLException e)
@@ -467,15 +512,14 @@ public class TestGroupBy
 
 	@Test
 	public void testOrderByUngroupedColumn() throws SQLException
-	{		
-		try
-		{
-			Properties props = new Properties();
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+	{
+		Properties props = new Properties();
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
 			Statement stmt = conn.createStatement();
-
-			stmt.executeQuery("SELECT Job FROM sample4 group by Job order by Id");
+			ResultSet results = stmt.executeQuery("SELECT Job FROM sample4 group by Job order by Id"))
+		{
 			fail("Should raise a java.sqlSQLException");
 		}
 		catch (SQLException e)
@@ -493,68 +537,76 @@ public class TestGroupBy
 		props.put("fileExtension", ".txt");
 		props.put("commentChar", "#");
 		props.put("columnTypes", "Date,Integer,Integer,Integer,Integer,Double");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt
-				.executeQuery("select FROM_BLZ from transactions group by FROM_BLZ having FROM_BLZ > 10020000");
-		assertTrue(results.next());
-		assertEquals("The FROM_BLZ is wrong", 10020500, results.getInt("FROM_BLZ"));
-		assertTrue(results.next());
-		assertEquals("The FROM_BLZ is wrong", 10020200, results.getInt("FROM_BLZ"));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt
+				.executeQuery("select FROM_BLZ from transactions group by FROM_BLZ having FROM_BLZ > 10020000"))
+		{
+			assertTrue(results.next());
+			assertEquals("The FROM_BLZ is wrong", 10020500, results.getInt("FROM_BLZ"));
+			assertTrue(results.next());
+			assertEquals("The FROM_BLZ is wrong", 10020200, results.getInt("FROM_BLZ"));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
 	public void testHavingCount() throws SQLException
 	{
 		Properties props = new Properties();
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt
-				.executeQuery("select Job from sample5 group by Job having COUNT(Job) = 1");
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Piloto", results.getString("Job"));
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Office Manager", results.getString("Job"));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt
+				.executeQuery("select Job from sample5 group by Job having COUNT(Job) = 1"))
+		{
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Piloto", results.getString("Job"));
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Office Manager", results.getString("Job"));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
 	public void testSelectAndHavingCount() throws SQLException
 	{
 		Properties props = new Properties();
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt
-				.executeQuery("select Job, COUNT(Job) from sample5 group by Job having COUNT(Job) > 1");
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
-		assertEquals("The COUNT(Job) is wrong", 3, results.getInt(2));
-		assertTrue(results.next());
-		assertEquals("The Job is wrong", "Office Employee", results.getString("Job"));
-		assertEquals("The COUNT(Job) is wrong", 4, results.getInt(2));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt
+				.executeQuery("select Job, COUNT(Job) from sample5 group by Job having COUNT(Job) > 1"))
+		{
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
+			assertEquals("The COUNT(Job) is wrong", 3, results.getInt(2));
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Office Employee", results.getString("Job"));
+			assertEquals("The COUNT(Job) is wrong", 4, results.getInt(2));
+			assertFalse(results.next());
+		}
 	}
 
 	@Test
 	public void testHavingWithBadColumnName() throws SQLException
-	{		
-		try
-		{
-			Properties props = new Properties();
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+	{
+		Properties props = new Properties();
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
 			Statement stmt = conn.createStatement();
-
-			stmt.executeQuery("SELECT Id FROM sample group by Id HAVING XXXX = 1");
+			ResultSet results = stmt.executeQuery("SELECT Id FROM sample group by Id HAVING XXXX = 1"))
+		{
 			fail("Should raise a java.sqlSQLException");
 		}
 		catch (SQLException e)
@@ -565,15 +617,15 @@ public class TestGroupBy
 
 	@Test
 	public void testHavingUngroupedColumn() throws SQLException
-	{		
-		try
-		{
-			Properties props = new Properties();
-			Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+	{
+		Properties props = new Properties();
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
 			Statement stmt = conn.createStatement();
 
-			stmt.executeQuery("SELECT Id FROM sample group by Id HAVING Name = 'foo'");
+			ResultSet results = stmt.executeQuery("SELECT Id FROM sample group by Id HAVING Name = 'foo'"))
+		{
 			fail("Should raise a java.sqlSQLException");
 		}
 		catch (SQLException e)
@@ -591,54 +643,52 @@ public class TestGroupBy
 		props.put("fileExtension", ".txt");
 		props.put("commentChar", "#");
 		props.put("columnTypes", "Date,Integer,Integer,Integer,Integer,Double");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt.executeQuery("select FROM_BLZ, count(distinct FROM_ACCT) from transactions group by FROM_BLZ order by FROM_BLZ");
-		assertTrue(results.next());
-		assertEquals("Incorrect FROM_BLZ", "10010010", results.getString(1));
-		assertEquals("Incorrect count FROM_ACCT", 2, results.getInt(2));
-		assertTrue(results.next());
-		assertEquals("Incorrect FROM_BLZ", "10020200", results.getString(1));
-		assertEquals("Incorrect count FROM_ACCT", 1, results.getInt(2));
-		assertTrue(results.next());
-		assertEquals("Incorrect FROM_BLZ", "10020500", results.getString(1));
-		assertEquals("Incorrect count FROM_ACCT", 1, results.getInt(2));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
 
-		results.close();
-		stmt.close();
-		conn.close();
+			ResultSet results = stmt.executeQuery("select FROM_BLZ, count(distinct FROM_ACCT) from transactions group by FROM_BLZ order by FROM_BLZ"))
+		{
+			assertTrue(results.next());
+			assertEquals("Incorrect FROM_BLZ", "10010010", results.getString(1));
+			assertEquals("Incorrect count FROM_ACCT", 2, results.getInt(2));
+			assertTrue(results.next());
+			assertEquals("Incorrect FROM_BLZ", "10020200", results.getString(1));
+			assertEquals("Incorrect count FROM_ACCT", 1, results.getInt(2));
+			assertTrue(results.next());
+			assertEquals("Incorrect FROM_BLZ", "10020500", results.getString(1));
+			assertEquals("Incorrect count FROM_ACCT", 1, results.getInt(2));
+			assertFalse(results.next());
+		}
 	}
-	
+
 	@Test
 	public void testGroupBySumAvgDistinct() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,Int,Int,Date,Time");
 		props.put("dateFormat", "M/D/YYYY");
-		Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		Statement stmt = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 
-		ResultSet results = stmt.executeQuery("select CampaignNo, sum(distinct PurchaseCt), round(avg(distinct PurchaseCt)*10) from Purchase group by CampaignNo order by CampaignNo");
-		assertTrue(results.next());
-		assertEquals("Incorrect CampaignNo", 1, results.getInt(1));
-		assertEquals("Incorrect sum PurchaseCt", 4 + 1 + 11, results.getInt(2));
-		assertEquals("Incorrect avg PurchaseCt", Math.round((4 + 1 + 11) / 3.0 * 10), results.getInt(3));
-		assertTrue(results.next());
-		assertEquals("Incorrect CampaignNo", 21, results.getInt(1));
-		assertEquals("Incorrect sum PurchaseCt", 1 + 3, results.getInt(2));
-		assertEquals("Incorrect avg PurchaseCt", Math.round((1 + 3) / 2.0 * 10), results.getInt(3));
-		assertTrue(results.next());
-		assertEquals("Incorrect CampaignNo", 61, results.getInt(1));
-		assertEquals("Incorrect sum PurchaseCt", 4, results.getInt(2));
-		assertEquals("Incorrect avg PurchaseCt", 4 * 10, results.getInt(3));
-		assertFalse(results.next());
+			Statement stmt = conn.createStatement();
 
-		results.close();
-		stmt.close();
-		conn.close();
+			ResultSet results = stmt.executeQuery("select CampaignNo, sum(distinct PurchaseCt), round(avg(distinct PurchaseCt)*10) from Purchase group by CampaignNo order by CampaignNo"))
+		{
+			assertTrue(results.next());
+			assertEquals("Incorrect CampaignNo", 1, results.getInt(1));
+			assertEquals("Incorrect sum PurchaseCt", 4 + 1 + 11, results.getInt(2));
+			assertEquals("Incorrect avg PurchaseCt", Math.round((4 + 1 + 11) / 3.0 * 10), results.getInt(3));
+			assertTrue(results.next());
+			assertEquals("Incorrect CampaignNo", 21, results.getInt(1));
+			assertEquals("Incorrect sum PurchaseCt", 1 + 3, results.getInt(2));
+			assertEquals("Incorrect avg PurchaseCt", Math.round((1 + 3) / 2.0 * 10), results.getInt(3));
+			assertTrue(results.next());
+			assertEquals("Incorrect CampaignNo", 61, results.getInt(1));
+			assertEquals("Incorrect sum PurchaseCt", 4, results.getInt(2));
+			assertEquals("Incorrect avg PurchaseCt", 4 * 10, results.getInt(3));
+			assertFalse(results.next());
+		}
 	}
 }
