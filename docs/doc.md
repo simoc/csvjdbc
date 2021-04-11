@@ -104,18 +104,17 @@ import java.sql.*;
 
 public class DemoDriver2
 {
-  public static void main(String[] args)
+  public static void main(String[] args) throws Exception
   {
-    try
-    {
-      Class.forName("org.relique.jdbc.csv.CsvDriver");
-      Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + args[0]);
+    Class.forName("org.relique.jdbc.csv.CsvDriver");
+    try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + args[0]);
 
       // create a scrollable Statement so we can move forwards and backwards
       // through ResultSets
       Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
         ResultSet.CONCUR_READ_ONLY);
-      ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample");
+      ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample"))
+    {
 
       // dump out the last record in the result set, then the first record
       if (results.last())
@@ -128,13 +127,6 @@ public class DemoDriver2
               "   NAME= " + results.getString("NAME"));
         }
       }
-
-      // clean up
-      conn.close();
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
     }
   }
 }
