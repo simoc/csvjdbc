@@ -185,33 +185,27 @@ import java.util.Properties;
 
 public class DemoDriver4
 {
-  public static void main(String[] args)
+  public static void main(String[] args) throws Exception
   {
-    try
-    {
-      Class.forName("org.relique.jdbc.csv.CsvDriver");
-      Properties props = new Properties();
-      // Define column names and column data types here.
-      props.put("suppressHeaders", "true");
-      props.put("headerline", "ID,ANGLE,MEASUREDATE");
-      props.put("columnTypes", "Int,Double,Date");
-      Connection conn = DriverManager.getConnection("jdbc:relique:csv:" +
+    Class.forName("org.relique.jdbc.csv.CsvDriver");
+    Properties props = new Properties();
+    // Define column names and column data types here.
+    props.put("suppressHeaders", "true");
+    props.put("headerline", "ID,ANGLE,MEASUREDATE");
+    props.put("columnTypes", "Int,Double,Date");
+    try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" +
         args[0], props);
       Statement stmt = conn.createStatement();
       ResultSet results = stmt.executeQuery("SELECT Id, Angle * 180 / 3.1415 as A, " +
-        "MeasureDate FROM t1 where Id > 1001");
+        "MeasureDate FROM t1 where Id > 1001"))
+    {
       while (results.next())
       {
-          // Fetch column values with methods that match the column data types.
-          System.out.println(results.getInt(1));
-          System.out.println(results.getDouble(2));
-          System.out.println(results.getDate(3));
+        // Fetch column values with methods that match the column data types.
+        System.out.println(results.getInt(1));
+        System.out.println(results.getDouble(2));
+        System.out.println(results.getDate(3));
       }
-      conn.close();
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
     }
   }
 }
