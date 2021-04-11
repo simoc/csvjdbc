@@ -250,6 +250,7 @@ classes.
 
 ```java
 import java.io.*;
+import java.net.*;
 import java.sql.*;
 import java.util.*;
 
@@ -286,23 +287,17 @@ import org.relique.jdbc.csv.CsvDriver;
 
 public class DemoDriver6
 {
-  public static void main(String []args)
+  public static void main(String []args) throws Exception
   {
-    try
-    {
-      Class.forName("org.relique.jdbc.csv.CsvDriver");
-      // Give name of Java class that provides database tables.
-      Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" +
+    Class.forName("org.relique.jdbc.csv.CsvDriver");
+    String sql = "SELECT * FROM sample";
+    // Give name of Java class that provides database tables.
+    try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" +
         MyHTTPReader.class.getName());
       Statement stmt = conn.createStatement();
-      String sql = "SELECT * FROM sample";
-      ResultSet results = stmt.executeQuery(sql);
-      CsvDriver.writeToCsv(results, System.out, true);
-      conn.close();
-    }
-    catch (Exception e)
+      ResultSet results = stmt.executeQuery(sql))
     {
-      e.printStackTrace();
+      CsvDriver.writeToCsv(results, System.out, true);
     }
   }
 }
