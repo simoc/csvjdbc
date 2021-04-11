@@ -49,17 +49,17 @@ public class DemoDriver
       "separator=;" + "&" + "fileExtension=.txt";
     try (Connection conn = DriverManager.getConnection(url);
 
-        // Create a Statement object to execute the query with.
-        // A Statement is not thread-safe.
-        Statement stmt = conn.createStatement();
+      // Create a Statement object to execute the query with.
+      // A Statement is not thread-safe.
+      Statement stmt = conn.createStatement();
 
-        // Select the ID and NAME columns from sample.csv
-        ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample"))
+      // Select the ID and NAME columns from sample.csv
+      ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample"))
     {
-        // Dump out the results to a CSV file with the same format
-        // using CsvJdbc helper function
-        boolean append = true;
-        CsvDriver.writeToCsv(results, System.out, append);
+      // Dump out the results to a CSV file with the same format
+      // using CsvJdbc helper function
+      boolean append = true;
+      CsvDriver.writeToCsv(results, System.out, append);
     }
   }
 }
