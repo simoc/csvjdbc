@@ -142,25 +142,24 @@ import java.util.Properties;
 
 public class DemoDriver3
 {
-  public static void main(String[] args)
+  public static void main(String[] args) throws Exception
   {
-    try
-    {
-      Class.forName("org.relique.jdbc.csv.CsvDriver");
-      Properties props = new Properties();
-      props.put("fileExtension", ".txt");
-      props.put("indexedFiles", "true");
-      // We want to read test-001-20081112.txt, test-002-20081113.txt and many
-      // other files matching this pattern.
-      props.put("fileTailPattern", "-(\\d+)-(\\d+)");
-      // Make the two groups in the regular expression available as
-      // additional table columns.
-      props.put("fileTailParts", "Seqnr,Logdatum");
-      Connection conn = DriverManager.getConnection("jdbc:relique:csv:" +
+    Class.forName("org.relique.jdbc.csv.CsvDriver");
+    Properties props = new Properties();
+    props.put("fileExtension", ".txt");
+    props.put("indexedFiles", "true");
+    // We want to read test-001-20081112.txt, test-002-20081113.txt and many
+    // other files matching this pattern.
+    props.put("fileTailPattern", "-(\\d+)-(\\d+)");
+    // Make the two groups in the regular expression available as
+    // additional table columns.
+    props.put("fileTailParts", "Seqnr,Logdatum");
+    try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" +
         args[0], props);
       Statement stmt = conn.createStatement();
       ResultSet results = stmt.executeQuery("SELECT Datum, Station, " +
-        "Seqnr, Logdatum FROM test");
+        "Seqnr, Logdatum FROM test"))
+    {
       ResultSetMetaData meta = results.getMetaData();
       while (results.next())
       {
@@ -170,11 +169,6 @@ public class DemoDriver3
             results.getString(i + 1));
         }
       }
-      conn.close();
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
     }
   }
 }
