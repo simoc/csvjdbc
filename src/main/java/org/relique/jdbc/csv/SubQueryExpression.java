@@ -60,27 +60,24 @@ class SubQueryExpression extends Expression
 		 * SELECT ... WHERE EXISTS (SELECT X2 FROM ... )
 		 */
 		boolean matches = false;
-		CsvStatement statement = null;
-		ResultSet resultSet = null;
 
-		try
+		/*
+		 * Clear query expressions so that any aggregate functions are calculated
+		 * independently each time this SQL statement is executed.
+		 */
+		SqlParser sqlParser = new SqlParser();
+		for (ParsedExpression parsedExpr : parsedStatement.queryEntries)
 		{
-			/*
-			 * Clear query expressions so that any aggregate functions are calculated
-			 * independently each time this SQL statement is executed.
-			 */
-			SqlParser sqlParser = new SqlParser();
-			for (ParsedExpression parsedExpr : parsedStatement.queryEntries)
-			{
-				parsedExpr.resetAggregateFunctions();
-			}
+			parsedExpr.resetAggregateFunctions();
+		}
 
-			sqlParser.setParsedStatement(parsedStatement);
+		sqlParser.setParsedStatement(parsedStatement);
 
-			Expression expr = new ColumnName(CsvStatement.STATEMENT_COLUMN_NAME);
-			statement = (CsvStatement) expr.eval(env);
+		Expression expr = new ColumnName(CsvStatement.STATEMENT_COLUMN_NAME);
+		CsvStatement statement = (CsvStatement) expr.eval(env);
 
-			resultSet = statement.executeParsedQuery(sqlParser, env);
+		try (ResultSet resultSet = statement.executeParsedQuery(sqlParser, env))
+		{
 			if (resultSet.getMetaData().getColumnCount() != 1)
 				throw new SQLException(CsvResources.getString("subqueryOneColumn"));
 
@@ -94,11 +91,7 @@ class SubQueryExpression extends Expression
 				matches = rowMatcher.matches(o);
 			}
 		}
-		finally
-		{
-			if (resultSet != null)
-				resultSet.close();
-		}
+
 		return matches;
 	}
 	public String toString()
