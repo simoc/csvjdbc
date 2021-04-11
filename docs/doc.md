@@ -218,30 +218,23 @@ example.
 
 ```java
 import java.sql.*;
-import java.util.Properties;
 
 public class DemoDriver5
 {
-  public static void main(String[] args)
+  public static void main(String[] args) throws Exception
   {
-    try
-    {
-      Class.forName("org.relique.jdbc.csv.CsvDriver");
-      String zipFilename = args[0];
-      Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:" +
+    Class.forName("org.relique.jdbc.csv.CsvDriver");
+    String zipFilename = args[0];
+    try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:" +
         zipFilename);
       Statement stmt = conn.createStatement();
       // Read from file mytable.csv inside the ZIP file
-      ResultSet results = stmt.executeQuery("SELECT * FROM mytable");
+      ResultSet results = stmt.executeQuery("SELECT * FROM mytable"))
+    {
       while (results.next())
       {
           System.out.println(results.getString("COUNTRY"));
       }
-      conn.close();
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
     }
   }
 }
