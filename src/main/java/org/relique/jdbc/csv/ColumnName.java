@@ -37,16 +37,19 @@ class ColumnName extends Expression
 		return columnName;
 	}
 
+	@Override
 	public Object eval(Map<String, Object> env)
 	{
 		return env.get(columnName);
 	}
 
+	@Override
 	public String toString()
 	{
 		return "["+columnName+"]";
 	}
 
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();

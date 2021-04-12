@@ -37,6 +37,7 @@ class SQLCalendarFunction extends Expression
 		this.calendarField = calendarField;
 		this.expression = expression;
 	}
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object retval = null;
@@ -85,16 +86,19 @@ class SQLCalendarFunction extends Expression
 		}
 		return retval;
 	}
+	@Override
 	public String toString()
 	{
 		return functionName+"("+expression+")";
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
 		result.addAll(expression.usedColumns(availableColumns));
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();

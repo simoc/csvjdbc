@@ -115,6 +115,7 @@ public class DbfReader extends DataReader
 		dbfTypeToSQLType.put("FLOAT", "Double");
 	}
 
+	@Override
 	public void close() throws SQLException
 	{
 		if (table != null)
@@ -131,6 +132,7 @@ public class DbfReader extends DataReader
 		table = null;
 	}
 
+	@Override
 	public String[] getColumnNames() throws SQLException
 	{
 		if (columnNames == null)
@@ -173,6 +175,7 @@ public class DbfReader extends DataReader
 		}
 	}
 
+	@Override
 	public boolean next() throws SQLException
 	{
 		rowNo++;
@@ -198,6 +201,7 @@ public class DbfReader extends DataReader
 		return true;
 	}
 
+	@Override
 	public String[] getColumnTypes() throws SQLException
 	{
 		String[] result = new String[fields.size()];
@@ -219,6 +223,7 @@ public class DbfReader extends DataReader
 		return result;
 	}
 
+	@Override
 	public int[] getColumnSizes() throws SQLException
 	{
 		int[] result = new int[fields.size()];
@@ -237,6 +242,7 @@ public class DbfReader extends DataReader
 		return result;
 	}
 
+	@Override
 	public Map<String, Object> getEnvironment() throws SQLException
 	{
 		int initialSize = fields.size() * 2;
@@ -277,6 +283,7 @@ public class DbfReader extends DataReader
 		return result;
 	}
 
+	@Override
 	public String getTableAlias()
 	{
 		return tableAlias;

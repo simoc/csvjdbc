@@ -40,6 +40,7 @@ class SQLStringAggFunction extends AggregateFunction
 		this.expression = expression;
 		this.delimiter = delimiter;
 	}
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object stringAggregation = null;
@@ -82,6 +83,7 @@ class SQLStringAggFunction extends AggregateFunction
 		}
 		return stringAggregation;
 	}
+	@Override
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder("STRING_AGG(");
@@ -93,29 +95,34 @@ class SQLStringAggFunction extends AggregateFunction
 		sb.append(")");
 		return sb.toString();
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
 		result.addAll(delimiter.usedColumns(availableColumns));
 		return result;
 	}
+	@Override
 	public List<String> aggregateColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
 		result.addAll(expression.usedColumns(availableColumns));
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
 		result.add(this);
 		return result;
 	}
+	@Override
 	public void resetAggregateFunctions()
 	{
 		distinctAggregateValues.clear();
 		aggregateValues.clear();
 	}
+	@Override
 	public void processRow(Map<String, Object> env) throws SQLException
 	{
 		/*

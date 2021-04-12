@@ -32,6 +32,7 @@ class SQLCoalesceFunction extends Expression
 	{
 		this.expressions = expressions;
 	}
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object retval = null;
@@ -47,6 +48,7 @@ class SQLCoalesceFunction extends Expression
 		}
 		return retval;
 	}
+	@Override
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder("COALESCE(");
@@ -61,6 +63,7 @@ class SQLCoalesceFunction extends Expression
 		sb.append(")");
 		return sb.toString();
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
@@ -71,6 +74,7 @@ class SQLCoalesceFunction extends Expression
 		}
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();

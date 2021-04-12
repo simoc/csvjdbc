@@ -33,6 +33,7 @@ class SQLNullIfFunction extends Expression
 		this.expression1 = expression1;
 		this.expression2 = expression2;
 	}
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object retval;
@@ -46,10 +47,12 @@ class SQLNullIfFunction extends Expression
 			retval = value1;
 		return retval;
 	}
+	@Override
 	public String toString()
 	{
 		return "NULLIF("+expression1+","+expression2+")";
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
@@ -57,6 +60,7 @@ class SQLNullIfFunction extends Expression
 		result.addAll(expression2.usedColumns(availableColumns));
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();

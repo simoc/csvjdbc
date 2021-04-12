@@ -25,6 +25,7 @@ public class SubQueryEqualsRowMatcher implements SubQueryRowMatcher
 {
 	ArrayList<Object> values = new ArrayList<Object>();
 
+	@Override
 	public boolean matches(Object expr) throws SQLException
 	{
 		/*

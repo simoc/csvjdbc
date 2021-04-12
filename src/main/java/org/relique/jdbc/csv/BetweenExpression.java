@@ -33,6 +33,7 @@ class BetweenExpression extends LogicalExpression
 		this.left = left;
 		this.right = right;
 	}
+	@Override
 	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		Comparable leftValue = (Comparable)left.eval(env);
@@ -53,10 +54,12 @@ class BetweenExpression extends LogicalExpression
 		}
 		return Boolean.FALSE;
 	}
+	@Override
 	public String toString()
 	{
 		return "B "+obj+" "+left+" "+right;
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
@@ -65,6 +68,7 @@ class BetweenExpression extends LogicalExpression
 		result.addAll(right.usedColumns(availableColumns));
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();

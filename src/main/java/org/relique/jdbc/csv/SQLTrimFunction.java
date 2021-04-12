@@ -38,6 +38,7 @@ class SQLTrimFunction extends Expression
 		this.trimChars = trimChars;
 		this.trimType = trimType;
 	}
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object retval = expression.eval(env);
@@ -101,6 +102,7 @@ class SQLTrimFunction extends Expression
 		}
 		return retval;
 	}
+	@Override
 	public String toString()
 	{
 		if (trimType == Type.LEADING)
@@ -110,6 +112,7 @@ class SQLTrimFunction extends Expression
 		else
 			return "TRIM("+expression+")";
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
@@ -118,6 +121,7 @@ class SQLTrimFunction extends Expression
 			result.addAll(trimChars.usedColumns(availableColumns));
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();

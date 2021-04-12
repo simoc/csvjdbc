@@ -27,6 +27,7 @@ class SQLAvgFunction extends SQLSumFunction
 	{
 		super(isDistinct, expression);
 	}
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object o = super.eval(env);
@@ -37,6 +38,7 @@ class SQLAvgFunction extends SQLSumFunction
 		}
 		return o;
 	}
+	@Override
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder("AVG(");

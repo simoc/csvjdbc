@@ -140,6 +140,7 @@ public class CsvResultSet implements ResultSet
 	 */
 	public class OrderByComparator implements Comparator<Map<String, Object>>
 	{
+		@Override
 		public int compare(Map<String, Object> recordEnvironment1, Map<String, Object> recordEnvironment2)
 		{
 			int retval = 0;
@@ -2783,12 +2784,14 @@ public class CsvResultSet implements ResultSet
 		// TODO Auto-generated method stub
 	}
 
+	@Override
 	public <T> T getObject(String columnLabel, Class<T> type) throws SQLException
 	{
 		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
 			": ResultSet.getObject(String, Class<T>)");
 	}
 
+	@Override
 	public <T> T getObject(int columnIndex, Class<T> type) throws SQLException
 	{
 		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +

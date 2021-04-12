@@ -1346,6 +1346,7 @@ public class CsvConnection implements Connection
 		// TODO Auto-generated method stub
 	}
 
+	@Override
 	public int getNetworkTimeout() throws SQLException
 	{
 		checkOpen();
@@ -1353,6 +1354,7 @@ public class CsvConnection implements Connection
 		return 0;
 	}
 
+	@Override
 	public void setNetworkTimeout(Executor executor, int milliseconds)
 		throws SQLException
 	{
@@ -1361,11 +1363,13 @@ public class CsvConnection implements Connection
 		throw new SQLFeatureNotSupportedException(CsvResources.getString("methodNotSupported") + ": Connection.setNetworkTimeout(Executor,int)");
 	}
 
+	@Override
 	public void abort(Executor executor) throws SQLException
 	{
 		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") + ": Connection.abort(Executor)");
 	}
 
+	@Override
 	public String getSchema() throws SQLException
 	{
 		checkOpen();
@@ -1373,6 +1377,7 @@ public class CsvConnection implements Connection
 		return null;
 	}
 
+	@Override
 	public void setSchema(String schema) throws SQLException
 	{
 		checkOpen();
@@ -1411,6 +1416,7 @@ public class CsvConnection implements Connection
 		if (path != null)
 		{
 			File[] matchingFiles = new File(path).listFiles(new FilenameFilter() {
+				@Override
 				public boolean accept(File dir, String name)
 				{
 					return name.endsWith(extension);

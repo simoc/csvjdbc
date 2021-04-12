@@ -29,10 +29,12 @@ class AsteriskExpression extends Expression
 	{
 		this.expression = expression;
 	}
+	@Override
 	public String toString()
 	{
 		return expression;
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();

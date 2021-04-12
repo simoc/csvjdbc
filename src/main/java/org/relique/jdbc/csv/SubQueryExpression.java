@@ -34,6 +34,7 @@ class SubQueryExpression extends Expression
 		this.parsedStatement = parsedStatement;
 	}
 
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		/*
@@ -94,6 +95,7 @@ class SubQueryExpression extends Expression
 
 		return matches;
 	}
+	@Override
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
@@ -102,6 +104,7 @@ class SubQueryExpression extends Expression
 		sb.append(")");
 		return sb.toString();
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> retval = new LinkedList<String>();
@@ -117,6 +120,7 @@ class SubQueryExpression extends Expression
 		}
 		return retval;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		/*

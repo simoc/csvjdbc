@@ -38,10 +38,12 @@ class AndExpression extends LogicalExpression
 			isValid = left.isValid() && right.isValid();
 		}
 	}
+	@Override
 	public boolean isValid()
 	{
 		return isValid;
 	}
+	@Override
 	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		Boolean leftIsTrue = left.isTrue(env);
@@ -70,10 +72,12 @@ class AndExpression extends LogicalExpression
 			return Boolean.FALSE;
 		}
 	}
+	@Override
 	public String toString()
 	{
 		return "AND "+left+" "+right;
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
@@ -81,6 +85,7 @@ class AndExpression extends LogicalExpression
 		result.addAll(right.usedColumns(availableColumns));
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();

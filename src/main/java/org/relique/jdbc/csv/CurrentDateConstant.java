@@ -30,14 +30,17 @@ class CurrentDateConstant extends Expression
 	{
 		this.parent = parent;
 	}
+	@Override
 	public Object eval(Map<String, Object> env)
 	{
 		return parent.getCurrentDate();
 	}
+	@Override
 	public String toString()
 	{
 		return "CURRENT_DATE";
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		return new LinkedList<String>();

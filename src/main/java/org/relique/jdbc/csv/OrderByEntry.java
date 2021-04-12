@@ -28,6 +28,7 @@ class OrderByEntry extends Expression
 		this.expression = expression;
 	}
 
+	@Override
 	public String toString()
 	{
 		return expression.toString() + " " + order;

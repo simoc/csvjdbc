@@ -37,6 +37,7 @@ class SQLSubstringFunction extends Expression
 		this.len = len;
 	}
 
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object retval = null;
@@ -140,6 +141,7 @@ class SQLSubstringFunction extends Expression
 		return retval;
 	}
 
+	@Override
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder("SUBSTRING(");
@@ -154,6 +156,7 @@ class SQLSubstringFunction extends Expression
 		sb.append(")");
 		return sb.toString();
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
@@ -163,6 +166,7 @@ class SQLSubstringFunction extends Expression
 			result.addAll(len.usedColumns(availableColumns));
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();

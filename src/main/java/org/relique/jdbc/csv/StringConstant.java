@@ -30,14 +30,17 @@ class StringConstant extends Expression
 	{
 		value = s;
 	}
+	@Override
 	public Object eval(Map<String, Object> env)
 	{
 		return value;
 	}
+	@Override
 	public String toString()
 	{
 		return "'"+value+"'";
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		return new LinkedList<String>();

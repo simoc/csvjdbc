@@ -31,6 +31,7 @@ class SQLUpperFunction extends Expression
 	{
 		this.expression = expression;
 	}
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object retval = expression.eval(env);
@@ -38,16 +39,19 @@ class SQLUpperFunction extends Expression
 			retval = retval.toString().toUpperCase();
 		return retval;
 	}
+	@Override
 	public String toString()
 	{
 		return "UPPER("+expression+")";
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
 		result.addAll(expression.usedColumns(availableColumns));
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();

@@ -34,6 +34,7 @@ class SQLMaxFunction extends AggregateFunction
 		this.isDistinct = isDistinct;
 		this.expression = expression;
 	}
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object o = env.get(GROUPING_COLUMN_NAME);
@@ -58,6 +59,7 @@ class SQLMaxFunction extends AggregateFunction
 		}
 		return max;
 	}
+	@Override
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder("MAX(");
@@ -67,26 +69,31 @@ class SQLMaxFunction extends AggregateFunction
 		sb.append(")");
 		return sb.toString();
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		return new LinkedList<String>();
 	}
+	@Override
 	public List<String> aggregateColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
 		result.addAll(expression.usedColumns(availableColumns));
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
 		result.add(this);
 		return result;
 	}
+	@Override
 	public void resetAggregateFunctions()
 	{
 		this.max = null;
 	}
+	@Override
 	public void processRow(Map<String, Object> env) throws SQLException
 	{
 		/*

@@ -31,11 +31,13 @@ class ExistsExpression extends LogicalExpression
 	{
 		this.subQuery = subQuery;
 	}
+	@Override
 	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		boolean matches = subQuery.evalList(env, new ExistsExpressionSubQueryRowMatcher());
 		return Boolean.valueOf(matches);
 	}
+	@Override
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
@@ -43,10 +45,12 @@ class ExistsExpression extends LogicalExpression
 		sb.append(subQuery.toString());
 		return sb.toString();
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		return subQuery.usedColumns(availableColumns);
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		return subQuery.aggregateFunctions();

@@ -25,14 +25,17 @@ import java.util.Set;
 
 class NullConstant extends Expression
 {
+	@Override
 	public Object eval(Map<String, Object> env)
 	{
 		return null;
 	}
+	@Override
 	public String toString()
 	{
 		return "null";
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		return new LinkedList<String>();

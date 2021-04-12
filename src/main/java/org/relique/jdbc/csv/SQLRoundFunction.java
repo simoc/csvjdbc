@@ -31,6 +31,7 @@ class SQLRoundFunction extends Expression
 	{
 		this.expression = expression;
 	}
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object retval = expression.eval(env);
@@ -65,16 +66,19 @@ class SQLRoundFunction extends Expression
 		}
 		return retval;
 	}
+	@Override
 	public String toString()
 	{
 		return "ROUND("+expression+")";
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
 		result.addAll(expression.usedColumns(availableColumns));
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
