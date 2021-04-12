@@ -49,7 +49,7 @@ public class EncryptedFileInputStream extends InputStream
 			return in.read(b, off, len);
 	}
 
-	public int read(InputStream in, byte[] b) throws IOException
+	public int read(byte[] b) throws IOException
 	{
 		if (filter != null)
 			return filter.read(in, b);
