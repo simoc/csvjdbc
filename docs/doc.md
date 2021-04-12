@@ -104,18 +104,17 @@ import java.sql.*;
 
 public class DemoDriver2
 {
-  public static void main(String[] args)
+  public static void main(String[] args) throws Exception
   {
-    try
-    {
-      Class.forName("org.relique.jdbc.csv.CsvDriver");
-      Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + args[0]);
+    Class.forName("org.relique.jdbc.csv.CsvDriver");
+    try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + args[0]);
 
       // create a scrollable Statement so we can move forwards and backwards
       // through ResultSets
       Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
         ResultSet.CONCUR_READ_ONLY);
-      ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample");
+      ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample"))
+    {
 
       // dump out the last record in the result set, then the first record
       if (results.last())
@@ -128,13 +127,6 @@ public class DemoDriver2
               "   NAME= " + results.getString("NAME"));
         }
       }
-
-      // clean up
-      conn.close();
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
     }
   }
 }
@@ -150,25 +142,24 @@ import java.util.Properties;
 
 public class DemoDriver3
 {
-  public static void main(String[] args)
+  public static void main(String[] args) throws Exception
   {
-    try
-    {
-      Class.forName("org.relique.jdbc.csv.CsvDriver");
-      Properties props = new Properties();
-      props.put("fileExtension", ".txt");
-      props.put("indexedFiles", "true");
-      // We want to read test-001-20081112.txt, test-002-20081113.txt and many
-      // other files matching this pattern.
-      props.put("fileTailPattern", "-(\\d+)-(\\d+)");
-      // Make the two groups in the regular expression available as
-      // additional table columns.
-      props.put("fileTailParts", "Seqnr,Logdatum");
-      Connection conn = DriverManager.getConnection("jdbc:relique:csv:" +
+    Class.forName("org.relique.jdbc.csv.CsvDriver");
+    Properties props = new Properties();
+    props.put("fileExtension", ".txt");
+    props.put("indexedFiles", "true");
+    // We want to read test-001-20081112.txt, test-002-20081113.txt and many
+    // other files matching this pattern.
+    props.put("fileTailPattern", "-(\\d+)-(\\d+)");
+    // Make the two groups in the regular expression available as
+    // additional table columns.
+    props.put("fileTailParts", "Seqnr,Logdatum");
+    try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" +
         args[0], props);
       Statement stmt = conn.createStatement();
       ResultSet results = stmt.executeQuery("SELECT Datum, Station, " +
-        "Seqnr, Logdatum FROM test");
+        "Seqnr, Logdatum FROM test"))
+    {
       ResultSetMetaData meta = results.getMetaData();
       while (results.next())
       {
@@ -178,11 +169,6 @@ public class DemoDriver3
             results.getString(i + 1));
         }
       }
-      conn.close();
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
     }
   }
 }
@@ -199,33 +185,27 @@ import java.util.Properties;
 
 public class DemoDriver4
 {
-  public static void main(String[] args)
+  public static void main(String[] args) throws Exception
   {
-    try
-    {
-      Class.forName("org.relique.jdbc.csv.CsvDriver");
-      Properties props = new Properties();
-      // Define column names and column data types here.
-      props.put("suppressHeaders", "true");
-      props.put("headerline", "ID,ANGLE,MEASUREDATE");
-      props.put("columnTypes", "Int,Double,Date");
-      Connection conn = DriverManager.getConnection("jdbc:relique:csv:" +
+    Class.forName("org.relique.jdbc.csv.CsvDriver");
+    Properties props = new Properties();
+    // Define column names and column data types here.
+    props.put("suppressHeaders", "true");
+    props.put("headerline", "ID,ANGLE,MEASUREDATE");
+    props.put("columnTypes", "Int,Double,Date");
+    try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" +
         args[0], props);
       Statement stmt = conn.createStatement();
       ResultSet results = stmt.executeQuery("SELECT Id, Angle * 180 / 3.1415 as A, " +
-        "MeasureDate FROM t1 where Id > 1001");
+        "MeasureDate FROM t1 where Id > 1001"))
+    {
       while (results.next())
       {
-          // Fetch column values with methods that match the column data types.
-          System.out.println(results.getInt(1));
-          System.out.println(results.getDouble(2));
-          System.out.println(results.getDate(3));
+        // Fetch column values with methods that match the column data types.
+        System.out.println(results.getInt(1));
+        System.out.println(results.getDouble(2));
+        System.out.println(results.getDate(3));
       }
-      conn.close();
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
     }
   }
 }
@@ -238,30 +218,23 @@ example.
 
 ```java
 import java.sql.*;
-import java.util.Properties;
 
 public class DemoDriver5
 {
-  public static void main(String[] args)
+  public static void main(String[] args) throws Exception
   {
-    try
-    {
-      Class.forName("org.relique.jdbc.csv.CsvDriver");
-      String zipFilename = args[0];
-      Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:" +
+    Class.forName("org.relique.jdbc.csv.CsvDriver");
+    String zipFilename = args[0];
+    try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:" +
         zipFilename);
       Statement stmt = conn.createStatement();
       // Read from file mytable.csv inside the ZIP file
-      ResultSet results = stmt.executeQuery("SELECT * FROM mytable");
+      ResultSet results = stmt.executeQuery("SELECT * FROM mytable"))
+    {
       while (results.next())
       {
           System.out.println(results.getString("COUNTRY"));
       }
-      conn.close();
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
     }
   }
 }
@@ -277,6 +250,7 @@ classes.
 
 ```java
 import java.io.*;
+import java.net.*;
 import java.sql.*;
 import java.util.*;
 
@@ -313,23 +287,17 @@ import org.relique.jdbc.csv.CsvDriver;
 
 public class DemoDriver6
 {
-  public static void main(String []args)
+  public static void main(String []args) throws Exception
   {
-    try
-    {
-      Class.forName("org.relique.jdbc.csv.CsvDriver");
-      // Give name of Java class that provides database tables.
-      Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" +
+    Class.forName("org.relique.jdbc.csv.CsvDriver");
+    String sql = "SELECT * FROM sample";
+    // Give name of Java class that provides database tables.
+    try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" +
         MyHTTPReader.class.getName());
       Statement stmt = conn.createStatement();
-      String sql = "SELECT * FROM sample";
-      ResultSet results = stmt.executeQuery(sql);
-      CsvDriver.writeToCsv(results, System.out, true);
-      conn.close();
-    }
-    catch (Exception e)
+      ResultSet results = stmt.executeQuery(sql))
     {
-      e.printStackTrace();
+      CsvDriver.writeToCsv(results, System.out, true);
     }
   }
 }

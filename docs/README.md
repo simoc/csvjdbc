@@ -47,22 +47,20 @@ public class DemoDriver
     // A single connection is thread-safe for use by several threads.
     String url = "jdbc:relique:csv:" + args[0] + "?" +
       "separator=;" + "&" + "fileExtension=.txt";
-    Connection conn = DriverManager.getConnection(url);
+    try (Connection conn = DriverManager.getConnection(url);
 
-    // Create a Statement object to execute the query with.
-    // A Statement is not thread-safe.
-    Statement stmt = conn.createStatement();
+      // Create a Statement object to execute the query with.
+      // A Statement is not thread-safe.
+      Statement stmt = conn.createStatement();
 
-    // Select the ID and NAME columns from sample.csv
-    ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample");
-
-    // Dump out the results to a CSV file with the same format
-    // using CsvJdbc helper function
-    boolean append = true;
-    CsvDriver.writeToCsv(results, System.out, append);
-
-    // Clean up
-    conn.close();
+      // Select the ID and NAME columns from sample.csv
+      ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample"))
+    {
+      // Dump out the results to a CSV file with the same format
+      // using CsvJdbc helper function
+      boolean append = true;
+      CsvDriver.writeToCsv(results, System.out, append);
+    }
   }
 }
 ```

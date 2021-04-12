@@ -132,64 +132,56 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 		String columnTypes = "String,String,String,String,Integer,String,Integer,Integer,Integer,Integer,Integer,"
 			+ "String,String,Integer,Integer,Integer,Integer,String,String,String,String,Short,String";
 		ArrayList<Object[]> columnValues = new ArrayList<Object[]>();
-		ResultSet resultSet = null;
-		ResultSet resultSet2 = null;
-		try
-		{			
-			if (internalStatement == null)
-				internalStatement = (CsvStatement) createdByConnection.createStatement();
 
-			/*
-			 * Find tables matching the pattern.
-			 */
-			resultSet = getTables(catalog, schemaPattern, tableNamePattern, null);
+		if (internalStatement == null)
+			internalStatement = (CsvStatement) createdByConnection.createStatement();
+
+		/*
+		 * Find tables matching the pattern.
+		 */
+		try (ResultSet resultSet = getTables(catalog, schemaPattern, tableNamePattern, null))
+		{
 			while (resultSet.next())
-			{				
+			{
 				String tableName = resultSet.getString(3);
 
-				resultSet2 = internalStatement.executeQuery("SELECT * FROM \"" + tableName + "\"");
-				ResultSetMetaData metadata = resultSet2.getMetaData();
-				int nColumns = metadata.getColumnCount();
-				Integer columnSize = Integer.valueOf(Short.MAX_VALUE);
-				Integer decimalDigits = Integer.valueOf(Short.MAX_VALUE);
-				Integer zero = Integer.valueOf(0);
-				Integer radix = Integer.valueOf(10);
-				Integer nullable = Integer.valueOf(columnNullable);
-				String remarks = null;
-				String defaultValue = null;
-	
-				for (int i = 0; i < nColumns; i++)
+				try (ResultSet resultSet2 = internalStatement.executeQuery("SELECT * FROM \"" + tableName + "\""))
 				{
-					String columnName = metadata.getColumnName(i + 1);
+					ResultSetMetaData metadata = resultSet2.getMetaData();
+					int nColumns = metadata.getColumnCount();
+					Integer columnSize = Integer.valueOf(Short.MAX_VALUE);
+					Integer decimalDigits = Integer.valueOf(Short.MAX_VALUE);
+					Integer zero = Integer.valueOf(0);
+					Integer radix = Integer.valueOf(10);
+					Integer nullable = Integer.valueOf(columnNullable);
+					String remarks = null;
+					String defaultValue = null;
 
-					/*
-					 * Only add columns matching the column pattern.
-					 */
-					if (columnNamePattern == null ||
-						LikePattern.matches(columnNamePattern, LikePattern.DEFAULT_ESCAPE_STRING, columnName))
+					for (int i = 0; i < nColumns; i++)
 					{
-						int columnType = metadata.getColumnType(i + 1);
-						String columnTypeName = metadata.getColumnTypeName(i + 1);
-						Object data[] = { null, null, tableName, columnName,
-							Integer.valueOf(columnType), columnTypeName,
-							columnSize, zero, decimalDigits, radix, nullable,
-							remarks, defaultValue, zero, zero, columnSize,
-							Integer.valueOf(i + 1), "YES", null, null, null, null,
-							"NO" };
-						columnValues.add(data);
+						String columnName = metadata.getColumnName(i + 1);
+
+						/*
+						 * Only add columns matching the column pattern.
+						 */
+						if (columnNamePattern == null ||
+							LikePattern.matches(columnNamePattern, LikePattern.DEFAULT_ESCAPE_STRING, columnName))
+						{
+							int columnType = metadata.getColumnType(i + 1);
+							String columnTypeName = metadata.getColumnTypeName(i + 1);
+							Object data[] = { null, null, tableName, columnName,
+								Integer.valueOf(columnType), columnTypeName,
+								columnSize, zero, decimalDigits, radix, nullable,
+								remarks, defaultValue, zero, zero, columnSize,
+								Integer.valueOf(i + 1), "YES", null, null, null, null,
+								"NO" };
+							columnValues.add(data);
+						}
 					}
 				}
-				resultSet2.close();
-				resultSet2 = null;
 			}
 		}
-		finally
-		{
-			if (resultSet2 != null)
-				resultSet2.close();
-			if (resultSet != null)
-				resultSet.close();
-		}
+
 		ResultSet retval = createResultSet(columnNames, columnTypes, columnValues);
 		return retval;
 	}
