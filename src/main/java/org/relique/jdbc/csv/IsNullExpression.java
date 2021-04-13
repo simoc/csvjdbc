@@ -31,6 +31,7 @@ class IsNullExpression extends LogicalExpression
 	{
 		this.arg = arg;
 	}
+	@Override
 	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		Object o = arg.eval(env);
@@ -39,16 +40,19 @@ class IsNullExpression extends LogicalExpression
 		else
 			return Boolean.FALSE;
 	}
+	@Override
 	public String toString()
 	{
 		return "N "+arg;
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
 		result.addAll(arg.usedColumns(availableColumns));
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();

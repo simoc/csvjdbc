@@ -34,6 +34,7 @@ class LikeExpression extends LogicalExpression
 		this.arg2 = arg2;
 		this.escapeArg = escapeArg;
 	}
+	@Override
 	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		Object left = arg1.eval(env);
@@ -57,6 +58,7 @@ class LikeExpression extends LogicalExpression
 			result = Boolean.valueOf(LikePattern.matches(right.toString(), escape, left.toString()));
 		return result;
 	}
+	@Override
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
@@ -71,6 +73,7 @@ class LikeExpression extends LogicalExpression
 		}
 		return sb.toString();
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
@@ -80,6 +83,7 @@ class LikeExpression extends LogicalExpression
 			result.addAll(escapeArg.usedColumns(availableColumns));
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();

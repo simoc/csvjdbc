@@ -752,6 +752,7 @@ public class CsvStatement implements Statement
 		return null;
 	}
 
+	@Override
 	public boolean isCloseOnCompletion() throws SQLException
 	{
 		checkOpen();
@@ -759,6 +760,7 @@ public class CsvStatement implements Statement
 		return false;
 	}
 
+	@Override
 	public void closeOnCompletion() throws SQLException
 	{
 		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +

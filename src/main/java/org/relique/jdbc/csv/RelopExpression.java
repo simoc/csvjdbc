@@ -39,6 +39,7 @@ class RelopExpression extends LogicalExpression
 		this.left = left;
 		this.right = right;
 	}
+	@Override
 	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		Boolean result = null;
@@ -177,10 +178,12 @@ class RelopExpression extends LogicalExpression
 		}
 		return leftComparedToRightObj;
 	}
+	@Override
 	public String toString()
 	{
 		return op+" "+left+" "+right;
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
@@ -188,6 +191,7 @@ class RelopExpression extends LogicalExpression
 		result.addAll(right.usedColumns(availableColumns));
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
@@ -195,6 +199,7 @@ class RelopExpression extends LogicalExpression
 		result.addAll(right.aggregateFunctions());
 		return result;
 	}
+	@Override
 	public boolean isValid()
 	{
 		return isValid;

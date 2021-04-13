@@ -39,6 +39,7 @@ class SearchedCaseExpression extends Expression
 		this.elseExpression = elseExpression;
 	}
 
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		for (int i = 0; i < conditions.size(); i++)
@@ -58,6 +59,7 @@ class SearchedCaseExpression extends Expression
 		return null;
 	}
 
+	@Override
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder("CASE");
@@ -72,6 +74,7 @@ class SearchedCaseExpression extends Expression
 		return sb.toString();
 	}
 
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
@@ -89,7 +92,8 @@ class SearchedCaseExpression extends Expression
 			result.addAll(elseExpression.usedColumns(availableColumns));
 		return result;
 	}
-	
+
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();

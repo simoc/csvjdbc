@@ -38,6 +38,7 @@ class SQLUserFunction extends Expression
 		this.expressions = expressions;
 	}
 
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object retval = null;
@@ -184,6 +185,7 @@ class SQLUserFunction extends Expression
 		return sb.toString();
 	}
 
+	@Override
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
@@ -199,6 +201,7 @@ class SQLUserFunction extends Expression
 		sb.append(")");
 		return sb.toString();
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
@@ -208,6 +211,7 @@ class SQLUserFunction extends Expression
 		}
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();

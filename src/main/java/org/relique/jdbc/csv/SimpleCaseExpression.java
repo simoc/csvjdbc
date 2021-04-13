@@ -41,6 +41,7 @@ class SimpleCaseExpression extends Expression
 		this.elseExpression = elseExpression;
 	}
 
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object o1 = caseExpression.eval(env);
@@ -58,6 +59,7 @@ class SimpleCaseExpression extends Expression
 		return null;
 	}
 
+	@Override
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder("CASE ");
@@ -73,6 +75,7 @@ class SimpleCaseExpression extends Expression
 		return sb.toString();
 	}
 
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
@@ -91,7 +94,8 @@ class SimpleCaseExpression extends Expression
 			result.addAll(elseExpression.usedColumns(availableColumns));
 		return result;
 	}
-	
+
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();

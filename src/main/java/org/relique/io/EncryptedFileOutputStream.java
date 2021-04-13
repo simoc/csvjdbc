@@ -33,6 +33,7 @@ public class EncryptedFileOutputStream extends OutputStream
 		out = new FileOutputStream(fileName);
 	}
 
+	@Override
 	public void write(int b) throws IOException
 	{
 		if (filter == null)
@@ -41,6 +42,7 @@ public class EncryptedFileOutputStream extends OutputStream
 			filter.write(out, b);
 	}
 
+	@Override
 	public void close() throws IOException
 	{
 		if (out != null)

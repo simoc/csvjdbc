@@ -33,6 +33,7 @@ public class EncryptedFileInputStream extends InputStream
 		in = new BufferedInputStream(new FileInputStream(fileName));
 	}
 
+	@Override
 	public int read() throws IOException
 	{
 		if (filter != null)
@@ -41,6 +42,7 @@ public class EncryptedFileInputStream extends InputStream
 			return in.read();
 	}
 
+	@Override
 	public int read(byte[] b, int off, int len) throws IOException
 	{
 		if (filter != null)
@@ -49,6 +51,7 @@ public class EncryptedFileInputStream extends InputStream
 			return in.read(b, off, len);
 	}
 
+	@Override
 	public int read(byte[] b) throws IOException
 	{
 		if (filter != null)
@@ -57,6 +60,7 @@ public class EncryptedFileInputStream extends InputStream
 			return in.read(b);
 	}
 
+	@Override
 	public void close() throws IOException
 	{
 		if (in != null)

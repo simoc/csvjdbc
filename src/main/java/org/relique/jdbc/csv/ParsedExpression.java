@@ -33,10 +33,12 @@ class ParsedExpression extends LogicalExpression
 		content = left;
 		placeholders = new HashMap<String, Object>();
 	}
+	@Override
 	public boolean isValid()
 	{
 		return content.isValid();
 	}
+	@Override
 	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		if(!placeholders.isEmpty())
@@ -51,6 +53,7 @@ class ParsedExpression extends LogicalExpression
 		} 
 		return ((LogicalExpression)content).isTrue(env);
 	}
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		if(!placeholders.isEmpty())
@@ -65,18 +68,22 @@ class ParsedExpression extends LogicalExpression
 		} 
 		return content.eval(env);
 	}
+	@Override
 	public String toString()
 	{
 		return content.toString();
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		return content.usedColumns(availableColumns);
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		return content.aggregateFunctions();
 	}
+	@Override
 	public void resetAggregateFunctions()
 	{
 		content.resetAggregateFunctions();

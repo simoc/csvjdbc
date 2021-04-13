@@ -76,6 +76,7 @@ public class MinimumMemoryMap<K, V> implements Map<K, V>
 
 	private class KeyHashCodeComparator implements Comparator<K>
 	{
+		@Override
 		public int compare(K key1, K key2)
 		{
 			int hashCode1 = (key1 != null) ? key1.hashCode() : 0;

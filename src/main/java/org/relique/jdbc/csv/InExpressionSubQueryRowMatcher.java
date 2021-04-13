@@ -32,6 +32,7 @@ public class InExpressionSubQueryRowMatcher implements SubQueryRowMatcher
 		this.objValue = objValue;
 	}
 
+	@Override
 	public boolean matches(Object expr) throws SQLException
 	{
 		/*

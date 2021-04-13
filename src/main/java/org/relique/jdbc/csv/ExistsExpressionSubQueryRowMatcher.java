@@ -22,6 +22,7 @@ import java.sql.SQLException;
 
 public class ExistsExpressionSubQueryRowMatcher implements SubQueryRowMatcher
 {
+	@Override
 	public boolean matches(Object expr) throws SQLException
 	{
 		/*

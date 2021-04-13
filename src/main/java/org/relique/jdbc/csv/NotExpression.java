@@ -36,10 +36,12 @@ class NotExpression extends LogicalExpression
 			isValid = this.content.isValid();
 		}
 	}
+	@Override
 	public boolean isValid()
 	{
 		return isValid;
 	}
+	@Override
 	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{
 		Boolean b = content.isTrue(env);
@@ -50,14 +52,17 @@ class NotExpression extends LogicalExpression
 		else
 			return Boolean.TRUE;
 	}
+	@Override
 	public String toString()
 	{
 		return "NOT "+content;
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		return content.usedColumns(availableColumns);
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		return content.aggregateFunctions();

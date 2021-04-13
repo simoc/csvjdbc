@@ -42,16 +42,19 @@ class QueryEnvEntry extends Expression
 		return key;
 	}
 
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		return expression.eval(env);
 	}
 
+	@Override
 	public String toString()
 	{
 		return key+": "+expression.toString();
 	}
 
+	@Override
 	public void resetAggregateFunctions()
 	{
 		expression.resetAggregateFunctions();

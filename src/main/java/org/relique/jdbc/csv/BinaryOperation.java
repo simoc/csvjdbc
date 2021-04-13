@@ -43,6 +43,7 @@ class BinaryOperation extends Expression
 		this.left = left;
 		this.right = right;
 	}
+	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		Object leftEval = left.eval(env);
@@ -253,10 +254,12 @@ class BinaryOperation extends Expression
 		newDate = Date.valueOf(newDate.toString());
 		return newDate;
 	}
+	@Override
 	public String toString()
 	{
 		return ""+operation+" "+left+" "+right;
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
@@ -264,6 +267,7 @@ class BinaryOperation extends Expression
 		result.addAll(right.usedColumns(availableColumns));
 		return result;
 	}
+	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
@@ -271,6 +275,7 @@ class BinaryOperation extends Expression
 		result.addAll(right.aggregateFunctions());
 		return result;
 	}
+	@Override
 	public boolean isValid()
 	{
 		/*

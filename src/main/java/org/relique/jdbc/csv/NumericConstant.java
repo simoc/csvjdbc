@@ -30,14 +30,17 @@ class NumericConstant extends Expression
 	{
 		value = d;
 	}
+	@Override
 	public Object eval(Map<String, Object> env)
 	{
 		return value;
 	}
+	@Override
 	public String toString()
 	{
 		return value.toString();
 	}
+	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		return new LinkedList<String>();
