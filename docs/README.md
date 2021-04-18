@@ -37,9 +37,6 @@ public class DemoDriver
 {
   public static void main(String[] args) throws Exception
   {
-    // Load the driver.
-    Class.forName("org.relique.jdbc.csv.CsvDriver");
-
     // Create a connection to directory given as first command line
     // parameter. Driver properties are passed in URL format
     // (or alternatively in a java.utils.Properties object).

@@ -106,7 +106,6 @@ public class DemoDriver2
 {
   public static void main(String[] args) throws Exception
   {
-    Class.forName("org.relique.jdbc.csv.CsvDriver");
     try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + args[0]);
 
       // create a scrollable Statement so we can move forwards and backwards
@@ -144,7 +143,6 @@ public class DemoDriver3
 {
   public static void main(String[] args) throws Exception
   {
-    Class.forName("org.relique.jdbc.csv.CsvDriver");
     Properties props = new Properties();
     props.put("fileExtension", ".txt");
     props.put("indexedFiles", "true");
@@ -187,7 +185,6 @@ public class DemoDriver4
 {
   public static void main(String[] args) throws Exception
   {
-    Class.forName("org.relique.jdbc.csv.CsvDriver");
     Properties props = new Properties();
     // Define column names and column data types here.
     props.put("suppressHeaders", "true");
@@ -223,7 +220,6 @@ public class DemoDriver5
 {
   public static void main(String[] args) throws Exception
   {
-    Class.forName("org.relique.jdbc.csv.CsvDriver");
     String zipFilename = args[0];
     try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:" +
         zipFilename);
@@ -289,7 +285,6 @@ public class DemoDriver6
 {
   public static void main(String []args) throws Exception
   {
-    Class.forName("org.relique.jdbc.csv.CsvDriver");
     String sql = "SELECT * FROM sample";
     // Give name of Java class that provides database tables.
     try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" +
