@@ -21,7 +21,6 @@ The CsvJdbc driver is used just like any other JDBC driver:
 
 
 1. download `csvjdbc.jar` and add it to the Java CLASSPATH.
-1. load the driver class, (its full name is `org.relique.jdbc.csv.CsvDriver`)
 1. use `DriverManager` to connect to the database (the directory or ZIP file)
 1. create a statement object
 1. use the statement object to execute an SQL SELECT query
@@ -37,9 +36,6 @@ public class DemoDriver
 {
   public static void main(String[] args) throws Exception
   {
-    // Load the driver.
-    Class.forName("org.relique.jdbc.csv.CsvDriver");
-
     // Create a connection to directory given as first command line
     // parameter. Driver properties are passed in URL format
     // (or alternatively in a java.utils.Properties object).
