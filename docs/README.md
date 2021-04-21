@@ -1,4 +1,4 @@
-# CsvJdbc
+# ![CsvJdbc](CsvJdbcLogo.png)
 
 ![Java CI](https://github.com/simoc/csvjdbc/workflows/Java%20CI/badge.svg)
 
