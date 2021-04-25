@@ -17,8 +17,11 @@ functionality is available.
 
 ## Usage
 
-The CsvJdbc driver is used just like any other JDBC driver:
-
+The CsvJdbc driver is used just like any other JDBC driver,
+either in a database tool such as
+[DBeaver](https://dbeaver.io/) or
+[SQuirrel SQL Client](http://squirrel-sql.sourceforge.net/),
+or programmatically in your own Java program using the steps below:
 
 1. download `csvjdbc.jar` and add it to the Java CLASSPATH.
 1. use `DriverManager` to connect to the database (the directory or ZIP file)
