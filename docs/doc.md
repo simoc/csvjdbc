@@ -478,8 +478,9 @@ words such as `December` which vary depending on the locale. Call method
 
 ### separator
 + type: String
-+ default: `","`
++ default: `,`
 + Defines column separator. A separator longer than one character is permitted.
+The separator `\t` is interpreted as a tab character.
 
 ### skipLeadingLines
 + type: Integer
