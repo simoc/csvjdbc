@@ -139,9 +139,10 @@ public class CsvRawReader
 				fixDefectiveHeaders();
 			Set<String> uniqueNames = new HashSet<String>();
 			for (int i = 0; i < this.columnNames.length; i++)
-				uniqueNames.add(this.columnNames[i]);
-			if (uniqueNames.size() != this.columnNames.length)
-				throw new SQLException(CsvResources.getString("duplicateColumns"));
+			{
+				if (!uniqueNames.add(this.columnNames[i].toUpperCase()))
+					throw new SQLException(CsvResources.getString("duplicateColumns") + ": " + this.columnNames[i]);
+			}
 		}
 
 		for (int i=0; i<skipLeadingDataLines; i++)

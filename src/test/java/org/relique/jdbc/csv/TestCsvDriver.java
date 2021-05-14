@@ -3323,9 +3323,8 @@ public class TestCsvDriver
 			}
 			catch (SQLException e)
 			{
-				assertEquals("wrong exception and/or exception text!",
-					"java.sql.SQLException: " + CsvResources.getString("duplicateColumns"),
-					"" + e);
+				assertTrue("wrong exception and/or exception text!",
+					e.toString().contains(CsvResources.getString("duplicateColumns")));
 			}
 		}
 	}
