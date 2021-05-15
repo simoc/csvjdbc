@@ -153,10 +153,23 @@ public class CsvRawReader
 
 	private void fixDefectiveHeaders()
 	{
+		Set<String> uniqueNames = new HashSet<String>();
 		for (int i = 0; i < this.columnNames.length; i++)
 		{
+			boolean isDefective = false;
 			if (this.columnNames[i].length() == 0)
+			{
+				isDefective = true;
+			}
+			else if (!uniqueNames.add(this.columnNames[i].toUpperCase()))
+			{
+				isDefective = true;
+			}
+
+			if (isDefective)
+			{
 				this.columnNames[i] = "COLUMN" + String.valueOf(i + 1);
+			}
 		}
 	}
 

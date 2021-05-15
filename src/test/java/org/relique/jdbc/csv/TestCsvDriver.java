@@ -3330,6 +3330,32 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testFixDuplicatedColumnNames() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("defectiveHeaders", "True");
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt
+				.executeQuery("SELECT * FROM duplicate_headers"))
+		{
+			ResultSetMetaData metadata = results.getMetaData();
+			assertEquals("ID", metadata.getColumnName(1));
+			assertEquals("COLUMN2", metadata.getColumnName(2));
+			assertEquals("Name", metadata.getColumnName(3));
+			assertEquals("COLUMN4", metadata.getColumnName(4));
+			assertTrue(results.next());
+			assertEquals("1:ID is wrong", "1", results.getString("ID"));
+			assertEquals("2:COLUMN2 is wrong", "2", results.getString("COLUMN2"));
+			assertEquals("3:Name is wrong", "george", results.getString("Name"));
+			assertEquals("4:COLUMN4 is wrong", "joe", results.getString("COLUMN4"));
+		}
+	}
+
+	@Test
 	public void testDuplicatedColumnNamesSuppressHeader() throws SQLException
 	{
 		// no bug report, check discussion thread
