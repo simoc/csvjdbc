@@ -359,7 +359,8 @@ decryption class set in property `cryptoFilterClassName`.
 ### defectiveHeaders
 + type: Boolean
 + default: `False`
-+ in case a column name is the emtpy string, replace it with COLUMNx,
++ When true, column names that are an emtpy string or a case insensitive
+duplicate of a previous column name are renamed to COLUMNx,
 where x is the ordinal identifying the column.
 
 ### fileExtension
