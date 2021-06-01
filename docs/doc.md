@@ -236,13 +236,52 @@ public class DemoDriver5
 }
 ```
 
-To read data that is either held inside the Java application (for example, in a
-JAR file) or accessed remotely (for example, using HTTP requests), create a
-Java class that implements the interface `org.relique.io.TableReader` and give
-this class name in the connection URL. CsvJdbc then creates an instance of this
-class and calls the `getReader` method to obtain a `java.io.Reader` for each
-database table being read. This is demonstrated in the following two Java
-classes.
+To read the resources from classpath as database tables, make a database connection
+to the classpath path using the JDBC connection string format
+`jdbc:relique:csv:classpath:path/to/resources`. The additional dependency
+is required to scan the paths in the classpath.
+
+```xml
+...
+<dependency>
+  <groupId>io.github.classgraph</groupId>
+  <artifactId>classgraph</artifactId>
+  <version>X.Y.Z</version>
+</dependency>
+...
+```
+
+The following example demonstrates reading from the classpath.
+
+```java
+import java.sql.*;
+
+public class DemoDriver6
+{
+  public static void main(String[] args) throws Exception
+  {
+    String path = args[0];
+    try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:classpath:" +
+            path);
+      Statement stmt = conn.createStatement();
+      // Read from the claspath resource mytable.csv
+      ResultSet results = stmt.executeQuery("SELECT * FROM mytable"))
+      {
+        while (results.next())
+        {
+            System.out.println(results.getString("COUNTRY"));
+        }
+      }
+  }
+}
+```
+
+To read data that is either held inside some file storage or accessed remotely
+(for example, using HTTP requests), create a Java class that implements the
+interface `org.relique.io.TableReader` and give this class name in the
+connection URL. CsvJdbc then creates an instance of this class and calls the 
+`getReader` method to obtain a `java.io.Reader` for each database table being
+read. This is demonstrated in the following two Java classes.
 
 ```java
 import java.io.*;
@@ -281,7 +320,7 @@ public class MyHTTPReader implements TableReader
 import java.sql.*;
 import org.relique.jdbc.csv.CsvDriver;
 
-public class DemoDriver6
+public class DemoDriver7
 {
   public static void main(String []args) throws Exception
   {
