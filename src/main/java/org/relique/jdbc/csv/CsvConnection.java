@@ -947,6 +947,11 @@ public class CsvConnection implements Connection
 			url = CsvDriver.URL_PREFIX + CsvDriver.ZIP_FILE_PREFIX +
 				((ZipFileTableReader) tableReader).getZipFilename();
 		}
+		else if (tableReader instanceof ClasspathTableReader)
+		{
+			url = CsvDriver.URL_PREFIX + CsvDriver.CLASSPATH_PREFIX +
+					((ClasspathTableReader) tableReader).getPath();
+		}
 		else
 		{
 			url = CsvDriver.URL_PREFIX + CsvDriver.READER_CLASS_PREFIX +

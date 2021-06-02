@@ -107,6 +107,7 @@ public class CsvDriver implements Driver
 
 	public static final String READER_CLASS_PREFIX = "class:";
 	public static final String ZIP_FILE_PREFIX = "zip:";
+	public static final String CLASSPATH_PREFIX = "classpath:";
 
 	public static final String FIXED_WIDTHS = "fixedWidths";
 
@@ -250,6 +251,14 @@ public class CsvDriver implements Driver
 				throw new SQLException(CsvResources.getString("zipOpenError") + ": " +
 					zipFilename, e);
 			}
+		}
+		else if (filePath.startsWith(CLASSPATH_PREFIX))
+		{
+			String path = filePath.substring(CLASSPATH_PREFIX.length());
+			ClasspathTableReader classpathTableReader = new ClasspathTableReader(
+					path, info.getProperty(CHARSET));
+			connection = new CsvConnection(classpathTableReader, info, urlProperties);
+			classpathTableReader.setExtension(connection.getExtension());
 		}
 		else
 		{
