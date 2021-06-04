@@ -125,7 +125,7 @@ public class FileSetInputStream extends InputStream
 			tail += '\n';
 		}
 
-		fileNames = new ArrayList<String>();
+		fileNames = new ArrayList<>();
 		File root = new File(dirName);
 		File[] candidates = root.listFiles();
 

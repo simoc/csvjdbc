@@ -309,7 +309,7 @@ public class CsvStatement implements Statement
 	protected ResultSet executeParsedQuery(SqlParser parser)
 			throws SQLException
 	{
-		HashMap<String, Object> parentobjectEnvironment = new HashMap<String, Object>();
+		HashMap<String, Object> parentobjectEnvironment = new HashMap<>();
 		ResultSet resultSet = executeParsedQuery(parser, parentobjectEnvironment);
 		lastResultSet = resultSet;
 		return resultSet;
@@ -346,7 +346,7 @@ public class CsvStatement implements Statement
 			 */
 			String[] columnNames = new String[0];
 			String[] columnTypes = new String[0];
-			ArrayList<Object[]> rows = new ArrayList<Object[]>();
+			ArrayList<Object[]> rows = new ArrayList<>();
 			rows.add(new Object[0]);
 			reader = new ListDataReader(columnNames, columnTypes, rows);
 		}

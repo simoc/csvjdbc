@@ -62,7 +62,7 @@ class BetweenExpression extends LogicalExpression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		result.addAll(obj.usedColumns(availableColumns));
 		result.addAll(left.usedColumns(availableColumns));
 		result.addAll(right.usedColumns(availableColumns));
@@ -71,7 +71,7 @@ class BetweenExpression extends LogicalExpression
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		result.addAll(obj.aggregateFunctions());
 		result.addAll(left.aggregateFunctions());
 		result.addAll(right.aggregateFunctions());

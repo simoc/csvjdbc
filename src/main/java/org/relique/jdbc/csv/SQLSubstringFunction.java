@@ -159,7 +159,7 @@ class SQLSubstringFunction extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		result.addAll(expr.usedColumns(availableColumns));
 		result.addAll(startIndex.usedColumns(availableColumns));
 		if (len != null)
@@ -169,7 +169,7 @@ class SQLSubstringFunction extends Expression
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		result.addAll(expr.aggregateFunctions());
 		result.addAll(startIndex.aggregateFunctions());
 		if (len != null)

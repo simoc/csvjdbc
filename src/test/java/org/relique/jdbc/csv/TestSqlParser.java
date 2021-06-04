@@ -344,7 +344,7 @@ public class TestSqlParser
 	public void testWhereEvaluating() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 
 		parser.parse("SELECT * FROM test WHERE c=1");
 		env.clear();
@@ -386,7 +386,7 @@ public class TestSqlParser
 	public void testWhereComparisons() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 		env.put("C", Integer.valueOf("12"));
 
 		parser.parse("SELECT * FROM test WHERE c=1");
@@ -409,7 +409,7 @@ public class TestSqlParser
 	public void testParsingWhereComparisonsNull() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 		env.put("C", null);
 
 		/*
@@ -430,7 +430,7 @@ public class TestSqlParser
 	public void testParsingWhereEmptyString() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 		env.put("C", new String(""));
 
 		parser.parse("SELECT * FROM test WHERE c=''");
@@ -441,7 +441,7 @@ public class TestSqlParser
 	public void testParsingWhereSingleQuoteString() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 		env.put("C", new String("it's"));
 
 		parser.parse("SELECT * FROM test WHERE c='it''s'");
@@ -452,7 +452,7 @@ public class TestSqlParser
 	public void testWhereEvaluatingIndistinguishedNumbers() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 
 		parser.parse("SELECT * FROM test WHERE c=1.0");
 		env.clear();
@@ -468,7 +468,7 @@ public class TestSqlParser
 	public void testWhereEvaluatingIndistinguishedNegativeNumbers() throws ParseException, SQLException
 	{
 		SqlParser parser = new SqlParser();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 
 		parser.parse("SELECT * FROM test WHERE c=-1.0");
 		env.clear();
@@ -572,7 +572,7 @@ public class TestSqlParser
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("A+b AS result"));
 		cs.parseQueryEnvEntry();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 		env.put("A", Integer.valueOf(1));
 
 		env.put("B", Integer.valueOf(1));
@@ -591,7 +591,7 @@ public class TestSqlParser
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("A || B AS result"));
 		cs.parseQueryEnvEntry();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 		env.put("A", "Hello");
 		env.put("B", "World");
 		assertEquals("HelloWorld", cs.eval(env));
@@ -607,7 +607,7 @@ public class TestSqlParser
 		cs = new ExpressionParser(new StringReader("A%b AS result"));
 		cs.parseQueryEnvEntry();
 
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 
 		env.put("A", Integer.valueOf(4));
 		env.put("B", Integer.valueOf(3));
@@ -648,7 +648,7 @@ public class TestSqlParser
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("a-b AS result"));
 		cs.parseQueryEnvEntry();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 		env.put("A", Integer.valueOf(5));
 
 		env.put("B", Integer.valueOf(1));
@@ -688,7 +688,7 @@ public class TestSqlParser
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("A+1 AS result"));
 		cs.parseQueryEnvEntry();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 		env.put("A", Short.valueOf("1"));
 		Object o = cs.eval(env);
 		assertEquals(o.toString(), "2");
@@ -713,7 +713,7 @@ public class TestSqlParser
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("A+5678678678 AS result"));
 		cs.parseQueryEnvEntry();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 		env.put("A", Integer.valueOf("1"));
 		Object o = cs.eval(env);
 		assertEquals(o.toString(), "5678678679");
@@ -749,7 +749,7 @@ public class TestSqlParser
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("CURRENT_DATE AS now"));
 		cs.parseQueryEnvEntry();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 		env.put(StringConverter.COLUMN_NAME, new StringConverter("yyyy-mm-dd", "HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "UTC", false));
 
 		// Protect against unlikely situation of test running over date change at midnight.
@@ -796,7 +796,7 @@ public class TestSqlParser
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("CURRENT_TIME AS T1"));
 		cs.parseQueryEnvEntry();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 		Time t1 = (Time)cs.eval(env);
 		assertNotNull(t1);
 		// Avoid comparison with current time because it is changing as unit test runs 
@@ -815,7 +815,7 @@ public class TestSqlParser
 			"WHEN POSTCODE >= 3000 AND POSTCODE <= 3999 THEN 'VIC' " +
 			"ELSE '' END"));
 		cs.parseQueryEnvEntry();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 
 		env.put("POSTCODE", Integer.valueOf(2601));
 		Object o = cs.eval(env);
@@ -1057,7 +1057,7 @@ public class TestSqlParser
 	public void testWhereDiacritics() throws SQLException, ParseException
 	{
 		SqlParser parser = new SqlParser();
-		Map<String, Object> env = new HashMap<String, Object>();
+		Map<String, Object> env = new HashMap<>();
 		env.put("C", new String(
 				"\u011B\u0161\u010D\u0159\u017E\u00FD\u00E1\u00ED\u00E9\u00FA\u016F\u010F\u0165\u0148\u011A\u0160\u010C\u0158\u017D\u00DD\u00C1\u00CD\u00C9\u00DA\u016E\u010E\u0164\u0147"));
 

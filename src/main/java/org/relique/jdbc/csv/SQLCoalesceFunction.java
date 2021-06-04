@@ -66,7 +66,7 @@ class SQLCoalesceFunction extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		Iterator<Expression> it = expressions.iterator();
 		while (it.hasNext())
 		{
@@ -77,7 +77,7 @@ class SQLCoalesceFunction extends Expression
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		Iterator<Expression> it = expressions.iterator();
 		while (it.hasNext())
 		{

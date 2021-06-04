@@ -204,7 +204,7 @@ class SQLUserFunction extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		for (Expression expression : expressions)
 		{
 			result.addAll(expression.usedColumns(availableColumns));
@@ -214,7 +214,7 @@ class SQLUserFunction extends Expression
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		for (Expression expression : expressions)
 		{
 			result.addAll(expression.aggregateFunctions());

@@ -100,7 +100,7 @@ public class CsvRawReader
 		this.missingValue = missingValue;
 		this.quoteStyle = quoteStyle;
 		this.fixedWidthColumns = fixedWidthColumns;
-		this.readAheadLines = new LinkedList<String>();
+		this.readAheadLines = new LinkedList<>();
 		this.readingAhead = false;
 
 		for (int i = 0; i < skipLeadingLines; i++)
@@ -137,7 +137,7 @@ public class CsvRawReader
 			// some column names may be missing and should be corrected
 			if (defectiveHeaders)
 				fixDefectiveHeaders();
-			Set<String> uniqueNames = new HashSet<String>();
+			Set<String> uniqueNames = new HashSet<>();
 			for (int i = 0; i < this.columnNames.length; i++)
 			{
 				if (!uniqueNames.add(this.columnNames[i].toUpperCase()))
@@ -153,7 +153,7 @@ public class CsvRawReader
 
 	private void fixDefectiveHeaders()
 	{
-		Set<String> uniqueNames = new HashSet<String>();
+		Set<String> uniqueNames = new HashSet<>();
 		for (int i = 0; i < this.columnNames.length; i++)
 		{
 			boolean isDefective = false;
@@ -485,7 +485,7 @@ public class CsvRawReader
 			throws SQLException
 	{
 		// TODO: quoteChar should be recognized ONLY when close to separator. 
-		Vector<String> values = new Vector<String>();
+		Vector<String> values = new Vector<>();
 		boolean inQuotedString = false;
 		int quotedLineNumber = 0;
 		StringBuilder value = new StringBuilder(32);

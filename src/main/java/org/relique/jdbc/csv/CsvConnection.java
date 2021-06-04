@@ -81,7 +81,7 @@ public class CsvConnection implements Connection
 	private Character quotechar = Character.valueOf(CsvDriver.DEFAULT_QUOTECHAR);
 
 	/** Lookup table with headerline to use for each table */
-	private HashMap<String, String> headerlines = new HashMap<String, String>();
+	private HashMap<String, String> headerlines = new HashMap<>();
 
 	/** Should headers be suppressed */
 	private boolean suppressHeaders = CsvDriver.DEFAULT_SUPPRESS;
@@ -99,10 +99,10 @@ public class CsvConnection implements Connection
 	private boolean indexedFiles = CsvDriver.DEFAULT_INDEXED_FILES;
 
 	/** Lookup table with column data types for each table */
-	private HashMap<String, String> columnTypes = new HashMap<String, String>();
+	private HashMap<String, String> columnTypes = new HashMap<>();
 
 	/** Collection of all created Statements */
-	private Vector<Statement> statements = new Vector<Statement>();
+	private Vector<Statement> statements = new Vector<>();
 
 	/** CharSet that should be used to read the files */
 	private String charset = null;
@@ -144,7 +144,7 @@ public class CsvConnection implements Connection
 
 	private ArrayList<int[]> fixedWidthColumns = null;
 
-	private HashMap<String, Method> sqlFunctions = new HashMap<String, Method>();
+	private HashMap<String, Method> sqlFunctions = new HashMap<>();
 
 	private int savepointCounter = 0;
 
@@ -170,7 +170,7 @@ public class CsvConnection implements Connection
 	private Map<String, String> getMatchingProperties(Properties info,
 		String prefix)
 	{
-		HashMap<String, String> retval = new HashMap<String, String>();
+		HashMap<String, String> retval = new HashMap<>();
 		for (Object o : info.keySet())
 		{
 			String key = o.toString();
@@ -442,7 +442,7 @@ public class CsvConnection implements Connection
 		String fixedWidths = info.getProperty(CsvDriver.FIXED_WIDTHS);
 		if (fixedWidths != null)
 		{
-			fixedWidthColumns = new ArrayList<int[]>();
+			fixedWidthColumns = new ArrayList<>();
 			String[] columnRanges = fixedWidths.split(",");
 			for (int i = 0; i < columnRanges.length; i++)
 			{
@@ -1417,7 +1417,7 @@ public class CsvConnection implements Connection
 	 */
 	public List<String> getTableNames() throws SQLException
 	{
-		List<String> tableNames = new ArrayList<String>();
+		List<String> tableNames = new ArrayList<>();
 		if (path != null)
 		{
 			File[] matchingFiles = new File(path).listFiles(new FilenameFilter() {
@@ -1438,7 +1438,7 @@ public class CsvConnection implements Connection
 				fileNameRE = Pattern.compile("(.+)" + fileNamePattern);
 			}
 
-			HashSet<String> indexedTableNames = new HashSet<String>();
+			HashSet<String> indexedTableNames = new HashSet<>();
 
 			for (int i = 0; i < matchingFiles.length; i++)
 			{

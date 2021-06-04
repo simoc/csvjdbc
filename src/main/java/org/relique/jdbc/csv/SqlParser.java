@@ -97,8 +97,8 @@ public class SqlParser
 	 */
 	public void parse(String sql) throws SQLException, ParseException
 	{
-		tableNames = new ArrayList<String>();
-		tableAliases = new ArrayList<String>();
+		tableNames = new ArrayList<>();
+		tableAliases = new ArrayList<>();
 
 		// Ensure last line of SQL statement ends with newline so we can
 		// correctly skip single-line comments.
@@ -132,8 +132,8 @@ public class SqlParser
 		this.limit = parsedStatement.limit;
 		this.offset = parsedStatement.offset;
 
-		this.tableNames = new ArrayList<String>();
-		this.tableAliases = new ArrayList<String>();
+		this.tableNames = new ArrayList<>();
+		this.tableAliases = new ArrayList<>();
 		for (ParsedTable parsedTable : parsedStatement.tableEntries)
 		{
 			if (parsedTable.isDerivedTable())
@@ -147,7 +147,7 @@ public class SqlParser
 			tableAliases.add(parsedTable.getTableAlias());
 		}
 
-		this.environment = new ArrayList<Object[]>();
+		this.environment = new ArrayList<>();
 
 		Iterator<ParsedExpression> it = parsedStatement.queryEntries.iterator();
 		while (it.hasNext())
@@ -189,7 +189,7 @@ public class SqlParser
 
 		Iterator<ParsedExpression> it2 = parsedStatement.groupByEntries.iterator();
 		if (it2.hasNext())
-			groupByColumns = new ArrayList<Expression>();
+			groupByColumns = new ArrayList<>();
 		while (it2.hasNext())
 		{
 			ParsedExpression cc = it2.next();
@@ -208,7 +208,7 @@ public class SqlParser
 
 		Iterator<ParsedExpression> it3 = parsedStatement.orderByEntries.iterator();
 		if (it3.hasNext())
-			orderByColumns = new ArrayList<Object[]>();
+			orderByColumns = new ArrayList<>();
 		while (it3.hasNext())
 		{
 			ParsedExpression cc = it3.next();

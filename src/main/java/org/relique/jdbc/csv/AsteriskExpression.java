@@ -37,7 +37,7 @@ class AsteriskExpression extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		return result;
 	}
 }

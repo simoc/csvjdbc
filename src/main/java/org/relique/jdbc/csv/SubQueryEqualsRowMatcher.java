@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 public class SubQueryEqualsRowMatcher implements SubQueryRowMatcher
 {
-	ArrayList<Object> values = new ArrayList<Object>();
+	ArrayList<Object> values = new ArrayList<>();
 
 	@Override
 	public boolean matches(Object expr) throws SQLException

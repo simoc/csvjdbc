@@ -236,20 +236,20 @@ public class CsvResultSet implements ResultSet
 		this.resultSetType = resultSetType;
 		this.reader = reader;
 		this.tableName = tableName;
-		this.queryEnvironment = new ArrayList<Object []>(queryEnvironment);
-		this.aggregateFunctions = new ArrayList<AggregateFunction>();
+		this.queryEnvironment = new ArrayList<>(queryEnvironment);
+		this.aggregateFunctions = new ArrayList<>();
 		this.whereClause = whereClause;
 		if (groupByColumns != null)
-			this.groupByColumns = new ArrayList<Expression>(groupByColumns);
+			this.groupByColumns = new ArrayList<>(groupByColumns);
 		else
 			this.groupByColumns = null;
 		this.havingClause = havingClause;
 		if (orderByColumns != null)
-			this.orderByColumns = new ArrayList<Object []>(orderByColumns);
+			this.orderByColumns = new ArrayList<>(orderByColumns);
 		else
 			this.orderByColumns = null;
 		if (isDistinct)
-			this.distinctValues = new HashSet<ArrayList<Object>>();
+			this.distinctValues = new HashSet<>();
 		this.parentObjectEnvironment = parentObjectEnvironment;
 
 		String timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
@@ -269,7 +269,7 @@ public class CsvResultSet implements ResultSet
 		String[] columnNames = reader.getColumnNames();
 
 		String tableAlias = reader.getTableAlias();
-		HashSet<String> allReaderColumns = new HashSet<String>();
+		HashSet<String> allReaderColumns = new HashSet<>();
 		for (int i = 0; i < columnNames.length; i++)
 		{
 			String columnName = columnNames[i].toUpperCase();
@@ -281,9 +281,9 @@ public class CsvResultSet implements ResultSet
 		}
 
 		if (whereClause!= null)
-			this.usedColumns = new LinkedList<String>(whereClause.usedColumns(allReaderColumns));
+			this.usedColumns = new LinkedList<>(whereClause.usedColumns(allReaderColumns));
 		else
-			this.usedColumns = new LinkedList<String>();
+			this.usedColumns = new LinkedList<>();
 
 		if (!(this.resultSetType == TYPE_FORWARD_ONLY || this.resultSetType == TYPE_SCROLL_INSENSITIVE ||
 			this.resultSetType == TYPE_SCROLL_SENSITIVE))
@@ -421,7 +421,7 @@ public class CsvResultSet implements ResultSet
 			/*
 			 * Check there is no mix of query columns and aggregate functions.
 			 */
-			List<String> allUsedColumns = new LinkedList<String>();
+			List<String> allUsedColumns = new LinkedList<>();
 			for (int i = 0; i < this.queryEnvironment.size(); i++)
 			{
 				Object[] o = this.queryEnvironment.get(i);
@@ -491,7 +491,7 @@ public class CsvResultSet implements ResultSet
 				for (Object []o : this.orderByColumns)
 				{
 					Expression expr = (Expression)o[1];
-					List<String> exprUsedColumns = new LinkedList<String>(expr.usedColumns(allReaderColumns));
+					List<String> exprUsedColumns = new LinkedList<>(expr.usedColumns(allReaderColumns));
 					if (expr instanceof SubQueryExpression)
 					{
 						/*
@@ -501,7 +501,7 @@ public class CsvResultSet implements ResultSet
 						 * Go through all the columns and only add the ones that are defined
 						 * in this table.
 						 */
-						List<String> copy = new LinkedList<String>();
+						List<String> copy = new LinkedList<>();
 						for (String usedColumn : exprUsedColumns)
 						{
 							if (allReaderColumns.contains(usedColumn.toUpperCase()))
@@ -544,7 +544,7 @@ public class CsvResultSet implements ResultSet
 		this.orderByColumns != null || this.aggregateFunctions.size() > 0 ||
 			isScrollable())
 		{
-			bufferedRecordEnvironments = new ArrayList<Map<String, Object>>();
+			bufferedRecordEnvironments = new ArrayList<>();
 			currentRow = 0;
 		}
 
@@ -557,8 +557,8 @@ public class CsvResultSet implements ResultSet
 			int savedLimit = limit;
 			maxRows = 0;
 			limit = -1;
-			ArrayList<ArrayList<Object>> groupOrder = new ArrayList<ArrayList<Object>>();
-			Map<ArrayList<Object>, ArrayList<Map<String, Object>>> groups = new MinimumMemoryMap<ArrayList<Object>, ArrayList<Map<String, Object>>>();
+			ArrayList<ArrayList<Object>> groupOrder = new ArrayList<>();
+			Map<ArrayList<Object>, ArrayList<Map<String, Object>>> groups = new MinimumMemoryMap<>();
 			try
 			{
 				while (next())
@@ -566,7 +566,7 @@ public class CsvResultSet implements ResultSet
 					Map<String, Object> objectEnvironment = updateRecordEnvironment(true);
 					if (converter != null)
 						objectEnvironment.put(StringConverter.COLUMN_NAME, converter);
-					ArrayList<Object> groupByKeys = new ArrayList<Object>(this.groupByColumns.size());
+					ArrayList<Object> groupByKeys = new ArrayList<>(this.groupByColumns.size());
 					for (Expression expr : this.groupByColumns)
 					{
 						groupByKeys.add(expr.eval(objectEnvironment));
@@ -574,7 +574,7 @@ public class CsvResultSet implements ResultSet
 					ArrayList<Map<String, Object>> groupByValues = groups.get(groupByKeys);
 					if (groupByValues == null)
 					{
-						groupByValues = new ArrayList<Map<String, Object>>();
+						groupByValues = new ArrayList<>();
 						groups.put(groupByKeys, groupByValues);
 						groupOrder.add(groupByKeys);
 					}
@@ -590,7 +590,7 @@ public class CsvResultSet implements ResultSet
 					 * reference to all the rows in that group so we can
 					 * later calculate any aggregate functions for each group.
 					 */
-					Map<String, Object> firstRow = new MinimumMemoryMap<String, Object>(values.get(0));
+					Map<String, Object> firstRow = new MinimumMemoryMap<>(values.get(0));
 					firstRow.put(AggregateFunction.GROUPING_COLUMN_NAME, values);
 
 					if (this.havingClause == null || Boolean.TRUE.equals(this.havingClause.isTrue(firstRow)))
@@ -644,7 +644,7 @@ public class CsvResultSet implements ResultSet
 				 */
 				bufferedRecordEnvironments.clear();
 				if ((savedLimit < 0 || savedLimit > 0) && sqlOffset == 0)
-					bufferedRecordEnvironments.add(new HashMap<String, Object>());
+					bufferedRecordEnvironments.add(new HashMap<>());
 			}
 			finally
 			{
@@ -747,12 +747,12 @@ public class CsvResultSet implements ResultSet
 					throw new SQLException(CsvResources.getString("invalidGroupBy") + ": " + expr.toString());
 				}
 			}
-			ArrayList<String> groupingColumns = new ArrayList<String>();
+			ArrayList<String> groupingColumns = new ArrayList<>();
 			for (Expression expr : this.groupByColumns)
 			{
 				groupingColumns.addAll(expr.usedColumns(allReaderColumns));
 			}
-			ArrayList<String> queryEnvironmentColumns = new ArrayList<String>();
+			ArrayList<String> queryEnvironmentColumns = new ArrayList<>();
 			for (int i = 0; i < this.queryEnvironment.size(); i++)
 			{
 				Object[] o = this.queryEnvironment.get(i);
@@ -834,8 +834,8 @@ public class CsvResultSet implements ResultSet
 				hasAggregateFunctions = true;
 			if (!hasAggregateFunctions)
 			{
-				this.distinctValues = new HashSet<ArrayList<Object>>();
-				this.distinctColumns = new ArrayList<Expression>(this.groupByColumns);
+				this.distinctValues = new HashSet<>();
+				this.distinctColumns = new ArrayList<>(this.groupByColumns);
 				this.groupByColumns = null;
 			}
 		}
@@ -843,7 +843,7 @@ public class CsvResultSet implements ResultSet
 
 	private void sortRows(int sqlOffset) throws SQLException
 	{
-		ArrayList<Map<String, Object>> allRows = new ArrayList<Map<String, Object>>(bufferedRecordEnvironments);
+		ArrayList<Map<String, Object>> allRows = new ArrayList<>(bufferedRecordEnvironments);
 		bufferedRecordEnvironments.clear();
 		try
 		{
@@ -996,7 +996,7 @@ public class CsvResultSet implements ResultSet
 
 	private Map<String, Object> updateRecordEnvironment(boolean thereWasAnAnswer) throws SQLException
 	{
-		Map<String, Object> objectEnvironment = new MinimumMemoryMap<String, Object>();
+		Map<String, Object> objectEnvironment = new MinimumMemoryMap<>();
 		if(!thereWasAnAnswer)
 		{
 			recordEnvironment = null;
@@ -1065,7 +1065,7 @@ public class CsvResultSet implements ResultSet
 		ArrayList<Object> environment;
 		if (this.distinctColumns != null)
 		{
-			environment = new ArrayList<Object>(distinctColumns.size());
+			environment = new ArrayList<>(distinctColumns.size());
 			for (int i = 0; i < distinctColumns.size(); i++)
 			{
 				Object value = distinctColumns.get(i).eval(objectEnvironment);
@@ -1074,7 +1074,7 @@ public class CsvResultSet implements ResultSet
 		}
 		else
 		{
-			environment = new ArrayList<Object>(queryEnvironment.size());
+			environment = new ArrayList<>(queryEnvironment.size());
 			for (int i = 0; i < queryEnvironment.size(); i++)
 			{
 				Object[] o = queryEnvironment.get(i);
@@ -1431,8 +1431,8 @@ public class CsvResultSet implements ResultSet
 			/*
 			 * Create a record containing dummy values.
 			 */
-			HashSet<String> allReaderColumns = new HashSet<String>();
-			HashMap<String, Object> env = new HashMap<String, Object>();
+			HashSet<String> allReaderColumns = new HashSet<>();
+			HashMap<String, Object> env = new HashMap<>();
 			for(int i=0; i<readerTypeNames.length; i++)
 			{
 				Object literal = StringConverter.getLiteralForTypeName(readerTypeNames[i]);

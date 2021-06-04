@@ -118,7 +118,7 @@ class SQLRoundFunction extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		result.addAll(expression.usedColumns(availableColumns));
 		if (decimals != null)
 		{
@@ -130,7 +130,7 @@ class SQLRoundFunction extends Expression
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		result.addAll(expression.aggregateFunctions());
 		if (decimals != null)
 		{

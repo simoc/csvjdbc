@@ -107,7 +107,7 @@ class SubQueryExpression extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> retval = new LinkedList<String>();
+		List<String> retval = new LinkedList<>();
 		List<String> usedColumns = parsedStatement.usedColumns(availableColumns);
 		for (String column : usedColumns)
 		{
@@ -127,6 +127,6 @@ class SubQueryExpression extends Expression
 		 * Aggregate functions are internal to this sub-query SQL statement,
 		 * and not the parent SQL statement, so do not return them.
 		 */
-		return new LinkedList<AggregateFunction>();
+		return new LinkedList<>();
 	}
 }

@@ -32,8 +32,8 @@ class SQLStringAggFunction extends AggregateFunction
 	boolean isDistinct;
 	Expression expression;
 	Expression delimiter;
-	ArrayList<Object> aggregateValues = new ArrayList<Object>();
-	LinkedHashSet<Object> distinctAggregateValues = new LinkedHashSet<Object>();
+	ArrayList<Object> aggregateValues = new ArrayList<>();
+	LinkedHashSet<Object> distinctAggregateValues = new LinkedHashSet<>();
 	public SQLStringAggFunction(boolean isDistinct, Expression expression, Expression delimiter)
 	{
 		this.isDistinct = isDistinct;
@@ -98,21 +98,21 @@ class SQLStringAggFunction extends AggregateFunction
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		result.addAll(delimiter.usedColumns(availableColumns));
 		return result;
 	}
 	@Override
 	public List<String> aggregateColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		result.addAll(expression.usedColumns(availableColumns));
 		return result;
 	}
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		result.add(this);
 		return result;
 	}

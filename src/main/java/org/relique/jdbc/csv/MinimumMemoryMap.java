@@ -38,20 +38,20 @@ public class MinimumMemoryMap<K, V> implements Map<K, V>
 
 	public MinimumMemoryMap()
 	{
-		keys = new ArrayList<K>();
-		values = new ArrayList<V>();
+		keys = new ArrayList<>();
+		values = new ArrayList<>();
 	}
 
 	public MinimumMemoryMap(int initialSize)
 	{
-		keys = new ArrayList<K>(initialSize);
-		values = new ArrayList<V>(initialSize);
+		keys = new ArrayList<>(initialSize);
+		values = new ArrayList<>(initialSize);
 	}
 
 	public MinimumMemoryMap(Map<K, V> otherMap)
 	{
-		keys = new ArrayList<K>();
-		values = new ArrayList<V>();
+		keys = new ArrayList<>();
+		values = new ArrayList<>();
 		putAll(otherMap);
 	}
 
@@ -214,24 +214,24 @@ public class MinimumMemoryMap<K, V> implements Map<K, V>
 	@Override
 	public Set<K> keySet()
 	{
-		return new HashSet<K>(keys);
+		return new HashSet<>(keys);
 	}
 
 	@Override
 	public Collection<V> values()
 	{
-		return new ArrayList<V>(values);
+		return new ArrayList<>(values);
 	}
 
 	@Override
 	public Set<Map.Entry<K, V>> entrySet()
 	{
 		int size = keys.size();
-		Set<Map.Entry<K, V>> entrySet = new HashSet<Map.Entry<K, V>>(size);
+		Set<Map.Entry<K, V>> entrySet = new HashSet<>(size);
 
 		for (int index = 0; index < size; index++)
 		{
-			entrySet.add(new AbstractMap.SimpleEntry<K, V>(keys.get(index), values.get(index)));
+			entrySet.add(new AbstractMap.SimpleEntry<>(keys.get(index), values.get(index)));
 		}
 		return entrySet;
 	}

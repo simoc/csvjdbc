@@ -76,7 +76,7 @@ class LikeExpression extends LogicalExpression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		result.addAll(arg1.usedColumns(availableColumns));
 		result.addAll(arg2.usedColumns(availableColumns));
 		if (escapeArg != null)
@@ -86,7 +86,7 @@ class LikeExpression extends LogicalExpression
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		result.addAll(arg1.aggregateFunctions());
 		result.addAll(arg2.aggregateFunctions());
 		if (escapeArg != null)

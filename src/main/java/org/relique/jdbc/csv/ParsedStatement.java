@@ -165,7 +165,7 @@ class ParsedStatement
 
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		if (queryEntries != null)
 		{
 			for (ParsedExpression parsedExpr : queryEntries)
@@ -203,7 +203,7 @@ class ParsedStatement
 
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		if (queryEntries != null)
 		{
 			for (ParsedExpression parsedExpr : queryEntries)

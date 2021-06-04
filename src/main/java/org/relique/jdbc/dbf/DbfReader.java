@@ -106,7 +106,7 @@ public class DbfReader extends DataReader
 		{
 			throw new SQLException(CsvResources.getString("dansDbfError") + ": " + e);
 		}
-		dbfTypeToSQLType = new HashMap<String, String>();
+		dbfTypeToSQLType = new HashMap<>();
 		dbfTypeToSQLType.put("CHARACTER", "String");
 		dbfTypeToSQLType.put("NUMBER", "Double");
 		dbfTypeToSQLType.put("LOGICAL", "Boolean");
@@ -251,7 +251,7 @@ public class DbfReader extends DataReader
 		if (initialSize == 0)
 			initialSize = 1;
 
-		Map<String, Object> result = new MinimumMemoryMap<String, Object>(initialSize);
+		Map<String, Object> result = new MinimumMemoryMap<>(initialSize);
 		for (int i = 0; i < fields.size(); i++)
 		{
 			Object field = fields.get(i);

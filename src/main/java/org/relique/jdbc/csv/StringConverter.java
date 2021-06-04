@@ -864,7 +864,7 @@ public class StringConverter
 				.valueOf((short) DatabaseMetaData.typeSearchable);
 		Short nullable = Short.valueOf((short) DatabaseMetaData.typeNullable);
 
-		ArrayList<Object[]> retval = new ArrayList<Object[]>();
+		ArrayList<Object[]> retval = new ArrayList<>();
 
 		retval.add(new Object[]
 		{ "String", Integer.valueOf(Types.VARCHAR), shortMax, "'", "'", null,

@@ -55,7 +55,7 @@ public class CsvReader extends DataReader
 
 		if (!this.isPlainReader())
 		{
-			firstTable = new Vector<String[]>();
+			firstTable = new Vector<>();
 			joiningValueNo = 0;
 			joiningValues = null;
 			try
@@ -241,7 +241,7 @@ public class CsvReader extends DataReader
 		if (initialSize == 0)
 			initialSize = 1;
 
-		Map<String, Object> result = new MinimumMemoryMap<String, Object>(initialSize);
+		Map<String, Object> result = new MinimumMemoryMap<>(initialSize);
 		result.put(StringConverter.COLUMN_NAME, converter);
 
 		for (int i = 0; i < columnNames.length; i++)

@@ -357,14 +357,14 @@ public class TestDbfDriver
 					+ filePath, props);
 			ResultSet results = conn.getMetaData().getTables(null, null, "%", null))
 		{
-			Set<String> target = new HashSet<String>();
+			Set<String> target = new HashSet<>();
 			target.add("sample");
 			target.add("fox_samp");
 			target.add("hotel");
 			target.add("xbase");
 			target.add("d");
 
-			Set<String> current = new HashSet<String>();
+			Set<String> current = new HashSet<>();
 			assertTrue(results.next());
 			current.add(results.getString("TABLE_NAME"));
 			assertTrue(results.next());

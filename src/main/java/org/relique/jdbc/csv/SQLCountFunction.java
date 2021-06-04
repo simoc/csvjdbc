@@ -33,7 +33,7 @@ class SQLCountFunction extends AggregateFunction
 	public SQLCountFunction(boolean isDistinct, Expression expression)
 	{
 		if (isDistinct)
-			this.distinctValues = new HashSet<Object>();
+			this.distinctValues = new HashSet<>();
 		this.expression = expression;
 	}
 	@Override
@@ -50,7 +50,7 @@ class SQLCountFunction extends AggregateFunction
 			List groupRows = (List)o;
 			if (this.distinctValues != null)
 			{
-				HashSet<Object> unique = new HashSet<Object>();
+				HashSet<Object> unique = new HashSet<>();
 				for (int i = 0; i < groupRows.size(); i++)
 				{
 					o = expression.eval((Map)groupRows.get(i));
@@ -100,12 +100,12 @@ class SQLCountFunction extends AggregateFunction
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		return new LinkedList<String>();
+		return new LinkedList<>();
 	}
 	@Override
 	public List<String> aggregateColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		if (!(expression instanceof AsteriskExpression))
 			result.addAll(expression.usedColumns(availableColumns));
 		return result;
@@ -113,7 +113,7 @@ class SQLCountFunction extends AggregateFunction
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		result.add(this);
 		return result;
 	}
