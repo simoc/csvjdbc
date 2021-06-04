@@ -255,7 +255,7 @@ public class CsvConnection implements Connection
 
 				Method[] methods = clazz.getMethods();
 				boolean methodFound = false;
-				for (int i = 0; i < methods.length && methodFound == false; i++)
+				for (int i = 0; i < methods.length && !methodFound; i++)
 				{
 					if (methods[i].getName().equals(methodName) &&
 						(methods[i].getModifiers() & Modifier.STATIC) != 0)

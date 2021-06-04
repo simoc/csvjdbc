@@ -133,7 +133,7 @@ public class FileSetInputStream extends InputStream
 
 		for (int i = 0; i < candidates.length; i++)
 		{
-			if (candidates[i].isDirectory() == false)
+			if (!candidates[i].isDirectory())
 			{
 				String candidateName = candidates[i].getName();
 				Matcher m = fileNameRE.matcher(candidateName);

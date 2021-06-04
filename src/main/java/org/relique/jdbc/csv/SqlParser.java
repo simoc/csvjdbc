@@ -161,7 +161,7 @@ public class SqlParser
 				 * A logical expression such as A > 5 is not allowed as a query expression.
 				 */
 				if ((cc.getExpression() instanceof LogicalExpression) ||
-					(cc.getExpression().isValid() == false))
+					(!cc.getExpression().isValid()))
 				{
 					throw new SQLException("invalidQueryExpression");
 				}

@@ -86,7 +86,7 @@ class SubQueryExpression extends Expression
 			 * Go through sub-query ResultSet sequentially until we find a row
 			 * that causes outer/parent SQL statement to be evaluated to true or false.
 			 */
-			while (matches == false && resultSet.next())
+			while (!matches && resultSet.next())
 			{
 				Object o = resultSet.getObject(1);
 				matches = rowMatcher.matches(o);

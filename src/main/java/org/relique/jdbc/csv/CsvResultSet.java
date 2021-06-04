@@ -477,8 +477,7 @@ public class CsvResultSet implements ResultSet
 		{
 			for (String usedColumn : this.usedColumns)
 			{
-				if (allReaderColumns.contains(usedColumn) == false &&
-						parentObjectEnvironment.containsKey(usedColumn) == false)
+				if (!allReaderColumns.contains(usedColumn) && !parentObjectEnvironment.containsKey(usedColumn))
 				{
 					throw new SQLException(CsvResources.getString("invalidColumnName") + ": " + usedColumn);
 				}
@@ -512,8 +511,7 @@ public class CsvResultSet implements ResultSet
 
 					for (String usedColumn : exprUsedColumns)
 					{
-						if (allReaderColumns.contains(usedColumn) == false &&
-							parentObjectEnvironment.containsKey(usedColumn) == false)
+						if (!allReaderColumns.contains(usedColumn) && !parentObjectEnvironment.containsKey(usedColumn))
 						{
 							throw new SQLException(CsvResources.getString("invalidColumnName") + ": " + usedColumn);
 						}
@@ -1608,7 +1606,7 @@ public class CsvResultSet implements ResultSet
 			/*
 			 * If next() has already returned false then we are after the last record.
 			 */
-			return (this.nextResult == false && this.currentRow > 0);
+			return (!this.nextResult && this.currentRow > 0);
 		}
 	}
 
@@ -1718,7 +1716,7 @@ public class CsvResultSet implements ResultSet
 	{
 		checkOpen();
 
-		if (isScrollable() == false && nextResult == false)
+		if (!isScrollable() && !nextResult)
 			return 0;
 		else
 			return currentRow;

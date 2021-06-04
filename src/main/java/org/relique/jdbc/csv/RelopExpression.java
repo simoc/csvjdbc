@@ -157,7 +157,7 @@ class RelopExpression extends LogicalExpression
 					// false (0) is less than true (1) in Boolean algebra
 					if (leftBoolean.equals(rightBoolean))
 						leftComparedToRightObj = Integer.valueOf(0);
-					else if (leftBoolean.booleanValue() == false)
+					else if (!leftBoolean.booleanValue())
 						leftComparedToRightObj = Integer.valueOf(-1);
 					else
 						leftComparedToRightObj = Integer.valueOf(1);
