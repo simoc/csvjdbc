@@ -44,8 +44,7 @@ public class ListDataReader extends DataReader
 	public boolean next() throws SQLException
 	{
 		rowIndex++;
-		boolean retval = (rowIndex < columnValues.size());
-		return retval;
+		return rowIndex < columnValues.size();
 	}
 
 	@Override

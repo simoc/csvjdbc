@@ -456,8 +456,7 @@ public class StringConverter
 			String dayGroup = m.group(day);
 			if (dayGroup.length() < 2)
 				dayGroup = "0" + dayGroup;
-			String retval = yearGroup + "-" + monthGroup + "-" + dayGroup;
-			return retval;
+			return yearGroup + "-" + monthGroup + "-" + dayGroup;
 		}
 		else
 		{
