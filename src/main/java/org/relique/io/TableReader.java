@@ -33,7 +33,7 @@ public interface TableReader
 	 * @return reader for the table, csvjdbc will close the reader itself at the end.
 	 * @throws SQLException if table does not exist or cannot be read.
 	 */
-	public Reader getReader(Statement statement, String tableName) throws SQLException;
+	Reader getReader(Statement statement, String tableName) throws SQLException;
 
 	/**
 	 * Returns a list of the names of all tables in the database.
@@ -41,5 +41,5 @@ public interface TableReader
 	 * @return list of String values containing table names.
 	 * @throws SQLException if there is a problem creating table name list.
 	 */
-	public List<String> getTableNames(Connection connection) throws SQLException;
+	List<String> getTableNames(Connection connection) throws SQLException;
 }
