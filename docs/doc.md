@@ -61,7 +61,7 @@ LTRIM(S [, T])       |Removes leading characters from S that occur in T
 MINUTE(T)            |Extracts minute of hour from time or timestamp T
 MONTH(D)             |Extracts month from date or timestamp D (first month is 1)
 NULLIF(X, Y)         |Returns NULL if X and Y are equal, otherwise X
-ROUND(N)             |Rounds N to nearest whole number
+ROUND(N [, D])       |Rounds N to the specified number of decimal places D (`0` by default)
 RTRIM(S, [, T])      |Removes trailing characters from S that occur in T
 SECOND(T)            |Extracts seconds value from time or timestamp T
 SUBSTRING(S, N [, L])|Extracts substring from S starting at index N (counting from 1) with length L
@@ -70,7 +70,7 @@ UPPER(S)             |Converts string to lower case
 YEAR(D)              |Extracts year from date or timestamp D
 
 Additional functions are defined from java methods using the
-`function.NAME` driver property. 
+`function.NAME` driver property.
 
 Aggregate Function|Description
 ------------------|-----------
@@ -85,19 +85,19 @@ For queries containing `ORDER BY`, all records are read into memory and sorted.
 For queries containing `GROUP BY` plus an aggregate function, all records are
 read into memory and grouped. For queries that produce a scrollable result set,
 all records up to the furthest accessed record are held into memory. For other
-queries, CsvJdbc holds only one record at a time in memory. 
+queries, CsvJdbc holds only one record at a time in memory.
 
 ## Dependencies
 
 CsvJdbc requires Java version 8, or later. For reading DBF files,
 [DANS DBF Library](http://dans-dbf-lib.sourceforge.net/)
-must be downloaded and included in the CLASSPATH. 
+must be downloaded and included in the CLASSPATH.
 
 ## Advanced Usage
 
 Like other databases, creating a scrollable statement enables scrolling
 forwards and backwards through result sets. This is demonstrated in the
-following example. 
+following example.
 
 ```java
 import java.sql.*;
@@ -133,7 +133,7 @@ public class DemoDriver2
 
 To read several files (for example, daily log files) as a single table,
 set the database connection property `indexedFiles`.
-The following example demonstrates how to do this. 
+The following example demonstrates how to do this.
 
 ```java
 import java.sql.*;
@@ -211,7 +211,7 @@ public class DemoDriver4
 To read the compressed files inside a ZIP file as database tables, make a
 database connection to the ZIP file using the JDBC connection string format
 `jdbc:relique:csv:zip:filename.zip`. This is demonstrated in the following
-example. 
+example.
 
 ```java
 import java.sql.*;
@@ -279,7 +279,7 @@ public class DemoDriver6
 To read data that is either held inside some file storage or accessed remotely
 (for example, using HTTP requests), create a Java class that implements the
 interface `org.relique.io.TableReader` and give this class name in the
-connection URL. CsvJdbc then creates an instance of this class and calls the 
+connection URL. CsvJdbc then creates an instance of this class and calls the
 `getReader` method to obtain a `java.io.Reader` for each database table being
 read. This is demonstrated in the following two Java classes.
 
@@ -391,7 +391,7 @@ decryption class set in property `cryptoFilterClassName`.
 
 ### cryptoFilterParameters
 + type: String
-+ default: 
++ default:
 + Comma-separated list of values to pass to the constructor of the
 decryption class set in property `cryptoFilterClassName`.
 
@@ -581,7 +581,7 @@ is used to parse and format timestamps, times and dates instead
 of the older class
 [SimpleDateFormat](https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html).
 
-The following example code shows how some of these properties are used. 
+The following example code shows how some of these properties are used.
 
 ```java
 ...
@@ -606,5 +606,3 @@ The following example code shows how some of these properties are used.
     "fileExtension=.txt" + "&" +
     "suppressHeaders=true");
 ```
-
-

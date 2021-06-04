@@ -2602,13 +2602,39 @@ public class TestCsvDriver
 
 			Statement stmt = conn.createStatement();
 
-			ResultSet results = stmt.executeQuery("select ROUND(11.77) as R1, ROUND('11.77') as R2, ROUND(C2) as R3, round(C3/7.0) as R4 from numeric where ROUND(C5) = 3"))
+			ResultSet results = stmt.executeQuery("select"
+					+ " ROUND(11.77) as R1,"
+					+ " ROUND('11.77') as R2,"
+					+ " ROUND(C2) as R3,"
+					+ " round(C3/7.0) as R4,"
+					+ " ROUND(11.77, 1) as R5,"
+					+ " ROUND(11.74, 1) as R6,"
+					+ " ROUND(11.75, 1) as R7,"
+					+ " ROUND('11.77', '1') as R8,"
+					+ " ROUND(C2, 1) as R9,"
+					+ " round(C3/7.0, 1) as R10,"
+					+ " round(C3/7.0, 2) as R11,"
+					+ " round(C3/7.0, '3') as R12,"
+					+ " ROUND(11.77, 0) as R13,"
+					+ " ROUND(11.77, -1) as R14"
+					+ " from numeric"
+					+ " where ROUND(C5) = 3"))
 		{
 			assertTrue(results.next());
 			assertEquals("R1 is wrong", 12, results.getInt(1));
 			assertEquals("R2 is wrong", 12, results.getInt(2));
 			assertEquals("R3 is wrong", -1010, results.getInt(3));
 			assertEquals("R4 is wrong", 42871, results.getInt(4));
+			assertEquals("R5 is wrong", 11.8, results.getDouble(5), 0.01);
+			assertEquals("R6 is wrong", 11.7, results.getDouble(6), 0.01);
+			assertEquals("R7 is wrong", 11.8, results.getDouble(7), 0.01);
+			assertEquals("R8 is wrong", 11.8, results.getDouble(8), 0.01);
+			assertEquals("R9 is wrong", -1010.0, results.getDouble(9), 0.01);
+			assertEquals("R10 is wrong", 42871.4, results.getDouble(10), 0.01);
+			assertEquals("R11 is wrong", 42871.43, results.getDouble(11), 0.001);
+			assertEquals("R12 is wrong", 42871.429, results.getDouble(12), 0.0001);
+			assertEquals("R13 is wrong", 12, results.getDouble(13), 0.01);
+			assertEquals("R14 is wrong", 10, results.getDouble(14), 0.01);
 			assertFalse(results.next());
 		}
 	}

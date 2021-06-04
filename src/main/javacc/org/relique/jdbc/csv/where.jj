@@ -951,9 +951,10 @@ Expression simpleExpression():
 	{
 		return new SQLLengthFunction(arg);
 	}
-	| <ROUND> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
+	| <ROUND> <OPENPARENTHESIS> arg = binaryOperation() (<COMMA>
+		arg2 = binaryOperation())? <CLOSEPARENTHESIS>
 	{
-		return new SQLRoundFunction(arg);
+		return new SQLRoundFunction(arg, arg2);
 	}
 	| <DAYOFMONTH> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
 	{
