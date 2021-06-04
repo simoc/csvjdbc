@@ -120,7 +120,7 @@ class ParsedStatement
 			}
 
 			if (whereClause != null)
-				sb.append(" WHERE ").append(whereClause.toString());
+				sb.append(" WHERE ").append(whereClause);
 
 			if (groupByEntries != null && groupByEntries.size() > 0)
 			{
@@ -135,7 +135,7 @@ class ParsedStatement
 				if (havingClause != null)
 				{
 					sb.append(" HAVING ");
-					sb.append(havingClause.toString());
+					sb.append(havingClause);
 				}
 			}
 

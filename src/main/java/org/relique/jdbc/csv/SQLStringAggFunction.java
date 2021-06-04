@@ -56,8 +56,8 @@ class SQLStringAggFunction extends AggregateFunction
 				if (o != null)
 				{
 					if (sb.length() > 0 && o2 != null)
-						sb.append(o2.toString());
-					sb.append(o.toString());
+						sb.append(o2);
+					sb.append(o);
 				}
 			}
 			stringAggregation = sb.toString();
@@ -69,14 +69,14 @@ class SQLStringAggFunction extends AggregateFunction
 			while (it.hasNext())
 			{
 				if (sb.length() > 0 && o2 != null)
-					sb.append(o2.toString());
+					sb.append(o2);
 				sb.append(it.next().toString());
 			}
 			it = distinctAggregateValues.iterator();
 			while (it.hasNext())
 			{
 				if (sb.length() > 0 && o2 != null)
-					sb.append(o2.toString());
+					sb.append(o2);
 				sb.append(it.next().toString());
 			}
 			stringAggregation = sb.toString();

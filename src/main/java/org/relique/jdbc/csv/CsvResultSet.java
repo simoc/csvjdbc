@@ -524,7 +524,7 @@ public class CsvResultSet implements ResultSet
 						/*
 						 * Must order by something that contains at least one column, not 'foo' or 1+1.
 						 */
-						throw new SQLException(CsvResources.getString("invalidOrderBy") + ": " + expr.toString());
+						throw new SQLException(CsvResources.getString("invalidOrderBy") + ": " + expr);
 					}
 				}
 			}
@@ -744,7 +744,7 @@ public class CsvResultSet implements ResultSet
 					/*
 					 * Must group by something that contains at least one column, not 'foo' or 1+1.
 					 */
-					throw new SQLException(CsvResources.getString("invalidGroupBy") + ": " + expr.toString());
+					throw new SQLException(CsvResources.getString("invalidGroupBy") + ": " + expr);
 				}
 			}
 			ArrayList<String> groupingColumns = new ArrayList<>();

@@ -151,7 +151,7 @@ class BinaryOperation extends Expression
 					Time rightT = (Time)rightEval;
 					Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
-					return sc.parseTimestamp(leftD.toString() + " " + rightT.toString());
+					return sc.parseTimestamp(leftD + " " + rightT);
 				}
 				else
 				{
@@ -173,7 +173,7 @@ class BinaryOperation extends Expression
 					Time leftT = (Time)leftEval;
 					Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
-					return sc.parseTimestamp(rightD.toString() + " " + leftT.toString());
+					return sc.parseTimestamp(rightD + " " + leftT);
 				}
 				else
 				{

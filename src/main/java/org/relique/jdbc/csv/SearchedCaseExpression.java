@@ -69,7 +69,7 @@ class SearchedCaseExpression extends Expression
 			sb.append(" WHEN ").append(condition.toString()).append(" THEN ").append(values.get(i));
 		}
 		if (elseExpression != null)
-			sb.append(" ELSE ").append(elseExpression.toString());
+			sb.append(" ELSE ").append(elseExpression);
 		sb.append(" END");
 		return sb.toString();
 	}

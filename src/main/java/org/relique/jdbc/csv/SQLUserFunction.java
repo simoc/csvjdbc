@@ -172,7 +172,7 @@ class SQLUserFunction extends Expression
 		{
 			sb.append(separator);
 			if (o != null)
-				sb.append(o.toString());
+				sb.append(o);
 			else
 				sb.append("null");
 			separator = ",";
