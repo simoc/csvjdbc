@@ -18,6 +18,8 @@
  */
 package org.relique.jdbc.csv;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,10 +29,14 @@ import java.util.Set;
 class SQLRoundFunction extends Expression
 {
 	Expression expression;
-	public SQLRoundFunction(Expression expression)
+	Expression decimals;
+
+	public SQLRoundFunction(Expression expression, Expression decimals)
 	{
 		this.expression = expression;
+		this.decimals = decimals;
 	}
+
 	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
@@ -52,37 +58,84 @@ class SQLRoundFunction extends Expression
 			{
 				if (retval instanceof Short)
 				{
-					retval = Integer.valueOf(((Short)retval).intValue());
+					retval = Integer.valueOf(((Short) retval).intValue());
 				}
 				else if (!(retval instanceof Integer || retval instanceof Long))
 				{
-					double d = ((Number)retval).doubleValue();
-					if (d < Integer.MIN_VALUE || d > Integer.MAX_VALUE)
-						retval = Double.valueOf(Math.round(d));
+					double d = ((Number) retval).doubleValue();
+					int newScale = 0;
+					if (decimals != null)
+					{
+						Object decimalsObj = decimals.eval(env);
+						if (decimalsObj != null)
+						{
+							if (decimalsObj instanceof Number)
+							{
+								newScale = ((Number) decimalsObj).intValue();
+							}
+							else
+							{
+								try
+								{
+									newScale = Integer.parseInt(decimalsObj.toString());
+								}
+								catch (NumberFormatException e)
+								{
+									newScale = 0;
+								}
+							}
+						}
+					}
+					BigDecimal rounded = BigDecimal.valueOf(d).setScale(newScale, RoundingMode.HALF_UP);
+					if (newScale > 0 || d < Integer.MIN_VALUE || d > Integer.MAX_VALUE)
+					{
+						retval = Double.valueOf(rounded.doubleValue());
+					}
 					else
-						retval = Integer.valueOf((int)Math.round(d));
+					{
+						retval = Integer.valueOf(rounded.intValue());
+					}
 				}
 			}
 		}
 		return retval;
 	}
+
 	@Override
 	public String toString()
 	{
-		return "ROUND("+expression+")";
+		StringBuilder stringBuilder = new StringBuilder("ROUND(");
+		stringBuilder.append(expression);
+		stringBuilder.append(")");
+		if (decimals != null)
+		{
+			stringBuilder.append(",");
+			stringBuilder.append(decimals);
+		}
+		return stringBuilder.toString();
 	}
+
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
 		List<String> result = new LinkedList<String>();
 		result.addAll(expression.usedColumns(availableColumns));
+		if (decimals != null)
+		{
+			result.addAll(decimals.usedColumns(availableColumns));
+		}
 		return result;
 	}
+
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
 		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
 		result.addAll(expression.aggregateFunctions());
+		if (decimals != null)
+		{
+			result.addAll(decimals.aggregateFunctions());
+		}
 		return result;
 	}
 }
