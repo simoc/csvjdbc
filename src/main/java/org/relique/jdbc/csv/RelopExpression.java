@@ -170,10 +170,7 @@ class RelopExpression extends LogicalExpression
 				}
 			}
 		}
-    	catch (ClassCastException e)
-		{
-		}
-		catch (NumberFormatException e)
+		catch (ClassCastException | NumberFormatException e)
 		{
 		}
 		return leftComparedToRightObj;

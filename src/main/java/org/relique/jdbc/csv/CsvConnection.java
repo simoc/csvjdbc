@@ -401,23 +401,8 @@ public class CsvConnection implements Connection
 				// ignore all possible exceptions: just leave the stream
 				// undecrypted.
 			}
-			catch (IllegalArgumentException e)
-			{
-				e.printStackTrace();
-			}
-			catch (InstantiationException e)
-			{
-				e.printStackTrace();
-			}
-			catch (IllegalAccessException e)
-			{
-				e.printStackTrace();
-			}
-			catch (InvocationTargetException e)
-			{
-				e.printStackTrace();
-			}
-			catch (NoSuchMethodException e)
+			catch (IllegalArgumentException | InstantiationException | IllegalAccessException
+					| InvocationTargetException | NoSuchMethodException e)
 			{
 				e.printStackTrace();
 			}

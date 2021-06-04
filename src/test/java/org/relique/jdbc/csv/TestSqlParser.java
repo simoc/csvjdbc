@@ -287,10 +287,7 @@ public class TestSqlParser
 			parser.parse(query);
 			fail("incorrect query '" + query + "' parsed as correct");
 		}
-		catch (ParseException e)
-		{
-		}
-		catch (SQLException e)
+		catch (ParseException | SQLException e)
 		{
 		}
 
@@ -300,10 +297,7 @@ public class TestSqlParser
 			parser.parse(query);
 			fail("incorrect query '" + query + "' parsed as correct");
 		}
-		catch (ParseException e)
-		{
-		}
-		catch (SQLException e)
+		catch (ParseException | SQLException e)
 		{
 		}
 
@@ -313,10 +307,7 @@ public class TestSqlParser
 			parser.parse(query);
 			fail("incorrect query '" + query + "' parsed as correct");
 		}
-		catch (ParseException e)
-		{
-		}
-		catch (SQLException e)
+		catch (ParseException | SQLException e)
 		{
 		}
 
@@ -1017,10 +1008,7 @@ public class TestSqlParser
 			parser2.parse("SELECT /* nested /* comment */ not allowed */ Name FROM sample");
 			fail("Should raise a ParseException");
 		}
-		catch (SQLException e)
-		{
-		}
-		catch (ParseException e)
+		catch (SQLException | ParseException e)
 		{
 		}
 	}

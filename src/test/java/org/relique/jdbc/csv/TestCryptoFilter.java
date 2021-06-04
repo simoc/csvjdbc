@@ -225,10 +225,6 @@ public class TestCryptoFilter
 					out.write((new String("\n")).getBytes());
 				}
 			}
-			catch (FileNotFoundException e)
-			{
-				e.printStackTrace();
-			}
 			catch (IOException e)
 			{
 				e.printStackTrace();

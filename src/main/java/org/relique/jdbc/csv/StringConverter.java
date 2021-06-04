@@ -490,11 +490,7 @@ public class StringConverter
 			}
 			return sqlResult;
 		}
-		catch (ParseException e)
-		{
-			return null;
-		}
-		catch (RuntimeException e)
+		catch (ParseException | RuntimeException e)
 		{
 			return null;
 		}
@@ -593,11 +589,7 @@ public class StringConverter
 			}
 			return sqlResult;
 		}
-		catch (ParseException e)
-		{
-			return null;
-		}
-		catch (RuntimeException e)
+		catch (ParseException | RuntimeException e)
 		{
 			return null;
 		}
@@ -660,10 +652,7 @@ public class StringConverter
 				}
 			}
 		}
-		catch (RuntimeException e)
-		{
-		}
-		catch (ParseException e)
+		catch (RuntimeException | ParseException e)
 		{
 		}
 		return result;

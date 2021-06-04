@@ -134,17 +134,13 @@ class SQLUserFunction extends Expression
 				args[args.length - 1] = lastArg;
 			retval = method.invoke(null, args);
 		}
-		catch (IllegalArgumentException e)
+		catch (IllegalArgumentException | InvocationTargetException e)
 		{
 			throw new SQLException(getInvokeString(args), e);
 		}
 		catch (IllegalAccessException e)
 		{
 			throw new SQLException(name + ": " + e.getMessage(), e);
-		}
-		catch (InvocationTargetException e)
-		{
-			throw new SQLException(getInvokeString(args), e);
 		}
 		return retval;
 	}
