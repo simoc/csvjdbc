@@ -40,10 +40,7 @@ class ExistsExpression extends LogicalExpression
 	@Override
 	public String toString()
 	{
-		StringBuilder sb = new StringBuilder();
-		sb.append("EXISTS ");
-		sb.append(subQuery.toString());
-		return sb.toString();
+		return "EXISTS " + subQuery.toString();
 	}
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)

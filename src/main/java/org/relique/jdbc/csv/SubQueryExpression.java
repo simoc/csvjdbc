@@ -98,11 +98,7 @@ class SubQueryExpression extends Expression
 	@Override
 	public String toString()
 	{
-		StringBuilder sb = new StringBuilder();
-		sb.append("(");
-		sb.append(parsedStatement.toString());
-		sb.append(")");
-		return sb.toString();
+		return "(" + parsedStatement.toString() + ")";
 	}
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
