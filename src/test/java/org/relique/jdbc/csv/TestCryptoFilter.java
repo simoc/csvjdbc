@@ -214,7 +214,7 @@ public class TestCryptoFilter
 			{
 				File f = new File(filePath, "scrambled_trailing.txt");
 				String filename = f.getAbsolutePath();
-				CryptoFilter cip = new XORCipher(new String("gaius vipsanius agrippa"));;
+				CryptoFilter cip = new XORCipher(new String("gaius vipsanius agrippa"));
 				try (EncryptedFileOutputStream out = new EncryptedFileOutputStream(filename, cip ))
 				{
 					out.write((new String("key,value\n")).getBytes());

@@ -26,7 +26,7 @@ import java.util.Set;
 
 class SQLTrimFunction extends Expression
 {
-	public enum Type { LEADING, TRAILING, BOTH };
+	public enum Type { LEADING, TRAILING, BOTH }
 
 	Expression expression;
 	Expression trimChars;
