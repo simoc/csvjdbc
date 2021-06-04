@@ -1094,17 +1094,8 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	@Override
 	public boolean supportsResultSetType(int type) throws SQLException
 	{
-		if (type == ResultSet.TYPE_FORWARD_ONLY)
-		{
-			return true;
-		}
+		return type == ResultSet.TYPE_FORWARD_ONLY || type == ResultSet.TYPE_SCROLL_SENSITIVE;
 
-		if (type == ResultSet.TYPE_SCROLL_SENSITIVE)
-		{
-			return true;
-		}
-
-		return false;
 	}
 
 	@Override

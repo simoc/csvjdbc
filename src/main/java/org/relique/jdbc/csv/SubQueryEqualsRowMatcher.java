@@ -35,10 +35,7 @@ public class SubQueryEqualsRowMatcher implements SubQueryRowMatcher
 		 * SQLException.
 		 */
 		values.add(expr);
-		if (values.size() > 1)
-			return true;
-		else
-			return false;
+		return values.size() > 1;
 	}
 	
 	public ArrayList<Object> getValues()
