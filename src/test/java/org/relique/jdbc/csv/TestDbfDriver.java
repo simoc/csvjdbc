@@ -119,7 +119,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -162,7 +161,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -200,7 +198,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -225,7 +222,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -258,7 +254,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -287,7 +282,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -313,7 +307,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -343,7 +336,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -384,7 +376,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -408,7 +399,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -436,7 +426,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -463,7 +452,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -493,7 +481,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -517,7 +504,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -542,7 +528,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -574,7 +559,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 }
