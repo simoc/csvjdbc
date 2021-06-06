@@ -47,14 +47,14 @@ class SQLLengthFunction extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		result.addAll(expression.usedColumns(availableColumns));
 		return result;
 	}
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		result.addAll(expression.aggregateFunctions());
 		return result;
 	}

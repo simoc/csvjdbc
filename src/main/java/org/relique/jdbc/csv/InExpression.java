@@ -91,7 +91,7 @@ class InExpression extends LogicalExpression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		result.addAll(obj.usedColumns(availableColumns));
 		if (inList != null)
 		{
@@ -109,7 +109,7 @@ class InExpression extends LogicalExpression
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		if (inList != null)
 		{
 			for (Expression expr: inList)

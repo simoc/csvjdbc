@@ -29,7 +29,7 @@ public class LikePattern
 	/**
 	 * Global lookup table of LIKE pattern to compiled regular expression.
 	 */
-	private static Hashtable<String, Pattern> compiledRegexs = new Hashtable<String, Pattern>();
+	private static Hashtable<String, Pattern> compiledRegexs = new Hashtable<>();
 
 	/**
 	 * 

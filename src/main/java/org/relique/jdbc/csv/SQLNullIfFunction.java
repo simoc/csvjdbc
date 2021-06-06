@@ -55,7 +55,7 @@ class SQLNullIfFunction extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		result.addAll(expression1.usedColumns(availableColumns));
 		result.addAll(expression2.usedColumns(availableColumns));
 		return result;
@@ -63,7 +63,7 @@ class SQLNullIfFunction extends Expression
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		result.addAll(expression1.aggregateFunctions());
 		result.addAll(expression2.aggregateFunctions());
 		return result;

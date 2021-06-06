@@ -94,8 +94,7 @@ public class CsvPreparedStatement extends CsvStatement implements PreparedStatem
 		setTimeoutMillis();
 		cancelled = false;
 
-		ResultSet resultSet = executeQuery();
-		lastResultSet = resultSet;
+		lastResultSet = executeQuery();
 
 		return true;
 	}

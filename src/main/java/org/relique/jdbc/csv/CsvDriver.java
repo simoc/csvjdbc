@@ -214,23 +214,8 @@ public class CsvDriver implements Driver
 				Object tableReaderInstance = clazz.getConstructor().newInstance();
 				connection = new CsvConnection((TableReader)tableReaderInstance, info, urlProperties);
 			}
-			catch (ClassNotFoundException e)
-			{
-				throw new SQLException(e);
-			}
-			catch (IllegalAccessException e)
-			{
-				throw new SQLException(e);
-			}
-			catch (InstantiationException e)
-			{
-				throw new SQLException(e);
-			}
-			catch (InvocationTargetException e)
-			{
-				throw new SQLException(e);
-			}
-			catch (NoSuchMethodException e)
+			catch (ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException
+					| NoSuchMethodException e)
 			{
 				throw new SQLException(e);
 			}

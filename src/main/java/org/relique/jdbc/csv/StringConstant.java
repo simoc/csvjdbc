@@ -43,6 +43,6 @@ class StringConstant extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		return new LinkedList<String>();
+		return new LinkedList<>();
 	}
 }

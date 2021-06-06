@@ -100,7 +100,7 @@ public class CsvRawReader
 		this.missingValue = missingValue;
 		this.quoteStyle = quoteStyle;
 		this.fixedWidthColumns = fixedWidthColumns;
-		this.readAheadLines = new LinkedList<String>();
+		this.readAheadLines = new LinkedList<>();
 		this.readingAhead = false;
 
 		for (int i = 0; i < skipLeadingLines; i++)
@@ -137,7 +137,7 @@ public class CsvRawReader
 			// some column names may be missing and should be corrected
 			if (defectiveHeaders)
 				fixDefectiveHeaders();
-			Set<String> uniqueNames = new HashSet<String>();
+			Set<String> uniqueNames = new HashSet<>();
 			for (int i = 0; i < this.columnNames.length; i++)
 			{
 				if (!uniqueNames.add(this.columnNames[i].toUpperCase()))
@@ -153,7 +153,7 @@ public class CsvRawReader
 
 	private void fixDefectiveHeaders()
 	{
-		Set<String> uniqueNames = new HashSet<String>();
+		Set<String> uniqueNames = new HashSet<>();
 		for (int i = 0; i < this.columnNames.length; i++)
 		{
 			boolean isDefective = false;
@@ -247,7 +247,7 @@ public class CsvRawReader
 	protected String getNextDataLine() throws IOException
 	{
 		String tmp;
-		if (readAheadLines.isEmpty() == false)
+		if (!readAheadLines.isEmpty())
 			tmp = readAheadLines.removeFirst();
 		else
 			tmp = input.readLine();
@@ -256,7 +256,7 @@ public class CsvRawReader
 		{
 			while (tmp != null && (tmp.length() == 0 || tmp.startsWith(comment)))
 			{
-				if (readAheadLines.isEmpty() == false)
+				if (!readAheadLines.isEmpty())
 					tmp = readAheadLines.removeFirst();
 				else
 					tmp = input.readLine();
@@ -285,7 +285,7 @@ public class CsvRawReader
 						break; // also good enough - hopefully
 					CsvDriver.writeLog("Ignoring row " + input.getLineNumber() + " Line=" + tmp);
 
-					if (readAheadLines.isEmpty() == false)
+					if (!readAheadLines.isEmpty())
 						tmp = readAheadLines.removeFirst();
 					else
 						tmp = input.readLine();
@@ -485,7 +485,7 @@ public class CsvRawReader
 			throws SQLException
 	{
 		// TODO: quoteChar should be recognized ONLY when close to separator. 
-		Vector<String> values = new Vector<String>();
+		Vector<String> values = new Vector<>();
 		boolean inQuotedString = false;
 		int quotedLineNumber = 0;
 		StringBuilder value = new StringBuilder(32);
@@ -535,8 +535,7 @@ public class CsvRawReader
 					}
 					else
 					{
-						while (trimValues &&
-							atSeparator(line, currentPos + 1) == false &&
+						while (trimValues && !atSeparator(line, currentPos + 1) &&
 							Character.isWhitespace(nextChar) &&
 							currentPos + 2 < line.length())
 						{
@@ -544,7 +543,7 @@ public class CsvRawReader
 							nextChar = line.charAt(currentPos + 2);
 							currentPos++;
 						}
-						if (atSeparator(line, currentPos + 1) == false)
+						if (!atSeparator(line, currentPos + 1))
 						{
 							throw new SQLException(CsvResources.getString("expectedSeparator") + ": " +
 								input.getLineNumber() + " " + (currentPos + 1) +
@@ -588,8 +587,7 @@ public class CsvRawReader
 					}
 					else if (trimValues &&
 						Character.isWhitespace(currentChar) &&
-						value.length() == 0 &&
-						inQuotedString == false)
+						value.length() == 0 && !inQuotedString)
 					{
 						// Skip leading whitespace in field
 					}
@@ -623,7 +621,7 @@ public class CsvRawReader
 					}
 					else
 					{
-						if (readAheadLines.isEmpty() == false)
+						if (!readAheadLines.isEmpty())
 							additionalLine = readAheadLines.removeFirst();
 						else
 							additionalLine = input.readLine();

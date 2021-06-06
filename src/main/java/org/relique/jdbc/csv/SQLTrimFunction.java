@@ -26,7 +26,7 @@ import java.util.Set;
 
 class SQLTrimFunction extends Expression
 {
-	public enum Type { LEADING, TRAILING, BOTH };
+	public enum Type { LEADING, TRAILING, BOTH }
 
 	Expression expression;
 	Expression trimChars;
@@ -115,7 +115,7 @@ class SQLTrimFunction extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		result.addAll(expression.usedColumns(availableColumns));
 		if (trimChars != null)
 			result.addAll(trimChars.usedColumns(availableColumns));
@@ -124,7 +124,7 @@ class SQLTrimFunction extends Expression
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		result.addAll(expression.aggregateFunctions());
 		if (trimChars != null)
 			result.addAll(trimChars.aggregateFunctions());

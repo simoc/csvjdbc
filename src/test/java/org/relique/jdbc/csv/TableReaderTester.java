@@ -47,7 +47,7 @@ public class TableReaderTester implements TableReader
 	@Override
 	public List<String> getTableNames(Connection connection) throws SQLException
 	{
-		Vector<String> v = new Vector<String>();
+		Vector<String> v = new Vector<>();
 		v.add("AIRLINE");
 		v.add("AIRPORT");
 		return v;

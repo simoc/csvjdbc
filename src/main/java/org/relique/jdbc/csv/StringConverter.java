@@ -456,8 +456,7 @@ public class StringConverter
 			String dayGroup = m.group(day);
 			if (dayGroup.length() < 2)
 				dayGroup = "0" + dayGroup;
-			String retval = yearGroup + "-" + monthGroup + "-" + dayGroup;
-			return retval;
+			return yearGroup + "-" + monthGroup + "-" + dayGroup;
 		}
 		else
 		{
@@ -490,11 +489,7 @@ public class StringConverter
 			}
 			return sqlResult;
 		}
-		catch (ParseException e)
-		{
-			return null;
-		}
-		catch (RuntimeException e)
+		catch (ParseException | RuntimeException e)
 		{
 			return null;
 		}
@@ -593,11 +588,7 @@ public class StringConverter
 			}
 			return sqlResult;
 		}
-		catch (ParseException e)
-		{
-			return null;
-		}
-		catch (RuntimeException e)
+		catch (ParseException | RuntimeException e)
 		{
 			return null;
 		}
@@ -660,10 +651,7 @@ public class StringConverter
 				}
 			}
 		}
-		catch (RuntimeException e)
-		{
-		}
-		catch (ParseException e)
+		catch (RuntimeException | ParseException e)
 		{
 		}
 		return result;
@@ -864,7 +852,7 @@ public class StringConverter
 				.valueOf((short) DatabaseMetaData.typeSearchable);
 		Short nullable = Short.valueOf((short) DatabaseMetaData.typeNullable);
 
-		ArrayList<Object[]> retval = new ArrayList<Object[]>();
+		ArrayList<Object[]> retval = new ArrayList<>();
 
 		retval.add(new Object[]
 		{ "String", Integer.valueOf(Types.VARCHAR), shortMax, "'", "'", null,

@@ -35,10 +35,10 @@ import java.io.OutputStream;
  */
 public interface CryptoFilter
 {
-	abstract public int read(InputStream in) throws IOException;
-	abstract public void write(OutputStream out, int ch) throws IOException;
-	abstract public int read(InputStream in, byte[] b, int off, int len) throws IOException;
-	abstract public int read(InputStream in, byte[] b) throws IOException;
-	abstract public void reset();
+	int read(InputStream in) throws IOException;
+	void write(OutputStream out, int ch) throws IOException;
+	int read(InputStream in, byte[] b, int off, int len) throws IOException;
+	int read(InputStream in, byte[] b) throws IOException;
+	void reset();
 	
 }

@@ -35,7 +35,7 @@ class SQLSumFunction extends AggregateFunction
 	public SQLSumFunction(boolean isDistinct, Expression expression)
 	{
 		if (isDistinct)
-			this.distinctValues = new HashSet<Object>();
+			this.distinctValues = new HashSet<>();
 		this.expression = expression;
 	}
 	@Override
@@ -54,7 +54,7 @@ class SQLSumFunction extends AggregateFunction
 			counter = 0;
 			if (this.distinctValues != null)
 			{
-				HashSet<Object> unique = new HashSet<Object>();
+				HashSet<Object> unique = new HashSet<>();
 				for (int i = 0; i < groupRows.size(); i++)
 				{
 					o = expression.eval((Map)groupRows.get(i));
@@ -151,19 +151,19 @@ class SQLSumFunction extends AggregateFunction
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		return new LinkedList<String>();
+		return new LinkedList<>();
 	}
 	@Override
 	public List<String> aggregateColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		result.addAll(expression.usedColumns(availableColumns));
 		return result;
 	}
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		result.add(this);
 		return result;
 	}

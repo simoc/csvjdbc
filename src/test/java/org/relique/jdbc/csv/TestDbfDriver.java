@@ -25,7 +25,6 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -120,7 +119,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -163,7 +161,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -201,7 +198,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -226,7 +222,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -259,7 +254,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -288,7 +282,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -314,7 +307,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -344,7 +336,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -358,14 +349,14 @@ public class TestDbfDriver
 					+ filePath, props);
 			ResultSet results = conn.getMetaData().getTables(null, null, "%", null))
 		{
-			Set<String> target = new HashSet<String>();
+			Set<String> target = new HashSet<>();
 			target.add("sample");
 			target.add("fox_samp");
 			target.add("hotel");
 			target.add("xbase");
 			target.add("d");
 
-			Set<String> current = new HashSet<String>();
+			Set<String> current = new HashSet<>();
 			assertTrue(results.next());
 			current.add(results.getString("TABLE_NAME"));
 			assertTrue(results.next());
@@ -385,7 +376,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -409,7 +399,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -437,7 +426,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -464,7 +452,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -494,7 +481,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -518,7 +504,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -543,7 +528,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 
@@ -575,7 +559,6 @@ public class TestDbfDriver
 			/*
 			 * Skip test if classes for reading DBF files are not available.
 			 */
-			return;
 		}
 	}
 }

@@ -134,17 +134,13 @@ class SQLUserFunction extends Expression
 				args[args.length - 1] = lastArg;
 			retval = method.invoke(null, args);
 		}
-		catch (IllegalArgumentException e)
+		catch (IllegalArgumentException | InvocationTargetException e)
 		{
 			throw new SQLException(getInvokeString(args), e);
 		}
 		catch (IllegalAccessException e)
 		{
 			throw new SQLException(name + ": " + e.getMessage(), e);
-		}
-		catch (InvocationTargetException e)
-		{
-			throw new SQLException(getInvokeString(args), e);
 		}
 		return retval;
 	}
@@ -176,7 +172,7 @@ class SQLUserFunction extends Expression
 		{
 			sb.append(separator);
 			if (o != null)
-				sb.append(o.toString());
+				sb.append(o);
 			else
 				sb.append("null");
 			separator = ",";
@@ -204,7 +200,7 @@ class SQLUserFunction extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		for (Expression expression : expressions)
 		{
 			result.addAll(expression.usedColumns(availableColumns));
@@ -214,7 +210,7 @@ class SQLUserFunction extends Expression
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		for (Expression expression : expressions)
 		{
 			result.addAll(expression.aggregateFunctions());

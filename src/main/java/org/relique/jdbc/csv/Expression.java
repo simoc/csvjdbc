@@ -35,7 +35,7 @@ public abstract class Expression
 
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		return new LinkedList<AggregateFunction>();
+		return new LinkedList<>();
 	}
 
 	/**

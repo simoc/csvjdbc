@@ -151,7 +151,7 @@ class BinaryOperation extends Expression
 					Time rightT = (Time)rightEval;
 					Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
-					return sc.parseTimestamp(leftD.toString() + " " + rightT.toString());
+					return sc.parseTimestamp(leftD + " " + rightT);
 				}
 				else
 				{
@@ -173,7 +173,7 @@ class BinaryOperation extends Expression
 					Time leftT = (Time)leftEval;
 					Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
 					StringConverter sc = (StringConverter) stringConverter.eval(env);
-					return sc.parseTimestamp(rightD.toString() + " " + leftT.toString());
+					return sc.parseTimestamp(rightD + " " + leftT);
 				}
 				else
 				{
@@ -262,7 +262,7 @@ class BinaryOperation extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		result.addAll(left.usedColumns(availableColumns));
 		result.addAll(right.usedColumns(availableColumns));
 		return result;
@@ -270,7 +270,7 @@ class BinaryOperation extends Expression
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		result.addAll(left.aggregateFunctions());
 		result.addAll(right.aggregateFunctions());
 		return result;

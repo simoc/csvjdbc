@@ -86,7 +86,7 @@ class SubQueryExpression extends Expression
 			 * Go through sub-query ResultSet sequentially until we find a row
 			 * that causes outer/parent SQL statement to be evaluated to true or false.
 			 */
-			while (matches == false && resultSet.next())
+			while (!matches && resultSet.next())
 			{
 				Object o = resultSet.getObject(1);
 				matches = rowMatcher.matches(o);
@@ -98,16 +98,12 @@ class SubQueryExpression extends Expression
 	@Override
 	public String toString()
 	{
-		StringBuilder sb = new StringBuilder();
-		sb.append("(");
-		sb.append(parsedStatement.toString());
-		sb.append(")");
-		return sb.toString();
+		return "(" + parsedStatement.toString() + ")";
 	}
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> retval = new LinkedList<String>();
+		List<String> retval = new LinkedList<>();
 		List<String> usedColumns = parsedStatement.usedColumns(availableColumns);
 		for (String column : usedColumns)
 		{
@@ -127,6 +123,6 @@ class SubQueryExpression extends Expression
 		 * Aggregate functions are internal to this sub-query SQL statement,
 		 * and not the parent SQL statement, so do not return them.
 		 */
-		return new LinkedList<AggregateFunction>();
+		return new LinkedList<>();
 	}
 }

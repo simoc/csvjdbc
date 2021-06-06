@@ -31,7 +31,7 @@ class ParsedExpression extends LogicalExpression
 	public ParsedExpression(Expression left)
 	{
 		content = left;
-		placeholders = new HashMap<String, Object>();
+		placeholders = new HashMap<>();
 	}
 	@Override
 	public boolean isValid()
@@ -46,7 +46,7 @@ class ParsedExpression extends LogicalExpression
 			/*
 			 * Add prepared statement placeholders to environment.
 			 */
-			Map<String, Object> useThisEnv = new HashMap<String, Object>();
+			Map<String, Object> useThisEnv = new HashMap<>();
 			useThisEnv.putAll(env);
 			useThisEnv.putAll(placeholders);
 			env = useThisEnv;
@@ -61,7 +61,7 @@ class ParsedExpression extends LogicalExpression
 			/*
 			 * Add prepared statement placeholders to environment.
 			 */
-			Map<String, Object> useThisEnv = new HashMap<String, Object>();
+			Map<String, Object> useThisEnv = new HashMap<>();
 			useThisEnv.putAll(env);
 			useThisEnv.putAll(placeholders);
 			env = useThisEnv;

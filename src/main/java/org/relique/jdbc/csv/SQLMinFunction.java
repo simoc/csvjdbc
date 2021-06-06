@@ -72,19 +72,19 @@ class SQLMinFunction extends AggregateFunction
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		return new LinkedList<String>();
+		return new LinkedList<>();
 	}
 	@Override
 	public List<String> aggregateColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		result.addAll(expression.usedColumns(availableColumns));
 		return result;
 	}
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		result.add(this);
 		return result;
 	}

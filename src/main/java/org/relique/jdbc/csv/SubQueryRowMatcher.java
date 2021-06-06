@@ -28,5 +28,5 @@ public interface SubQueryRowMatcher
 	 * @return true if value completes SQL sub-query evaluation and sub-query should stop.
 	 * @throws SQLException if there is an error evaluating the expression.
 	 */
-	public boolean matches(Object expr) throws SQLException;
+	boolean matches(Object expr) throws SQLException;
 }

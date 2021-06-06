@@ -120,7 +120,7 @@ class ParsedStatement
 			}
 
 			if (whereClause != null)
-				sb.append(" WHERE ").append(whereClause.toString());
+				sb.append(" WHERE ").append(whereClause);
 
 			if (groupByEntries != null && groupByEntries.size() > 0)
 			{
@@ -135,7 +135,7 @@ class ParsedStatement
 				if (havingClause != null)
 				{
 					sb.append(" HAVING ");
-					sb.append(havingClause.toString());
+					sb.append(havingClause);
 				}
 			}
 
@@ -165,7 +165,7 @@ class ParsedStatement
 
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		if (queryEntries != null)
 		{
 			for (ParsedExpression parsedExpr : queryEntries)
@@ -203,7 +203,7 @@ class ParsedStatement
 
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		if (queryEntries != null)
 		{
 			for (ParsedExpression parsedExpr : queryEntries)

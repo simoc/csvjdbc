@@ -69,7 +69,7 @@ class SearchedCaseExpression extends Expression
 			sb.append(" WHEN ").append(condition.toString()).append(" THEN ").append(values.get(i));
 		}
 		if (elseExpression != null)
-			sb.append(" ELSE ").append(elseExpression.toString());
+			sb.append(" ELSE ").append(elseExpression);
 		sb.append(" END");
 		return sb.toString();
 	}
@@ -77,7 +77,7 @@ class SearchedCaseExpression extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		Iterator<Expression> it = conditions.iterator();
 		while (it.hasNext())
 		{
@@ -96,7 +96,7 @@ class SearchedCaseExpression extends Expression
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		Iterator<Expression> it = conditions.iterator();
 		while (it.hasNext())
 		{

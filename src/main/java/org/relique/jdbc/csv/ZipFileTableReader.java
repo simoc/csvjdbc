@@ -81,7 +81,7 @@ public class ZipFileTableReader implements TableReader
 	@Override
 	public List<String> getTableNames(Connection connection) throws SQLException
 	{
-		Vector<String> v = new Vector<String>();
+		Vector<String> v = new Vector<>();
 		Enumeration<? extends ZipEntry> en = zipFile.entries();
 		while (en.hasMoreElements())
 		{

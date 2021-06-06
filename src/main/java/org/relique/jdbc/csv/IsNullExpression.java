@@ -48,14 +48,14 @@ class IsNullExpression extends LogicalExpression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		result.addAll(arg.usedColumns(availableColumns));
 		return result;
 	}
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		result.addAll(arg.aggregateFunctions());
 		return result;
 	}

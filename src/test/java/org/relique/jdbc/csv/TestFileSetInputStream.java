@@ -70,8 +70,8 @@ public class TestFileSetInputStream
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
 								"location", "file_date" }, ",", false, false, null, 0, null))))
 		{
-			Set<String> refSet = new HashSet<String>();
-			Set<String> testSet = new HashSet<String>();
+			Set<String> refSet = new HashSet<>();
+			Set<String> testSet = new HashSet<>();
 			inputRef.readLine();
 			inputTest.readLine();
 			String lineRef, lineTest;
@@ -99,8 +99,8 @@ public class TestFileSetInputStream
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
 								"location", "file_date" }, ",", true, false, null, 0, null))))
 		{
-			Set<String> refSet = new HashSet<String>();
-			Set<String> testSet = new HashSet<String>();
+			Set<String> refSet = new HashSet<>();
+			Set<String> testSet = new HashSet<>();
 			inputRef.readLine();
 			inputTest.readLine();
 			String lineRef, lineTest;
@@ -128,8 +128,8 @@ public class TestFileSetInputStream
 						"headerless-([0-9]{3})-([0-9]{8}).txt", new String[] {
 								"location", "file_date" }, ",", true, true, null, 0, null))))
 		{
-			Set<String> refSet = new HashSet<String>();
-			Set<String> testSet = new HashSet<String>();
+			Set<String> refSet = new HashSet<>();
+			Set<String> testSet = new HashSet<>();
 			String lineRef, lineTest;
 			do
 			{
@@ -155,8 +155,8 @@ public class TestFileSetInputStream
 						"empty-([0-9]+).txt", new String[] {
 							"EMPTY_ID"}, ",", false, false, null, 0, null))))
 		{
-			Set<String> refSet = new HashSet<String>();
-			Set<String> testSet = new HashSet<String>();
+			Set<String> refSet = new HashSet<>();
+			Set<String> testSet = new HashSet<>();
 			String lineRef, lineTest;
 			do
 			{

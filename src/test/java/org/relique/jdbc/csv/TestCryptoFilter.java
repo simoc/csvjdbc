@@ -27,7 +27,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -214,7 +213,7 @@ public class TestCryptoFilter
 			{
 				File f = new File(filePath, "scrambled_trailing.txt");
 				String filename = f.getAbsolutePath();
-				CryptoFilter cip = new XORCipher(new String("gaius vipsanius agrippa"));;
+				CryptoFilter cip = new XORCipher(new String("gaius vipsanius agrippa"));
 				try (EncryptedFileOutputStream out = new EncryptedFileOutputStream(filename, cip ))
 				{
 					out.write((new String("key,value\n")).getBytes());
@@ -224,10 +223,6 @@ public class TestCryptoFilter
 					out.write((new String("3,tre\n")).getBytes());
 					out.write((new String("\n")).getBytes());
 				}
-			}
-			catch (FileNotFoundException e)
-			{
-				e.printStackTrace();
 			}
 			catch (IOException e)
 			{

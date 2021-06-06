@@ -67,15 +67,15 @@ public class DbfReader extends DataReader
 		}
 		try
 		{
-			tableOpenMethod = tableClass.getMethod("open", new Class[] {});
-			tableCloseMethod = tableClass.getMethod("close", new Class[] {});
-			tableGetFieldsMethod = tableClass.getMethod("getFields", new Class[] {});
-			fieldGetNameMethod = fieldClass.getMethod("getName", new Class[] {});
-			tableGetRecordCountMethod = tableClass.getMethod("getRecordCount", new Class[] {});
-			tableGetRecordAtMethod = tableClass.getMethod("getRecordAt", new Class[] {Integer.TYPE}); 
-			recordGetTypedValueMethod = recordClass.getMethod("getTypedValue", new Class[] {String.class});
-			fieldGetTypeMethod = fieldClass.getMethod("getType", new Class[] {});
-			fieldGetLengthMethod = fieldClass.getMethod("getLength", new Class[] {});
+			tableOpenMethod = tableClass.getMethod("open");
+			tableCloseMethod = tableClass.getMethod("close");
+			tableGetFieldsMethod = tableClass.getMethod("getFields");
+			fieldGetNameMethod = fieldClass.getMethod("getName");
+			tableGetRecordCountMethod = tableClass.getMethod("getRecordCount");
+			tableGetRecordAtMethod = tableClass.getMethod("getRecordAt", Integer.TYPE);
+			recordGetTypedValueMethod = recordClass.getMethod("getTypedValue", String.class);
+			fieldGetTypeMethod = fieldClass.getMethod("getType");
+			fieldGetLengthMethod = fieldClass.getMethod("getLength");
 		}
 		catch (Exception e)
 		{
@@ -86,15 +86,15 @@ public class DbfReader extends DataReader
 			Constructor<?> tableConstructor;
 			if (charset != null)
 			{
-				tableConstructor = tableClass.getConstructor(new Class[] {File.class, String.class});
-				table = tableConstructor.newInstance(new Object[] { new File(path), charset });
+				tableConstructor = tableClass.getConstructor(File.class, String.class);
+				table = tableConstructor.newInstance(new File(path), charset);
 			}
 			else
 			{
-				tableConstructor = tableClass.getConstructor(new Class[] {File.class});
-				table = tableConstructor.newInstance(new Object[] { new File(path) });
+				tableConstructor = tableClass.getConstructor(File.class);
+				table = tableConstructor.newInstance(new File(path));
 			}
-			tableOpenMethod.invoke(table, new Object[] {});
+			tableOpenMethod.invoke(table);
 			fields = (List) tableGetFieldsMethod.invoke(table, new Object[] {});
 			recordCount = (Integer)tableGetRecordCountMethod.invoke(table, new Object[] {});
 			record = null;
@@ -106,7 +106,7 @@ public class DbfReader extends DataReader
 		{
 			throw new SQLException(CsvResources.getString("dansDbfError") + ": " + e);
 		}
-		dbfTypeToSQLType = new HashMap<String, String>();
+		dbfTypeToSQLType = new HashMap<>();
 		dbfTypeToSQLType.put("CHARACTER", "String");
 		dbfTypeToSQLType.put("NUMBER", "Double");
 		dbfTypeToSQLType.put("LOGICAL", "Boolean");
@@ -122,7 +122,7 @@ public class DbfReader extends DataReader
 		{
 			try
 			{
-				tableCloseMethod.invoke(table, new Object[] {});
+				tableCloseMethod.invoke(table);
 			}
 			catch (Exception e)
 			{
@@ -162,7 +162,7 @@ public class DbfReader extends DataReader
 		{
 			String []fieldNames = getColumnNames();
 			String fieldName = fieldNames[i];
-			Object result = recordGetTypedValueMethod.invoke(record, new Object[] {fieldName});
+			Object result = recordGetTypedValueMethod.invoke(record, fieldName);
 			if(result instanceof String)
 				result = ((String) result).trim();
 			else if (result instanceof java.util.Date)
@@ -185,7 +185,7 @@ public class DbfReader extends DataReader
 
 		try
 		{
-			record = tableGetRecordAtMethod.invoke(table, new Object[]{Integer.valueOf(rowNo)});
+			record = tableGetRecordAtMethod.invoke(table, Integer.valueOf(rowNo));
 		}
 		catch (InvocationTargetException e)
 		{
@@ -210,7 +210,7 @@ public class DbfReader extends DataReader
 			String dbfType = "";
 			try
 			{
-				dbfType = fieldGetTypeMethod.invoke(fields.get(i), new Object[] {}).toString();
+				dbfType = fieldGetTypeMethod.invoke(fields.get(i)).toString();
 			}
 			catch (Exception e)
 			{
@@ -231,7 +231,7 @@ public class DbfReader extends DataReader
 		{
 			try
 			{
-				Object fieldLength = fieldGetLengthMethod.invoke(fields.get(i), new Object[] {});
+				Object fieldLength = fieldGetLengthMethod.invoke(fields.get(i));
 				result[i] = ((Number)fieldLength).intValue();
 			}
 			catch (Exception e)
@@ -251,7 +251,7 @@ public class DbfReader extends DataReader
 		if (initialSize == 0)
 			initialSize = 1;
 
-		Map<String, Object> result = new MinimumMemoryMap<String, Object>(initialSize);
+		Map<String, Object> result = new MinimumMemoryMap<>(initialSize);
 		for (int i = 0; i < fields.size(); i++)
 		{
 			Object field = fields.get(i);

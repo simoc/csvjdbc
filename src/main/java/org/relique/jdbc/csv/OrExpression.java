@@ -71,7 +71,7 @@ class OrExpression extends LogicalExpression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		result.addAll(left.usedColumns(availableColumns));
 		result.addAll(right.usedColumns(availableColumns));
 		return result;
@@ -79,7 +79,7 @@ class OrExpression extends LogicalExpression
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<AggregateFunction>();
+		List<AggregateFunction> result = new LinkedList<>();
 		result.addAll(left.aggregateFunctions());
 		result.addAll(right.aggregateFunctions());
 		return result;
