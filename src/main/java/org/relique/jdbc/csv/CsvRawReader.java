@@ -61,7 +61,7 @@ public class CsvRawReader
 	private String comment = null;
 	private boolean ignoreUnparseableLines;
 	private String missingValue;
-	private String quoteStyle;
+	private QuoteStyle quoteStyle;
 	private ArrayList<int []> fixedWidthColumns;
 	private LinkedList<String> readAheadLines;
 	private boolean readingAhead;
@@ -83,7 +83,7 @@ public class CsvRawReader
 		String missingValue,
 		boolean defectiveHeaders,
 		int skipLeadingDataLines,
-		String quoteStyle,
+		QuoteStyle quoteStyle,
 		ArrayList<int []> fixedWidthColumns) throws IOException, SQLException
 	{
 		this.tableName = tableName;
@@ -501,20 +501,20 @@ public class CsvRawReader
 			{
 				char currentChar = line.charAt(currentPos);
 				if (value.length() == 0 && isQuoteChar(currentChar)
-						&& !inQuotedString)
+						&& !inQuotedString && quoteStyle != QuoteStyle.NONE)
 				{
 					// acknowledge quoteChar only at beginning of value.
 					inQuotedString = true;
 					quotedLineNumber = input.getLineNumber();
 				}
-				else if (currentChar == '\\' && "C".equals(quoteStyle))
+				else if (currentChar == '\\' && quoteStyle == QuoteStyle.C)
 				{
 					// in C quoteStyle \\ escapes any character.
 					char nextChar = line.charAt(currentPos + 1);
 					value.append(nextChar);
 					currentPos++;
 				}
-				else if (isQuoteChar(currentChar))
+				else if (isQuoteChar(currentChar) && quoteStyle != QuoteStyle.NONE)
 				{
 					char nextChar = line.charAt(currentPos + 1);
 					if (!inQuotedString)
@@ -526,7 +526,7 @@ public class CsvRawReader
 					else if (isQuoteChar(nextChar))
 					{
 						value.append(quoteChar.charValue());
-						if ("SQL".equals(quoteStyle))
+						if (quoteStyle == QuoteStyle.SQL)
 						{
 							// doubled quoteChar in quoted strings collapse to
 							// one single quoteChar in SQL quotestyle

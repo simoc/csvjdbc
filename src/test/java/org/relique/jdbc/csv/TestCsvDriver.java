@@ -3542,6 +3542,29 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testEscapingQuotecharExplicitNONEStyle() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("separator", ";");
+		props.put("quotechar", "'");
+		props.put("quoteStyle", "NONE");
+
+		Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+
+		Statement stmt = conn.createStatement();
+		ResultSet results = stmt.executeQuery("SELECT F1 FROM nullquotestyle");
+		assertTrue(results.next());
+		assertEquals("'doubling \\\"\\\"quotechar'", results.getObject("F1"));
+		assertTrue(results.next());
+		assertEquals("Foo\\\\Bar",results.getObject("F1"));
+		assertTrue(results.next());
+		assertEquals("Joe \"6\" Pack",results.getObject("F1"));
+		assertTrue(results.next());
+		assertEquals("\"\"Jane\"\" Doe",results.getObject("F1"));
+	}
+	
+	@Test
 	public void testBadQuotechar() throws SQLException
 	{
 		Properties props = new Properties();

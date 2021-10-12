@@ -140,7 +140,7 @@ public class CsvConnection implements Connection
 
 	private boolean autoCommit;
 
-	private String quoteStyle;
+	private QuoteStyle quoteStyle;
 
 	private ArrayList<int[]> fixedWidthColumns = null;
 
@@ -492,7 +492,7 @@ public class CsvConnection implements Connection
 		setSkipLeadingLines(info.getProperty(CsvDriver.SKIP_LEADING_LINES,
 			CsvDriver.DEFAULT_SKIP_LEADING_LINES));
 		setQuoteStyle(info.getProperty(CsvDriver.QUOTE_STYLE,
-			CsvDriver.DEFAULT_QUOTE_STYLE));
+			CsvDriver.DEFAULT_QUOTE_STYLE.name()));
 		setIgnoreUnparseableLines(Boolean.parseBoolean(info.getProperty(
 			CsvDriver.IGNORE_UNPARSEABLE_LINES,
 			CsvDriver.DEFAULT_IGNORE_UNPARSEABLE_LINES)));
@@ -556,13 +556,12 @@ public class CsvConnection implements Connection
 		}
 	}
 
-	private void setQuoteStyle(String property)
+	private void setQuoteStyle(QuoteStyle property)
 	{
-		// TODO Auto-generated method stub
 		quoteStyle = property;
 	}
 
-	public String getQuoteStyle()
+	public QuoteStyle getQuoteStyle()
 	{
 		return quoteStyle;
 	}
