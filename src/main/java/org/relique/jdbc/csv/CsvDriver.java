@@ -103,7 +103,7 @@ public class CsvDriver implements Driver
 	// choosing Rome makes sure we change chronology from Julian to Gregorian on
 	// 1582-10-04/15, as SQL does.
 	public static final String QUOTE_STYLE = "quoteStyle";
-	public static final String DEFAULT_QUOTE_STYLE = "SQL";
+	public static final QuoteStyle DEFAULT_QUOTE_STYLE = QuoteStyle.valueOf("SQL");
 
 	public static final String READER_CLASS_PREFIX = "class:";
 	public static final String ZIP_FILE_PREFIX = "zip:";
@@ -309,7 +309,7 @@ public class CsvDriver implements Driver
 	{
 		String separator = DEFAULT_SEPARATOR;
 		Character quoteChar = Character.valueOf(DEFAULT_QUOTECHAR);
-		String quoteStyle = DEFAULT_QUOTE_STYLE;
+		QuoteStyle quoteStyle = DEFAULT_QUOTE_STYLE;
 		String dateFormat = DEFAULT_DATE_FORMAT;
 		String timeFormat = DEFAULT_TIME_FORMAT;
 		String timestampFormat = DEFAULT_TIMESTAMP_FORMAT;
@@ -418,17 +418,17 @@ public class CsvDriver implements Driver
 		out.flush();
 	}
 
-	private static String addQuotes(String value, String separator, char quoteChar, String quoteStyle)
+	private static String addQuotes(String value, String separator, char quoteChar, QuoteStyle quoteStyle)
 	{
 		/*
 		 * Escape all quote chars embedded in the string.
 		 */
-		if (quoteStyle.equals("C"))
+		if (quoteStyle.equals(QuoteStyle.C))
 		{
 			value = value.replace("\\", "\\\\");
 			value = value.replace("" + quoteChar, "\\" + quoteChar);
 		}
-		else
+		else if (quoteStyle == QuoteStyle.SQL)
 		{
 			value = value.replace("" + quoteChar, "" + quoteChar + quoteChar);
 		}
@@ -436,8 +436,9 @@ public class CsvDriver implements Driver
 		/*
 		 * Surround value with quotes if it contains any special characters.
 		 */
-		if (value.indexOf(separator) >= 0 || value.indexOf(quoteChar) >= 0 ||
-			value.indexOf('\r') >= 0 || value.indexOf('\n') >= 0)
+		if (quoteStyle != QuoteStyle.NONE && (
+			value.indexOf(separator) >= 0 || value.indexOf(quoteChar) >= 0 ||
+			value.indexOf('\r') >= 0 || value.indexOf('\n') >= 0))
 		{
 			value = quoteChar + value + quoteChar;
 		}
