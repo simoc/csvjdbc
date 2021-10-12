@@ -491,8 +491,8 @@ public class CsvConnection implements Connection
 			CsvDriver.DEFAULT_SKIP_LEADING_DATA_LINES));
 		setSkipLeadingLines(info.getProperty(CsvDriver.SKIP_LEADING_LINES,
 			CsvDriver.DEFAULT_SKIP_LEADING_LINES));
-		setQuoteStyle(info.getProperty(CsvDriver.QUOTE_STYLE,
-			CsvDriver.DEFAULT_QUOTE_STYLE.name()));
+		setQuoteStyle(QuoteStyle.valueOf(info.getProperty(CsvDriver.QUOTE_STYLE,
+			CsvDriver.DEFAULT_QUOTE_STYLE.name())));
 		setIgnoreUnparseableLines(Boolean.parseBoolean(info.getProperty(
 			CsvDriver.IGNORE_UNPARSEABLE_LINES,
 			CsvDriver.DEFAULT_IGNORE_UNPARSEABLE_LINES)));
