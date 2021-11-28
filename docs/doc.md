@@ -516,6 +516,13 @@ as a single quote character.
 words such as `December` which vary depending on the locale. Call method
 `java.util.Locale.toString()` to convert a locale to a string.
 
+### maxDataLines
++ type: Integer
++ default: `0`
++ when non-zero, defines the maximum number of lines of data to read from the
+file.  Using this property together with `skipLeadingDataLines` enables a
+limited number of lines to be read from the middle of a very large file.
+
 ### separator
 + type: String
 + default: `,`
