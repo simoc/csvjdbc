@@ -122,6 +122,8 @@ public class CsvResultSet implements ResultSet
 
 	private int limit;
 
+	private int maxDataLines;
+
 	private boolean isClosed = false;
 
 	/**
@@ -226,6 +228,7 @@ public class CsvResultSet implements ResultSet
 			int sqlOffset,
 			String columnTypes,
 			int skipLeadingLines,
+			int maxDataLines,
 			Map<String, Object> parentObjectEnvironment) throws ClassNotFoundException, SQLException
 	{
 		this.statement = statement;
@@ -250,6 +253,7 @@ public class CsvResultSet implements ResultSet
 			this.orderByColumns = null;
 		if (isDistinct)
 			this.distinctValues = new HashSet<>();
+		this.maxDataLines = maxDataLines;
 		this.parentObjectEnvironment = parentObjectEnvironment;
 
 		String timeFormat = ((CsvConnection)statement.getConnection()).getTimeFormat();
@@ -905,6 +909,11 @@ public class CsvResultSet implements ResultSet
 			if(maxRows != 0 && currentRow >= maxRows)
 			{
 				// Do not fetch any more rows, we have reached the row limit set by caller.
+				thereWasAnAnswer = false;
+			}
+			else if (maxDataLines != 0 && currentRow >= maxDataLines)
+			{
+				// We have already read the maximum number of rows from CSV file. Stop now.
 				thereWasAnAnswer = false;
 			}
 			else if(limit >= 0 && currentRow >= limit)

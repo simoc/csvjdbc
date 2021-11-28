@@ -510,6 +510,7 @@ public class CsvStatement implements Statement
 				parser.getOffset(),
 				connection.getColumnTypes(tableName),
 				connection.getSkipLeadingLines(),
+				connection.getMaxDataLines(),
 				parentobjectEnvironment);
 			lastResultSet = resultSet;
 		}

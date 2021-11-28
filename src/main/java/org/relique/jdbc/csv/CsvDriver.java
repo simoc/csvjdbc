@@ -63,6 +63,7 @@ public class CsvDriver implements Driver
 	public static final boolean DEFAULT_USE_DATE_TIME_FORMATTER = false;
 	public static final String DEFAULT_COMMENT_CHAR = null;
 	public static final String DEFAULT_SKIP_LEADING_LINES = null;
+	public static final String DEFAULT_MAX_DATA_LINES = "0";
 	public static final String DEFAULT_IGNORE_UNPARSEABLE_LINES = "False";
 	public static final String DEFAULT_MISSING_VALUE = null;
 	public static final String DEFAULT_FILE_TAIL_PREPEND = "False";
@@ -86,6 +87,7 @@ public class CsvDriver implements Driver
 	public static final String USE_DATE_TIME_FORMATTER = "useDateTimeFormatter";
 	public static final String COMMENT_CHAR = "commentChar";
 	public static final String SKIP_LEADING_LINES = "skipLeadingLines";
+	public static final String MAX_DATA_LINES = "maxDataLines";
 	public static final String IGNORE_UNPARSEABLE_LINES = "ignoreNonParseableLines";
 	public static final String MISSING_VALUE = "missingValue";
 	public static final String FILE_TAIL_PREPEND = "fileTailPrepend";
