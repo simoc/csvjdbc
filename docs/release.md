@@ -28,30 +28,6 @@ git clone ssh://simoc@git.code.sf.net/p/csvjdbc/code csvjdbc-code
 git clone ssh://simoc@git.code.sf.net/p/csvjdbc/website csvjdbc-website
 ```
 
-* Check that XML `<property name="rel">` tag in file
-`csvjdbc-code/build/build.xml` is the version number we are creating.
-If not, update it and commit.
-
-* Compile
-
-```
-cd csvjdbc-code/build
-ant jar test
-```
-
-* Check that the ant test step above does not report failing unit tests
-
-* Upload to Sourceforge web site (replace `simoc` and `1.0-29` with values
-for this release).
-
-```
-sftp simoc,csvjdbc@frs.sourceforge.net
-cd /home/frs/project/c/cs/csvjdbc/CsvJdbc
-mkdir 1.0-29
-cd 1.0-29
-put target/csvjdbc-1.0-29.jar
-```
-
 * Check that XML `<project><version>` tag in file `pom.xml` is the version
 number we are creating plus "-SNAPSHOT" suffix. If not, update it and
 commit.
@@ -78,6 +54,8 @@ mvn release:clean release:prepare
 version number. You are also prompted for Sourceforge password several
 times).
 
+* Check that the Maven step above does not report failing unit tests
+
 ```
 mvn release:perform
 ```
@@ -86,15 +64,28 @@ mvn release:perform
 (username and password same as in `<ossrh>` XML tag in
 `$HOME/.m2/settings.xml`), click on Staging Repositories in left panel,
 then on row netsourceforgecsvjdbc- ..., then Close in toolbar and
-Confirm in dialog box, then Release in toolbar and Confirm in dialog
+Confirm in dialog box. This may take 20 minutes to process. Then click
+Release in toolbar and Confirm in dialog
 box, as described
 [here](http://central.sonatype.org/pages/releasing-the-deployment.html).
 
+* Upload to Sourceforge web site (replace `simoc` and `1.0-29` with values
+for this release).
+
+```
+sftp simoc,csvjdbc@frs.sourceforge.net
+cd /home/frs/project/c/cs/csvjdbc/CsvJdbc
+mkdir 1.0-29
+cd 1.0-29
+put target/csvjdbc-1.0-29.jar
+```
+
+* Create a `README.md` file listing the changed SourceForge
+Tracker tickets and GitHub issues and
+upload to 1.0-29 directory, as in previous step.
+
 * Update Tracker tickets from 'Pending' to 'Closed' with a comment
 that they are included in release 1.0-29.
-
-* Create a `README.md` file listing the changed Tracker tickets and
-upload to 1.0-29 directory, as in Step 7.
 
 * Upload new `index.html` if it has changed since last release.
 
@@ -105,3 +96,9 @@ cd /home/project-web/c/cs/csvjdbc/htdocs
 put index.html
 ```
 
+* Push the commits and tag created by Maven to the GitHub repository
+
+```
+git push https://github.com/simoc/csvjdbc.git master
+git push https://github.com/simoc/csvjdbc.git csvjdbc-1.0-29
+```
