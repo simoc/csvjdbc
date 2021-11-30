@@ -596,7 +596,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 				internalStatement = (CsvStatement) createdByConnection.createStatement();
 			retval = new CsvResultSet(internalStatement, reader, "",
 				queryEnvironment, false, ResultSet.TYPE_FORWARD_ONLY, null, null, null, null, -1, 0,
-				columnTypes, 0, new HashMap<>());
+				columnTypes, 0, 0, new HashMap<>());
 		}
 		catch (ClassNotFoundException e)
 		{

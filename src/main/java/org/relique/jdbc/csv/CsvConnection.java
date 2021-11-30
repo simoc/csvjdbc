@@ -122,6 +122,8 @@ public class CsvConnection implements Connection
 
 	private int skipLeadingLines = 0;
 
+	private int maxDataLines = 0;
+
 	private boolean ignoreUnparseableLines;
 
 	private String missingValue;
@@ -491,6 +493,8 @@ public class CsvConnection implements Connection
 			CsvDriver.DEFAULT_SKIP_LEADING_DATA_LINES));
 		setSkipLeadingLines(info.getProperty(CsvDriver.SKIP_LEADING_LINES,
 			CsvDriver.DEFAULT_SKIP_LEADING_LINES));
+		setMaxDataLines(info.getProperty(CsvDriver.MAX_DATA_LINES,
+				CsvDriver.DEFAULT_MAX_DATA_LINES));
 		setQuoteStyle(info.getProperty(CsvDriver.QUOTE_STYLE,
 			CsvDriver.DEFAULT_QUOTE_STYLE));
 		setIgnoreUnparseableLines(Boolean.parseBoolean(info.getProperty(
@@ -1263,6 +1267,26 @@ public class CsvConnection implements Connection
 	public void setSkipLeadingLines(int skipLeadingLines)
 	{
 		this.skipLeadingLines = skipLeadingLines;
+	}
+
+	private void setMaxDataLines(String property)
+	{
+		try
+		{
+			maxDataLines = Integer.parseInt(property);
+		}
+		catch (NumberFormatException e)
+		{
+			maxDataLines = 0;
+		}
+	}
+
+	/**
+	 * @return the maxDataLines
+	 */
+	public int getMaxDataLines()
+	{
+		return maxDataLines;
 	}
 
 	public boolean isIgnoreUnparseableLines()

@@ -4007,6 +4007,49 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testMaxDataLines() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("skipLeadingDataLines", "2");
+		props.put("maxDataLines", "3");
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+			Statement stmt = conn.createStatement();
+			ResultSet results = stmt.executeQuery("SELECT * FROM sample"))
+		{
+			assertTrue(results.next());
+			assertEquals("Incorrect ID Value", "B234", results.getString(1));
+			assertTrue(results.next());
+			assertEquals("Incorrect ID Value", "C456", results.getString(1));
+			assertTrue(results.next());
+			assertEquals("Incorrect ID Value", "D789", results.getString(1));
+			assertFalse(results.next());
+		}
+	}
+
+	@Test
+	public void testMaxDataLinesWithOrderBy() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("maxDataLines", "3");
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+			Statement stmt = conn.createStatement();
+			ResultSet results = stmt.executeQuery("SELECT * FROM sample ORDER BY ID"))
+		{
+			assertTrue(results.next());
+			assertEquals("Incorrect ID Value", "A123", results.getString(1));
+			assertTrue(results.next());
+			assertEquals("Incorrect ID Value", "B234", results.getString(1));
+			assertTrue(results.next());
+			assertEquals("Incorrect ID Value", "Q123", results.getString(1));
+			assertFalse(results.next());
+		}
+	}
+
+	@Test
 	public void testIgnoreUnparseableInIndexedFile() throws SQLException
 	{
 		Properties props = new Properties();
