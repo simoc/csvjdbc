@@ -205,7 +205,7 @@ public class CsvReader extends DataReader
 		return this.aliasedColumnNames;
 	}
 
-	private Object getField(int i) throws SQLException
+	private Object getField(int i)
 	{
 		if (isPlainReader())
 			return rawReader.getField(i);
@@ -303,55 +303,49 @@ public class CsvReader extends DataReader
 		columnTypes = new String[fieldValues.length];
 		for (int i = 0; i < fieldValues.length; i++)
 		{
-			try
+			String typeName = "String";
+			String value = getField(i).toString();
+			if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
 			{
-				String typeName = "String";
-				String value = getField(i).toString();
-				if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
-				{
-					typeName = "Boolean";
-				}
-				else if (value.equals(("" + converter.parseInt(value))))
-				{
-					typeName = "Int";
-				}
-				else if (value.equals(("" + converter.parseLong(value))))
-				{
-					typeName = "Long";
-				}
-				else if (value.equals(("" + converter.parseDouble(value))))
-				{
-					typeName = "Double";
-				}
-				else if (value.equals(("" + converter.parseBytes(value))))
-				{
-					typeName = "Bytes";
-				}
-				else if (value.equals(("" + converter.parseBigDecimal(value))))
-				{
-					typeName = "BigDecimal";
-				}
-				else if (converter.parseTimestamp(value) != null)
-				{
-					typeName = "Timestamp";
-				}
-				else if (converter.parseDate(value) != null)
-				{
-					typeName = "Date";
-				}
-				else if (converter.parseTime(value) != null)
-				{
-					typeName = "Time";
-				}
-				else if (value.equals(("" + converter.parseAsciiStream(value))))
-				{
-					typeName = "AsciiStream";
-				}
-				columnTypes[i] = typeName;
+				typeName = "Boolean";
 			}
-			catch (SQLException e)
+			else if (value.equals(("" + converter.parseInt(value))))
 			{
+				typeName = "Int";
 			}
+			else if (value.equals(("" + converter.parseLong(value))))
+			{
+				typeName = "Long";
+			}
+			else if (value.equals(("" + converter.parseDouble(value))))
+			{
+				typeName = "Double";
+			}
+			else if (value.equals(("" + converter.parseBytes(value))))
+			{
+				typeName = "Bytes";
+			}
+			else if (value.equals(("" + converter.parseBigDecimal(value))))
+			{
+				typeName = "BigDecimal";
+			}
+			else if (converter.parseTimestamp(value) != null)
+			{
+				typeName = "Timestamp";
+			}
+			else if (converter.parseDate(value) != null)
+			{
+				typeName = "Date";
+			}
+			else if (converter.parseTime(value) != null)
+			{
+				typeName = "Time";
+			}
+			else if (value.equals(("" + converter.parseAsciiStream(value))))
+			{
+				typeName = "AsciiStream";
+			}
+			columnTypes[i] = typeName;
 		}
 	}
 

@@ -545,7 +545,7 @@ public class CsvStatement implements Statement
 		}
 	}
 
-	public boolean isCancelled() throws SQLException
+	public boolean isCancelled()
 	{
 		return cancelled;
 	}

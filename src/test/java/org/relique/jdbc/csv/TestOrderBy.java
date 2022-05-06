@@ -399,7 +399,7 @@ public class TestOrderBy
 	}
 
 	@Test
-	public void testOrderByWithBadColumnName() throws SQLException
+	public void testOrderByWithBadColumnName()
 	{
 		Properties props = new Properties();
 
@@ -417,7 +417,7 @@ public class TestOrderBy
 	}
 
 	@Test
-	public void testOrderByWithBadColumnNumber() throws SQLException
+	public void testOrderByWithBadColumnNumber()
 	{
 		Properties props = new Properties();
 
@@ -435,7 +435,7 @@ public class TestOrderBy
 	}
 
 	@Test
-	public void testOrderByWithFloatColumnNumber() throws SQLException
+	public void testOrderByWithFloatColumnNumber()
 	{
 		Properties props = new Properties();
 
@@ -453,7 +453,7 @@ public class TestOrderBy
 	}
 
 	@Test
-	public void testOrderByWithBadValue() throws SQLException
+	public void testOrderByWithBadValue()
 	{
 		Properties props = new Properties();
 

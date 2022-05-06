@@ -472,7 +472,7 @@ public class TestSqlParser
 	}
 
 	@Test
-	public void testParsingQueryEnvironmentEntries() throws ParseException, SQLException
+	public void testParsingQueryEnvironmentEntries() throws ParseException
 	{
 		ExpressionParser cs;
 		cs = new ExpressionParser(new StringReader("*"));

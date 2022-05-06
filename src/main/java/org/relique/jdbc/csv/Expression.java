@@ -24,6 +24,9 @@ import java.util.Set;
 
 public abstract class Expression
 {
+	/**
+	 * @throws SQLException if error evaluating expression.
+	 */
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
 		return null;

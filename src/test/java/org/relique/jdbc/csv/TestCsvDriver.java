@@ -650,8 +650,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testColumnTypesUserSpecified() throws SQLException,
-			ParseException
+	public void testColumnTypesUserSpecified() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date");
@@ -677,8 +676,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testColumnTypesUserSpecifiedShuffled() throws SQLException,
-			ParseException
+	public void testColumnTypesUserSpecifiedShuffled() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Date");
@@ -762,8 +760,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testColumnTypesInferDateTimeFromData() throws SQLException,
-			ParseException
+	public void testColumnTypesInferDateTimeFromData() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("columnTypes", "");
@@ -795,8 +792,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testColumnTypesInferBeforeNext() throws SQLException,
-			ParseException
+	public void testColumnTypesInferBeforeNext() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("columnTypes", "");
@@ -855,8 +851,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testColumnTypesDefaultBehaviour() throws SQLException,
-			ParseException
+	public void testColumnTypesDefaultBehaviour() throws SQLException
 	{
 		Properties props = new Properties();
 
@@ -876,7 +871,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testBadColumnTypesFails() throws SQLException
+	public void testBadColumnTypesFails()
 	{
 		try
 		{
@@ -898,7 +893,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testBadColumnNameFails() throws SQLException
+	public void testBadColumnNameFails()
 	{
 		try
 		{
@@ -919,7 +914,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testEmptyColumnTypesFails() throws SQLException
+	public void testEmptyColumnTypesFails()
 	{
 		try
 		{
@@ -942,8 +937,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testColumnTypesWithSelectStar() throws SQLException,
-			ParseException
+	public void testColumnTypesWithSelectStar() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Int,String,String,Timestamp");
@@ -965,8 +959,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testColumnTypesWithMultipleTables() throws SQLException,
-			ParseException
+	public void testColumnTypesWithMultipleTables() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("columnTypes.sample5", "Int,String,String,Timestamp");
@@ -1553,7 +1546,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testWhereWithBadColumnName() throws SQLException
+	public void testWhereWithBadColumnName()
 	{
 		try
 		{
@@ -2918,7 +2911,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testSkippingUtf8ByteOrderMark() throws SQLException, ParseException
+	public void testSkippingUtf8ByteOrderMark() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("charset", "UTF-8");
@@ -3542,7 +3535,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testBadQuotechar() throws SQLException
+	public void testBadQuotechar()
 	{
 		Properties props = new Properties();
 		props.put("quotechar", "()");
@@ -3894,7 +3887,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testWithDefectiveHeaders() throws SQLException, ParseException
+	public void testWithDefectiveHeaders() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
@@ -3926,7 +3919,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testWithHeaderMissingColumns() throws SQLException, ParseException
+	public void testWithHeaderMissingColumns() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("defectiveHeaders", "True");
@@ -3954,7 +3947,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testSkipLeadingDataLines() throws SQLException, ParseException
+	public void testSkipLeadingDataLines() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("fileExtension", ".txt");
@@ -4139,8 +4132,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testTimestampFormat() throws SQLException,
-			ParseException
+	public void testTimestampFormat() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("timeZoneName", "UTC");
@@ -4169,7 +4161,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testTimestampFormatGermany() throws SQLException, ParseException
+	public void testTimestampFormatGermany() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("timeZoneName", "UTC");
@@ -4197,8 +4189,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testTimestampInTimeZoneRome() throws SQLException,
-			ParseException
+	public void testTimestampInTimeZoneRome() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("timeZoneName", "Europe/Rome");
@@ -4227,8 +4218,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testTimestampInTimeZoneSantiago() throws SQLException,
-			ParseException
+	public void testTimestampInTimeZoneSantiago() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("timeZoneName", "America/Santiago");
@@ -4257,8 +4247,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testTimestampInTimeZoneGMTPlus0400() throws SQLException,
-			ParseException
+	public void testTimestampInTimeZoneGMTPlus0400() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("timeZoneName", "GMT+04:00");
@@ -4287,8 +4276,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testTimestampInTimeZoneGMTMinus0400() throws SQLException,
-			ParseException
+	public void testTimestampInTimeZoneGMTMinus0400() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("timeZoneName", "GMT-04:00");
@@ -4317,8 +4305,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testAddingDateToTimeInTimeZoneAthens() throws SQLException,
-			ParseException
+	public void testAddingDateToTimeInTimeZoneAthens() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("timeZoneName", "Europe/Athens");
@@ -4361,8 +4348,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testAddingDateToTimeInTimeZoneGMTMinus0500() throws SQLException,
-			ParseException
+	public void testAddingDateToTimeInTimeZoneGMTMinus0500() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("timeZoneName", "GMT-05:00");
@@ -4792,7 +4778,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testTableReaderWithBadReader() throws SQLException
+	public void testTableReaderWithBadReader()
 	{
 		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:class:" + TestCsvDriver.class.getName()))
 		{
@@ -4971,7 +4957,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testNoTable() throws SQLException, ParseException
+	public void testNoTable() throws SQLException
 	{
 		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
 			Statement stmt = conn.createStatement();
@@ -5204,8 +5190,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testBooleanConversion() throws SQLException,
-			ParseException
+	public void testBooleanConversion() throws SQLException
 	{
 		Properties props = new Properties();
 		props.put("columnTypes", "Integer,String,Boolean");
@@ -5356,7 +5341,7 @@ public class TestCsvDriver
 	}
 
 	@Test
-	public void testBadUserSqlFunction() throws SQLException
+	public void testBadUserSqlFunction()
 	{
 		Properties props = new Properties();
 		props.put("function.BAD", "java.lang.Math.bad(double)");
