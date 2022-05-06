@@ -398,7 +398,6 @@ public class CsvRawReader
 
 
 	private String [] parseFixedLine(String line, boolean trimValues)
-		throws SQLException
 	{
 		String []values = new String[fixedWidthColumns.size()];
 		if (line == null)

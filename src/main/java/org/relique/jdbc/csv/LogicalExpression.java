@@ -27,6 +27,7 @@ abstract class LogicalExpression extends Expression
 	 * Returns evaluation of expression using given environment.
 	 * @param env key, value pairs of environment.
 	 * @return TRUE or FALSE or null if evaluation contains SQL NULL.
+	 * @throws SQLException if error evaluating logical expression.
 	 */
 	public Boolean isTrue(Map<String, Object> env) throws SQLException
 	{

@@ -358,7 +358,7 @@ public class TestCryptoFilter
 	}
 
 	@Test
-	public void testOpenManyCryptoFiles() throws SQLException, IOException
+	public void testOpenManyCryptoFiles() throws SQLException
 	{
 		// the properties for the connection:
 		Properties props = new Properties();

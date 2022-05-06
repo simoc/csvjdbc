@@ -64,7 +64,7 @@ class SQLSubstringFunction extends Expression
 		return retval;
 	}
 
-	private Object substring(Object str, Object startIndex, Object len) throws SQLException
+	private Object substring(Object str, Object startIndex, Object len)
 	{
 		int start = 0;
 		long nChars = 0;

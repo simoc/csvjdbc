@@ -140,7 +140,7 @@ public class TestZipFiles
 	}
 
 	@Test
-	public void testBadZipFileFails() throws SQLException
+	public void testBadZipFileFails()
 	{
 		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:zip:"
 				+ filePath + File.separator + "abc" + TEST_ZIP_FILENAME_1))

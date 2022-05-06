@@ -475,7 +475,7 @@ public class TestGroupBy
 	}
 
 	@Test
-	public void testGroupByWithBadColumnName() throws SQLException
+	public void testGroupByWithBadColumnName()
 	{
 		Properties props = new Properties();
 
@@ -493,7 +493,7 @@ public class TestGroupBy
 	}
 
 	@Test
-	public void testSelectUngroupedColumn() throws SQLException
+	public void testSelectUngroupedColumn()
 	{
 		Properties props = new Properties();
 
@@ -511,7 +511,7 @@ public class TestGroupBy
 	}
 
 	@Test
-	public void testOrderByUngroupedColumn() throws SQLException
+	public void testOrderByUngroupedColumn()
 	{
 		Properties props = new Properties();
 
@@ -598,7 +598,7 @@ public class TestGroupBy
 	}
 
 	@Test
-	public void testHavingWithBadColumnName() throws SQLException
+	public void testHavingWithBadColumnName()
 	{
 		Properties props = new Properties();
 
@@ -616,7 +616,7 @@ public class TestGroupBy
 	}
 
 	@Test
-	public void testHavingUngroupedColumn() throws SQLException
+	public void testHavingUngroupedColumn()
 	{
 		Properties props = new Properties();
 
