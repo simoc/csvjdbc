@@ -182,7 +182,7 @@ public class TestPrepareStatement
 		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 			PreparedStatement prepstmt = conn.prepareStatement(queryString))
 		{
-			prepstmt.setFloat(1, (float)3);
+			prepstmt.setFloat(1, 3);
 			try (ResultSet results = prepstmt.executeQuery())
 			{
 				assertTrue(results.next());
