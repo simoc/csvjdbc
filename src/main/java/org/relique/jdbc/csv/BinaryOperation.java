@@ -181,7 +181,7 @@ class BinaryOperation extends Expression
 					if (leftEval instanceof Short)
 						leftLong = Long.valueOf(((Short)leftEval).intValue());
 					else if (leftEval instanceof Long)
-						leftLong = (Long)rightEval;
+						leftLong = (Long)leftEval;
 					else
 						leftLong = Long.valueOf(((Integer)leftEval).intValue());
 					return incrementDate(rightD, leftLong.longValue());
