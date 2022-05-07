@@ -2792,6 +2792,30 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testLongPlusDate() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Date,Long,String");
+		props.put("dateFormat", "yyyy-MM-dd");
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+
+			Statement stmt = conn.createStatement();
+
+            ResultSet results = stmt.executeQuery("select start_date + duration, duration + start_date from events"))
+		{
+			assertTrue(results.next());
+			java.sql.Date expect = java.sql.Date.valueOf("2024-01-01");
+			assertEquals("start_date plus duration is wrong", expect, results.getDate(1));
+			assertEquals("duration plus start_date is wrong", expect, results.getDate(2));
+			assertTrue(results.next());
+			expect = java.sql.Date.valueOf("2023-04-01");
+			assertEquals("start_date plus duration is wrong", expect, results.getDate(1));
+			assertEquals("duration plus start_date is wrong", expect, results.getDate(2));
+		}
+	}
+
+	@Test
 	public void testNullIfFunction() throws SQLException
 	{
 		Properties props = new Properties();
