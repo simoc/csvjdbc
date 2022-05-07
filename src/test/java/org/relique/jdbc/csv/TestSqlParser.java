@@ -65,7 +65,7 @@ public class TestSqlParser
 		List<Object []> cols = parser.getColumns();
 		assertEquals("Incorrect Column Count", 4, cols.size());
 
-		Object[] colSpec = (Object[]) cols.get(3);
+		Object[] colSpec = cols.get(3);
 		assertEquals("Incorrect Column Name Col 3", "VALUE", colSpec[0].toString());
 		assertEquals("Incorrect Column Name Col 3", "[NAME.SUFFIX]", colSpec[1].toString());
 
@@ -567,9 +567,9 @@ public class TestSqlParser
 		env.put("A", Integer.valueOf(1));
 
 		env.put("B", Integer.valueOf(1));
-		assertEquals((Object)(Integer.valueOf("2")), cs.eval(env));
+		assertEquals(Integer.valueOf("2"), cs.eval(env));
 		env.put("A", Double.valueOf(1));
-		assertEquals((Object)(Double.valueOf("2")), cs.eval(env));
+		assertEquals(Double.valueOf("2"), cs.eval(env));
 		env.put("A", new String("1"));
 		// string concatenation because one of the arguments is a string
 		assertEquals("11", ""+cs.eval(env));
@@ -602,11 +602,11 @@ public class TestSqlParser
 
 		env.put("A", Integer.valueOf(4));
 		env.put("B", Integer.valueOf(3));
-		assertEquals((Object)(Integer.valueOf("1")), cs.eval(env));
+		assertEquals(Integer.valueOf("1"), cs.eval(env));
 
 		env.put("A", Integer.valueOf(-3));
 		env.put("B", Integer.valueOf(2));
-		assertEquals((Object)(Integer.valueOf("-1")), cs.eval(env));
+		assertEquals(Integer.valueOf("-1"), cs.eval(env));
 
 		env.put("A", Integer.valueOf(4));
 		env.put("B", Integer.valueOf(0));
@@ -622,15 +622,15 @@ public class TestSqlParser
 
 		env.put("A", Double.valueOf(5));
 		env.put("B", Double.valueOf(3));
-		assertEquals((Object)(Double.valueOf("2")), cs.eval(env));
+		assertEquals(Double.valueOf("2"), cs.eval(env));
 
 		env.put("A", Double.valueOf(8.8));
 		env.put("B", Double.valueOf(3.3));
-		assertEquals((Object)(Double.valueOf("2.2")), cs.eval(env));
+		assertEquals(Double.valueOf("2.2"), cs.eval(env));
 
 		env.put("A", Double.valueOf(-5));
 		env.put("B", Double.valueOf(3));
-		assertEquals((Object)(Double.valueOf("-2")), cs.eval(env));
+		assertEquals(Double.valueOf("-2"), cs.eval(env));
 	}
 
 	@Test
@@ -643,24 +643,24 @@ public class TestSqlParser
 		env.put("A", Integer.valueOf(5));
 
 		env.put("B", Integer.valueOf(1));
-		assertEquals((Object)(Integer.valueOf("4")), cs.eval(env));
+		assertEquals(Integer.valueOf("4"), cs.eval(env));
 		env.put("B", Double.valueOf(1));
-		assertEquals((Object)(Double.valueOf("4")), cs.eval(env));
+		assertEquals(Double.valueOf("4"), cs.eval(env));
 
 		cs = new ExpressionParser(new StringReader("a*b AS result"));
 		cs.parseQueryEnvEntry();
 
 		env.put("B", Integer.valueOf(1));
-		assertEquals((Object)(Integer.valueOf("5")), cs.eval(env));
+		assertEquals(Integer.valueOf("5"), cs.eval(env));
 		env.put("B", Double.valueOf(1));
-		assertEquals((Object)(Double.valueOf("5")), cs.eval(env));
+		assertEquals(Double.valueOf("5"), cs.eval(env));
 		
 		cs = new ExpressionParser(new StringReader("a/b AS result"));
 		cs.parseQueryEnvEntry();
 		env.put("B", Integer.valueOf(2));
-		assertEquals((Object)(Integer.valueOf("2")), cs.eval(env));
+		assertEquals(Integer.valueOf("2"), cs.eval(env));
 		env.put("B", Double.valueOf(2));
-		assertEquals((Object)(Double.valueOf("2.5")), cs.eval(env));
+		assertEquals(Double.valueOf("2.5"), cs.eval(env));
 
 		env.put("B", Double.valueOf(0));
 		try
