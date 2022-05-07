@@ -5201,15 +5201,15 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT * FROM bool"))
 		{
 			assertTrue(results.next());
-			assertEquals("incorrect I", false, results.getBoolean(1));
-			assertEquals("incorrect J", true, results.getBoolean(2));
-			assertEquals("incorrect K", false, results.getBoolean(3));
-			assertEquals("incorrect L", true, results.getBoolean(4));
+			assertEquals("incorrect I", Boolean.FALSE, Boolean.valueOf(results.getBoolean(1)));
+			assertEquals("incorrect J", Boolean.TRUE, Boolean.valueOf(results.getBoolean(2)));
+			assertEquals("incorrect K", Boolean.FALSE, Boolean.valueOf(results.getBoolean(3)));
+			assertEquals("incorrect L", Boolean.TRUE, Boolean.valueOf(results.getBoolean(4)));
 			assertTrue(results.next());
-			assertEquals("incorrect I", true, results.getBoolean("I"));
-			assertEquals("incorrect J", false, results.getBoolean("J"));
-			assertEquals("incorrect K", false, results.getBoolean("K"));
-			assertEquals("incorrect L", false, results.getBoolean("L"));
+			assertEquals("incorrect I", Boolean.TRUE, Boolean.valueOf(results.getBoolean("I")));
+			assertEquals("incorrect J", Boolean.FALSE, Boolean.valueOf(results.getBoolean("J")));
+			assertEquals("incorrect K", Boolean.FALSE, Boolean.valueOf(results.getBoolean("K")));
+			assertEquals("incorrect L", Boolean.FALSE, Boolean.valueOf(results.getBoolean("L")));
 		}
 	}
 

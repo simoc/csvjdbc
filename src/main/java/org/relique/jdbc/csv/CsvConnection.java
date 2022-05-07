@@ -345,7 +345,7 @@ public class CsvConnection implements Connection
 		// set the fixed width header flag
 		if (info.getProperty(CsvDriver.IS_HEADER_FIXED_WIDTH) != null)
 		{
-			isHeaderFixedWidth = Boolean.valueOf(info.getProperty(CsvDriver.IS_HEADER_FIXED_WIDTH));
+			isHeaderFixedWidth = Boolean.valueOf(info.getProperty(CsvDriver.IS_HEADER_FIXED_WIDTH)).booleanValue();
 		}
 		// set the trimValues flag
 		if (info.getProperty(CsvDriver.TRIM_VALUES) != null)

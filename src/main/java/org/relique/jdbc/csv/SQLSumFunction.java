@@ -98,7 +98,7 @@ class SQLSumFunction extends AggregateFunction
 			}
 			catch (ArithmeticException e)
 			{
-				retval = groupSum.doubleValue();
+				retval = Double.valueOf(groupSum.doubleValue());
 			}
 			return retval;
 		}
@@ -123,7 +123,7 @@ class SQLSumFunction extends AggregateFunction
 				}
 				catch (ArithmeticException e)
 				{
-					retval = groupSum.doubleValue();
+					retval = Double.valueOf(groupSum.doubleValue());
 				}
 			}
 			else
@@ -134,7 +134,7 @@ class SQLSumFunction extends AggregateFunction
 		}
 		catch (ArithmeticException e)
 		{
-			retval = sum.doubleValue();
+			retval = Double.valueOf(sum.doubleValue());
 		}
 		return retval;
 	}
