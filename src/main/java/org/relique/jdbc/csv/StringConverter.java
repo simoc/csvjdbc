@@ -220,11 +220,11 @@ public class StringConverter
 
 	public Boolean parseBoolean(String str)
 	{
-		boolean retval;
+		Boolean retval;
 		if (str != null && str.equals("1"))
-			retval = true;
+			retval = Boolean.TRUE;
 		else if (str != null && str.equals("0"))
-			retval = false;
+			retval = Boolean.FALSE;
 		else
 			retval = Boolean.valueOf(str);
 		return retval;
@@ -448,7 +448,7 @@ public class StringConverter
 					proposedYear -= 100;
 				if (currentYear - proposedYear > 80)
 					proposedYear += 100;
-				yearGroup = String.format("%04d", proposedYear);
+				yearGroup = String.format("%04d", Integer.valueOf(proposedYear));
 			}
 			String monthGroup = m.group(month);
 			if (monthGroup.length() < 2)
@@ -686,7 +686,13 @@ public class StringConverter
 				int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
 				int minutes = calendar.get(Calendar.MINUTE);
 				int seconds = calendar.get(Calendar.SECOND);
-				formatted = String.format("%04d-%02d-%02d %02d:%02d:%02d", year, month, dayOfMonth, hourOfDay, minutes, seconds);
+				formatted = String.format("%04d-%02d-%02d %02d:%02d:%02d",
+					Integer.valueOf(year),
+					Integer.valueOf(month),
+					Integer.valueOf(dayOfMonth),
+					Integer.valueOf(hourOfDay),
+					Integer.valueOf(minutes),
+					Integer.valueOf(seconds));
 			}
 		}
 		return formatted;
