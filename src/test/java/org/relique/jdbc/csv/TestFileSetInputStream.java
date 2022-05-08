@@ -234,4 +234,22 @@ public class TestFileSetInputStream
 			assertEquals("2|04.11.2020|-2,2|2222|04112020", line);
 		}
 	}
+
+	@Test
+	public void testFileSetInputStreamBadDirName()
+	{
+		try
+		{
+		    try (FileSetInputStream in = new FileSetInputStream("????",
+			"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
+			"location", "file_date"}, ",", false, false, null, 0, null))
+		    {
+			fail("expected exception java.io.IOException");
+		    }
+		}
+		catch (IOException e)
+		{
+			assertTrue(("" + e).contains("IOException"));
+		}
+	}
 }
