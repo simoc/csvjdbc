@@ -129,6 +129,11 @@ public class FileSetInputStream extends InputStream
 		File root = new File(dirName);
 		File[] candidates = root.listFiles();
 
+		if (candidates == null)
+		{
+			throw new IOException(CsvResources.getString("dirNotFound") + ": " + dirName);
+		}
+
 		fileNameRE = Pattern.compile(fileNamePattern);
 
 		for (int i = 0; i < candidates.length; i++)
