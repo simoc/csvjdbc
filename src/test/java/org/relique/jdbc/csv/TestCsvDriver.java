@@ -4721,6 +4721,27 @@ public class TestCsvDriver
 	}
 
 	@Test
+	public void testEmptyHeaderline() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("headerline", "");
+		props.put("suppressHeaders", "true");
+		props.put("fileExtension", ".txt");
+		props.put("commentChar", "#");
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+			Statement stmt = conn.createStatement();
+			ResultSet results = stmt.executeQuery("SELECT COLUMN1, COLUMN2 FROM banks"))
+		{
+			assertTrue(results.next());
+			// Check that default column names are used.
+			assertEquals("COLUMN1 wrong", "10000000", results.getString("COLUMN1"));
+			assertEquals("COLUMN2 wrong", "Bundesbank (Berlin)", results.getString("COLUMN2"));
+		}
+	}
+
+	@Test
 	public void testWarnings() throws SQLException
 	{
 		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"

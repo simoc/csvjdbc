@@ -111,7 +111,7 @@ public class CsvRawReader
 		if (this.suppressHeaders)
 		{
 			// column names specified by property are available. Read and use.
-			if (this.headerLine != null)
+			if (this.headerLine != null && !this.headerLine.isEmpty())
 			{
 				this.columnNames = parseHeaderLine(this.headerLine, trimHeaders);
 			}
