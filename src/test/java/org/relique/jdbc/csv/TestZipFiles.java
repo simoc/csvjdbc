@@ -29,10 +29,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Properties;
-import java.util.TimeZone;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,7 +40,6 @@ import org.junit.Test;
 public class TestZipFiles
 {
 	private static String filePath;
-	private static DateFormat toUTC;
 	private static String TEST_ZIP_FILENAME_1 = "olympic-medals.zip";
 	private static String TEST_ZIP_FILENAME_2 = "encodings.zip";
 
@@ -64,8 +60,6 @@ public class TestZipFiles
 		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
-		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 
 	@Test

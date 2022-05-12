@@ -69,7 +69,6 @@ import org.junit.Test;
 public class TestCsvDriver
 {
 	private static String filePath;
-	private static DateFormat toUTC;
 	private static DateTimeFormatter toUTCDateTimeFormatter;
 
 	@BeforeClass
@@ -89,9 +88,16 @@ public class TestCsvDriver
 		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
-		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+
 		toUTCDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("UTC"));
+	}
+
+	private DateFormat getUTCDateFormat()
+	{
+		// java.text.DateFormat is not thread-safe, so create new object every time we need one.
+		DateFormat toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+		return toUTC;
 	}
 
 	@Test
@@ -950,6 +956,7 @@ public class TestCsvDriver
 		{
 			assertTrue(results.next());
 			String target = "2001-01-02 12:30:00";
+			DateFormat toUTC = getUTCDateFormat();
 			assertEquals("the start time is wrong", target, toUTC.format(results
 					.getObject("start")));
 			assertEquals("The ID is wrong", Integer.valueOf(1), results.getObject("id"));
@@ -2232,6 +2239,7 @@ public class TestCsvDriver
 			expect = java.sql.Timestamp.valueOf("2001-04-02 12:30:00");
 			assertEquals("adding Date to Time", expect.getClass(), results
 					.getObject("ts").getClass());
+			DateFormat toUTC = getUTCDateFormat();
 			assertEquals("adding Date to Time", ((Timestamp) expect).toString(), toUTC
 					.format(results.getObject("ts")) + ".0");
 
@@ -2276,6 +2284,7 @@ public class TestCsvDriver
 			Object expect = java.sql.Timestamp.valueOf("2001-04-02 12:31:01");
 			assertEquals("adding Date + Time + Int", expect.getClass(), results
 					.getObject("ts").getClass());
+			DateFormat toUTC = getUTCDateFormat();
 			assertEquals("adding Date to Time", ((Timestamp) expect).toString(), toUTC
 					.format(results.getObject("ts")) + ".0");
 			expect = java.sql.Timestamp.valueOf("2001-04-02 12:28:59");
@@ -3985,6 +3994,7 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT * FROM twoheaders"))
 		{
 			assertTrue(results.next());
+			DateFormat toUTC = getUTCDateFormat();
 			assertEquals("1 is wrong", "2010-02-21 00:00:00", toUTC.format(results
 					.getObject(1)));
 			assertEquals("1 is wrong", "2010-02-21 00:00:00", toUTC.format(results
@@ -4177,6 +4187,7 @@ public class TestCsvDriver
 		{
 			assertTrue(results.next());
 			Timestamp got = results.getTimestamp(1);
+			DateFormat toUTC = getUTCDateFormat();
 			assertEquals("2013-11-25 13:29:07", toUTC.format(got));
 			assertTrue(results.next());
 			got = results.getTimestamp(1);
@@ -4229,6 +4240,7 @@ public class TestCsvDriver
 			// TODO: getString miserably fails!
 			//assertEquals("2001-01-02 12:30:00.0", results.getString("start"));
 			Timestamp got = (Timestamp) results.getObject("start");
+			DateFormat toUTC = getUTCDateFormat();
 			assertEquals("2001-01-02 11:30:00", toUTC.format(got));
 			got = results.getTimestamp("start");
 			assertEquals("2001-01-02 11:30:00", toUTC.format(got));
@@ -4258,6 +4270,7 @@ public class TestCsvDriver
 			// TODO: getString miserably fails!
 			//assertEquals("2001-01-02 12:30:00", results.getString("start"));
 			Timestamp got = (Timestamp) results.getObject("start");
+			DateFormat toUTC = getUTCDateFormat();
 			assertEquals("2001-01-02 15:30:00", toUTC.format(got));
 			got = results.getTimestamp("start");
 			assertEquals("2001-01-02 15:30:00", toUTC.format(got));
@@ -4287,6 +4300,7 @@ public class TestCsvDriver
 			// TODO: getString miserably fails!
 			// assertEquals("2001-01-02 12:30:00", results.getString("start"));
 			Timestamp got = (Timestamp) results.getObject("start");
+			DateFormat toUTC = getUTCDateFormat();
 			assertEquals("2001-01-02 08:30:00", toUTC.format(got));
 			got = results.getTimestamp("start");
 			assertEquals("2001-01-02 08:30:00", toUTC.format(got));
@@ -4316,6 +4330,7 @@ public class TestCsvDriver
 			// TODO: getString miserably fails!
 			// assertEquals("2001-01-02 12:30:00", results.getString("start"));
 			Timestamp got = (Timestamp) results.getObject("start");
+			DateFormat toUTC = getUTCDateFormat();
 			assertEquals("2001-01-02 16:30:00", toUTC.format(got));
 			got = results.getTimestamp("start");
 			assertEquals("2001-01-02 16:30:00", toUTC.format(got));
@@ -4345,6 +4360,7 @@ public class TestCsvDriver
 			// TODO: getString miserably fails!
 			//assertEquals("2001-01-02 12:30:00", results.getString("start"));
 			Timestamp got = (Timestamp) results.getObject("DT");
+			DateFormat toUTC = getUTCDateFormat();
 			assertEquals("2010-01-01 23:30:00", toUTC.format(got));
 
 			assertTrue(results.next());
@@ -4388,6 +4404,7 @@ public class TestCsvDriver
 			// TODO: getString miserably fails!
 			//assertEquals("2001-01-02 12:30:00", results.getString("start"));
 			Timestamp got = (Timestamp) results.getObject("DT");
+			DateFormat toUTC = getUTCDateFormat();
 			assertEquals("2010-01-02 06:30:00", toUTC.format(got));
 
 			assertTrue(results.next());

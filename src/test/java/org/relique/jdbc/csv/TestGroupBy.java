@@ -30,10 +30,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Properties;
-import java.util.TimeZone;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -44,7 +41,6 @@ import org.junit.Test;
 public class TestGroupBy
 {
 	private static String filePath;
-	private static DateFormat toUTC;
 
 	@BeforeClass
 	public static void setUp()
@@ -63,8 +59,6 @@ public class TestGroupBy
 		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
-		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 
 	@Test
