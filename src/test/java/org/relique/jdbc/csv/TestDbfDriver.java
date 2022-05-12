@@ -33,12 +33,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,7 +49,6 @@ import org.relique.jdbc.dbf.DbfClassNotFoundException;
 public class TestDbfDriver
 {
 	private static String filePath;
-	private static DateFormat toUTC;
 
 	@BeforeClass
 	public static void setUp()
@@ -71,8 +67,6 @@ public class TestDbfDriver
 		{
 			fail("Driver is not in the CLASSPATH -> " + e);
 		}
-		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 
 	/**

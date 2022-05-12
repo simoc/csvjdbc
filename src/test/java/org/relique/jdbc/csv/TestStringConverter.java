@@ -38,14 +38,13 @@ import org.junit.Test;
  * @author Mario Frasca
  */
 public class TestStringConverter
-{	
-	private static DateFormat toUTC;
-
-	@BeforeClass
-	public static void setUp()
+{
+	private DateFormat getUTCDateFormat()
 	{
-		toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
-		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));  
+		// java.text.DateFormat is not thread-safe, so create new object every time we need one.
+		DateFormat toUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		toUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+		return toUTC;
 	}
 
 	@Test
@@ -165,6 +164,7 @@ public class TestStringConverter
 		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "America/Guadeloupe", false);
 		Timestamp got;
 
+		DateFormat toUTC = getUTCDateFormat();
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
 		assertEquals("2010-01-01 16:00:00", toUTC.format(got));
 
@@ -179,6 +179,7 @@ public class TestStringConverter
 		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "Asia/Yakutsk", false);
 		Timestamp got;
 
+		DateFormat toUTC = getUTCDateFormat();
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
 		assertEquals("2010-01-01 03:00:00", toUTC.format(got));
 
@@ -194,6 +195,7 @@ public class TestStringConverter
 		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "America/Santiago", false);
 		Timestamp got;
 
+		DateFormat toUTC = getUTCDateFormat();
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
 		assertEquals("2010-01-01 15:00:00", toUTC.format(got));
 
@@ -209,6 +211,7 @@ public class TestStringConverter
 		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "Europe/Athens", false);
 		Timestamp got;
 
+		DateFormat toUTC = getUTCDateFormat();
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
 		assertEquals("2010-01-01 10:00:00", toUTC.format(got));
 
@@ -224,6 +227,7 @@ public class TestStringConverter
 		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "", false);
 		Timestamp got;
 
+		DateFormat toUTC = getUTCDateFormat();
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
 		assertEquals("2010-01-01 12:00:00", toUTC.format(got));
 	}
@@ -235,6 +239,7 @@ public class TestStringConverter
 		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "", false);
 		Timestamp got;
 
+		DateFormat toUTC = getUTCDateFormat();
 		got = sc.parseTimestamp("2010-07-01 12:00:00");
 		assertEquals("2010-07-01 12:00:00", toUTC.format(got));
 	}
@@ -246,6 +251,7 @@ public class TestStringConverter
 		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "UTC", false);
 		Timestamp got;
 
+		DateFormat toUTC = getUTCDateFormat();
 		got = sc.parseTimestamp("2010-01-01 12:00:00");
 		assertEquals("2010-01-01 12:00:00", toUTC.format(got));
 	}
@@ -257,6 +263,7 @@ public class TestStringConverter
 		StringConverter sc = new StringConverter("", "", "yyyy-MM-dd HH:mm:ss", "UTC", false);
 		Timestamp got;
 
+		DateFormat toUTC = getUTCDateFormat();
 		got = sc.parseTimestamp("2010-07-01 12:00:00");
 		assertEquals("2010-07-01 12:00:00", toUTC.format(got));
 	}
@@ -268,6 +275,7 @@ public class TestStringConverter
 		StringConverter sc = new StringConverter("", "", "dd-MMM-yy hh.mm.ss.000000 aa", "UTC", false);
 		Timestamp got;
 
+		DateFormat toUTC = getUTCDateFormat();
 		got = sc.parseTimestamp("25-NOV-13 01.29.07.000000 PM");
 		assertEquals("2013-11-25 13:29:07", toUTC.format(got));
 	}
@@ -286,6 +294,7 @@ public class TestStringConverter
 		Time expectTime = java.sql.Time.valueOf("19:51:00");
 		assertEquals(expectTime, gotTime);
 
+		DateFormat toUTC = getUTCDateFormat();
 		Timestamp gotTimestamp = sc.parseTimestamp("2019-09-04 13:45:48.616");
 		assertEquals("2019-09-04 13:45:48", toUTC.format(gotTimestamp));
 
@@ -307,6 +316,7 @@ public class TestStringConverter
 		Time expectTime = java.sql.Time.valueOf("07:31:59");
 		assertEquals(expectTime, gotTime);
 
+		DateFormat toUTC = getUTCDateFormat();
 		// in November Montreal lies 5 hours behind UTC
 		Timestamp gotTimestamp = sc.parseTimestamp("29.11.2020 06:02:00");
 		assertEquals("2020-11-29 11:02:00", toUTC.format(gotTimestamp));
