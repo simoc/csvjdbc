@@ -1437,6 +1437,11 @@ public class CsvConnection implements Connection
 				}
 			});
 
+			if (matchingFiles == null)
+			{
+				throw new SQLException(CsvResources.getString("dirNotFound") + ": " + path);
+			}
+
 			Pattern fileNameRE = null;
 			if (indexedFiles)
 			{
