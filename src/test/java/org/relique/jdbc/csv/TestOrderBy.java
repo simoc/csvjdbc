@@ -401,8 +401,10 @@ public class TestOrderBy
 
 			Statement stmt = conn.createStatement())
 		{
-			stmt.executeQuery("SELECT Id FROM sample order by XXXX");
-			fail("Should raise a java.sqlSQLException");
+			try (ResultSet results = stmt.executeQuery("SELECT Id FROM sample order by XXXX"))
+			{
+				fail("Should raise a java.sqlSQLException");
+			}
 		}
 		catch (SQLException e)
 		{
@@ -419,8 +421,10 @@ public class TestOrderBy
 
 			Statement stmt = conn.createStatement())
 		{
-			stmt.executeQuery("SELECT * FROM sample ORDER BY 99");
-			fail("Should raise a java.sqlSQLException");
+			try (ResultSet results = stmt.executeQuery("SELECT * FROM sample ORDER BY 99"))
+			{
+				fail("Should raise a java.sqlSQLException");
+			}
 		}
 		catch (SQLException e)
 		{
@@ -437,8 +441,10 @@ public class TestOrderBy
 
 			Statement stmt = conn.createStatement())
 		{
-			stmt.executeQuery("SELECT * FROM sample ORDER BY 3.14");
-			fail("Should raise a java.sqlSQLException");
+			try (ResultSet results = stmt.executeQuery("SELECT * FROM sample ORDER BY 3.14"))
+			{
+				fail("Should raise a java.sqlSQLException");
+			}
 		}
 		catch (SQLException e)
 		{
@@ -455,8 +461,10 @@ public class TestOrderBy
 
 			Statement stmt = conn.createStatement())
 		{
-			stmt.executeQuery("SELECT * FROM sample ORDER BY 'X'");
-			fail("Should raise a java.sqlSQLException");
+			try (ResultSet results = stmt.executeQuery("SELECT * FROM sample ORDER BY 'X'"))
+			{
+				fail("Should raise a java.sqlSQLException");
+			}
 		}
 		catch (SQLException e)
 		{

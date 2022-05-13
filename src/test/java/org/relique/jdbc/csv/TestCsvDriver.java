@@ -888,8 +888,10 @@ public class TestCsvDriver
 
 				Statement stmt = conn.createStatement())
 			{
-				stmt.executeQuery("SELECT Id, Name FROM sample");
-				fail("Should raise a java.sqlSQLException");
+				try (ResultSet results = stmt.executeQuery("SELECT Id, Name FROM sample"))
+				{
+					fail("Should raise a java.sqlSQLException");
+				}
 			}
 		}
 		catch (SQLException e)
@@ -909,8 +911,10 @@ public class TestCsvDriver
 
 				Statement stmt = conn.createStatement())
 			{
-				stmt.executeQuery("SELECT Id, XXXX FROM sample");
-				fail("Should raise a java.sqlSQLException");
+				try (ResultSet results = stmt.executeQuery("SELECT Id, XXXX FROM sample"))
+				{
+					fail("Should raise a java.sqlSQLException");
+				}
 			}
 		}
 		catch (SQLException e)
@@ -932,8 +936,10 @@ public class TestCsvDriver
 
 				Statement stmt = conn.createStatement())
 			{
-				stmt.executeQuery("SELECT * FROM sample");
-				fail("Should raise a java.sqlSQLException");
+				try (ResultSet results = stmt.executeQuery("SELECT * FROM sample"))
+				{
+					fail("Should raise a java.sqlSQLException");
+				}
 			}
 		}
 		catch (SQLException e)
@@ -1563,8 +1569,10 @@ public class TestCsvDriver
 
 				Statement stmt = conn.createStatement())
 			{
-				stmt.executeQuery("SELECT Id FROM sample where XXXX='123'");
-				fail("Should raise a java.sqlSQLException");
+				try (ResultSet results = stmt.executeQuery("SELECT Id FROM sample where XXXX='123'"))
+				{
+					fail("Should raise a java.sqlSQLException");
+				}
 			}
 		}
 		catch (SQLException e)
@@ -1736,8 +1744,10 @@ public class TestCsvDriver
 		{
 			try
 			{
-				stmt.executeQuery("select * from sample where Name in ()");
-				fail("SQL Query should fail");
+				try (ResultSet results = stmt.executeQuery("select * from sample where Name in ()"))
+				{
+					fail("SQL Query should fail");
+				}
 			}
 			catch (SQLException e)
 			{
@@ -2364,8 +2374,10 @@ public class TestCsvDriver
 		{
 			try
 			{
-				stmt.executeQuery("SELECT ((ID + 1) as N1 FROM sample5");
-				fail("Should raise a java.sqlSQLException");
+				try (ResultSet results = stmt.executeQuery("SELECT ((ID + 1) as N1 FROM sample5"))
+				{
+					fail("Should raise a java.sqlSQLException");
+				}
 			}
 			catch (SQLException e)
 			{
@@ -3331,8 +3343,10 @@ public class TestCsvDriver
 		{
 			try
 			{
-				stmt.executeQuery("SELECT * FROM not_there");
-				fail("Should not find the table 'not_there'");
+				try (ResultSet results = stmt.executeQuery("SELECT * FROM not_there"))
+				{
+					fail("Should not find the table 'not_there'");
+				}
 			}
 			catch (SQLException e)
 			{
@@ -3370,8 +3384,10 @@ public class TestCsvDriver
 			// load CSV driver
 			try
 			{
-				stmt.executeQuery("SELECT * FROM duplicate_headers");
-				fail("expected exception java.sql.SQLException: " + CsvResources.getString("duplicateColumns"));
+				try (ResultSet results = stmt.executeQuery("SELECT * FROM duplicate_headers"))
+				{
+					fail("expected exception java.sql.SQLException: " + CsvResources.getString("duplicateColumns"));
+				}
 			}
 			catch (SQLException e)
 			{
@@ -3773,8 +3789,10 @@ public class TestCsvDriver
 
 			try
 			{
-				stmt.executeQuery("SELECT * FROM sample");
-				fail("expected exception java.sql.SQLException");
+				try (ResultSet results = stmt.executeQuery("SELECT * FROM sample"))
+				{
+					fail("expected exception java.sql.SQLException");
+				}
 			}
 			catch (SQLException e)
 			{
@@ -4829,8 +4847,10 @@ public class TestCsvDriver
 		{
 			try
 			{
-				stmt.executeQuery("SELECT * FROM X");
-				fail("Should raise a java.sqlSQLException");
+				try (ResultSet results = stmt.executeQuery("SELECT * FROM X"))
+				{
+					fail("Should raise a java.sqlSQLException");
+				}
 			}
 			catch (SQLException e)
 			{

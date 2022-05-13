@@ -120,9 +120,8 @@ public class TestZipFiles
 			+ filePath + File.separator + TEST_ZIP_FILENAME_1);
 			Statement stmt = conn.createStatement())
 		{
-			try
+			try (ResultSet results = stmt.executeQuery("SELECT * FROM abc"))
 			{
-				stmt.executeQuery("SELECT * FROM abc");
 				fail("Query should fail");
 			}
 			catch (SQLException e)

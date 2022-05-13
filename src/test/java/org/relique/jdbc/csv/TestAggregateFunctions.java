@@ -92,9 +92,8 @@ public class TestAggregateFunctions
 		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
 			Statement stmt = conn.createStatement())
 		{
-			try
+			try (ResultSet results = stmt.executeQuery("SELECT count(XXXX) FROM sample"))
 			{
-				stmt.executeQuery("SELECT count(XXXX) FROM sample");
 				fail("Should raise a java.sqlSQLException");
 			}
 			catch (SQLException e)
@@ -110,9 +109,8 @@ public class TestAggregateFunctions
 		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
 			Statement stmt = conn.createStatement())
 		{
-			try
+			try (ResultSet results = stmt.executeQuery("SELECT ID, count(ID) FROM sample"))
 			{
-				stmt.executeQuery("SELECT ID, count(ID) FROM sample");
 				fail("Should raise a java.sqlSQLException");
 			}
 			catch (SQLException e)
@@ -154,9 +152,8 @@ public class TestAggregateFunctions
 		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
 			Statement stmt = conn.createStatement())
 		{
-			try
+			try (ResultSet results = stmt.executeQuery("SELECT * FROM sample where count(*)=1"))
 			{
-				stmt.executeQuery("SELECT * FROM sample where count(*)=1");
 				fail("Should raise a java.sqlSQLException");
 			}
 			catch (SQLException e)
