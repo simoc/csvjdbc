@@ -83,9 +83,8 @@ public class TestClasspathResources
 		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:classpath:testdata/olympic-medals");
 			Statement stmt = conn.createStatement())
 		{
-			try
+			try (ResultSet results = stmt.executeQuery("SELECT * FROM abc"))
 			{
-				stmt.executeQuery("SELECT * FROM abc");
 				fail("Query should fail");
 			}
 			catch (SQLException e)

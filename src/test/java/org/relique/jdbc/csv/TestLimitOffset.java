@@ -252,9 +252,8 @@ public class TestLimitOffset
 
 			Statement stmt = conn.createStatement())
 		{
-			try
+			try (ResultSet results = stmt.executeQuery("select * from sample5 limit 5 offset -1"))
 			{
-				stmt.executeQuery("select * from sample5 limit 5 offset -1");
 				fail("Should raise a java.sqlSQLException");
 			}
 			catch (SQLException e)
