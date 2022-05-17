@@ -100,5 +100,5 @@ put index.html
 
 ```
 git push https://github.com/simoc/csvjdbc.git master
-git push https://github.com/simoc/csvjdbc.git csvjdbc-1.0-29
+git push https://github.com/simoc/csvjdbc.git csvjdbc-1.0.29
 ```
