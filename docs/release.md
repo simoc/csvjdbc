@@ -69,7 +69,7 @@ Release in toolbar and Confirm in dialog
 box, as described
 [here](http://central.sonatype.org/pages/releasing-the-deployment.html).
 
-* Upload to Sourceforge web site (replace `simoc` and `1.0-29` with values
+* Upload to Sourceforge web site (replace `simoc`, `1.0-29` and `1.0.29` with values
 for this release).
 
 ```
@@ -77,7 +77,7 @@ sftp simoc,csvjdbc@frs.sourceforge.net
 cd /home/frs/project/c/cs/csvjdbc/CsvJdbc
 mkdir 1.0-29
 cd 1.0-29
-put target/csvjdbc-1.0-29.jar
+put target/csvjdbc-1.0.29.jar
 ```
 
 * Create a `README.md` file listing the changed SourceForge
