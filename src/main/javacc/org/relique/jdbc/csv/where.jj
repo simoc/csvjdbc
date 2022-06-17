@@ -308,6 +308,10 @@ TOKEN:
 }
 TOKEN:
 {
+	<REPLACE:"REPLACE">
+}
+TOKEN:
+{
 	<LENGTH:"LENGTH">
 }
 TOKEN:
@@ -947,6 +951,12 @@ Expression simpleExpression():
 	{
 		return new SQLSubstringFunction(arg, arg2, arg3);
 	}
+	| <REPLACE> <OPENPARENTHESIS> arg = binaryOperation()
+		<COMMA> arg2 = binaryOperation()
+		<COMMA> arg3 = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLReplaceFunction(arg, arg2, arg3);
+	}
 	| <LENGTH> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
 	{
 		return new SQLLengthFunction(arg);
@@ -1114,7 +1124,7 @@ Expression columnName():
 	Token t;
 }
 {
-	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>t=<STRING_AGG>)
+	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>t=<STRING_AGG>)
 	{
 		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}
@@ -1180,7 +1190,7 @@ Expression columnAlias():
 	Token t;
 }
 {
-	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>|t=<STRING_AGG>)
+	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>|t=<STRING_AGG>)
 	{
 		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}

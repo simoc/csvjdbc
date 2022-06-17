@@ -2575,6 +2575,25 @@ public class TestCsvDriver
 		}
 	}
 
+	@Test
+	public void testReplaceFunction() throws SQLException
+	{
+		Properties props = new Properties();
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:"
+				+ filePath, props);
+			Statement stmt = conn.createStatement();
+			ResultSet results = stmt.executeQuery("SELECT replace(name, ' ', '_'), replace(name, 'foo', 'bar'), " +
+					"replace(id, '0', ''), replace('abcd0123', id, job) FROM sample4"))
+		{
+			assertTrue(results.next());
+			assertEquals("The replace is wrong", "Juan_Pablo_Morales", results.getString(1));
+			assertEquals("The replace is wrong", "Juan Pablo Morales", results.getString(2));
+			assertEquals("The replace is wrong", "1", results.getString(3));
+			assertEquals("The replace is wrong", "abcdProject Manager23", results.getString(4));
+		}
+	}
+
 	/**
 	 * Compare two values for near equality, allowing for floating point round-off.
 	 */

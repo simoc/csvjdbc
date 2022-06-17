@@ -61,6 +61,7 @@ LTRIM(S [, T])       |Removes leading characters from S that occur in T
 MINUTE(T)            |Extracts minute of hour from time or timestamp T
 MONTH(D)             |Extracts month from date or timestamp D (first month is 1)
 NULLIF(X, Y)         |Returns NULL if X and Y are equal, otherwise X
+REPLACE(S, FROM, TO) |Replaces all occurrences of string FROM in S with TO
 ROUND(N [, D])       |Rounds N to the specified number of decimal places D (`0` by default)
 RTRIM(S, [, T])      |Removes trailing characters from S that occur in T
 SECOND(T)            |Extracts seconds value from time or timestamp T
