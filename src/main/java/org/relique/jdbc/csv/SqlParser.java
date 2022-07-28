@@ -48,20 +48,35 @@ public class SqlParser
 	private int limit;
 	private int offset;
 
+	private Expression limitExp;
+	private Expression offsetExp;
+
 	private boolean isDistinct;
 
 	public void setPlaceholdersValues(Object[] values)
 	{
-		if (whereClause != null)
+
+		if (whereClause != null) {
 			whereClause.setPlaceholdersValues(values);
+		}
+
+		int reverseIdx = 1;
+
+		if (offsetExp instanceof Placeholder) {
+			offset = (int) values[values.length-reverseIdx];
+			reverseIdx += 1;
+		}
+
+		if (limitExp instanceof  Placeholder) {
+			limit = (int) values[values.length-reverseIdx];
+		}
+
+
 	}
 
 	public int getPlaceholdersCount()
 	{
-		if (whereClause != null)
-			return whereClause.getPlaceholdersCount();
-		else
-			return 0;
+		return Placeholder.nextIndex - 1;
 	}
 
 	/**
@@ -129,8 +144,32 @@ public class SqlParser
 		}
 
 		this.whereClause = parsedStatement.whereClause;
-		this.limit = parsedStatement.limit;
-		this.offset = parsedStatement.offset;
+		this.limitExp = parsedStatement.limitExp;
+		this.offsetExp = parsedStatement.offsetExp;
+
+		if (limitExp instanceof NumericConstant) {
+			this.limit = (int)((NumericConstant) limitExp).value;
+
+			if (this.limit < 0) {
+				throw new SQLException(CsvResources.getString("invalidLimit"));
+			}
+
+		} else {
+			this.limit = -1;
+		}
+
+		if (offsetExp instanceof NumericConstant) {
+			this.offset = (int)((NumericConstant) offsetExp).value;
+
+			if (this.offset < 0) {
+				throw new SQLException(CsvResources.getString("invalidOffset"));
+			}
+
+		} else {
+			this.offset = 0;
+		}
+
+
 
 		this.tableNames = new ArrayList<>();
 		this.tableAliases = new ArrayList<>();

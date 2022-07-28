@@ -33,13 +33,16 @@ class ParsedStatement
 	List<ParsedExpression> orderByEntries;
 	int limit, offset;
 
+	Expression limitExp;
+	Expression offsetExp;
+
 	public ParsedStatement(List<ParsedExpression> queryEntries, boolean isDistinct,
 		List<ParsedTable> tableEntries,
 		ParsedExpression whereClause,
 		List<ParsedExpression> groupByEntries,
 		ParsedExpression havingClause,
 		List<ParsedExpression> orderByEntries,
-		int limit, int offset)
+		Expression limitExp, Expression offsetExp)
 	{
 		this.queryEntries = queryEntries;
 		this.isDistinct = isDistinct;
@@ -48,8 +51,21 @@ class ParsedStatement
 		this.groupByEntries = groupByEntries;
 		this.havingClause = havingClause;
 		this.orderByEntries = orderByEntries;
-		this.limit = limit;
-		this.offset = offset;
+		this.limitExp = limitExp;
+		this.offsetExp = offsetExp;
+
+		if (limitExp instanceof NumericConstant) {
+			this.limit = (int) ((NumericConstant) limitExp).value;
+		} else {
+			this.limit = -1;
+		}
+
+		if (offsetExp instanceof NumericConstant) {
+			this.offset = (int) ((NumericConstant) offsetExp).value;
+		} else {
+			this.offset = 0;
+		}
+
 	}
 
 	@Override
@@ -152,14 +168,17 @@ class ParsedStatement
 			}
 		}
 
-		if (limit >= 0)
+
+		if (limitExp != null)
 		{
-			sb.append(" LIMIT ").append(limit);
+			sb.append(" LIMIT ").append(limitExp);
 		}
-		if (offset > 0)
+
+		if (offsetExp != null)
 		{
-			sb.append(" OFFSET ").append(offset);
+			sb.append(" OFFSET ").append(offsetExp);
 		}
+
 		return sb.toString();
 	}
 
