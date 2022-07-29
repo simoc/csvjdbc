@@ -382,4 +382,98 @@ public class TestPrepareStatement
 			}
 		}
 	}
+
+	@Test
+	public void testLimitParameter() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("extension", ".csv");
+		props.put("columnTypes", "Int,String,String");
+		String queryString = "SELECT * FROM sample4 LIMIT ?";
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+			 PreparedStatement prepstmt = conn.prepareStatement(queryString))
+		{
+			prepstmt.setInt(1, 2);
+			try (ResultSet results = prepstmt.executeQuery())
+			{
+				assertTrue(results.next());
+				assertTrue(results.next());
+				assertFalse(results.next());
+			}
+		}
+	}
+
+	@Test
+	public void testOffsetParameter() throws SQLException{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,String,Date,Time");
+		String queryString = "select id from sample5 where id > 2 limit 3 offset ?";
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+			 PreparedStatement prepstmt = conn.prepareStatement(queryString))
+		{
+			prepstmt.setInt(1, 4);
+
+			try (ResultSet results = prepstmt.executeQuery()) {
+				assertTrue(results.next());
+				assertEquals("The ID is wrong", 6, results.getInt("ID"));
+				assertTrue(results.next());
+				assertEquals("The ID is wrong", 7, results.getInt("ID"));
+				assertTrue(results.next());
+				assertEquals("The ID is wrong", 8, results.getInt("ID"));
+				assertFalse(results.next());
+			}
+		}
+	}
+
+	@Test
+	public void testLimitOffsetParameter() throws SQLException{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,String,Date,Time");
+		String queryString = "select id from sample5 where id > 2 limit ? offset ?";
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+			 PreparedStatement prepstmt = conn.prepareStatement(queryString))
+		{
+			prepstmt.setInt(1, 3);
+			prepstmt.setInt(2, 4);
+
+			try (ResultSet results = prepstmt.executeQuery()) {
+				assertTrue(results.next());
+				assertEquals("The ID is wrong", 6, results.getInt("ID"));
+				assertTrue(results.next());
+				assertEquals("The ID is wrong", 7, results.getInt("ID"));
+				assertTrue(results.next());
+				assertEquals("The ID is wrong", 8, results.getInt("ID"));
+				assertFalse(results.next());
+			}
+		}
+	}
+
+	@Test
+	public void testWhereAndLimitParameter() throws SQLException{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,String,String,Date,Time");
+		String queryString = "select id from sample5 where id > ? limit ? offset ?";
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+			 PreparedStatement prepstmt = conn.prepareStatement(queryString))
+		{
+			prepstmt.setInt(1, 2);
+			prepstmt.setInt(2, 3);
+			prepstmt.setInt(3, 4);
+
+			try (ResultSet results = prepstmt.executeQuery()) {
+				assertTrue(results.next());
+				assertEquals("The ID is wrong", 6, results.getInt("ID"));
+				assertTrue(results.next());
+				assertEquals("The ID is wrong", 7, results.getInt("ID"));
+				assertTrue(results.next());
+				assertEquals("The ID is wrong", 8, results.getInt("ID"));
+				assertFalse(results.next());
+			}
+		}
+	}
+
+
 }

@@ -674,8 +674,8 @@ ParsedStatement selectStatement():
 	List<ParsedExpression> groupByEntries = new LinkedList<ParsedExpression>();
 	ParsedExpression havingClause = null;
 	List<ParsedExpression> orderByEntries = new LinkedList<ParsedExpression>();
-	int limit = -1;
-	int offset = 0;
+    Expression limitExp = null;
+    Expression offsetExp = null;
 	Token t;
 }
 {
@@ -688,10 +688,11 @@ ParsedStatement selectStatement():
 		(<WHERE>whereClause = logicalExpression())?
 		(<GROUP><BY>entry = groupByEntry(){groupByEntries.add(entry);}(<COMMA>entry = groupByEntry(){groupByEntries.add(entry);})*(<HAVING>havingClause = logicalExpression())?)?
 		(<ORDER><BY>entry = orderByEntry(){orderByEntries.add(entry);}(<COMMA>entry = orderByEntry(){orderByEntries.add(entry);})*)?
-		(<LIMIT>t=<UNSIGNEDINT>{limit = Integer.parseInt(t.image);}(<OFFSET>t=<UNSIGNEDINT>{offset = Integer.parseInt(t.image);})?)?
+//		(<LIMIT>t=<UNSIGNEDINT>{limit = Integer.parseInt(t.image);}(<OFFSET>t=<UNSIGNEDINT>{offset = Integer.parseInt(t.image);})?)?
+	(((<LIMIT>limitExp=numericConstant()) | (<LIMIT> limitExp=simpleExpression()))((<OFFSET>offsetExp=numericConstant()) | (<OFFSET>offsetExp=simpleExpression()))?)?
 	)?
 	{
-		return new ParsedStatement(result, isDistinct, tableEntries, whereClause, groupByEntries, havingClause, orderByEntries, limit, offset);
+		return new ParsedStatement(result, isDistinct, tableEntries, whereClause, groupByEntries, havingClause, orderByEntries, limitExp, offsetExp);
 	}
 }
 ParsedExpression queryEnvEntry():

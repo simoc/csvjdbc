@@ -90,7 +90,7 @@ class ParsedExpression extends LogicalExpression
 	}
 	public int getPlaceholdersCount()
 	{
-		return Placeholder.nextIndex - 1;
+		return placeholders.size();
 	}
 	public void setPlaceholdersValues(Object[] values)
 	{
