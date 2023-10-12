@@ -53,6 +53,7 @@ Function             |Description
 -----------          |-------------------
 ABS(N)               |Returns absolute value of N
 COALESCE(N1, N2, ...)|Returns first expression that is not NULL
+TO_ARRAY([DISTINCT] N1, N2, ...) | Returns java.sql.Array containing (optionally distinct) values
 DAYOFMONTH(D)        |Extracts day of month from date or timestamp D (first day of month is 1)
 HOUROFDAY(T)         |Extracts hour of day from time or timestamp T
 LENGTH(S)            |Returns length of string
@@ -80,6 +81,7 @@ COUNT(N)          |Count of all values
 MAX(N)            |Maximum value
 MIN(N)            |Minimum value
 STRING_AGG(S, D)  |All values of S concatenated with delimiter D
+ARRAY_AGG(S)      |All values of S into a java.sql.Array
 SUM(N)            |Sum of all values
 
 For queries containing `ORDER BY`, all records are read into memory and sorted.
@@ -87,6 +89,12 @@ For queries containing `GROUP BY` plus an aggregate function, all records are
 read into memory and grouped. For queries that produce a scrollable result set,
 all records up to the furthest accessed record are held into memory. For other
 queries, CsvJdbc holds only one record at a time in memory.
+
+Notes on functions returning an array:
+* `ResultSet.getArray(...)` will return an `org.relique.jdbc.csv.SqlArray`
+* SqlArray has working getArray(...) methods, but getResultSet(...) methods are not implemented
+* SqlArray tries to infer the type of the values for its `getBaseTypeName()` and `getBaseType()` 
+methods; an `IllegalStateException` will be thrown if it detects values of different types
 
 ## Dependencies
 
@@ -265,7 +273,7 @@ public class DemoDriver6
     try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:classpath:" +
             path);
       Statement stmt = conn.createStatement();
-      // Read from the claspath resource mytable.csv
+      // Read from the classpath resource mytable.csv
       ResultSet results = stmt.executeQuery("SELECT * FROM mytable"))
       {
         while (results.next())
