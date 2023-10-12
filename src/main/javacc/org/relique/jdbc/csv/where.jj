@@ -328,6 +328,10 @@ TOKEN:
 }
 TOKEN:
 {
+	<TO_ARRAY:"TO_ARRAY">
+}
+TOKEN:
+{
 	<COUNT:"COUNT">
 }
 TOKEN:
@@ -1005,6 +1009,13 @@ Expression simpleExpression():
 	{
 		return new SQLCoalesceFunction(args);
 	}
+	| <TO_ARRAY> <OPENPARENTHESIS>{isDistinct = false;}
+        (<DISTINCT>{isDistinct = true;})?
+        arg = binaryOperation(){args.add(arg);}
+		(<COMMA> arg = binaryOperation(){args.add(arg);})* <CLOSEPARENTHESIS>
+	{
+		return new SQLToArrayFunction(isDistinct, args);
+	}
 	| <COUNT> <OPENPARENTHESIS>{isDistinct = false;}
 		(<DISTINCT>{isDistinct = true;})?
 		arg = countOperation() <CLOSEPARENTHESIS>
@@ -1125,7 +1136,7 @@ Expression columnName():
 	Token t;
 }
 {
-	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>t=<STRING_AGG>)
+	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>t=<STRING_AGG>|t=<TO_ARRAY>)
 	{
 		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}
@@ -1191,7 +1202,7 @@ Expression columnAlias():
 	Token t;
 }
 {
-	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>|t=<STRING_AGG>)
+	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>|t=<STRING_AGG>|t=<TO_ARRAY>)
 	{
 		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}
