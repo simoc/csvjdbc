@@ -945,4 +945,55 @@ public class StringConverter
 	{
 		return string.replace("\"", "");
 	}
+
+	public String[] inferColumnTypes(Object[] fieldValues) {
+		String[] columnTypes = new String[fieldValues.length];
+		for (int i = 0; i < fieldValues.length; i++)
+		{
+			String typeName = "String";
+			String value = fieldValues[i].toString();
+			if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
+			{
+				typeName = "Boolean";
+			}
+			else if (value.equals(("" + parseInt(value))))
+			{
+				typeName = "Int";
+			}
+			else if (value.equals(("" + parseLong(value))))
+			{
+				typeName = "Long";
+			}
+			else if (value.equals(("" + parseDouble(value))))
+			{
+				typeName = "Double";
+			}
+			else if (value.equals(("" + parseBytes(value))))
+			{
+				typeName = "Bytes";
+			}
+			else if (value.equals(("" + parseBigDecimal(value))))
+			{
+				typeName = "BigDecimal";
+			}
+			else if (parseTimestamp(value) != null)
+			{
+				typeName = "Timestamp";
+			}
+			else if (parseDate(value) != null)
+			{
+				typeName = "Date";
+			}
+			else if (parseTime(value) != null)
+			{
+				typeName = "Time";
+			}
+			else if (value.equals(("" + parseAsciiStream(value))))
+			{
+				typeName = "AsciiStream";
+			}
+			columnTypes[i] = typeName;
+		}
+		return columnTypes;
+	}
 }

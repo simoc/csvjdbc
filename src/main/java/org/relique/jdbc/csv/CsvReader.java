@@ -300,53 +300,7 @@ public class CsvReader extends DataReader
 		if (fieldValues == null)
 			throw new SQLException(CsvResources.getString("cannotInferColumns"));
 
-		columnTypes = new String[fieldValues.length];
-		for (int i = 0; i < fieldValues.length; i++)
-		{
-			String typeName = "String";
-			String value = getField(i).toString();
-			if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
-			{
-				typeName = "Boolean";
-			}
-			else if (value.equals(("" + converter.parseInt(value))))
-			{
-				typeName = "Int";
-			}
-			else if (value.equals(("" + converter.parseLong(value))))
-			{
-				typeName = "Long";
-			}
-			else if (value.equals(("" + converter.parseDouble(value))))
-			{
-				typeName = "Double";
-			}
-			else if (value.equals(("" + converter.parseBytes(value))))
-			{
-				typeName = "Bytes";
-			}
-			else if (value.equals(("" + converter.parseBigDecimal(value))))
-			{
-				typeName = "BigDecimal";
-			}
-			else if (converter.parseTimestamp(value) != null)
-			{
-				typeName = "Timestamp";
-			}
-			else if (converter.parseDate(value) != null)
-			{
-				typeName = "Date";
-			}
-			else if (converter.parseTime(value) != null)
-			{
-				typeName = "Time";
-			}
-			else if (value.equals(("" + converter.parseAsciiStream(value))))
-			{
-				typeName = "AsciiStream";
-			}
-			columnTypes[i] = typeName;
-		}
+		columnTypes = converter.inferColumnTypes(fieldValues);
 	}
 
 	@Override
