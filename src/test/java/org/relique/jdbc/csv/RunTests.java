@@ -34,6 +34,7 @@ import org.junit.runners.Suite;
 	TestStringConverter.class,
 	TestZipFiles.class,
 	TestAggregateFunctions.class,
+	TestArrayFunctions.class,
 	TestOrderBy.class,
 	TestGroupBy.class,
 	TestLimitOffset.class,

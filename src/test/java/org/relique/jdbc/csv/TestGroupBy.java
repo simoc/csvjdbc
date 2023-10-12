@@ -18,22 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 package org.relique.jdbc.csv;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.File;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Properties;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests use of SQL GROUP BY clause.
@@ -357,6 +349,27 @@ public class TestGroupBy
 			assertFalse(results.next());
 		}
 	}
+
+	@Test
+	public void testGroupByArrayAgg() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("select Job, ARRAY_AGG(Name) from sample4 GROUP BY Job"))
+		{
+			assertTrue(results.next());
+			assertEquals("The Job is wrong", "Project Manager", results.getString(1));
+			Array array = results.getArray(2);
+			assertNotNull(array);
+			Object[] data = (Object[]) array.getArray();
+			assertEquals(3, data.length);
+			assertArrayEquals("The array is wrong",
+					new String[]{ "Juan Pablo Morales", "Mauricio Hernandez","Felipe Grajales"},
+					data);
+		}
+	}
+
+
 
 	@Test
 	public void testGroupByOrderByCount() throws SQLException
