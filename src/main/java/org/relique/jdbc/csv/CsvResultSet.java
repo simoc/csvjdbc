@@ -2264,8 +2264,12 @@ public class CsvResultSet implements ResultSet
 	@Override
 	public Array getArray(int i) throws SQLException
 	{
-		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
-			": ResultSet.getArray(int)");
+		Object result = getObject(i);
+		if (result == null || result instanceof Array) {
+			return (Array) result;
+		}
+		throw new SQLException(CsvResources.getString("invalidColumnType") +
+			": column #" + i + " is not an array");
 	}
 
 	@Override
@@ -2299,8 +2303,7 @@ public class CsvResultSet implements ResultSet
 	@Override
 	public Array getArray(String colName) throws SQLException
 	{
-		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
-			": ResultSet.getArray(String)");
+		return getArray(findColumn(colName));
 	}
 
 	@Override
