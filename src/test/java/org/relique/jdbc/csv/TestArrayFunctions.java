@@ -126,4 +126,30 @@ public class TestArrayFunctions
 			assertEquals("teacher", data[0]);
 		}
 	}
+
+	@Test
+	public void testFreedArray() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT TO_ARRAY(DISTINCT role_1, role_2) AS roles FROM arrays_sample")) {
+			assertTrue(results.next());
+			Array array = results.getArray(1);
+			Object[] data = (Object[]) array.getArray();
+			assertEquals(2, data.length);
+			assertEquals("teacher", data[0]);
+			assertEquals("grader", data[1]);
+			array.free();
+
+			try
+			{
+				array.getArray();
+				fail("Using freed Array should throw SQLException");
+			}
+			catch (SQLException e)
+			{
+				assertEquals("java.sql.SQLException: " + CsvResources.getString("freedArray"), "" + e);
+			}
+		}
+	}
 }
