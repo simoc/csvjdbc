@@ -121,8 +121,7 @@ public class SqlArray implements Array
 		if (index < 1 || index > values.size() || count < 0)
 		{
 			throw new SQLException(CsvResources.getString("arraySubListOutOfBounds") + ": " +
-				index + ": " +
-				count);
+				index + ": " + count);
 		}
 		int toIndex = Math.min(values.size(),  (int) index - 1 + count);
 		return values.subList((int) index - 1, toIndex).toArray();
