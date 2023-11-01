@@ -122,7 +122,7 @@ public class SqlArray implements Array
 		{
 			throw new SQLException(CsvResources.getString("arraySubListOutOfBounds") + ": " +
 				index + ": " +
-				count + ": ");
+				count);
 		}
 		int toIndex = Math.min(values.size(),  (int) index - 1 + count);
 		return values.subList((int) index - 1, toIndex).toArray();
