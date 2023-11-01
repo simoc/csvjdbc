@@ -118,10 +118,14 @@ public class SqlArray implements Array
 	{
 		checkFreed();
 
-		if (index > values.size())
-			throw new SQLException("index " + index + " is out of bounds for array with size " + values.size());
+		if (index < 1 || index > values.size() || count < 0)
+		{
+			throw new SQLException(CsvResources.getString("arraySubListOutOfBounds") + ": " +
+				index + ": " +
+				count + ": ");
+		}
 		int toIndex = Math.min(values.size(),  (int) index - 1 + count);
-		return values.subList((int) index - 1, toIndex);
+		return values.subList((int) index - 1, toIndex).toArray();
 	}
 
 	@Override
