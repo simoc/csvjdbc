@@ -33,6 +33,7 @@ public class SqlArray implements Array
 	private final List<Object> values;
 	private final String baseTypeName;
 	private final int baseType;
+	private boolean freed;
 
 	public SqlArray(List<Object> values, StringConverter converter) 
 	{
@@ -43,6 +44,12 @@ public class SqlArray implements Array
 		this.values = values.stream()
 				.map(o -> converter.convert(baseTypeName, o.toString()))
 				.collect(Collectors.toList());
+	}
+
+	protected void checkFreed() throws SQLException
+	{
+		if (freed)
+			throw new SQLException(CsvResources.getString("freedArray"));
 	}
 
 	@Override
@@ -94,6 +101,8 @@ public class SqlArray implements Array
 	@Override
 	public Object getArray() throws SQLException 
 	{
+		checkFreed();
+
 		return values.toArray();
 	}
 
@@ -107,6 +116,8 @@ public class SqlArray implements Array
 	@Override
 	public Object getArray(long index, int count) throws SQLException 
 	{
+		checkFreed();
+
 		if (index > values.size())
 			throw new SQLException("index " + index + " is out of bounds for array with size " + values.size());
 		int toIndex = Math.min(values.size(),  (int) index - 1 + count);
@@ -152,5 +163,6 @@ public class SqlArray implements Array
 	public void free() throws SQLException 
 	{
 		values.clear();
+		freed = true;
 	}
 }
