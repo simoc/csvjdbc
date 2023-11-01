@@ -46,11 +46,11 @@ public class SqlArray implements Array
 				.collect(Collectors.toList());
 	}
 
-    protected void checkFreed() throws SQLException
-    {
-        if (freed)
-            throw new SQLException(CsvResources.getString("freedArray"));
-    }
+	protected void checkFreed() throws SQLException
+	{
+		if (freed)
+			throw new SQLException(CsvResources.getString("freedArray"));
+	}
 
 	@Override
 	public String getBaseTypeName() throws SQLException 
