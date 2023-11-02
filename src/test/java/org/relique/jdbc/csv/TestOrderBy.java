@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 package org.relique.jdbc.csv;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.sql.Connection;
@@ -31,8 +31,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests use of SQL ORDER BY clause.
@@ -41,13 +41,13 @@ public class TestOrderBy
 {
 	private static String filePath;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp()
 	{
 		filePath = ".." + File.separator + "src" + File.separator + "testdata";
 		if (!new File(filePath).isDirectory())
 			filePath = "src" + File.separator + "testdata";
-		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
+		assertTrue(new File(filePath).isDirectory(), "Sample files directory not found: " + filePath);
 
 		// load CSV driver
 		try
@@ -79,35 +79,35 @@ public class TestOrderBy
 				.executeQuery("SELECT * FROM banks ORDER BY BANK_NAME"))
 		{
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10010424, results.getInt("BLZ"));
-			assertEquals("The BLZ_NAME is wrong", "Aareal Bank (Berlin)", results.getString("BANK_NAME"));
+			assertEquals(10010424, results.getInt("BLZ"), "The BLZ is wrong");
+			assertEquals("Aareal Bank (Berlin)", results.getString("BANK_NAME"), "The BLZ_NAME is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10020200, results.getInt("BLZ"));
-			assertEquals("The BLZ_NAME is wrong", "BHF-BANK (Berlin)", results.getString("BANK_NAME"));
+			assertEquals(10020200, results.getInt("BLZ"), "The BLZ is wrong");
+			assertEquals("BHF-BANK (Berlin)", results.getString("BANK_NAME"), "The BLZ_NAME is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10020500, results.getInt("BLZ"));
-			assertEquals("The BLZ_NAME is wrong", "Bank f\u00FCr Sozialwirtschaft (Berlin)", results.getString("BANK_NAME"));
+			assertEquals(10020500, results.getInt("BLZ"), "The BLZ is wrong");
+			assertEquals("Bank f\u00FCr Sozialwirtschaft (Berlin)", results.getString("BANK_NAME"), "The BLZ_NAME is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10020000, results.getInt("BLZ"));
-			assertEquals("The BLZ_NAME is wrong", "Berliner Bank -alt- (Berlin)", results.getString("BANK_NAME"));
+			assertEquals(10020000, results.getInt("BLZ"), "The BLZ is wrong");
+			assertEquals("Berliner Bank -alt- (Berlin)", results.getString("BANK_NAME"), "The BLZ_NAME is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10000000, results.getInt("BLZ"));
-			assertEquals("The BLZ_NAME is wrong", "Bundesbank (Berlin)", results.getString("BANK_NAME"));
+			assertEquals(10000000, results.getInt("BLZ"), "The BLZ is wrong");
+			assertEquals("Bundesbank (Berlin)", results.getString("BANK_NAME"), "The BLZ_NAME is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10020400, results.getInt("BLZ"));
-			assertEquals("The BLZ_NAME is wrong", "Citadele Bank Zndl Deutschland (M\u00FCnchen)", results.getString("BANK_NAME"));
+			assertEquals(10020400, results.getInt("BLZ"), "The BLZ is wrong");
+			assertEquals("Citadele Bank Zndl Deutschland (M\u00FCnchen)", results.getString("BANK_NAME"), "The BLZ_NAME is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10019610, results.getInt("BLZ"));
-			assertEquals("The BLZ_NAME is wrong", "Dexia Kommunalbank Deutschland (Berlin)", results.getString("BANK_NAME"));
+			assertEquals(10019610, results.getInt("BLZ"), "The BLZ is wrong");
+			assertEquals("Dexia Kommunalbank Deutschland (Berlin)", results.getString("BANK_NAME"), "The BLZ_NAME is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10010010, results.getInt("BLZ"));
-			assertEquals("The BLZ_NAME is wrong", "Postbank (Berlin)", results.getString("BANK_NAME"));
+			assertEquals(10010010, results.getInt("BLZ"), "The BLZ is wrong");
+			assertEquals("Postbank (Berlin)", results.getString("BANK_NAME"), "The BLZ_NAME is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10010111, results.getInt("BLZ"));
-			assertEquals("The BLZ_NAME is wrong", "SEB (Berlin)", results.getString("BANK_NAME"));
+			assertEquals(10010111, results.getInt("BLZ"), "The BLZ is wrong");
+			assertEquals("SEB (Berlin)", results.getString("BANK_NAME"), "The BLZ_NAME is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10010222, results.getInt("BLZ"));
-			assertEquals("The BLZ_NAME is wrong", "The Royal Bank of Scotland, Niederlassung Deutschland (Berlin)", results.getString("BANK_NAME"));
+			assertEquals(10010222, results.getInt("BLZ"), "The BLZ is wrong");
+			assertEquals("The Royal Bank of Scotland, Niederlassung Deutschland (Berlin)", results.getString("BANK_NAME"), "The BLZ_NAME is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -126,25 +126,25 @@ public class TestOrderBy
 				.executeQuery("SELECT * FROM sample5 ORDER BY 1"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 1, results.getInt("ID"));
+			assertEquals(1, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 2, results.getInt("ID"));
+			assertEquals(2, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 3, results.getInt("ID"));
+			assertEquals(3, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 4, results.getInt("ID"));
+			assertEquals(4, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 5, results.getInt("ID"));
+			assertEquals(5, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 6, results.getInt("ID"));
+			assertEquals(6, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 7, results.getInt("ID"));
+			assertEquals(7, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 8, results.getInt("ID"));
+			assertEquals(8, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 9, results.getInt("ID"));
+			assertEquals(9, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 41, results.getInt("ID"));
+			assertEquals(41, results.getInt("ID"), "The ID is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -163,9 +163,9 @@ public class TestOrderBy
 				.executeQuery("SELECT ID+10 AS ID10 FROM sample5 ORDER BY 1"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 11, results.getInt("ID10"));
+			assertEquals(11, results.getInt("ID10"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 12, results.getInt("ID10"));
+			assertEquals(12, results.getInt("ID10"), "The ID is wrong");
 			assertTrue(results.next());
 		}
 	}
@@ -188,25 +188,25 @@ public class TestOrderBy
 				.executeQuery("SELECT BLZ FROM banks ORDER BY BLZ DESC"))
 		{
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10020500, results.getInt(1));
+			assertEquals(10020500, results.getInt(1), "The BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10020400, results.getInt(1));
+			assertEquals(10020400, results.getInt(1), "The BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10020200, results.getInt(1));
+			assertEquals(10020200, results.getInt(1), "The BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10020000, results.getInt(1));
+			assertEquals(10020000, results.getInt(1), "The BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10019610, results.getInt(1));
+			assertEquals(10019610, results.getInt(1), "The BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10010424, results.getInt(1));
+			assertEquals(10010424, results.getInt(1), "The BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10010222, results.getInt(1));
+			assertEquals(10010222, results.getInt(1), "The BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10010111, results.getInt(1));
+			assertEquals(10010111, results.getInt(1), "The BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10010010, results.getInt(1));
+			assertEquals(10010010, results.getInt(1), "The BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", 10000000, results.getInt(1));
+			assertEquals(10000000, results.getInt(1), "The BLZ is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -229,32 +229,32 @@ public class TestOrderBy
 				.executeQuery("select * from transactions order by from_blz, from_acct"))
 		{
 			assertTrue(results.next());
-			assertEquals("The from_blz is wrong", 10010010, results.getInt("from_blz"));
-			assertEquals("The from_acct is wrong", 3670345, results.getInt("from_acct"));
+			assertEquals(10010010, results.getInt("from_blz"), "The from_blz is wrong");
+			assertEquals(3670345, results.getInt("from_acct"), "The from_acct is wrong");
 			assertTrue(results.next());
-			assertEquals("The from_blz is wrong", 10010010, results.getInt("from_blz"));
-			assertEquals("The from_acct is wrong", 3670345, results.getInt("from_acct"));
+			assertEquals(10010010, results.getInt("from_blz"), "The from_blz is wrong");
+			assertEquals(3670345, results.getInt("from_acct"), "The from_acct is wrong");
 			assertTrue(results.next());
-			assertEquals("The from_blz is wrong", 10010010, results.getInt("from_blz"));
-			assertEquals("The from_acct is wrong", 3670345, results.getInt("from_acct"));
+			assertEquals(10010010, results.getInt("from_blz"), "The from_blz is wrong");
+			assertEquals(3670345, results.getInt("from_acct"), "The from_acct is wrong");
 			assertTrue(results.next());
-			assertEquals("The from_blz is wrong", 10010010, results.getInt("from_blz"));
-			assertEquals("The from_acct is wrong", 3670345, results.getInt("from_acct"));
+			assertEquals(10010010, results.getInt("from_blz"), "The from_blz is wrong");
+			assertEquals(3670345, results.getInt("from_acct"), "The from_acct is wrong");
 			assertTrue(results.next());
-			assertEquals("The from_blz is wrong", 10010010, results.getInt("from_blz"));
-			assertEquals("The from_acct is wrong", 58340576, results.getInt("from_acct"));
+			assertEquals(10010010, results.getInt("from_blz"), "The from_blz is wrong");
+			assertEquals(58340576, results.getInt("from_acct"), "The from_acct is wrong");
 			assertTrue(results.next());
-			assertEquals("The from_blz is wrong", 10020200, results.getInt("from_blz"));
-			assertEquals("The from_acct is wrong", 2340529, results.getInt("from_acct"));
+			assertEquals(10020200, results.getInt("from_blz"), "The from_blz is wrong");
+			assertEquals(2340529, results.getInt("from_acct"), "The from_acct is wrong");
 			assertTrue(results.next());
-			assertEquals("The from_blz is wrong", 10020500, results.getInt("from_blz"));
-			assertEquals("The from_acct is wrong", 97540210, results.getInt("from_acct"));
+			assertEquals(10020500, results.getInt("from_blz"), "The from_blz is wrong");
+			assertEquals(97540210, results.getInt("from_acct"), "The from_acct is wrong");
 			assertTrue(results.next());
-			assertEquals("The from_blz is wrong", 10020500, results.getInt("from_blz"));
-			assertEquals("The from_acct is wrong", 97540210, results.getInt("from_acct"));
+			assertEquals(10020500, results.getInt("from_blz"), "The from_blz is wrong");
+			assertEquals(97540210, results.getInt("from_acct"), "The from_acct is wrong");
 			assertTrue(results.next());
-			assertEquals("The from_blz is wrong", 10020500, results.getInt("from_blz"));
-			assertEquals("The from_acct is wrong", 97540210, results.getInt("from_acct"));
+			assertEquals(10020500, results.getInt("from_blz"), "The from_blz is wrong");
+			assertEquals(97540210, results.getInt("from_acct"), "The from_acct is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -277,14 +277,14 @@ public class TestOrderBy
 				.executeQuery("SELECT FROM_ACCT, FROM_BLZ from transactions where AMOUNT < 50 ORDER BY AMOUNT"))
 		{
 			assertTrue(results.next());
-			assertEquals("The FROM_ACCT is wrong", 97540210, results.getInt("FROM_ACCT"));
-			assertEquals("The FROM_BLZ is wrong", 10020500, results.getInt("FROM_BLZ"));
+			assertEquals(97540210, results.getInt("FROM_ACCT"), "The FROM_ACCT is wrong");
+			assertEquals(10020500, results.getInt("FROM_BLZ"), "The FROM_BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The FROM_ACCT is wrong", 3670345, results.getInt("FROM_ACCT"));
-			assertEquals("The FROM_BLZ is wrong", 10010010, results.getInt("FROM_BLZ"));
+			assertEquals(3670345, results.getInt("FROM_ACCT"), "The FROM_ACCT is wrong");
+			assertEquals(10010010, results.getInt("FROM_BLZ"), "The FROM_BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The FROM_ACCT is wrong", 3670345, results.getInt("FROM_ACCT"));
-			assertEquals("The FROM_BLZ is wrong", 10010010, results.getInt("FROM_BLZ"));
+			assertEquals(3670345, results.getInt("FROM_ACCT"), "The FROM_ACCT is wrong");
+			assertEquals(10010010, results.getInt("FROM_BLZ"), "The FROM_BLZ is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -315,13 +315,13 @@ public class TestOrderBy
 				.executeQuery("SELECT FROM_ACCT, AMOUNT * 0.01 as FEE from transactions ORDER BY FEE"))
 		{
 			assertTrue(results.next());
-			assertEquals("The FROM_ACCT is wrong", 97540210, results.getInt(1));
+			assertEquals(97540210, results.getInt(1), "The FROM_ACCT is wrong");
 			double fee = results.getDouble(2);
-			assertTrue("The FEE is wrong", fuzzyEquals(7.23 * 0.01, fee));
+			assertTrue(fuzzyEquals(7.23 * 0.01, fee), "The FEE is wrong");
 			assertTrue(results.next());
-			assertEquals("The FROM_ACCT is wrong", 3670345, results.getInt(1));
+			assertEquals(3670345, results.getInt(1), "The FROM_ACCT is wrong");
 			fee = results.getDouble(2);
-			assertTrue("The FEE is wrong", fuzzyEquals(21.23 * 0.01, fee));
+			assertTrue(fuzzyEquals(21.23 * 0.01, fee), "The FEE is wrong");
 		}
 	}
 
@@ -345,11 +345,11 @@ public class TestOrderBy
 			assertTrue(results.next());
 			double a0 = results.getFloat("AI007.000");
 			double a1 = results.getFloat("AI007.001");
-			assertTrue("The sort order is wrong", fuzzyEquals(26.54, a0 + a1));
+			assertTrue(fuzzyEquals(26.54, a0 + a1), "The sort order is wrong");
 			assertTrue(results.next());
 			a0 = results.getFloat("AI007.000");
 			a1 = results.getFloat("AI007.001");
-			assertTrue("The sort order is wrong", fuzzyEquals(26.54, a0 + a1));
+			assertTrue(fuzzyEquals(26.54, a0 + a1), "The sort order is wrong");
 		}
 	}
 
@@ -369,25 +369,25 @@ public class TestOrderBy
 				.executeQuery("select * from sample5 order by start+timeoffset asc"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 1, results.getInt(1));
+			assertEquals(1, results.getInt(1), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 41, results.getInt(1));
+			assertEquals(41, results.getInt(1), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 2, results.getInt(1));
+			assertEquals(2, results.getInt(1), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 3, results.getInt(1));
+			assertEquals(3, results.getInt(1), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 7, results.getInt(1));
+			assertEquals(7, results.getInt(1), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 8, results.getInt(1));
+			assertEquals(8, results.getInt(1), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 4, results.getInt(1));
+			assertEquals(4, results.getInt(1), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 5, results.getInt(1));
+			assertEquals(5, results.getInt(1), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 6, results.getInt(1));
+			assertEquals(6, results.getInt(1), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 9, results.getInt(1));
+			assertEquals(9, results.getInt(1), "The ID is wrong");
 			assertFalse(results.next());
 		}
 	}

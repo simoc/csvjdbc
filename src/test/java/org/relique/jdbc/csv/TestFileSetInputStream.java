@@ -19,9 +19,9 @@
 
 package org.relique.jdbc.csv;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,21 +31,21 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.relique.io.FileSetInputStream;
 
 public class TestFileSetInputStream
 {
 	private static String filePath;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp()
 	{
 		filePath = ".." + File.separator + "src" + File.separator + "testdata";
 		if (!new File(filePath).isDirectory())
 			filePath = "src" + File.separator + "testdata";
-		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
+		assertTrue(new File(filePath).isDirectory(), "Sample files directory not found: " + filePath);
 		filePath = filePath + File.separator;
 
 		// load CSV driver
@@ -83,8 +83,8 @@ public class TestFileSetInputStream
 				testSet.add(lineTest);
 			}
 			while (lineRef != null && lineTest != null);
-			assertTrue("refSet contains testSet", refSet.containsAll(testSet));
-			assertTrue("testSet contains refSet", testSet.containsAll(refSet));
+			assertTrue(refSet.containsAll(testSet), "refSet contains testSet");
+			assertTrue(testSet.containsAll(refSet), "testSet contains refSet");
 		}
 	}
 
@@ -112,8 +112,8 @@ public class TestFileSetInputStream
 				testSet.add(lineTest);
 			}
 			while (lineRef != null && lineTest != null);
-			assertTrue("refSet contains testSet", refSet.containsAll(testSet));
-			assertTrue("testSet contains refSet", testSet.containsAll(refSet));
+			assertTrue(refSet.containsAll(testSet), "refSet contains testSet");
+			assertTrue(testSet.containsAll(refSet), "testSet contains refSet");
 		}
 	}
 
@@ -139,8 +139,8 @@ public class TestFileSetInputStream
 				testSet.add(lineTest);
 			}
 			while (lineRef != null && lineTest != null);
-			assertTrue("refSet contains testSet", refSet.containsAll(testSet));
-			assertTrue("testSet contains refSet", testSet.containsAll(refSet));
+			assertTrue(refSet.containsAll(testSet), "refSet contains testSet");
+			assertTrue(testSet.containsAll(refSet), "testSet contains refSet");
 		}
 	}
 
@@ -166,8 +166,8 @@ public class TestFileSetInputStream
 				testSet.add(lineTest);
 			}
 			while (lineRef != null && lineTest != null);
-			assertTrue("refSet contains testSet", refSet.containsAll(testSet));
-			assertTrue("testSet contains refSet", testSet.containsAll(refSet));
+			assertTrue(refSet.containsAll(testSet), "refSet contains testSet");
+			assertTrue(testSet.containsAll(refSet), "testSet contains refSet");
 		}
 	}
 
@@ -189,7 +189,7 @@ public class TestFileSetInputStream
 				String []columns = lineTest.split(separator);
 				// CSV file contains two columns, plus two extra columns from filename
 				int expectedColumns = 4;
-				assertEquals("Expected number of columns", expectedColumns, columns.length);
+				assertEquals(expectedColumns, columns.length, "Expected number of columns");
 				lineTest = inputTest.readLine();
 			}
 		}

@@ -18,10 +18,10 @@
  */
 package org.relique.jdbc.csv;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.sql.Connection;
@@ -31,21 +31,21 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class TestJoinedTables
 {
 	private static String filePath;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp()
 	{
 		filePath = ".." + File.separator + "src" + File.separator + "testdata";
 		if (!new File(filePath).isDirectory())
 			filePath = "src" + File.separator + "testdata";
-		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
+		assertTrue(new File(filePath).isDirectory(), "Sample files directory not found: " + filePath);
 
 		// load CSV driver
 		try
@@ -82,7 +82,7 @@ public class TestJoinedTables
 
 			ResultSet results = stmt.executeQuery("SELECT * FROM twojoinedtables01"))
 		{
-			assertTrue("there should be results", results.next());
+			assertTrue(results.next(), "there should be results");
 			assertEquals("l1", results.getObject("L"));
 			assertEquals("p1", results.getObject("P"));
 			assertEquals("k1", results.getObject("K"));
@@ -92,7 +92,7 @@ public class TestJoinedTables
 			assertEquals("t1", results.getObject("T"));
 			assertEquals("v11", results.getObject("V"));
 
-			assertTrue("there should be results", results.next());
+			assertTrue(results.next(), "there should be results");
 			assertEquals("l2", results.getObject("L"));
 			assertEquals("p2", results.getObject("P"));
 			assertEquals("k2", results.getObject("K"));
@@ -518,7 +518,7 @@ public class TestJoinedTables
 	}
 
 	@Test
-	@Ignore
+	@Disabled
 	public void donttestHeaderLooksLikeHeaderIndexedDifferentLength() throws SQLException
 	{
 		Properties props = new Properties();

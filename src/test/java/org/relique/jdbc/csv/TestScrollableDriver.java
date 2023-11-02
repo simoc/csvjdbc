@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 package org.relique.jdbc.csv;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.sql.Connection;
@@ -31,8 +31,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * This class is used to test the CsvJdbc Scrollable driver.
@@ -43,13 +43,13 @@ public class TestScrollableDriver
 {
 	private static String filePath;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp()
 	{
 		filePath = ".." + File.separator + "src" + File.separator + "testdata";
 		if (!new File(filePath).isDirectory())
 			filePath = "src" + File.separator + "testdata";
-		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
+		assertTrue(new File(filePath).isDirectory(), "Sample files directory not found: " + filePath);
 
 		// load CSV driver
 		try
@@ -79,31 +79,31 @@ public class TestScrollableDriver
 		{
 			// dump out the results
 			results.next();
-			assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "\"S,\"", results
-					.getString("NAME"));
-			assertEquals("incorrect row #", 1, results.getRow());
+			assertEquals("Q123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("\"S,\"", results.getString("NAME"),
+				"Incorrect NAME Value");
+			assertEquals(1, results.getRow(), "incorrect row #");
 
 			results.next();
-			assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Jonathan Ackerman", results
-					.getString("NAME"));
-			assertEquals("incorrect row #", 2, results.getRow());
+			assertEquals("A123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Jonathan Ackerman", results.getString("NAME"),
+				"Incorrect NAME Value");
+			assertEquals(2, results.getRow(), "incorrect row #");
 
 			results.previous();
-			assertEquals("incorrect row #", 1, results.getRow());
-			assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "\"S,\"", results
-					.getString("NAME"));
+			assertEquals(1, results.getRow(), "incorrect row #");
+			assertEquals("Q123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("\"S,\"", results.getString("NAME"),
+				"Incorrect NAME Value");
 
 			results.first();
-			assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "\"S,\"", results
-					.getString("NAME"));
-			assertEquals("incorrect row #", 1, results.getRow());
+			assertEquals("Q123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("\"S,\"", results.getString("NAME"),
+				"Incorrect NAME Value");
+			assertEquals(1, results.getRow(), "incorrect row #");
 
 			assertFalse(results.previous());
-			assertEquals("incorrect row #", 0, results.getRow());
+			assertEquals(0, results.getRow(), "incorrect row #");
 			try
 			{
 				results.getString("ID");
@@ -124,66 +124,64 @@ public class TestScrollableDriver
 			}
 
 			results.next();
-			assertEquals("incorrect row #", 1, results.getRow());
-			assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "\"S,\"", results
-					.getString("NAME"));
+			assertEquals(1, results.getRow(), "incorrect row #");
+			assertEquals("Q123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("\"S,\"", results.getString("NAME"),
+				"Incorrect NAME Value");
 
 			results.next();
-			assertEquals("incorrect row #", 2, results.getRow());
-			assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Jonathan Ackerman", results
-					.getString("NAME"));
+			assertEquals(2, results.getRow(), "incorrect row #");
+			assertEquals("A123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Jonathan Ackerman", results.getString("NAME"),
+				"Incorrect NAME Value");
 
 			results.absolute(1);
-			assertEquals("incorrect row #", 1, results.getRow());
-			assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "\"S,\"", results
-					.getString("NAME"));
+			assertEquals(1, results.getRow(), "incorrect row #");
+			assertEquals("Q123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("\"S,\"", results.getString("NAME"),
+				"Incorrect NAME Value");
 
 			results.absolute(2);
-			assertEquals("incorrect row #", 2, results.getRow());
-			assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Jonathan Ackerman", results
-					.getString("NAME"));
+			assertEquals(2, results.getRow(), "incorrect row #");
+			assertEquals("A123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Jonathan Ackerman", results.getString("NAME"),
+				"Incorrect NAME Value");
 
 			results.relative(2);
-			assertEquals("incorrect row #", 4, results.getRow());
-			assertEquals("Incorrect ID Value", "C456", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Susan, Peter and Dave", results
-					.getString("NAME"));
+			assertEquals(4, results.getRow(), "incorrect row #");
+			assertEquals("C456", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Susan, Peter and Dave", results.getString("NAME"),
+				"Incorrect NAME Value");
 
 			results.relative(-3);
-			assertEquals("incorrect row #", 1, results.getRow());
-			assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "\"S,\"", results
-					.getString("NAME"));
+			assertEquals(1, results.getRow(), "incorrect row #");
+			assertEquals("Q123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("\"S,\"", results.getString("NAME"),
+				"Incorrect NAME Value");
 
 			results.relative(0);
-			assertEquals("incorrect row #", 1, results.getRow());
-			assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", results.getString("NAME"),
-					"\"S,\"");
+			assertEquals(1, results.getRow(), "incorrect row #");
+			assertEquals("Q123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals(results.getString("NAME"),	"\"S,\"",
+				"Incorrect NAME Value");
 
 			results.last();
-			assertEquals("incorrect row #", 6, results.getRow());
-			assertEquals("Incorrect ID Value", "X234", results.getString("ID"));
-			assertEquals("Incorrect NAME Value",
-					"Peter \"peg leg\", Jimmy & Samantha \"Sam\"", results
-							.getString("NAME"));
+			assertEquals(6, results.getRow(), "incorrect row #");
+			assertEquals("X234", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Peter \"peg leg\", Jimmy & Samantha \"Sam\"",
+				results.getString("NAME"), "Incorrect NAME Value");
 
 			results.absolute(-1);
-			assertEquals("incorrect row #", 6, results.getRow());
-			assertEquals("Incorrect ID Value", "X234", results.getString("ID"));
-			assertEquals("Incorrect NAME Value",
-					"Peter \"peg leg\", Jimmy & Samantha \"Sam\"", results
-							.getString("NAME"));
+			assertEquals(6, results.getRow(), "incorrect row #");
+			assertEquals("X234", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Peter \"peg leg\", Jimmy & Samantha \"Sam\"",
+				results.getString("NAME"), "Incorrect NAME Value");
 
 			results.absolute(-2);
-			assertEquals("incorrect row #", 5, results.getRow());
-			assertEquals("Incorrect ID Value", "D789", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Amelia \"meals\" Maurice",
-					results.getString("NAME"));
+			assertEquals(5, results.getRow(), "incorrect row #");
+			assertEquals("D789", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Amelia \"meals\" Maurice",
+					results.getString("NAME"), "Incorrect NAME Value");
 
 			results.last();
 			results.next();
@@ -191,18 +189,17 @@ public class TestScrollableDriver
 			assertNull(results.getString("NAME"));
 
 			results.previous();
-			assertEquals("Incorrect ID Value", "X234", results.getString("ID"));
-			assertEquals("Incorrect NAME Value",
-					"Peter \"peg leg\", Jimmy & Samantha \"Sam\"", results
-							.getString("NAME"));
+			assertEquals("X234", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Peter \"peg leg\", Jimmy & Samantha \"Sam\"",
+				results.getString("NAME"), "Incorrect NAME Value");
 
 			assertFalse(results.relative(100));
-			assertEquals("incorrect row #", 7, results.getRow());
+			assertEquals(7, results.getRow(), "incorrect row #");
 			assertNull(results.getString("ID"));
 			assertNull(results.getString("NAME"));
 
 			assertFalse(results.relative(-100));
-			assertEquals("incorrect row #", 0, results.getRow());
+			assertEquals(0, results.getRow(), "incorrect row #");
 			try
 			{
 				results.getString("ID");
@@ -224,18 +221,18 @@ public class TestScrollableDriver
 			}
 
 			results.relative(2);
-			assertEquals("incorrect row #", 2, results.getRow());
-			assertEquals("Incorrect ID Value", results.getString("ID"), "A123");
-			assertEquals("Incorrect NAME Value", results.getString("NAME"),
-					"Jonathan Ackerman");
+			assertEquals(2, results.getRow(), "incorrect row #");
+			assertEquals(results.getString("ID"), "A123", "Incorrect ID Value");
+			assertEquals(results.getString("NAME"),
+					"Jonathan Ackerman", "Incorrect NAME Value");
 
 			results.absolute(7);
-			assertEquals("incorrect row #", 7, results.getRow());
+			assertEquals(7, results.getRow(), "incorrect row #");
 			assertNull(results.getString("ID"));
 			assertNull(results.getString("NAME"));
 
 			assertFalse(results.absolute(-10));
-			assertEquals("incorrect row #", 0, results.getRow());
+			assertEquals(0, results.getRow(), "incorrect row #");
 			try
 			{
 				results.getString("ID");
@@ -257,9 +254,9 @@ public class TestScrollableDriver
 			}
 
 			results.absolute(2);
-			assertEquals("Incorrect ID Value", results.getString("ID"), "A123");
-			assertEquals("Incorrect NAME Value", results.getString("NAME"),
-					"Jonathan Ackerman");
+			assertEquals(results.getString("ID"), "A123", "Incorrect ID Value");
+			assertEquals(results.getString("NAME"),
+					"Jonathan Ackerman", "Incorrect NAME Value");
 
 			assertFalse(results.absolute(0));
 			try
@@ -322,57 +319,57 @@ public class TestScrollableDriver
 		{
 			// dump out the results
 			results.next();
-			assertEquals("incorrect row #", 1, results.getRow());
+			assertEquals(1, results.getRow(), "incorrect row #");
 			assertTrue(results.isFirst());
 			assertFalse(results.isLast());
 			assertFalse(results.isBeforeFirst());
 			assertFalse(results.isAfterLast());
 
 			results.next();
-			assertEquals("incorrect row #", 2, results.getRow());
+			assertEquals(2, results.getRow(), "incorrect row #");
 			assertFalse(results.isFirst());
 			assertFalse(results.isLast());
 
 			results.previous();
-			assertEquals("incorrect row #", 1, results.getRow());
+			assertEquals(1, results.getRow(), "incorrect row #");
 			assertTrue(results.isFirst());
 			assertFalse(results.isLast());
 
 			results.first();
-			assertEquals("incorrect row #", 1, results.getRow());
+			assertEquals(1, results.getRow(), "incorrect row #");
 			assertTrue(results.isFirst());
 			assertFalse(results.isLast());
 
 			results.previous();
-			assertEquals("incorrect row #", 0, results.getRow());
+			assertEquals(0, results.getRow(), "incorrect row #");
 			assertTrue(results.isBeforeFirst());
 			assertFalse(results.isAfterLast());
 			assertFalse(results.isFirst());
 			assertFalse(results.isLast());
 
 			results.next();
-			assertEquals("incorrect row #", 1, results.getRow());
+			assertEquals(1, results.getRow(), "incorrect row #");
 			assertTrue(results.isFirst());
 			assertFalse(results.isLast());
 
 			results.last();
-			assertEquals("incorrect row #", 6, results.getRow());
+			assertEquals(6, results.getRow(), "incorrect row #");
 			assertFalse(results.isFirst());
 			assertTrue(results.isLast());
 
 			results.absolute(-1);
-			assertEquals("incorrect row #", 6, results.getRow());
+			assertEquals(6, results.getRow(), "incorrect row #");
 			assertFalse(results.isBeforeFirst());
 			assertFalse(results.isAfterLast());
 			assertFalse(results.isFirst());
 			assertTrue(results.isLast());
 
 			results.afterLast();
-			assertEquals("incorrect row #", 7, results.getRow());
+			assertEquals(7, results.getRow(), "incorrect row #");
 			assertFalse(results.isBeforeFirst());
 			assertTrue(results.isAfterLast());
-			assertFalse("is seen as first", results.isFirst());
-			assertFalse("is seen as last", results.isLast());
+			assertFalse(results.isFirst(), "is seen as first");
+			assertFalse(results.isLast(), "is seen as last");
 		}
 	}
 
@@ -397,16 +394,16 @@ public class TestScrollableDriver
 		{
 			// dump out the results
 			results.next();
-			assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Aman", results.getString("NAME"));
+			assertEquals("A123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Aman", results.getString("NAME"), "Incorrect NAME Value");
 
 			results.next();
-			assertEquals("Incorrect ID Value", "B223", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Binoy", results.getString("NAME"));
+			assertEquals("B223", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Binoy", results.getString("NAME"), "Incorrect NAME Value");
 
 			results.first();
-			assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Aman", results.getString("NAME"));
+			assertEquals("A123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Aman", results.getString("NAME"), "Incorrect NAME Value");
 
 			assertFalse(results.previous());
 			try
@@ -429,53 +426,52 @@ public class TestScrollableDriver
 			}
 
 			results.next();
-			assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Aman", results.getString("NAME"));
+			assertEquals("A123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Aman", results.getString("NAME"), "Incorrect NAME Value");
 
 			results.next();
-			assertEquals("Incorrect ID Value", "B223", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Binoy", results.getString("NAME"));
+			assertEquals("B223", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Binoy", results.getString("NAME"), "Incorrect NAME Value");
 
 			results.relative(2);
-			assertEquals("Incorrect ID Value", "D456", results.getString("ID"));
-			assertEquals("Incorrect NAME Value",
-					"Dilip \"meals\" Maurice\n ~In New  LIne~ \nDone", results
-							.getString("NAME"));
+			assertEquals("D456", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Dilip \"meals\" Maurice\n ~In New  LIne~ \nDone",
+				results.getString("NAME"), "Incorrect NAME Value");
 
 			results.relative(-3);
-			assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Aman", results.getString("NAME"));
+			assertEquals("A123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Aman", results.getString("NAME"), "Incorrect NAME Value");
 
 			results.relative(0);
-			assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Aman", results.getString("NAME"));
+			assertEquals("A123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Aman", results.getString("NAME"), "Incorrect NAME Value");
 
 			results.absolute(2);
-			assertEquals("Incorrect ID Value", "B223", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Binoy", results.getString("NAME"));
+			assertEquals("B223", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Binoy", results.getString("NAME"), "Incorrect NAME Value");
 
 			results.absolute(-2);
-			assertEquals("Incorrect ID Value", "E589", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "\"Elephant\"", results
-					.getString("NAME"));
+			assertEquals("E589", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("\"Elephant\"", results.getString("NAME"),
+				"Incorrect NAME Value");
 
 			results.last();
-			assertEquals("Incorrect ID Value", "F634", results.getString("ID"));
+			assertEquals("F634", results.getString("ID"), "Incorrect ID Value");
 			assertEquals(
-					"Incorrect NAME Value",
 					"Fandu \"\"peg leg\"\", Jimmy & Samantha \n~In Another New  LIne~ \n\"\"Sam\"\"",
-					results.getString("NAME"));
+					results.getString("NAME"),
+					"Incorrect NAME Value");
 
 			results.next();
 			assertNull(results.getString("ID"));
 			assertNull(results.getString("NAME"));
 
 			results.previous();
-			assertEquals("Incorrect ID Value", "F634", results.getString("ID"));
+			assertEquals("F634", results.getString("ID"), "Incorrect ID Value");
 			assertEquals(
-					"Incorrect NAME Value",
 					"Fandu \"\"peg leg\"\", Jimmy & Samantha \n~In Another New  LIne~ \n\"\"Sam\"\"",
-					results.getString("NAME"));
+					results.getString("NAME"),
+					"Incorrect NAME Value");
 
 			results.relative(100);
 			assertNull(results.getString("ID"));
@@ -502,8 +498,8 @@ public class TestScrollableDriver
 			}
 
 			results.relative(2);
-			assertEquals("Incorrect ID Value", "B223", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Binoy", results.getString("NAME"));
+			assertEquals("B223", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Binoy", results.getString("NAME"), "Incorrect NAME Value");
 
 			results.absolute(7);
 			assertNull(results.getString("ID"));
@@ -530,8 +526,8 @@ public class TestScrollableDriver
 			}
 
 			results.absolute(2);
-			assertEquals("Incorrect ID Value", "B223", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Binoy", results.getString("NAME"));
+			assertEquals("B223", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Binoy", results.getString("NAME"), "Incorrect NAME Value");
 
 			assertFalse(results.absolute(0));
 			try
@@ -593,7 +589,7 @@ public class TestScrollableDriver
 			ResultSet results = stmt
 				.executeQuery("SELECT ID,Name FROM sample4 WHERE ID='05'"))
 		{
-			assertFalse("There are some junk records found", results.next());
+			assertFalse(results.next(), "There are some junk records found");
 			assertFalse(results.last());
 			try
 			{
@@ -613,7 +609,7 @@ public class TestScrollableDriver
 			{
 				assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 			}
-			assertTrue("Is not last", results.isLast());
+			assertTrue(results.isLast(), "Is not last");
 			assertFalse(results.absolute(0));
 			try
 			{
@@ -633,12 +629,12 @@ public class TestScrollableDriver
 			{
 				assertEquals("java.sql.SQLException: " + CsvResources.getString("noCurrentRow"), "" + e);
 			}
-			assertTrue("Is not last", results.isLast());
+			assertTrue(results.isLast(), "Is not last");
 			assertFalse(results.absolute(0));
-			assertTrue("Is not before first", results.isBeforeFirst());
+			assertTrue(results.isBeforeFirst(), "Is not before first");
 			results.previous();
-			assertTrue("Is not before first", results.isBeforeFirst());
-			assertTrue("Is not last", results.isLast());
+			assertTrue(results.isBeforeFirst(), "Is not before first");
+			assertTrue(results.isLast(), "Is not last");
 			// Following throws exception
 			// assertTrue("Is not before first", results.isAfterLast());
 		}
@@ -662,29 +658,29 @@ public class TestScrollableDriver
 				.executeQuery("SELECT ID,Name FROM singlerecord"))
 		{
 			assertTrue(results.last());
-			assertEquals("Invalid Id", "A123", results.getString("ID"));
-			assertEquals("Invalid Name", "Jonathan Ackerman", results
-					.getString("NAME"));
+			assertEquals("A123", results.getString("ID"), "Invalid Id");
+			assertEquals("Jonathan Ackerman", results.getString("NAME"),
+				"Invalid Name");
 			results.absolute(1);
-			assertEquals("Invalid Id", "A123", results.getString("ID"));
-			assertEquals("Invalid Name", "Jonathan Ackerman", results
-					.getString("NAME"));
-			assertTrue("Is not last", results.isLast());
-			assertTrue("Is not first", results.isFirst());
+			assertEquals("A123", results.getString("ID"), "Invalid Id");
+			assertEquals("Jonathan Ackerman", results.getString("NAME"),
+				"Invalid Name");
+			assertTrue(results.isLast(), "Is not last");
+			assertTrue(results.isFirst(), "Is not first");
 			results.absolute(0);
-			assertTrue("Is not before first", results.isBeforeFirst());
+			assertTrue(results.isBeforeFirst(), "Is not before first");
 			results.previous();
-			assertTrue("Is not before first", results.isBeforeFirst());
+			assertTrue(results.isBeforeFirst(), "Is not before first");
 			assertTrue(results.next());
-			assertEquals("Invalid Id", "A123", results.getString("ID"));
-			assertEquals("Invalid Name", "Jonathan Ackerman", results
-					.getString("NAME"));
+			assertEquals("A123", results.getString("ID"), "Invalid Id");
+			assertEquals("Jonathan Ackerman", results.getString("NAME"),
+				"Invalid Name");
 			results.relative(1);
-			assertTrue("Is not after last", results.isAfterLast());
+			assertTrue(results.isAfterLast(), "Is not after last");
 			results.previous();
-			assertEquals("Invalid Id", "A123", results.getString("ID"));
-			assertEquals("Invalid Name", "Jonathan Ackerman", results
-					.getString("NAME"));
+			assertEquals("A123", results.getString("ID"), "Invalid Id");
+			assertEquals("Jonathan Ackerman", results.getString("NAME"),
+				"Invalid Name");
 		}
 	}
 
@@ -706,35 +702,34 @@ public class TestScrollableDriver
 				.executeQuery("SELECT ID, Name, Job FROM sample4 WHERE Job = 'Project Manager'"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "01", results.getString("ID"));
+			assertEquals("01", results.getString("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "02", results.getString("ID"));
+			assertEquals("02", results.getString("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "04", results.getString("ID"));
+			assertEquals("04", results.getString("ID"), "The ID is wrong");
 			assertTrue(results.first());
-			assertEquals("The ID is wrong when using first", "01", results
-					.getString("ID"));
+			assertEquals("01", results.getString("ID"), "The ID is wrong when using first");
 
 			assertTrue(results.absolute(3));
-			assertEquals("The ID is wrong", "04", results.getString("ID"));
+			assertEquals("04", results.getString("ID"), "The ID is wrong");
 
 			assertTrue(results.last());
-			assertEquals("The ID is wrong", "04", results.getString("ID"));
-			assertFalse("It has records after last", results.next());
-			assertTrue("Is not after Last", results.isAfterLast());
+			assertEquals("04", results.getString("ID"), "The ID is wrong");
+			assertFalse(results.next(), "It has records after last");
+			assertTrue(results.isAfterLast(), "Is not after Last");
 			assertTrue(results.previous());
 			assertTrue(results.previous());
-			assertEquals("The ID is wrong", "02", results.getString("ID"));
+			assertEquals("02", results.getString("ID"), "The ID is wrong");
 			assertTrue(results.relative(0));
-			assertEquals("The ID is wrong", "02", results.getString("ID"));
+			assertEquals("02", results.getString("ID"), "The ID is wrong");
 			assertTrue(results.relative(1));
-			assertEquals("The ID is wrong", "04", results.getString("ID"));
-			assertTrue("Is not last", results.isLast());
+			assertEquals("04", results.getString("ID"), "The ID is wrong");
+			assertTrue(results.isLast(), "Is not last");
 			assertTrue(results.relative(-2));
-			assertEquals("The ID is wrong", "01", results.getString("ID"));
-			assertTrue("Is not first", results.isFirst());
+			assertEquals("01", results.getString("ID"), "The ID is wrong");
+			assertTrue(results.isFirst(), "Is not first");
 			results.previous();
-			assertTrue("Is not before first", results.isBeforeFirst());
+			assertTrue(results.isBeforeFirst(), "Is not before first");
 		}
 	}
 
@@ -747,19 +742,19 @@ public class TestScrollableDriver
 			Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY))
 		{
 			stmt.setMaxRows(4);
-			assertEquals("getMaxRows() incorrect", 4, stmt.getMaxRows());
+			assertEquals(4, stmt.getMaxRows(), "getMaxRows() incorrect");
 
 			try (ResultSet results = stmt.executeQuery("SELECT * FROM sample5"))
 			{
-				assertTrue("Moving to last record failed", results.last());
-				assertEquals("Last record wrong", 4, results.getRow());
-				assertEquals("The ID is wrong", "03", results.getString("ID"));
-				assertTrue("Moving to first record failed", results.first());
-				assertEquals("The ID is wrong", "41", results.getString("ID"));
-				assertTrue("Reading row 2 failed", results.next());
-				assertTrue("Reading row 3 failed", results.next());
-				assertTrue("Reading row 4 failed", results.next());
-				assertFalse("Stopping after row 4 failed", results.next());
+				assertTrue(results.last(), "Moving to last record failed");
+				assertEquals(4, results.getRow(), "Last record wrong");
+				assertEquals("03", results.getString("ID"), "The ID is wrong");
+				assertTrue(results.first(), "Moving to first record failed");
+				assertEquals("41", results.getString("ID"), "The ID is wrong");
+				assertTrue(results.next(), "Reading row 2 failed");
+				assertTrue(results.next(), "Reading row 3 failed");
+				assertTrue(results.next(), "Reading row 4 failed");
+				assertFalse(results.next(), "Stopping after row 4 failed");
 			}
 		}
 	}

@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 package org.relique.jdbc.csv;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.sql.Connection;
@@ -32,20 +32,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class TestSubQuery
 {
 	private static String filePath;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp()
 	{
 		filePath = ".." + File.separator + "src" + File.separator + "testdata";
 		if (!new File(filePath).isDirectory())
 			filePath = "src" + File.separator + "testdata";
-		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
+		assertTrue(new File(filePath).isDirectory(), "Sample files directory not found: " + filePath);
 
 		// load CSV driver
 		try
@@ -86,16 +86,16 @@ public class TestSubQuery
 			ResultSet rs1 = stmt.executeQuery("SELECT (SELECT BANK_NAME FROM banks WHERE BLZ=FROM_BLZ), AMOUNT FROM transactions"))
 		{
 			assertTrue(rs1.next());
-			assertEquals("The BANK_NAME is wrong", "Postbank (Berlin)", rs1.getString(1));
-			assertTrue("The AMOUNT is wrong", fuzzyEquals(250.0, rs1.getDouble(2)));
+			assertEquals("Postbank (Berlin)", rs1.getString(1), "The BANK_NAME is wrong");
+			assertTrue(fuzzyEquals(250.0, rs1.getDouble(2)), "The AMOUNT is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The BANK_NAME is wrong", "Postbank (Berlin)", rs1.getString(1));
+			assertEquals("Postbank (Berlin)", rs1.getString(1), "The BANK_NAME is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The BANK_NAME is wrong", "Postbank (Berlin)", rs1.getString(1));
+			assertEquals("Postbank (Berlin)", rs1.getString(1), "The BANK_NAME is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The BANK_NAME is wrong", "Bank f\u00FCr Sozialwirtschaft (Berlin)", rs1.getString(1));
+			assertEquals("Bank f\u00FCr Sozialwirtschaft (Berlin)", rs1.getString(1), "The BANK_NAME is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The BANK_NAME is wrong", "Postbank (Berlin)", rs1.getString(1));
+			assertEquals("Postbank (Berlin)", rs1.getString(1), "The BANK_NAME is wrong");
 		}
 	}
 
@@ -228,19 +228,19 @@ public class TestSubQuery
 			ResultSet rs1 = stmt.executeQuery("SELECT ID, NAME, (SELECT NAME FROM sample2 s2 WHERE s2.ID=s1.ID) FROM sample s1"))
 		{
 			assertTrue(rs1.next());
-			assertEquals("The ID is wrong", "Q123", rs1.getString(1));
-			assertEquals("The Name is wrong", "\"S,\"", rs1.getString(2));
+			assertEquals("Q123", rs1.getString(1), "The ID is wrong");
+			assertEquals("\"S,\"", rs1.getString(2), "The Name is wrong");
 			// No match so subquery returns null for this row.
-			assertNull("The Subquery is wrong", rs1.getString(3));
+			assertNull(rs1.getString(3), "The Subquery is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The ID is wrong", "A123", rs1.getString(1));
-			assertEquals("The Name is wrong", "Jonathan Ackerman", rs1.getString(2));
-			assertEquals("The Subquery is wrong", "Aman", rs1.getString(3));
+			assertEquals("A123", rs1.getString(1), "The ID is wrong");
+			assertEquals("Jonathan Ackerman", rs1.getString(2), "The Name is wrong");
+			assertEquals("Aman", rs1.getString(3), "The Subquery is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The ID is wrong", "B234", rs1.getString(1));
-			assertEquals("The Name is wrong", "Grady O'Neil", rs1.getString(2));
+			assertEquals("B234", rs1.getString(1), "The ID is wrong");
+			assertEquals("Grady O'Neil", rs1.getString(2), "The Name is wrong");
 			// No match so subquery returns null for this row.
-			assertNull("The Subquery is wrong", rs1.getString(3));
+			assertNull(rs1.getString(3), "The Subquery is wrong");
 		}
 	}
 
@@ -262,14 +262,14 @@ public class TestSubQuery
 			ResultSet rs1 = stmt.executeQuery("SELECT BANK_NAME, (SELECT COUNT(*) FROM transactions WHERE BLZ=FROM_BLZ) COUNT_ FROM banks"))
 		{
 			assertTrue(rs1.next());
-			assertEquals("The BANK_NAME is wrong", "Bundesbank (Berlin)", rs1.getString(1));
-			assertEquals("The Subquery is wrong", 0, rs1.getInt(2));
+			assertEquals("Bundesbank (Berlin)", rs1.getString(1), "The BANK_NAME is wrong");
+			assertEquals(0, rs1.getInt(2), "The Subquery is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The BANK_NAME is wrong", "Postbank (Berlin)", rs1.getString(1));
-			assertEquals("The Subquery is wrong", 5, rs1.getInt(2));
+			assertEquals("Postbank (Berlin)", rs1.getString(1), "The BANK_NAME is wrong");
+			assertEquals(5, rs1.getInt(2), "The Subquery is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The BANK_NAME is wrong", "SEB (Berlin)", rs1.getString(1));
-			assertEquals("The Subquery is wrong", 0, rs1.getInt(2));
+			assertEquals("SEB (Berlin)", rs1.getString(1), "The BANK_NAME is wrong");
+			assertEquals(0, rs1.getInt(2), "The Subquery is wrong");
 		}
 	}
 
@@ -291,14 +291,14 @@ public class TestSubQuery
 			ResultSet rs1 = stmt.executeQuery("SELECT BANK_NAME, (SELECT COUNT(*) FROM transactions WHERE BLZ=FROM_BLZ) COUNT_ FROM banks ORDER BY COUNT_ DESC"))
 		{
 			assertTrue(rs1.next());
-			assertEquals("The BANK_NAME is wrong", "Postbank (Berlin)", rs1.getString(1));
-			assertEquals("The Subquery is wrong", 5, rs1.getInt(2));
+			assertEquals("Postbank (Berlin)", rs1.getString(1), "The BANK_NAME is wrong");
+			assertEquals(5, rs1.getInt(2), "The Subquery is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The BANK_NAME is wrong", "Bank f\u00FCr Sozialwirtschaft (Berlin)", rs1.getString(1));
-			assertEquals("The Subquery is wrong", 3, rs1.getInt(2));
+			assertEquals("Bank f\u00FCr Sozialwirtschaft (Berlin)", rs1.getString(1), "The BANK_NAME is wrong");
+			assertEquals(3, rs1.getInt(2), "The Subquery is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The BANK_NAME is wrong", "BHF-BANK (Berlin)", rs1.getString(1));
-			assertEquals("The Subquery is wrong", 1, rs1.getInt(2));
+			assertEquals("BHF-BANK (Berlin)", rs1.getString(1), "The BANK_NAME is wrong");
+			assertEquals(1, rs1.getInt(2), "The Subquery is wrong");
 		}
 	}
 
@@ -315,7 +315,7 @@ public class TestSubQuery
 			ResultSet rs1 = stmt.executeQuery("select AccountNo from Purchase where CampaignNo=(select max(CampaignNo) from Purchase)"))
 		{
 			assertTrue(rs1.next());
-			assertEquals("The AccountNo is wrong", 22021, rs1.getInt(1));
+			assertEquals(22021, rs1.getInt(1), "The AccountNo is wrong");
 			assertFalse(rs1.next());
 		}
 	}
@@ -331,13 +331,13 @@ public class TestSubQuery
 			ResultSet rs1 = stmt.executeQuery("select NAME from sample5 where ID in (select ID from sample4)"))
 		{
 			assertTrue(rs1.next());
-			assertEquals("The NAME is wrong", "Juan Pablo Morales", rs1.getString(1));
+			assertEquals("Juan Pablo Morales", rs1.getString(1), "The NAME is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The NAME is wrong", "Mauricio Hernandez", rs1.getString(1));
+			assertEquals("Mauricio Hernandez", rs1.getString(1), "The NAME is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The NAME is wrong", "Maria Cristina Lucero", rs1.getString(1));
+			assertEquals("Maria Cristina Lucero", rs1.getString(1), "The NAME is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The NAME is wrong", "Felipe Grajales", rs1.getString(1));
+			assertEquals("Felipe Grajales", rs1.getString(1), "The NAME is wrong");
 			assertFalse(rs1.next());
 		}
 	}
@@ -367,7 +367,7 @@ public class TestSubQuery
 			ResultSet rs1 = stmt.executeQuery("select EXTRA_FIELD from sample where exists (select 1 from sample2 where sample2.id=sample.id)"))
 		{
 			assertTrue(rs1.next());
-			assertEquals("The EXTRA_FIELD is wrong", "A", rs1.getString(1));
+			assertEquals("A", rs1.getString(1), "The EXTRA_FIELD is wrong");
 			assertFalse(rs1.next());
 		}
 	}
@@ -383,15 +383,15 @@ public class TestSubQuery
 			ResultSet rs1 = stmt.executeQuery("select EXTRA_FIELD from sample where not exists (select 1 from sample2 where sample2.id=sample.id)"))
 		{
 			assertTrue(rs1.next());
-			assertEquals("The EXTRA_FIELD is wrong", "F", rs1.getString(1));
+			assertEquals("F", rs1.getString(1), "The EXTRA_FIELD is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The EXTRA_FIELD is wrong", "B", rs1.getString(1));
+			assertEquals("B", rs1.getString(1), "The EXTRA_FIELD is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The EXTRA_FIELD is wrong", "C", rs1.getString(1));
+			assertEquals("C", rs1.getString(1), "The EXTRA_FIELD is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The EXTRA_FIELD is wrong", "E", rs1.getString(1));
+			assertEquals("E", rs1.getString(1), "The EXTRA_FIELD is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The EXTRA_FIELD is wrong", "G", rs1.getString(1));
+			assertEquals("G", rs1.getString(1), "The EXTRA_FIELD is wrong");
 			assertFalse(rs1.next());
 		}
 	}

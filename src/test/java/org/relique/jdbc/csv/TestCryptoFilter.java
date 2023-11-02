@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 package org.relique.jdbc.csv;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -36,9 +36,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.relique.io.CryptoFilter;
 import org.relique.io.EncryptedFileOutputStream;
 import org.relique.io.XORCipher;
@@ -56,13 +56,13 @@ public class TestCryptoFilter
 	private static String filePath;
 	private static int testSize = 1100;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp()
 	{
 		filePath = ".." + File.separator + "src" + File.separator + "testdata";
 		if (!new File(filePath).isDirectory())
 			filePath = "src" + File.separator + "testdata";
-		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
+		assertTrue(new File(filePath).isDirectory(), "Sample files directory not found: " + filePath);
 
 		// load CSV driver
 		try
@@ -107,7 +107,7 @@ public class TestCryptoFilter
 		}
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void tearDown()
 	{
 		// and delete the files when ready
@@ -158,14 +158,14 @@ public class TestCryptoFilter
 			ResultSet results = stmt.executeQuery("SELECT * FROM scrambled"))
 		{
 			assertTrue(results.next());
-			assertEquals("The key is wrong", "1", results.getString("key"));
-			assertEquals("The value is wrong", "uno", results.getString("value"));
+			assertEquals("1", results.getString("key"), "The key is wrong");
+			assertEquals("uno", results.getString("value"), "The value is wrong");
 			assertTrue(results.next());
-			assertEquals("The key is wrong", "2", results.getString("key"));
-			assertEquals("The value is wrong", "due", results.getString("value"));
+			assertEquals("2", results.getString("key"), "The key is wrong");
+			assertEquals("due", results.getString("value"), "The value is wrong");
 			assertTrue(results.next());
-			assertEquals("The key is wrong", "3", results.getString("key"));
-			assertEquals("The value is wrong", "tre", results.getString("value"));
+			assertEquals("3", results.getString("key"), "The key is wrong");
+			assertEquals("tre", results.getString("value"), "The value is wrong");
 			assertTrue(!results.next());
 		}
 	}
@@ -236,14 +236,14 @@ public class TestCryptoFilter
 			ResultSet results = stmt.executeQuery("SELECT * FROM scrambled_trailing"))
 		{
 			assertTrue(results.next());
-			assertEquals("The key is wrong", "1", results.getString("key"));
-			assertEquals("The value is wrong", "uno", results.getString("value"));
+			assertEquals("1", results.getString("key"), "The key is wrong");
+			assertEquals("uno", results.getString("value"), "The value is wrong");
 			assertTrue(results.next());
-			assertEquals("The key is wrong", "2", results.getString("key"));
-			assertEquals("The value is wrong", "due", results.getString("value"));
+			assertEquals("2", results.getString("key"), "The key is wrong");
+			assertEquals("due", results.getString("value"), "The value is wrong");
 			assertTrue(results.next());
-			assertEquals("The key is wrong", "3", results.getString("key"));
-			assertEquals("The value is wrong", "tre", results.getString("value"));
+			assertEquals("3", results.getString("key"), "The key is wrong");
+			assertEquals("tre", results.getString("value"), "The value is wrong");
 			assertTrue(!results.next());
 		}
 	}
@@ -264,24 +264,24 @@ public class TestCryptoFilter
 			try (ResultSet results = stmt.executeQuery("SELECT * FROM scrambled"))
 			{
 				assertTrue(results.next());
-				assertEquals("The key is wrong", "1", results.getString("key"));
-				assertEquals("The value is wrong", "uno", results.getString("value"));
+				assertEquals("1", results.getString("key"), "The key is wrong");
+				assertEquals("uno", results.getString("value"), "The value is wrong");
 				assertTrue(results.next());
-				assertEquals("The key is wrong", "2", results.getString("key"));
-				assertEquals("The value is wrong", "due", results.getString("value"));
+				assertEquals("2", results.getString("key"), "The key is wrong");
+				assertEquals("due", results.getString("value"), "The value is wrong");
 			}
 
 			try (ResultSet results = stmt.executeQuery("SELECT * FROM scrambled"))
 			{
 				assertTrue(results.next());
-				assertEquals("The key is wrong", "1", results.getString("key"));
-				assertEquals("The value is wrong", "uno", results.getString("value"));
+				assertEquals("1", results.getString("key"), "The key is wrong");
+				assertEquals("uno", results.getString("value"), "The value is wrong");
 				assertTrue(results.next());
-				assertEquals("The key is wrong", "2", results.getString("key"));
-				assertEquals("The value is wrong", "due", results.getString("value"));
+				assertEquals("2", results.getString("key"), "The key is wrong");
+				assertEquals("due", results.getString("value"), "The value is wrong");
 				assertTrue(results.next());
-				assertEquals("The key is wrong", "3", results.getString("key"));
-				assertEquals("The value is wrong", "tre", results.getString("value"));
+				assertEquals("3", results.getString("key"), "The key is wrong");
+				assertEquals("tre", results.getString("value"), "The value is wrong");
 				assertTrue(!results.next());
 			}
 		}
@@ -352,9 +352,9 @@ public class TestCryptoFilter
 		// comparing results
 		assertEquals(noEncryptCount, encryptCount);
 
-		assertTrue("timeNoEncrypt = " + timeNoEncrypt
-				+ "ms; timeEncrypt = " + timeEncrypt + "ms",
-				timeEncrypt <= 30 * timeNoEncrypt);
+		assertTrue(timeEncrypt <= 30 * timeNoEncrypt,
+				"timeNoEncrypt = " + timeNoEncrypt
+				+ "ms; timeEncrypt = " + timeEncrypt + "ms");
 	}
 
 	@Test
