@@ -152,4 +152,56 @@ public class TestArrayFunctions
 			}
 		}
 	}
+
+	@Test
+	public void testToArrayWithSubList() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT TO_ARRAY(name, role_1, role_2) AS roles FROM arrays_sample"))
+		{
+			assertTrue(results.next());
+			Array array = results.getArray(1);
+			Object[] data = (Object[]) array.getArray(2, 2);
+			assertEquals(2, data.length);
+			assertEquals("teacher", data[0]);
+			assertEquals("grader", data[1]);
+		}
+	}
+
+	@Test
+	public void testToArrayWithSubListOutOfBounds() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT TO_ARRAY(name, role_1, role_2) AS roles FROM arrays_sample"))
+		{
+			assertTrue(results.next());
+			Array array = results.getArray(1);
+			Object[] data = (Object[]) array.getArray(1, 0);
+			assertEquals(0, data.length);
+
+			try
+			{
+				array.getArray(5, 2);
+				fail("Array index out of bounds should throw SQLException");
+			}
+			catch (SQLException e)
+			{
+				assertTrue(e.toString().startsWith("java.sql.SQLException: " +
+					CsvResources.getString("arraySubListOutOfBounds")));
+			}
+
+			try
+			{
+				array.getArray(-1, 2);
+				fail("Array index out of bounds should throw SQLException");
+			}
+			catch (SQLException e)
+			{
+				assertTrue(e.toString().startsWith("java.sql.SQLException: " +
+					CsvResources.getString("arraySubListOutOfBounds")));
+			}
+		}
+	}
 }
