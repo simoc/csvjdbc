@@ -49,6 +49,6 @@ import org.junit.platform.suite.api.Suite;
  *
  * @author Jonathan Ackerman
  */
-public class RunTests
+public class RunSuite
 {
 }
