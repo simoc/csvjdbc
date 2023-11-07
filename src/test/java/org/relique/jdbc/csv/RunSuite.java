@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 package org.relique.jdbc.csv;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.platform.suite.api.SelectClasses;
+import org.junit.platform.suite.api.Suite;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
+@Suite
+@SelectClasses({
 	TestSqlParser.class,
 	TestCsvDriver.class,
 	TestDbfDriver.class,
@@ -45,7 +45,7 @@ import org.junit.runners.Suite;
 })
 
 /**
- * Junit4 test suite for the CsvJdbc driver.
+ * Junit5 test suite for the CsvJdbc driver.
  *
  * @author Jonathan Ackerman
  */

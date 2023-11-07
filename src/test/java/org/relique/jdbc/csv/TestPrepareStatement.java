@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 package org.relique.jdbc.csv;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.sql.Connection;
@@ -32,8 +32,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * This class is used to test the CsvJdbc driver.
@@ -44,13 +44,13 @@ public class TestPrepareStatement
 {
 	private static String filePath;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp()
 	{
 		filePath = ".." + File.separator + "src" + File.separator + "testdata";
 		if (!new File(filePath).isDirectory())
 			filePath = "src" + File.separator + "testdata";
-		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
+		assertTrue(new File(filePath).isDirectory(), "Sample files directory not found: " + filePath);
 
 		// load CSV driver
 		try
@@ -101,11 +101,11 @@ public class TestPrepareStatement
 			try (ResultSet results = prepstmt.executeQuery())
 			{
 				assertTrue(results.next());
-				assertEquals("Integer column ID is wrong", Integer.valueOf(1), results.getObject("id"));
+				assertEquals(Integer.valueOf(1), results.getObject("id"), "Integer column ID is wrong");
 				assertTrue(results.next());
-				assertEquals("Integer column ID is wrong", Integer.valueOf(2), results.getObject("id"));
+				assertEquals(Integer.valueOf(2), results.getObject("id"), "Integer column ID is wrong");
 				assertTrue(results.next());
-				assertEquals("Integer column ID is wrong", Integer.valueOf(3), results.getObject("id"));
+				assertEquals(Integer.valueOf(3), results.getObject("id"), "Integer column ID is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -122,7 +122,7 @@ public class TestPrepareStatement
 			try (ResultSet results = prepstmt.executeQuery())
 			{
 				assertTrue(results.next());
-				assertEquals("Column EXTRA_FIELD is wrong", "A", results.getString("EXTRA_FIELD"));
+				assertEquals("A", results.getString("EXTRA_FIELD"), "Column EXTRA_FIELD is wrong");
 				conn.close();
 				assertTrue(prepstmt.isClosed());
 			}
@@ -143,7 +143,7 @@ public class TestPrepareStatement
 			try (ResultSet results = prepstmt.executeQuery())
 			{
 				assertTrue(results.next());
-				assertEquals("Column Job is wrong", "Finance Manager", results.getString("Job"));
+				assertEquals("Finance Manager", results.getString("Job"), "Column Job is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -168,7 +168,7 @@ public class TestPrepareStatement
 			ResultSet results = prepstmt.executeQuery();
 
 			assertTrue(results.next());
-			assertEquals("Column BANK_NAME is wrong", "BHF-BANK (Berlin)", results.getString("BANK_NAME"));
+			assertEquals("BHF-BANK (Berlin)", results.getString("BANK_NAME"), "Column BANK_NAME is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -186,7 +186,7 @@ public class TestPrepareStatement
 			try (ResultSet results = prepstmt.executeQuery())
 			{
 				assertTrue(results.next());
-				assertEquals("Column C5 is wrong", "0.0", results.getString("C5"));
+				assertEquals("0.0", results.getString("C5"), "Column C5 is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -205,7 +205,7 @@ public class TestPrepareStatement
 			try (ResultSet results = prepstmt.executeQuery())
 			{
 				assertTrue(results.next());
-				assertEquals("Column C6 is wrong", "-0.0", results.getString("C6"));
+				assertEquals("-0.0", results.getString("C6"), "Column C6 is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -224,7 +224,7 @@ public class TestPrepareStatement
 			try (ResultSet results = prepstmt.executeQuery())
 			{
 				assertTrue(results.next());
-				assertEquals("Column ID is wrong", 3, results.getInt("ID"));
+				assertEquals(3, results.getInt("ID"), "Column ID is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -255,7 +255,7 @@ public class TestPrepareStatement
 				{
 					assertTrue(results1.isClosed());
 					assertTrue(results2.next());
-					assertEquals("Integer column ID is wrong", Integer.valueOf(41), results2.getObject("id"));
+					assertEquals(Integer.valueOf(41), results2.getObject("id"), "Integer column ID is wrong");
 					assertFalse(results2.next());
 				}
 			}
@@ -276,11 +276,11 @@ public class TestPrepareStatement
 			try (ResultSet results = prepstmt.executeQuery())
 			{
 				assertTrue(results.next());
-				assertEquals("Integer column ID is wrong", Integer.valueOf(1), results.getObject("id"));
+				assertEquals(Integer.valueOf(1), results.getObject("id"), "Integer column ID is wrong");
 				assertTrue(results.next());
-				assertEquals("Integer column ID is wrong", Integer.valueOf(3), results.getObject("id"));
+				assertEquals(Integer.valueOf(3), results.getObject("id"), "Integer column ID is wrong");
 				assertTrue(results.next());
-				assertEquals("Integer column ID is wrong", Integer.valueOf(4), results.getObject("id"));
+				assertEquals(Integer.valueOf(4), results.getObject("id"), "Integer column ID is wrong");
 				assertFalse(results.next());
 			}
 
@@ -288,13 +288,13 @@ public class TestPrepareStatement
 			try (ResultSet results = prepstmt.executeQuery())
 			{
 				assertTrue(results.next());
-				assertEquals("Integer column ID is wrong", Integer.valueOf(6), results.getObject("id"));
+				assertEquals(Integer.valueOf(6), results.getObject("id"), "Integer column ID is wrong");
 				assertTrue(results.next());
-				assertEquals("Integer column ID is wrong", Integer.valueOf(7), results.getObject("id"));
+				assertEquals(Integer.valueOf(7), results.getObject("id"), "Integer column ID is wrong");
 				assertTrue(results.next());
-				assertEquals("Integer column ID is wrong", Integer.valueOf(8), results.getObject("id"));
+				assertEquals(Integer.valueOf(8), results.getObject("id"), "Integer column ID is wrong");
 				assertTrue(results.next());
-				assertEquals("Integer column ID is wrong", Integer.valueOf(9), results.getObject("id"));
+				assertEquals(Integer.valueOf(9), results.getObject("id"), "Integer column ID is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -330,7 +330,7 @@ public class TestPrepareStatement
 			try (ResultSet results = stmt.executeQuery())
 			{
 				assertTrue(results.next());
-				assertEquals("NAME wrong", "Paris Charles De Gaulle", results.getString("NAME"));
+				assertEquals("Paris Charles De Gaulle", results.getString("NAME"), "NAME wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -350,11 +350,11 @@ public class TestPrepareStatement
 			try (ResultSet results = prepstmt.executeQuery())
 			{
 				assertTrue(results.next());
-				assertEquals("column ID is wrong", 8, results.getInt("ID"));
+				assertEquals(8, results.getInt("ID"), "column ID is wrong");
 				assertTrue(results.next());
-				assertEquals("column ID is wrong", 9, results.getInt("ID"));
+				assertEquals(9, results.getInt("ID"), "column ID is wrong");
 				assertTrue(results.next());
-				assertEquals("column ID is wrong", 41, results.getInt("ID"));
+				assertEquals(41, results.getInt("ID"), "column ID is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -374,9 +374,9 @@ public class TestPrepareStatement
 			assertTrue(prepstmt.execute());
 			try (ResultSet results = prepstmt.getResultSet())
 			{
-				assertNotNull("ResultSet is null", results);
+				assertNotNull(results, "ResultSet is null");
 				assertTrue(results.next());
-				assertEquals("column Job is wrong", "Finance Manager", results.getString("Job"));
+				assertEquals("Finance Manager", results.getString("Job"), "column Job is wrong");
 				assertFalse(results.next());
 				assertFalse(prepstmt.getMoreResults());
 			}
@@ -416,11 +416,11 @@ public class TestPrepareStatement
 
 			try (ResultSet results = prepstmt.executeQuery()) {
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", 6, results.getInt("ID"));
+				assertEquals(6, results.getInt("ID"), "The ID is wrong");
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", 7, results.getInt("ID"));
+				assertEquals(7, results.getInt("ID"), "The ID is wrong");
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", 8, results.getInt("ID"));
+				assertEquals(8, results.getInt("ID"), "The ID is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -440,11 +440,11 @@ public class TestPrepareStatement
 
 			try (ResultSet results = prepstmt.executeQuery()) {
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", 6, results.getInt("ID"));
+				assertEquals(6, results.getInt("ID"), "The ID is wrong");
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", 7, results.getInt("ID"));
+				assertEquals(7, results.getInt("ID"), "The ID is wrong");
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", 8, results.getInt("ID"));
+				assertEquals(8, results.getInt("ID"), "The ID is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -465,11 +465,11 @@ public class TestPrepareStatement
 
 			try (ResultSet results = prepstmt.executeQuery()) {
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", 6, results.getInt("ID"));
+				assertEquals(6, results.getInt("ID"), "The ID is wrong");
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", 7, results.getInt("ID"));
+				assertEquals(7, results.getInt("ID"), "The ID is wrong");
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", 8, results.getInt("ID"));
+				assertEquals(8, results.getInt("ID"), "The ID is wrong");
 				assertFalse(results.next());
 			}
 		}

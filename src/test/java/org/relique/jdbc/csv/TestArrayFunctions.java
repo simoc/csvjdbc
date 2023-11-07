@@ -18,25 +18,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 package org.relique.jdbc.csv;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.sql.*;
-
-import static org.junit.Assert.*;
 
 public class TestArrayFunctions
 {
 	public static String filePath;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp()
 	{
 		filePath = ".." + File.separator + "src" + File.separator + "testdata";
 		if (!new File(filePath).isDirectory())
 			filePath = "src" + File.separator + "testdata";
-		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
+		assertTrue(new File(filePath).isDirectory(), "Sample files directory not found: " + filePath);
 
 		// load CSV driver
 		try
@@ -57,19 +60,19 @@ public class TestArrayFunctions
 			 ResultSet results = stmt.executeQuery("SELECT name, TO_ARRAY(role_1, role_2) AS roles FROM arrays_sample"))
 		{
 			assertTrue(results.next());
-			assertEquals("Incorrect row", "alice", results.getString(1));
+			assertEquals("alice", results.getString(1), "Incorrect row");
 			Array array = results.getArray(2);
-			assertEquals("Not an array of strings", "String", array.getBaseTypeName());
-			assertEquals("Not an array of varchar", Types.VARCHAR, array.getBaseType());
+			assertEquals("String", array.getBaseTypeName(), "Not an array of strings");
+			assertEquals(Types.VARCHAR, array.getBaseType(), "Not an array of varchar");
 			Object[] data = (Object[]) array.getArray();
 			assertEquals(2, data.length);
 			assertEquals("teacher", data[0]);
 			assertEquals("grader", data[1]);
 
 			assertTrue(results.next());
-			assertEquals("Incorrect row", "bob", results.getString(1));
+			assertEquals("bob", results.getString(1), "Incorrect row");
 			array = results.getArray(2);
-			assertEquals("Not an array of strings", "String", array.getBaseTypeName());
+			assertEquals("String", array.getBaseTypeName(), "Not an array of strings");
 			data = (Object []) array.getArray();
 			assertEquals(2, data.length);
 			assertEquals("", data[0]);
@@ -85,19 +88,19 @@ public class TestArrayFunctions
 			 ResultSet results = stmt.executeQuery("SELECT name,TO_ARRAY(role_id_1, role_id_2) AS roles FROM arrays_sample"))
 		{
 			assertTrue(results.next());
-			assertEquals("Incorrect row", "alice", results.getString(1));
+			assertEquals("alice", results.getString(1), "Incorrect row");
 			Array array = results.getArray(2);
-			assertEquals("Not an array of integers", "Int", array.getBaseTypeName());
-			assertEquals("Not an array of integer", Types.INTEGER, array.getBaseType());
+			assertEquals("Int", array.getBaseTypeName(), "Not an array of integers");
+			assertEquals(Types.INTEGER, array.getBaseType(), "Not an array of integer");
 			Object[] data = (Object[]) array.getArray();
 			assertEquals(2, data.length);
 			assertEquals(31, data[0]);
 			assertEquals(76, data[1]);
 
 			assertTrue(results.next());
-			assertEquals("Incorrect row", "bob", results.getString(1));
+			assertEquals("bob", results.getString(1), "Incorrect row");
 			array = results.getArray(2);
-			assertEquals("Not an array of integers", "Int", array.getBaseTypeName());
+			assertEquals("Int", array.getBaseTypeName(), "Not an array of integers");
 			data = (Object []) array.getArray();
 			assertEquals(2, data.length);
 			assertNull(data[0]);
@@ -112,7 +115,7 @@ public class TestArrayFunctions
 			 Statement stmt = conn.createStatement();
 			 ResultSet results = stmt.executeQuery("SELECT name, TO_ARRAY(DISTINCT role_1, role_2) AS roles FROM arrays_sample")) {
 			assertTrue(results.next());
-			assertEquals("Incorrect row", "alice", results.getString(1));
+			assertEquals("alice", results.getString(1), "Incorrect row");
 			Object[] data = (Object[]) results.getArray(2).getArray();
 			assertEquals(2, data.length);
 			assertEquals("teacher", data[0]);
@@ -120,7 +123,7 @@ public class TestArrayFunctions
 
 			assertTrue(results.next());
 			assertTrue(results.next());
-			assertEquals("Incorrect row", "eve", results.getString(1));
+			assertEquals("eve", results.getString(1), "Incorrect row");
 			data = (Object[]) results.getArray(2).getArray();
 			assertEquals(1, data.length);
 			assertEquals("teacher", data[0]);

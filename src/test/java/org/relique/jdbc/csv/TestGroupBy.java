@@ -18,14 +18,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 package org.relique.jdbc.csv;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.sql.*;
 import java.util.Properties;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests use of SQL GROUP BY clause.
@@ -34,13 +39,13 @@ public class TestGroupBy
 {
 	private static String filePath;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp()
 	{
 		filePath = ".." + File.separator + "src" + File.separator + "testdata";
 		if (!new File(filePath).isDirectory())
 			filePath = "src" + File.separator + "testdata";
-		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
+		assertTrue(new File(filePath).isDirectory(), "Sample files directory not found: " + filePath);
 
 		// load CSV driver
 		try
@@ -71,13 +76,13 @@ public class TestGroupBy
 				.executeQuery("select TO_BLZ from transactions group by TO_BLZ"))
 		{
 			assertTrue(results.next());
-			assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
+			assertEquals(10020500, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The TO_BLZ is wrong", 10010424, results.getInt("TO_BLZ"));
+			assertEquals(10010424, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The TO_BLZ is wrong", 10020400, results.getInt("TO_BLZ"));
+			assertEquals(10020400, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The TO_BLZ is wrong", 10010010, results.getInt("TO_BLZ"));
+			assertEquals(10010010, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -101,26 +106,26 @@ public class TestGroupBy
 				.executeQuery("select TRANS_DATE, TO_BLZ from transactions group by TRANS_DATE, TO_BLZ"))
 		{
 			assertTrue(results.next());
-			assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-19"), results.getDate("TRANS_DATE"));
-			assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
+			assertEquals(Date.valueOf("2011-10-19"), results.getDate("TRANS_DATE"), "The TRANS_DATE is wrong");
+			assertEquals(10020500, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-21"), results.getDate("TRANS_DATE"));
-			assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
+			assertEquals(Date.valueOf("2011-10-21"), results.getDate("TRANS_DATE"), "The TRANS_DATE is wrong");
+			assertEquals(10020500, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-21"), results.getDate("TRANS_DATE"));
-			assertEquals("The TO_BLZ is wrong", 10010424, results.getInt("TO_BLZ"));
+			assertEquals(Date.valueOf("2011-10-21"), results.getDate("TRANS_DATE"), "The TRANS_DATE is wrong");
+			assertEquals(10010424, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-24"), results.getDate("TRANS_DATE"));
-			assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
+			assertEquals(Date.valueOf("2011-10-24"), results.getDate("TRANS_DATE"), "The TRANS_DATE is wrong");
+			assertEquals(10020500, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-27"), results.getDate("TRANS_DATE"));
-			assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
+			assertEquals(Date.valueOf("2011-10-27"), results.getDate("TRANS_DATE"), "The TRANS_DATE is wrong");
+			assertEquals(10020500, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-28"), results.getDate("TRANS_DATE"));
-			assertEquals("The TO_BLZ is wrong", 10020400, results.getInt("TO_BLZ"));
+			assertEquals(Date.valueOf("2011-10-28"), results.getDate("TRANS_DATE"), "The TRANS_DATE is wrong");
+			assertEquals(10020400, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The TRANS_DATE is wrong", Date.valueOf("2011-10-31"), results.getDate("TRANS_DATE"));
-			assertEquals("The TO_BLZ is wrong", 10010010, results.getInt("TO_BLZ"));
+			assertEquals(Date.valueOf("2011-10-31"), results.getDate("TRANS_DATE"), "The TRANS_DATE is wrong");
+			assertEquals(10010010, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -153,13 +158,13 @@ public class TestGroupBy
 			ResultSet results = stmt.executeQuery("select ID from sample4 GROUP BY ID"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "01", results.getString("ID"));
+			assertEquals("01", results.getString("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "02", results.getString("ID"));
+			assertEquals("02", results.getString("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "03", results.getString("ID"));
+			assertEquals("03", results.getString("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "04", results.getString("ID"));
+			assertEquals("04", results.getString("ID"), "The ID is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -177,11 +182,11 @@ public class TestGroupBy
 			ResultSet results = stmt.executeQuery("select Job from sample5 WHERE ID >= 5 GROUP BY Job"))
 		{
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Piloto", results.getString("Job"));
+			assertEquals("Piloto", results.getString("Job"), "The Job is wrong");
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Office Manager", results.getString("Job"));
+			assertEquals("Office Manager", results.getString("Job"), "The Job is wrong");
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Office Employee", results.getString("Job"));
+			assertEquals("Office Employee", results.getString("Job"), "The Job is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -198,9 +203,9 @@ public class TestGroupBy
 			ResultSet results = stmt.executeQuery("select Job from sample4 GROUP BY Job ORDER BY Job"))
 		{
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
+			assertEquals("Finance Manager", results.getString("Job"), "The Job is wrong");
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
+			assertEquals("Project Manager", results.getString("Job"), "The Job is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -223,17 +228,17 @@ public class TestGroupBy
 				.executeQuery("select TO_BLZ, COUNT(TO_BLZ) AS N from transactions group by TO_BLZ"))
 		{
 			assertTrue(results.next());
-			assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
-			assertEquals("The COUNT is wrong", 5, results.getInt("N"));
+			assertEquals(10020500, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
+			assertEquals(5, results.getInt("N"), "The COUNT is wrong");
 			assertTrue(results.next());
-			assertEquals("The TO_BLZ is wrong", 10010424, results.getInt("TO_BLZ"));
-			assertEquals("The COUNT is wrong", 2, results.getInt("N"));
+			assertEquals(10010424, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
+			assertEquals(2, results.getInt("N"), "The COUNT is wrong");
 			assertTrue(results.next());
-			assertEquals("The TO_BLZ is wrong", 10020400, results.getInt("TO_BLZ"));
-			assertEquals("The COUNT is wrong", 1, results.getInt("N"));
+			assertEquals(10020400, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
+			assertEquals(1, results.getInt("N"), "The COUNT is wrong");
 			assertTrue(results.next());
-			assertEquals("The TO_BLZ is wrong", 10010010, results.getInt("TO_BLZ"));
-			assertEquals("The COUNT is wrong", 1, results.getInt("N"));
+			assertEquals(10010010, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
+			assertEquals(1, results.getInt("N"), "The COUNT is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -251,14 +256,14 @@ public class TestGroupBy
 			ResultSet results = stmt.executeQuery("select NAME, count(*) from scores group by NAME"))
 		{
 			assertTrue(results.next());
-			assertEquals("The NAME is wrong", "Daniel", results.getString(1));
-			assertEquals("The COUNT is wrong", 3, results.getInt(2));
+			assertEquals("Daniel", results.getString(1), "The NAME is wrong");
+			assertEquals(3, results.getInt(2), "The COUNT is wrong");
 			assertTrue(results.next());
-			assertEquals("The NAME is wrong", "Mark", results.getString(1));
-			assertEquals("The COUNT is wrong", 3, results.getInt(2));
+			assertEquals("Mark", results.getString(1), "The NAME is wrong");
+			assertEquals(3, results.getInt(2), "The COUNT is wrong");
 			assertTrue(results.next());
-			assertEquals("The NAME is wrong", "Maria", results.getString(1));
-			assertEquals("The COUNT is wrong", 3, results.getInt(2));
+			assertEquals("Maria", results.getString(1), "The NAME is wrong");
+			assertEquals(3, results.getInt(2), "The COUNT is wrong");
 		}
 	}
 
@@ -274,14 +279,14 @@ public class TestGroupBy
 			ResultSet results = stmt.executeQuery("select NAME, COUNT(NULLIF(SCORE, 'NA')) FROM scores GROUP BY NAME"))
 		{
 			assertTrue(results.next());
-			assertEquals("The NAME is wrong", "Daniel", results.getString(1));
-			assertEquals("The COUNT is wrong", 2, results.getInt(2));
+			assertEquals("Daniel", results.getString(1), "The NAME is wrong");
+			assertEquals(2, results.getInt(2), "The COUNT is wrong");
 			assertTrue(results.next());
-			assertEquals("The NAME is wrong", "Mark", results.getString(1));
-			assertEquals("The COUNT is wrong", 3, results.getInt(2));
+			assertEquals("Mark", results.getString(1), "The NAME is wrong");
+			assertEquals(3, results.getInt(2), "The COUNT is wrong");
 			assertTrue(results.next());
-			assertEquals("The NAME is wrong", "Maria", results.getString(1));
-			assertEquals("The COUNT is wrong", 1, results.getInt(2));
+			assertEquals("Maria", results.getString(1), "The NAME is wrong");
+			assertEquals(1, results.getInt(2), "The COUNT is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -312,21 +317,21 @@ public class TestGroupBy
 				.executeQuery("select TO_BLZ, MIN(AMOUNT) AS MIN_AMOUNT, MAX(AMOUNT) AS MAX_AMOUNT from transactions group by TO_BLZ"))
 		{
 			assertTrue(results.next());
-			assertEquals("The TO_BLZ is wrong", 10020500, results.getInt("TO_BLZ"));
-			assertTrue("The MIN_AMOUNT is wrong", fuzzyEquals(21.23, results.getDouble("MIN_AMOUNT")));
-			assertTrue("The MAX_AMOUNT is wrong", fuzzyEquals(250.00, results.getDouble("MAX_AMOUNT")));
+			assertEquals(10020500, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
+			assertTrue(fuzzyEquals(21.23, results.getDouble("MIN_AMOUNT")), "The MIN_AMOUNT is wrong");
+			assertTrue(fuzzyEquals(250.00, results.getDouble("MAX_AMOUNT")), "The MAX_AMOUNT is wrong");
 			assertTrue(results.next());
-			assertEquals("The TO_BLZ is wrong", 10010424, results.getInt("TO_BLZ"));
-			assertTrue("The MIN_AMOUNT is wrong", fuzzyEquals(460.00, results.getDouble("MIN_AMOUNT")));
-			assertTrue("The MAX_AMOUNT is wrong", fuzzyEquals(999.00, results.getDouble("MAX_AMOUNT")));
+			assertEquals(10010424, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
+			assertTrue(fuzzyEquals(460.00, results.getDouble("MIN_AMOUNT")), "The MIN_AMOUNT is wrong");
+			assertTrue(fuzzyEquals(999.00, results.getDouble("MAX_AMOUNT")), "The MAX_AMOUNT is wrong");
 			assertTrue(results.next());
-			assertEquals("The TO_BLZ is wrong", 10020400, results.getInt("TO_BLZ"));
-			assertTrue("The MIN_AMOUNT is wrong", fuzzyEquals(1012.74, results.getDouble("MIN_AMOUNT")));
-			assertTrue("The MAX_AMOUNT is wrong", fuzzyEquals(1012.74, results.getDouble("MAX_AMOUNT")));
+			assertEquals(10020400, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
+			assertTrue(fuzzyEquals(1012.74, results.getDouble("MIN_AMOUNT")), "The MIN_AMOUNT is wrong");
+			assertTrue(fuzzyEquals(1012.74, results.getDouble("MAX_AMOUNT")), "The MAX_AMOUNT is wrong");
 			assertTrue(results.next());
-			assertEquals("The TO_BLZ is wrong", 10010010, results.getInt("TO_BLZ"));
-			assertTrue("The MIN_AMOUNT is wrong", fuzzyEquals(7.23, results.getDouble("MIN_AMOUNT")));
-			assertTrue("The MAX_AMOUNT is wrong", fuzzyEquals(7.23, results.getDouble("MAX_AMOUNT")));
+			assertEquals(10010010, results.getInt("TO_BLZ"), "The TO_BLZ is wrong");
+			assertTrue(fuzzyEquals(7.23, results.getDouble("MIN_AMOUNT")), "The MIN_AMOUNT is wrong");
+			assertTrue(fuzzyEquals(7.23, results.getDouble("MAX_AMOUNT")), "The MAX_AMOUNT is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -341,11 +346,11 @@ public class TestGroupBy
 			ResultSet results = stmt.executeQuery("select Job, string_agg(Name, ';') from sample4 GROUP BY Job"))
 		{
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Project Manager", results.getString(1));
-			assertEquals("The string_agg is wrong", "Juan Pablo Morales;Mauricio Hernandez;Felipe Grajales", results.getString(2));
+			assertEquals("Project Manager", results.getString(1), "The Job is wrong");
+			assertEquals("Juan Pablo Morales;Mauricio Hernandez;Felipe Grajales", results.getString(2), "The string_agg is wrong");
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Finance Manager", results.getString(1));
-			assertEquals("The string_agg is wrong", "Maria Cristina Lucero", results.getString(2));
+			assertEquals("Finance Manager", results.getString(1), "The Job is wrong");
+			assertEquals("Maria Cristina Lucero", results.getString(2), "The string_agg is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -358,14 +363,13 @@ public class TestGroupBy
 			 ResultSet results = stmt.executeQuery("select Job, ARRAY_AGG(Name) from sample4 GROUP BY Job"))
 		{
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Project Manager", results.getString(1));
+			assertEquals("Project Manager", results.getString(1), "The Job is wrong");
 			Array array = results.getArray(2);
 			assertNotNull(array);
 			Object[] data = (Object[]) array.getArray();
 			assertEquals(3, data.length);
-			assertArrayEquals("The array is wrong",
-					new String[]{ "Juan Pablo Morales", "Mauricio Hernandez","Felipe Grajales"},
-					data);
+			assertArrayEquals(new String[]{ "Juan Pablo Morales", "Mauricio Hernandez","Felipe Grajales"},
+				data, "The array is wrong");
 		}
 	}
 
@@ -383,11 +387,11 @@ public class TestGroupBy
 			ResultSet results = stmt.executeQuery("select Job, COUNT(Job) C from sample4 GROUP BY Job ORDER BY C DESC"))
 		{
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
-			assertEquals("The COUNT is wrong", 3, results.getInt("C"));
+			assertEquals("Project Manager", results.getString("Job"), "The Job is wrong");
+			assertEquals(3, results.getInt("C"), "The COUNT is wrong");
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
-			assertEquals("The COUNT is wrong", 1, results.getInt("C"));
+			assertEquals("Finance Manager", results.getString("Job"), "The Job is wrong");
+			assertEquals(1, results.getInt("C"), "The COUNT is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -404,9 +408,9 @@ public class TestGroupBy
 			ResultSet results = stmt.executeQuery("select Job from sample4 GROUP BY 1"))
 		{
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
+			assertEquals("Project Manager", results.getString("Job"), "The Job is wrong");
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
+			assertEquals("Finance Manager", results.getString("Job"), "The Job is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -423,9 +427,9 @@ public class TestGroupBy
 			ResultSet results = stmt.executeQuery("select Job from sample4 T GROUP BY T.Job"))
 		{
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
+			assertEquals("Project Manager", results.getString("Job"), "The Job is wrong");
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
+			assertEquals("Finance Manager", results.getString("Job"), "The Job is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -449,13 +453,13 @@ public class TestGroupBy
 				.executeQuery("select FROM_ACCT + '/' + FROM_BLZ as KEY from transactions group by KEY"))
 		{
 			assertTrue(results.next());
-			assertEquals("The KEY is wrong", "3670345/10010010", results.getString("KEY"));
+			assertEquals("3670345/10010010", results.getString("KEY"), "The KEY is wrong");
 			assertTrue(results.next());
-			assertEquals("The KEY is wrong", "97540210/10020500", results.getString("KEY"));
+			assertEquals("97540210/10020500", results.getString("KEY"), "The KEY is wrong");
 			assertTrue(results.next());
-			assertEquals("The KEY is wrong", "58340576/10010010", results.getString("KEY"));
+			assertEquals("58340576/10010010", results.getString("KEY"), "The KEY is wrong");
 			assertTrue(results.next());
-			assertEquals("The KEY is wrong", "2340529/10020200", results.getString("KEY"));
+			assertEquals("2340529/10020200", results.getString("KEY"), "The KEY is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -472,11 +476,11 @@ public class TestGroupBy
 			ResultSet results = stmt.executeQuery("select Job + '/' C1, 7 C2 from sample4 GROUP BY Job"))
 		{
 			assertTrue(results.next());
-			assertEquals("The C1 is wrong", "Project Manager/", results.getString("C1"));
-			assertEquals("The C2 is wrong", "7", results.getString("C2"));
+			assertEquals("Project Manager/", results.getString("C1"), "The C1 is wrong");
+			assertEquals("7", results.getString("C2"), "The C2 is wrong");
 			assertTrue(results.next());
-			assertEquals("The C1 is wrong", "Finance Manager/", results.getString("C1"));
-			assertEquals("The C2 is wrong", "7", results.getString("C2"));
+			assertEquals("Finance Manager/", results.getString("C1"), "The C1 is wrong");
+			assertEquals("7", results.getString("C2"), "The C2 is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -553,9 +557,9 @@ public class TestGroupBy
 				.executeQuery("select FROM_BLZ from transactions group by FROM_BLZ having FROM_BLZ > 10020000"))
 		{
 			assertTrue(results.next());
-			assertEquals("The FROM_BLZ is wrong", 10020500, results.getInt("FROM_BLZ"));
+			assertEquals(10020500, results.getInt("FROM_BLZ"), "The FROM_BLZ is wrong");
 			assertTrue(results.next());
-			assertEquals("The FROM_BLZ is wrong", 10020200, results.getInt("FROM_BLZ"));
+			assertEquals(10020200, results.getInt("FROM_BLZ"), "The FROM_BLZ is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -573,11 +577,11 @@ public class TestGroupBy
 				.executeQuery("select Job from sample5 group by Job having COUNT(Job) = 1"))
 		{
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Piloto", results.getString("Job"));
+			assertEquals("Piloto", results.getString("Job"), "The Job is wrong");
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Finance Manager", results.getString("Job"));
+			assertEquals("Finance Manager", results.getString("Job"), "The Job is wrong");
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Office Manager", results.getString("Job"));
+			assertEquals("Office Manager", results.getString("Job"), "The Job is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -595,11 +599,11 @@ public class TestGroupBy
 				.executeQuery("select Job, COUNT(Job) from sample5 group by Job having COUNT(Job) > 1"))
 		{
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Project Manager", results.getString("Job"));
-			assertEquals("The COUNT(Job) is wrong", 3, results.getInt(2));
+			assertEquals("Project Manager", results.getString("Job"), "The Job is wrong");
+			assertEquals(3, results.getInt(2), "The COUNT(Job) is wrong");
 			assertTrue(results.next());
-			assertEquals("The Job is wrong", "Office Employee", results.getString("Job"));
-			assertEquals("The COUNT(Job) is wrong", 4, results.getInt(2));
+			assertEquals("Office Employee", results.getString("Job"), "The Job is wrong");
+			assertEquals(4, results.getInt(2), "The COUNT(Job) is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -658,14 +662,14 @@ public class TestGroupBy
 			ResultSet results = stmt.executeQuery("select FROM_BLZ, count(distinct FROM_ACCT) from transactions group by FROM_BLZ order by FROM_BLZ"))
 		{
 			assertTrue(results.next());
-			assertEquals("Incorrect FROM_BLZ", "10010010", results.getString(1));
-			assertEquals("Incorrect count FROM_ACCT", 2, results.getInt(2));
+			assertEquals("10010010", results.getString(1), "Incorrect FROM_BLZ");
+			assertEquals(2, results.getInt(2), "Incorrect count FROM_ACCT");
 			assertTrue(results.next());
-			assertEquals("Incorrect FROM_BLZ", "10020200", results.getString(1));
-			assertEquals("Incorrect count FROM_ACCT", 1, results.getInt(2));
+			assertEquals("10020200", results.getString(1), "Incorrect FROM_BLZ");
+			assertEquals(1, results.getInt(2), "Incorrect count FROM_ACCT");
 			assertTrue(results.next());
-			assertEquals("Incorrect FROM_BLZ", "10020500", results.getString(1));
-			assertEquals("Incorrect count FROM_ACCT", 1, results.getInt(2));
+			assertEquals("10020500", results.getString(1), "Incorrect FROM_BLZ");
+			assertEquals(1, results.getInt(2), "Incorrect count FROM_ACCT");
 			assertFalse(results.next());
 		}
 	}
@@ -684,17 +688,17 @@ public class TestGroupBy
 			ResultSet results = stmt.executeQuery("select CampaignNo, sum(distinct PurchaseCt), round(avg(distinct PurchaseCt)*10) from Purchase group by CampaignNo order by CampaignNo"))
 		{
 			assertTrue(results.next());
-			assertEquals("Incorrect CampaignNo", 1, results.getInt(1));
-			assertEquals("Incorrect sum PurchaseCt", 4 + 1 + 11, results.getInt(2));
-			assertEquals("Incorrect avg PurchaseCt", Math.round((4 + 1 + 11) / 3.0 * 10), results.getInt(3));
+			assertEquals(1, results.getInt(1), "Incorrect CampaignNo");
+			assertEquals(4 + 1 + 11, results.getInt(2), "Incorrect sum PurchaseCt");
+			assertEquals(Math.round((4 + 1 + 11) / 3.0 * 10), results.getInt(3), "Incorrect avg PurchaseCt");
 			assertTrue(results.next());
-			assertEquals("Incorrect CampaignNo", 21, results.getInt(1));
-			assertEquals("Incorrect sum PurchaseCt", 1 + 3, results.getInt(2));
-			assertEquals("Incorrect avg PurchaseCt", Math.round((1 + 3) / 2.0 * 10), results.getInt(3));
+			assertEquals(21, results.getInt(1), "Incorrect CampaignNo");
+			assertEquals(1 + 3, results.getInt(2), "Incorrect sum PurchaseCt");
+			assertEquals(Math.round((1 + 3) / 2.0 * 10), results.getInt(3), "Incorrect avg PurchaseCt");
 			assertTrue(results.next());
-			assertEquals("Incorrect CampaignNo", 61, results.getInt(1));
-			assertEquals("Incorrect sum PurchaseCt", 4, results.getInt(2));
-			assertEquals("Incorrect avg PurchaseCt", 4 * 10, results.getInt(3));
+			assertEquals(61, results.getInt(1), "Incorrect CampaignNo");
+			assertEquals(4, results.getInt(2), "Incorrect sum PurchaseCt");
+			assertEquals(4 * 10, results.getInt(3), "Incorrect avg PurchaseCt");
 			assertFalse(results.next());
 		}
 	}

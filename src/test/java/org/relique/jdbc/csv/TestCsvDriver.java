@@ -18,12 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 package org.relique.jdbc.csv;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -55,8 +55,8 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * This class is used to test the CsvJdbc driver.
@@ -71,13 +71,13 @@ public class TestCsvDriver
 	private static String filePath;
 	private static DateTimeFormatter toUTCDateTimeFormatter;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp()
 	{
 		filePath = ".." + File.separator + "src" + File.separator + "testdata";
 		if (!new File(filePath).isDirectory())
 			filePath = "src" + File.separator + "testdata";
-		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
+		assertTrue(new File(filePath).isDirectory(), "Sample files directory not found: " + filePath);
 
 		// load CSV driver
 		try
@@ -112,51 +112,41 @@ public class TestCsvDriver
 				.executeQuery("SELECT NAME,ID,EXTRA_FIELD FROM sample"))
 		{
 			results.next();
-			assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "\"S,\"", results
-					.getString("NAME"));
-			assertEquals("Incorrect EXTRA_FIELD Value", "F", results
-					.getString("EXTRA_FIELD"));
+			assertEquals("Q123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("\"S,\"", results.getString("NAME"), "Incorrect NAME Value");
+			assertEquals("F", results.getString("EXTRA_FIELD"), "Incorrect EXTRA_FIELD Value");
 
-			assertEquals("Incorrect Column 1 Value", "\"S,\"", results.getString(1));
-			assertEquals("Incorrect Column 2 Value", "Q123", results.getString(2));
-			assertEquals("Incorrect Column 3 Value", "F", results.getString(3));
+			assertEquals("\"S,\"", results.getString(1), "Incorrect Column 1 Value");
+			assertEquals("Q123", results.getString(2), "Incorrect Column 2 Value");
+			assertEquals("F", results.getString(3), "Incorrect Column 3 Value");
 
 			results.next();
-			assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Jonathan Ackerman", results
-					.getString("NAME"));
-			assertEquals("Incorrect EXTRA_FIELD Value", "A", results
-					.getString("EXTRA_FIELD"));
+			assertEquals("A123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Jonathan Ackerman", results.getString("NAME"), "Incorrect NAME Value");
+			assertEquals("A", results.getString("EXTRA_FIELD"), "Incorrect EXTRA_FIELD Value");
 
 			results.next();
-			assertEquals("Incorrect ID Value", "B234", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Grady O'Neil", results
-					.getString("NAME"));
-			assertEquals("Incorrect EXTRA_FIELD Value", "B", results
-					.getString("EXTRA_FIELD"));
+			assertEquals("B234", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Grady O'Neil", results.getString("NAME"), "Incorrect NAME Value");
+			assertEquals("B", results.getString("EXTRA_FIELD"), "Incorrect EXTRA_FIELD Value");
 
 			results.next();
-			assertEquals("Incorrect ID Value", "C456", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Susan, Peter and Dave", results
-					.getString("NAME"));
-			assertEquals("Incorrect EXTRA_FIELD Value", "C", results
-					.getString("EXTRA_FIELD"));
+			assertEquals("C456", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Susan, Peter and Dave", results.getString("NAME"), "Incorrect NAME Value");
+			assertEquals("C", results.getString("EXTRA_FIELD"), "Incorrect EXTRA_FIELD Value");
 
 			results.next();
-			assertEquals("Incorrect ID Value", "D789", results.getString("ID"));
-			assertEquals("Incorrect NAME Value", "Amelia \"meals\" Maurice",
-					results.getString("NAME"));
-			assertEquals("Incorrect EXTRA_FIELD Value", "E", results
-					.getString("EXTRA_FIELD"));
+			assertEquals("D789", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Amelia \"meals\" Maurice", results.getString("NAME"),
+				"Incorrect NAME Value");
+			assertEquals("E", results.getString("EXTRA_FIELD"),
+				"Incorrect EXTRA_FIELD Value");
 
 			results.next();
-			assertEquals("Incorrect ID Value", "X234", results.getString("ID"));
-			assertEquals("Incorrect NAME Value",
-					"Peter \"peg leg\", Jimmy & Samantha \"Sam\"", results
-							.getString("NAME"));
-			assertEquals("Incorrect EXTRA_FIELD Value", "G", results
-					.getString("EXTRA_FIELD"));
+			assertEquals("X234", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Peter \"peg leg\", Jimmy & Samantha \"Sam\"", results.getString("NAME"),
+				"Incorrect NAME Value");
+			assertEquals("G", results.getString("EXTRA_FIELD"), "Incorrect EXTRA_FIELD Value");
 		}
 	}
 
@@ -177,8 +167,8 @@ public class TestCsvDriver
 				.executeQuery("SELECT ID,Name FROM sample4 WHERE ID='03'"))
 		{
 			assertTrue(results.next());
-			assertEquals("The name is wrong", "Maria Cristina Lucero", results
-					.getString("Name"));
+			assertEquals("Maria Cristina Lucero", results.getString("Name"),
+				"The name is wrong");
 			try
 			{
 				results.getString("Job");
@@ -208,12 +198,12 @@ public class TestCsvDriver
 			ResultSet results = stmt
 				.executeQuery("SELECT Job,ID,Name FROM sample4 WHERE ID='02'"))
 		{
-			assertTrue("no results found - should be one", results.next());
-			assertEquals("The name is wrong", "Mauricio Hernandez", results
-					.getString("Name"));
-			assertEquals("The job is wrong", "Project Manager", results
-					.getString("Job"));
-			assertTrue("more than one matching records", !results.next());
+			assertTrue(results.next(), "no results found - should be one");
+			assertEquals("Mauricio Hernandez", results.getString("Name"),
+				"The name is wrong");
+			assertEquals("Project Manager", results.getString("Job"),
+				"The job is wrong");
+			assertTrue(!results.next(), "more than one matching records");
 		}
 	}
 
@@ -233,46 +223,36 @@ public class TestCsvDriver
 				.executeQuery("SELECT NAME,ID,EXTRA_FIELD FROM sample"))
 		{
 			results.next();
-			assertTrue("Incorrect ID Value", results.getString("ID").equals("Q123"));
-			assertTrue("Incorrect NAME Value", results.getString("NAME").equals(
-					"\"S;\""));
-			assertTrue("Incorrect EXTRA_FIELD Value", results.getString(
-					"EXTRA_FIELD").equals("F"));
+			assertTrue(results.getString("ID").equals("Q123"), "Incorrect ID Value");
+			assertTrue(results.getString("NAME").equals("\"S;\""), "Incorrect NAME Value");
+			assertTrue(results.getString("EXTRA_FIELD").equals("F"), "Incorrect EXTRA_FIELD Value");
 
 			results.next();
-			assertTrue("Incorrect ID Value", results.getString("ID").equals("A123"));
-			assertTrue("Incorrect NAME Value", results.getString("NAME").equals(
-					"Jonathan Ackerman"));
-			assertTrue("Incorrect EXTRA_FIELD Value", results.getString(
-					"EXTRA_FIELD").equals("A"));
+			assertTrue(results.getString("ID").equals("A123"), "Incorrect ID Value");
+			assertTrue(results.getString("NAME").equals("Jonathan Ackerman"), "Incorrect NAME Value");
+			assertTrue(results.getString("EXTRA_FIELD").equals("A"), "Incorrect EXTRA_FIELD Value");
 
 			results.next();
-			assertTrue("Incorrect ID Value", results.getString("ID").equals("B234"));
-			assertTrue("Incorrect NAME Value", results.getString("NAME").equals(
-					"Grady O'Neil"));
-			assertTrue("Incorrect EXTRA_FIELD Value", results.getString(
-					"EXTRA_FIELD").equals("B"));
+			assertTrue(results.getString("ID").equals("B234"), "Incorrect ID Value");
+			assertTrue(results.getString("NAME").equals("Grady O'Neil"), "Incorrect NAME Value");
+			assertTrue(results.getString("EXTRA_FIELD").equals("B"), "Incorrect EXTRA_FIELD Value");
 
 			results.next();
-			assertTrue("Incorrect ID Value", results.getString("ID").equals("C456"));
-			assertTrue("Incorrect NAME Value", results.getString("NAME").equals(
-					"Susan; Peter and Dave"));
-			assertTrue("Incorrect EXTRA_FIELD Value", results.getString(
-					"EXTRA_FIELD").equals("C"));
+			assertTrue(results.getString("ID").equals("C456"), "Incorrect ID Value");
+			assertTrue(results.getString("NAME").equals("Susan; Peter and Dave"), "Incorrect NAME Value");
+			assertTrue(results.getString("EXTRA_FIELD").equals("C"), "Incorrect EXTRA_FIELD Value");
 
 			results.next();
-			assertTrue("Incorrect ID Value", results.getString("ID").equals("D789"));
-			assertTrue("Incorrect NAME Value", results.getString("NAME").equals(
-					"Amelia \"meals\" Maurice"));
-			assertTrue("Incorrect EXTRA_FIELD Value", results.getString(
-					"EXTRA_FIELD").equals("E"));
+			assertTrue(results.getString("ID").equals("D789"), "Incorrect ID Value");
+			assertTrue(results.getString("NAME").equals("Amelia \"meals\" Maurice"), "Incorrect NAME Value");
+			assertTrue(results.getString("EXTRA_FIELD").equals("E"), "Incorrect EXTRA_FIELD Value");
 
 			results.next();
-			assertTrue("Incorrect ID Value", results.getString("ID").equals("X234"));
-			assertTrue("Incorrect NAME Value", results.getString("NAME").equals(
-					"Peter \"peg leg\"; Jimmy & Samantha \"Sam\""));
-			assertTrue("Incorrect EXTRA_FIELD Value", results.getString(
-					"EXTRA_FIELD").equals("G"));
+			assertTrue(results.getString("ID").equals("X234"), "Incorrect ID Value");
+			assertTrue(results.getString("NAME").equals("Peter \"peg leg\"; Jimmy & Samantha \"Sam\""),
+				"Incorrect NAME Value");
+			assertTrue(results.getString("EXTRA_FIELD").equals("G"),
+				"Incorrect EXTRA_FIELD Value");
 		}
 	}
 
@@ -286,9 +266,9 @@ public class TestCsvDriver
 
 			ResultSet results = stmt.executeQuery("SELECT * FROM sample"))
 		{
-			assertEquals("Incorrect Column", 1, results.findColumn("ID"));
-			assertEquals("Incorrect Column", 2, results.findColumn("Name"));
-			assertEquals("Incorrect Column", 3, results.findColumn("EXTRA_FIELD"));
+			assertEquals(1, results.findColumn("ID"), "Incorrect Column");
+			assertEquals(2, results.findColumn("Name"), "Incorrect Column");
+			assertEquals(3, results.findColumn("EXTRA_FIELD"), "Incorrect Column");
 
 			try
 			{
@@ -314,19 +294,13 @@ public class TestCsvDriver
 		{
 			ResultSetMetaData metadata = results.getMetaData();
 
-			assertEquals("Incorrect Table Name", "sample3", metadata
-					.getTableName(0));
+			assertEquals("sample3", metadata.getTableName(0), "Incorrect Table Name");
 
-			assertEquals("Incorrect Column Name 1", "column 1", metadata
-					.getColumnName(1));
-			assertEquals("Incorrect Column Name 2", "column \"2\" two", metadata
-					.getColumnName(2));
-			assertEquals("Incorrect Column Name 3", "Column 3", metadata
-					.getColumnName(3));
-			assertEquals("Incorrect Column Name 4", "CoLuMn4", metadata
-					.getColumnName(4));
-			assertEquals("Incorrect Column Name 5", "COLumn5", metadata
-					.getColumnName(5));
+			assertEquals("column 1", metadata.getColumnName(1), "Incorrect Column Name 1");
+			assertEquals("column \"2\" two", metadata.getColumnName(2), "Incorrect Column Name 2");
+			assertEquals("Column 3", metadata.getColumnName(3), "Incorrect Column Name 3");
+			assertEquals("CoLuMn4", metadata.getColumnName(4), "Incorrect Column Name 4");
+			assertEquals("COLumn5", metadata.getColumnName(5), "Incorrect Column Name 5");
 		}
 	}
 
@@ -345,15 +319,11 @@ public class TestCsvDriver
 		{
 			ResultSetMetaData metadata = results.getMetaData();
 
-			assertTrue("Incorrect Table Name", metadata.getTableName(0).equals(
-					"sample"));
+			assertTrue(metadata.getTableName(0).equals("sample"), "Incorrect Table Name");
 
-			assertTrue("Incorrect Column Name 1", metadata.getColumnName(1).equals(
-					"COLUMN1"));
-			assertTrue("Incorrect Column Name 2", metadata.getColumnName(2).equals(
-					"COLUMN2"));
-			assertTrue("Incorrect Column Name 3", metadata.getColumnName(3).equals(
-					"COLUMN3"));
+			assertTrue(metadata.getColumnName(1).equals("COLUMN1"), "Incorrect Column Name 1");
+			assertTrue(metadata.getColumnName(2).equals("COLUMN2"), "Incorrect Column Name 2");
+			assertTrue(metadata.getColumnName(3).equals("COLUMN3"), "Incorrect Column Name 3");
 		}
 	}
 
@@ -373,23 +343,23 @@ public class TestCsvDriver
 		{
 			ResultSetMetaData metadata = results.getMetaData();
 
-			assertEquals("type of column 1 is incorrect", Types.INTEGER, metadata
-					.getColumnType(1));
-			assertEquals("type of column 2 is incorrect", Types.VARCHAR, metadata
-					.getColumnType(2));
-			assertEquals("type of column 3 is incorrect", Types.VARCHAR, metadata
-					.getColumnType(3));
-			assertEquals("type of column 4 is incorrect", Types.TIMESTAMP, metadata
-					.getColumnType(4));
+			assertEquals(Types.INTEGER, metadata.getColumnType(1),
+				"type of column 1 is incorrect");
+			assertEquals(Types.VARCHAR, metadata.getColumnType(2),
+				"type of column 2 is incorrect");
+			assertEquals(Types.VARCHAR, metadata.getColumnType(3),
+				"type of column 3 is incorrect");
+			assertEquals(Types.TIMESTAMP, metadata.getColumnType(4),
+				"type of column 4 is incorrect");
 
-			assertEquals("type of column 1 is incorrect", "Int", metadata
-					.getColumnTypeName(1));
-			assertEquals("type of column 2 is incorrect", "String", metadata
-					.getColumnTypeName(2));
-			assertEquals("type of column 3 is incorrect", "String", metadata
-					.getColumnTypeName(3));
-			assertEquals("type of column 4 is incorrect", "Timestamp", metadata
-					.getColumnTypeName(4));
+			assertEquals("Int", metadata.getColumnTypeName(1),
+				"type of column 1 is incorrect");
+			assertEquals("String", metadata.getColumnTypeName(2),
+				"type of column 2 is incorrect");
+			assertEquals("String", metadata.getColumnTypeName(3),
+				"type of column 3 is incorrect");
+			assertEquals("Timestamp", metadata.getColumnTypeName(4),
+				"type of column 4 is incorrect");
 		}
 	}
 
@@ -409,14 +379,14 @@ public class TestCsvDriver
 		{
 			ResultSetMetaData metadata = results.getMetaData();
 
-			assertEquals("size of column 1 is incorrect", 20, metadata
-					.getColumnDisplaySize(1));
-			assertEquals("size of column 2 is incorrect", 20, metadata
-					.getColumnDisplaySize(2));
-			assertEquals("size of column 3 is incorrect", 20, metadata
-					.getColumnDisplaySize(3));
-			assertEquals("size of column 4 is incorrect", 20, metadata
-					.getColumnDisplaySize(4));
+			assertEquals(20, metadata.getColumnDisplaySize(1),
+				"size of column 1 is incorrect");
+			assertEquals(20, metadata.getColumnDisplaySize(2),
+				"size of column 2 is incorrect");
+			assertEquals(20, metadata.getColumnDisplaySize(3),
+				"size of column 3 is incorrect");
+			assertEquals(20, metadata.getColumnDisplaySize(4),
+				"size of column 4 is incorrect");
 		}
 	}
 
@@ -439,14 +409,14 @@ public class TestCsvDriver
 			ResultSetMetaData metadata = results.getMetaData();
 
 			// TODO - this fails
-			assertEquals("type of column 1 is incorrect", Types.TIMESTAMP, metadata
-					.getColumnType(1));
-			assertEquals("type of column 2 is incorrect", Types.INTEGER, metadata
-					.getColumnType(2));
-			assertEquals("type of column 3 is incorrect", Types.VARCHAR, metadata
-					.getColumnType(3));
-			assertEquals("type of column 4 is incorrect", Types.VARCHAR, metadata
-					.getColumnType(4));
+			assertEquals(Types.TIMESTAMP, metadata.getColumnType(1),
+				"type of column 1 is incorrect");
+			assertEquals(Types.INTEGER, metadata.getColumnType(2),
+				"type of column 2 is incorrect");
+			assertEquals(Types.VARCHAR, metadata.getColumnType(3),
+				"type of column 3 is incorrect");
+			assertEquals(Types.VARCHAR, metadata.getColumnType(4),
+				"type of column 4 is incorrect");
 		}
 	}
 
@@ -469,22 +439,22 @@ public class TestCsvDriver
 		{
 			ResultSetMetaData metadata = results.getMetaData();
 
-			assertEquals("type of column 1 is incorrect", Types.INTEGER, metadata
-					.getColumnType(1));
-			assertEquals("type of column 2 is incorrect", Types.TIMESTAMP, metadata
-					.getColumnType(2));
-			assertEquals("type of column 3 is incorrect", Types.INTEGER, metadata
-					.getColumnType(3));
-			assertEquals("type of column 4 is incorrect", Types.INTEGER, metadata
-					.getColumnType(4));
-			assertEquals("type of column 5 is incorrect", Types.DOUBLE, metadata
-					.getColumnType(5));
-			assertEquals("type of column 6 is incorrect", Types.VARCHAR, metadata
-					.getColumnType(6));
-			assertEquals("type of column 7 is incorrect", Types.VARCHAR, metadata
-					.getColumnType(7));
-			assertEquals("type of column 8 is incorrect", Types.VARCHAR, metadata
-					.getColumnType(8));
+			assertEquals(Types.INTEGER, metadata.getColumnType(1),
+				"type of column 1 is incorrect");
+			assertEquals(Types.TIMESTAMP, metadata.getColumnType(2),
+				"type of column 2 is incorrect");
+			assertEquals(Types.INTEGER, metadata.getColumnType(3),
+				"type of column 3 is incorrect");
+			assertEquals(Types.INTEGER, metadata.getColumnType(4),
+				"type of column 4 is incorrect");
+			assertEquals(Types.DOUBLE, metadata.getColumnType(5),
+				"type of column 5 is incorrect");
+			assertEquals(Types.VARCHAR, metadata.getColumnType(6),
+				"type of column 6 is incorrect");
+			assertEquals(Types.VARCHAR, metadata.getColumnType(7),
+				"type of column 7 is incorrect");
+			assertEquals(Types.VARCHAR, metadata.getColumnType(8),
+				"type of column 8 is incorrect");
 		}
 	}
 
@@ -501,10 +471,10 @@ public class TestCsvDriver
 		{
 			ResultSetMetaData metadata = results.getMetaData();
 
-			assertEquals("Incorrect Table Name", "sample", metadata.getTableName(0));
+			assertEquals("sample", metadata.getTableName(0), "Incorrect Table Name");
 
-			assertEquals("Incorrect Column Name 1", "ID", metadata.getColumnName(1));
-			assertEquals("Incorrect Column Name 2", "NAME", metadata.getColumnName(2));
+			assertEquals("ID", metadata.getColumnName(1), "Incorrect Column Name 1");
+			assertEquals("NAME", metadata.getColumnName(2), "Incorrect Column Name 2");
 		}
 	}
 
@@ -524,12 +494,12 @@ public class TestCsvDriver
 		{
 			ResultSetMetaData metadata = results.getMetaData();
 
-			assertEquals("name of column 1 is incorrect", "XID", metadata.getColumnName(1));
-			assertEquals("label of column 1 is incorrect", "XID", metadata.getColumnLabel(1));
-			assertEquals("name of column 2 is incorrect", "Name", metadata.getColumnName(2));
-			assertEquals("label of column 2 is incorrect", "Name", metadata.getColumnLabel(2));
-			assertEquals("name of column 3 is incorrect", "DEPT", metadata.getColumnName(3));
-			assertEquals("label of column 3 is incorrect", "DEPT", metadata.getColumnLabel(3));
+			assertEquals("XID", metadata.getColumnName(1), "name of column 1 is incorrect");
+			assertEquals("XID", metadata.getColumnLabel(1), "label of column 1 is incorrect");
+			assertEquals("Name", metadata.getColumnName(2), "name of column 2 is incorrect");
+			assertEquals("Name", metadata.getColumnLabel(2), "label of column 2 is incorrect");
+			assertEquals("DEPT", metadata.getColumnName(3), "name of column 3 is incorrect");
+			assertEquals("DEPT", metadata.getColumnLabel(3), "label of column 3 is incorrect");
 		}
 	}
 
@@ -542,7 +512,7 @@ public class TestCsvDriver
 			DatabaseMetaData metadata = conn.getMetaData();
 			ResultSet results = metadata.getTableTypes();
 			assertTrue(results.next());
-			assertEquals("Wrong table type", "TABLE", results.getString(1));
+			assertEquals("TABLE", results.getString(1), "Wrong table type");
 			assertFalse(results.next());
 		}
 	}
@@ -567,11 +537,11 @@ public class TestCsvDriver
 			ResultSet results = conn.getMetaData().getColumns(null, null, "C D", null))
 		{
 			assertTrue(results.next());
-			assertEquals("Wrong table name", "C D", results.getString("TABLE_NAME"));
-			assertEquals("Wrong column name", "A", results.getString("COLUMN_NAME"));
+			assertEquals("C D", results.getString("TABLE_NAME"), "Wrong table name");
+			assertEquals("A", results.getString("COLUMN_NAME"), "Wrong column name");
 			assertTrue(results.next());
-			assertEquals("Wrong table name", "C D", results.getString("TABLE_NAME"));
-			assertEquals("Wrong column name", "B", results.getString("COLUMN_NAME"));
+			assertEquals("C D", results.getString("TABLE_NAME"), "Wrong table name");
+			assertEquals("B", results.getString("COLUMN_NAME"), "Wrong column name");
 		}
 	}
 
@@ -589,11 +559,11 @@ public class TestCsvDriver
 			ResultSet results = conn.getMetaData().getColumns(null, null, "test", null))
 		{
 			assertTrue(results.next());
-			assertEquals("Wrong table name", "test", results.getString("TABLE_NAME"));
-			assertEquals("Wrong column name", "Datum", results.getString("COLUMN_NAME"));
+			assertEquals("test", results.getString("TABLE_NAME"), "Wrong table name");
+			assertEquals("Datum", results.getString("COLUMN_NAME"), "Wrong column name");
 			assertTrue(results.next());
-			assertEquals("Wrong table name", "test", results.getString("TABLE_NAME"));
-			assertEquals("Wrong column name", "Tijd", results.getString("COLUMN_NAME"));
+			assertEquals("test", results.getString("TABLE_NAME"), "Wrong table name");
+			assertEquals("Tijd", results.getString("COLUMN_NAME"), "Wrong column name");
 		}
 	}
 
@@ -649,9 +619,9 @@ public class TestCsvDriver
 			ResultSet results = conn.getMetaData().getTypeInfo())
 		{
 			assertTrue(results.next());
-			assertEquals("TYPE_NAME is wrong", "String", results.getString("TYPE_NAME"));
-			assertEquals("DATA_TYPE is wrong", Types.VARCHAR, results.getInt("DATA_TYPE"));
-			assertEquals("NULLABLE is wrong", DatabaseMetaData.typeNullable, results.getShort("NULLABLE"));
+			assertEquals("String", results.getString("TYPE_NAME"), "TYPE_NAME is wrong");
+			assertEquals(Types.VARCHAR, results.getInt("DATA_TYPE"), "DATA_TYPE is wrong");
+			assertEquals(DatabaseMetaData.typeNullable, results.getShort("NULLABLE"), "NULLABLE is wrong");
 		}
 	}
 
@@ -668,16 +638,17 @@ public class TestCsvDriver
 				+ "FROM sample5 WHERE Job = 'Project Manager'"))
 		{
 			assertTrue(results.next());
-			assertEquals("Integer column ID is wrong", Integer.valueOf(1), results
-					.getObject("id"));
-			assertEquals("Integer column 1 is wrong", Integer.valueOf(1), results
-					.getObject(1));
+			assertEquals(Integer.valueOf(1), results.getObject("id"),
+				"Integer column ID is wrong");
+			assertEquals(Integer.valueOf(1), results.getObject(1),
+				"Integer column 1 is wrong");
 			java.sql.Date shouldBe = java.sql.Date.valueOf("2001-01-02");
-			assertEquals("Date column Start is wrong", shouldBe, results
-					.getObject("start"));
-			assertEquals("Date column 4 is wrong", shouldBe, results.getObject(4));
-			assertEquals("The Name is wrong", "Juan Pablo Morales", results
-					.getObject("name"));
+			assertEquals(shouldBe, results.getObject("start"),
+				"Date column Start is wrong");
+			assertEquals(shouldBe, results.getObject(4),
+				"Date column 4 is wrong");
+			assertEquals("Juan Pablo Morales", results.getObject("name"),
+				"The Name is wrong");
 		}
 	}
 
@@ -694,16 +665,16 @@ public class TestCsvDriver
 				+ "FROM sample5 WHERE Job = 'Project Manager'"))
 		{
 			assertTrue(results.next());
-			assertEquals("Integer column ID is wrong", Integer.valueOf(1), results
-					.getObject("id"));
-			assertEquals("Integer column 1 is wrong", Integer.valueOf(1), results
-					.getObject(1));
+			assertEquals(Integer.valueOf(1), results.getObject("id"),
+				"Integer column ID is wrong");
+			assertEquals(Integer.valueOf(1), results.getObject(1),
+				"Integer column 1 is wrong");
 			java.sql.Date shouldBe = java.sql.Date.valueOf("2001-01-02");
-			assertEquals("Date column Start is wrong", shouldBe, results
-					.getObject("start"));
-			assertEquals("Date column 4 is wrong", shouldBe, results.getObject(2));
-			assertEquals("The Name is wrong", "Juan Pablo Morales", results
-					.getObject("name"));
+			assertEquals(shouldBe, results.getObject("start"),
+				"Date column Start is wrong");
+			assertEquals(shouldBe, results.getObject(2), "Date column 4 is wrong");
+			assertEquals("Juan Pablo Morales", results.getObject("name"),
+				"The Name is wrong");
 		}
 	}
 
@@ -722,16 +693,16 @@ public class TestCsvDriver
 		{
 			assertTrue(results.next());
 			DateFormat dfp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			assertEquals("Integer column ID is wrong", Integer.valueOf(1), results
-					.getObject("id"));
-			assertEquals("Integer column 1 is wrong", Integer.valueOf(1), results
-					.getObject(1));
-			assertEquals("Date column Start is wrong", dfp.parse(results
-					.getString("start")), results.getObject("start"));
-			assertEquals("Date column 4 is wrong", dfp.parse(results
-					.getString("start")), results.getObject(4));
-			assertEquals("The Name is wrong", "Juan Pablo Morales", results
-					.getObject("name"));
+			assertEquals(Integer.valueOf(1), results.getObject("id"),
+				"Integer column ID is wrong");
+			assertEquals(Integer.valueOf(1), results.getObject(1),
+				"Integer column 1 is wrong");
+			assertEquals(dfp.parse(results.getString("start")), results.getObject("start"),
+				"Date column Start is wrong");
+			assertEquals(dfp.parse(results.getString("start")), results.getObject(4),
+				"Date column 4 is wrong");
+			assertEquals("Juan Pablo Morales", results.getObject("name"),
+				"The Name is wrong");
 		}
 	}
 
@@ -754,14 +725,14 @@ public class TestCsvDriver
 		{
 			assertTrue(results.next());
 			ResultSetMetaData metadata = results.getMetaData();
-			assertEquals("type of column 1 is incorrect", Types.INTEGER, metadata
-					.getColumnType(1));
-			assertEquals("type of column 2 is incorrect", Types.VARCHAR, metadata
-					.getColumnType(2));
-			assertEquals("type of column 3 is incorrect", Types.VARCHAR, metadata
-					.getColumnType(3));
-			assertEquals("type of column 4 is incorrect", Types.TIMESTAMP, metadata
-					.getColumnType(4));
+			assertEquals(Types.INTEGER, metadata.getColumnType(1),
+				"type of column 1 is incorrect");
+			assertEquals(Types.VARCHAR, metadata.getColumnType(2),
+				"type of column 2 is incorrect");
+			assertEquals(Types.VARCHAR, metadata.getColumnType(3),
+				"type of column 3 is incorrect");
+			assertEquals(Types.TIMESTAMP, metadata.getColumnType(4),
+				"type of column 4 is incorrect");
 		}
 	}
 
@@ -788,12 +759,12 @@ public class TestCsvDriver
 		{
 			assertTrue(results.next());
 			ResultSetMetaData metadata = results.getMetaData();
-			assertEquals("type of column 1 is incorrect", Types.INTEGER, metadata
-					.getColumnType(1));
-			assertEquals("type of column 2 is incorrect", Types.DATE, metadata
-					.getColumnType(2));
-			assertEquals("type of column 3 is incorrect", Types.TIME, metadata
-					.getColumnType(3));
+			assertEquals(Types.INTEGER, metadata.getColumnType(1),
+				"type of column 1 is incorrect");
+			assertEquals(Types.DATE, metadata.getColumnType(2),
+				"type of column 2 is incorrect");
+			assertEquals(Types.TIME, metadata.getColumnType(3),
+				"type of column 3 is incorrect");
 		}
 	}
 
@@ -839,20 +810,20 @@ public class TestCsvDriver
 		{
 			assertTrue(results.next());
 			ResultSetMetaData metadata = results.getMetaData();
-			assertEquals("type of column 1 is incorrect", Types.TINYINT, metadata
-					.getColumnType(1));
-			assertEquals("type of column 2 is incorrect", Types.SMALLINT, metadata
-					.getColumnType(2));
-			assertEquals("type of column 3 is incorrect", Types.INTEGER, metadata
-					.getColumnType(3));
-			assertEquals("type of column 4 is incorrect", Types.BIGINT, metadata
-					.getColumnType(4));
-			assertEquals("type of column 5 is incorrect", Types.FLOAT, metadata
-					.getColumnType(5));
-			assertEquals("type of column 6 is incorrect", Types.DOUBLE, metadata
-					.getColumnType(6));
-			assertEquals("type of column 7 is incorrect", Types.DECIMAL, metadata
-					.getColumnType(7));
+			assertEquals(Types.TINYINT, metadata.getColumnType(1),
+				"type of column 1 is incorrect");
+			assertEquals(Types.SMALLINT, metadata.getColumnType(2),
+				"type of column 2 is incorrect");
+			assertEquals(Types.INTEGER, metadata.getColumnType(3),
+				"type of column 3 is incorrect");
+			assertEquals(Types.BIGINT, metadata.getColumnType(4),
+				"type of column 4 is incorrect");
+			assertEquals(Types.FLOAT, metadata.getColumnType(5),
+				"type of column 5 is incorrect");
+			assertEquals(Types.DOUBLE, metadata.getColumnType(6),
+				"type of column 6 is incorrect");
+			assertEquals(Types.DECIMAL, metadata.getColumnType(7),
+				"type of column 7 is incorrect");
 		}
 	}
 
@@ -868,11 +839,11 @@ public class TestCsvDriver
 				+ "FROM sample5 WHERE Job = 'Project Manager'"))
 		{
 			assertTrue(results.next());
-			assertEquals("the start time is wrong", "2001-01-02 12:30:00", results
-					.getObject("start"));
-			assertEquals("The ID is wrong", "01", results.getObject("id"));
-			assertEquals("The Name is wrong", "Juan Pablo Morales", results
-					.getObject("name"));
+			assertEquals("2001-01-02 12:30:00", results.getObject("start"),
+				"the start time is wrong");
+			assertEquals("01", results.getObject("id"), "The ID is wrong");
+			assertEquals("Juan Pablo Morales", results.getObject("name"),
+				"The Name is wrong");
 		}
 	}
 
@@ -963,11 +934,11 @@ public class TestCsvDriver
 			assertTrue(results.next());
 			String target = "2001-01-02 12:30:00";
 			DateFormat toUTC = getUTCDateFormat();
-			assertEquals("the start time is wrong", target, toUTC.format(results
-					.getObject("start")));
-			assertEquals("The ID is wrong", Integer.valueOf(1), results.getObject("id"));
-			assertEquals("The Name is wrong", "Juan Pablo Morales", results
-					.getObject("name"));
+			assertEquals(target, toUTC.format(results.getObject("start")),
+				"the start time is wrong");
+			assertEquals(Integer.valueOf(1), results.getObject("id"), "The ID is wrong");
+			assertEquals("Juan Pablo Morales", results.getObject("name"),
+				"The Name is wrong");
 		}
 	}
 
@@ -987,22 +958,22 @@ public class TestCsvDriver
 			try (ResultSet results = stmt.executeQuery("SELECT * from sample5"))
 			{
 				assertTrue(results.next());
-				assertEquals("The sample5 ID is wrong", Integer.valueOf(41), results.getObject("id"));
-				assertEquals("The sample5 Job is wrong", "Piloto", results.getObject("job"));
+				assertEquals(Integer.valueOf(41), results.getObject("id"), "The sample5 ID is wrong");
+				assertEquals("Piloto", results.getObject("job"), "The sample5 Job is wrong");
 			}
 			try (ResultSet results = stmt.executeQuery("SELECT ID,EXTRA_FIELD from sample"))
 			{
 				assertTrue(results.next());
-				assertEquals("The sample ID is wrong", "Q123", results.getObject(1));
-				assertEquals("The sample EXTRA_FIELD is wrong", "F", results.getObject(2));
+				assertEquals("Q123", results.getObject(1), "The sample ID is wrong");
+				assertEquals("F", results.getObject(2), "The sample EXTRA_FIELD is wrong");
 			}
 
 			// column types are inferred from data.
 			try (ResultSet results = stmt.executeQuery("SELECT C2, 'X' as X from numeric"))
 			{
 				assertTrue(results.next());
-				assertEquals("The numeric C2 is wrong", Integer.valueOf(-1010), results.getObject(1));
-				assertEquals("The numeric X is wrong", "X", results.getObject(2));
+				assertEquals(Integer.valueOf(-1010), results.getObject(1), "The numeric C2 is wrong");
+				assertEquals("X", results.getObject(2), "The numeric X is wrong");
 			}
 		}
 	}
@@ -1021,60 +992,60 @@ public class TestCsvDriver
 		{
 			// header is now treated as normal data line
 			results.next();
-			assertTrue("Incorrect COLUMN1 Value", results.getString("COLUMN1")
-					.equals("ID"));
-			assertTrue("Incorrect COLUMN2 Value", results.getString("COLUMN2")
-					.equals("NAME"));
-			assertTrue("Incorrect COLUMN3 Value", results.getString("COLUMN3")
-					.equals("EXTRA_FIELD"));
+			assertTrue(results.getString("COLUMN1").equals("ID"),
+				"Incorrect COLUMN1 Value");
+			assertTrue(results.getString("COLUMN2").equals("NAME"),
+				"Incorrect COLUMN2 Value");
+			assertTrue(results.getString("COLUMN3").equals("EXTRA_FIELD"),
+				"Incorrect COLUMN3 Value");
 
 			results.next();
-			assertTrue("Incorrect COLUMN1 Value", results.getString("COLUMN1")
-					.equals("Q123"));
-			assertTrue("Incorrect COLUMN2 Value", results.getString("COLUMN2")
-					.equals("\"S,\""));
-			assertTrue("Incorrect COLUMN3 Value", results.getString("COLUMN3")
-					.equals("F"));
+			assertTrue(results.getString("COLUMN1").equals("Q123"),
+				"Incorrect COLUMN1 Value");
+			assertTrue(results.getString("COLUMN2").equals("\"S,\""),
+				"Incorrect COLUMN2 Value");
+			assertTrue(results.getString("COLUMN3").equals("F"),
+				"Incorrect COLUMN3 Value");
 
 			results.next();
-			assertTrue("Incorrect COLUMN1 Value", results.getString("COLUMN1")
-					.equals("A123"));
-			assertTrue("Incorrect COLUMN2 Value", results.getString("COLUMN2")
-					.equals("Jonathan Ackerman"));
-			assertTrue("Incorrect COLUMN3 Value", results.getString("COLUMN3")
-					.equals("A"));
+			assertTrue(results.getString("COLUMN1").equals("A123"),
+				"Incorrect COLUMN1 Value");
+			assertTrue(results.getString("COLUMN2").equals("Jonathan Ackerman"),
+				"Incorrect COLUMN2 Value");
+			assertTrue(results.getString("COLUMN3").equals("A"),
+				"Incorrect COLUMN3 Value");
 
 			results.next();
-			assertTrue("Incorrect COLUMN1 Value", results.getString("COLUMN1")
-					.equals("B234"));
-			assertTrue("Incorrect COLUMN2 Value", results.getString("COLUMN2")
-					.equals("Grady O'Neil"));
-			assertTrue("Incorrect COLUMN3 Value", results.getString("COLUMN3")
-					.equals("B"));
+			assertTrue(results.getString("COLUMN1").equals("B234"),
+				"Incorrect COLUMN1 Value");
+			assertTrue(results.getString("COLUMN2").equals("Grady O'Neil"),
+				"Incorrect COLUMN2 Value");
+			assertTrue(results.getString("COLUMN3").equals("B"),
+				"Incorrect COLUMN3 Value");
 
 			results.next();
-			assertTrue("Incorrect COLUMN1 Value", results.getString("COLUMN1")
-					.equals("C456"));
-			assertTrue("Incorrect COLUMN2 Value", results.getString("COLUMN2")
-					.equals("Susan, Peter and Dave"));
-			assertTrue("Incorrect COLUMN3 Value", results.getString("COLUMN3")
-					.equals("C"));
+			assertTrue(results.getString("COLUMN1").equals("C456"),
+				"Incorrect COLUMN1 Value");
+			assertTrue(results.getString("COLUMN2").equals("Susan, Peter and Dave"),
+				"Incorrect COLUMN2 Value");
+			assertTrue(results.getString("COLUMN3").equals("C"),
+				"Incorrect COLUMN3 Value");
 
 			results.next();
-			assertTrue("Incorrect COLUMN1 Value", results.getString("COLUMN1")
-					.equals("D789"));
-			assertTrue("Incorrect COLUMN2 Value", results.getString("COLUMN2")
-					.equals("Amelia \"meals\" Maurice"));
-			assertTrue("Incorrect COLUMN3 Value", results.getString("COLUMN3")
-					.equals("E"));
+			assertTrue(results.getString("COLUMN1").equals("D789"),
+				"Incorrect COLUMN1 Value");
+			assertTrue(results.getString("COLUMN2").equals("Amelia \"meals\" Maurice"),
+				"Incorrect COLUMN2 Value");
+			assertTrue(results.getString("COLUMN3").equals("E"),
+				"Incorrect COLUMN3 Value");
 
 			results.next();
-			assertTrue("Incorrect COLUMN1 Value", results.getString("COLUMN1")
-					.equals("X234"));
-			assertTrue("Incorrect COLUMN2 Value", results.getString("COLUMN2")
-					.equals("Peter \"peg leg\", Jimmy & Samantha \"Sam\""));
-			assertTrue("Incorrect COLUMN3 Value", results.getString("COLUMN3")
-					.equals("G"));
+			assertTrue(results.getString("COLUMN1").equals("X234"),
+				"Incorrect COLUMN1 Value");
+			assertTrue(results.getString("COLUMN2").equals("Peter \"peg leg\", Jimmy & Samantha \"Sam\""),
+				"Incorrect COLUMN2 Value");
+			assertTrue(results.getString("COLUMN3").equals("G"),
+				"Incorrect COLUMN3 Value");
 		}
 	}
 
@@ -1094,8 +1065,8 @@ public class TestCsvDriver
 		{
 			// Test selecting from a file with a multi-line value as the first record.
 			assertTrue(results.next());
-			assertEquals("Incorrect COLUMN1 Value", "Germany", results.getString("COLUMN1"));
-			assertEquals("Incorrect COLUMN2 Value", "Wallstrasse 76-79,\n10179 Berlin", results.getString("COLUMN2"));
+			assertEquals("Germany", results.getString("COLUMN1"), "Incorrect COLUMN1 Value");
+			assertEquals("Wallstrasse 76-79,\n10179 Berlin", results.getString("COLUMN2"), "Incorrect COLUMN2 Value");
 			assertTrue(results.next());
 		}
 	}
@@ -1117,11 +1088,11 @@ public class TestCsvDriver
 						+ File.separator + subPath + File.separator + "sample"))
 		{
 			results.next();
-			assertTrue("Incorrect ID Value", results.getString("ID").equals("Q123"));
-			assertTrue("Incorrect NAME Value", results.getString("NAME").equals(
-					"\"S,\""));
-			assertTrue("Incorrect EXTRA_FIELD Value", results.getString(
-					"EXTRA_FIELD").equals("F"));
+			assertTrue(results.getString("ID").equals("Q123"), "Incorrect ID Value");
+			assertTrue(results.getString("NAME").equals("\"S,\""),
+				"Incorrect NAME Value");
+			assertTrue(results.getString("EXTRA_FIELD").equals("F"),
+				"Incorrect EXTRA_FIELD Value");
 		}
 	}
 
@@ -1137,11 +1108,11 @@ public class TestCsvDriver
 				.executeQuery("SELECT ID, Name, Job FROM sample4 WHERE Job = 'Project Manager'"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "01", results.getString("ID"));
+			assertEquals("01", results.getString("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "02", results.getString("ID"));
+			assertEquals("02", results.getString("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "04", results.getString("ID"));
+			assertEquals("04", results.getString("ID"), "The ID is wrong");
 			assertTrue(!results.next());
 		}
 	}
@@ -1159,17 +1130,17 @@ public class TestCsvDriver
 				.executeQuery("SELECT ID as i, Name as n, Job as j FROM sample4 WHERE j='Project Manager'"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "01", results.getString("i"));
+			assertEquals("01", results.getString("i"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "02", results.getString("i"));
-			assertEquals("The name is wrong", "Mauricio Hernandez", results
-					.getString("N"));
-			assertEquals("The name is wrong", "Mauricio Hernandez", results
-					.getString(2));
-			assertEquals("The job is wrong", "Project Manager", results
-					.getString("J"));
+			assertEquals("02", results.getString("i"), "The ID is wrong");
+			assertEquals("Mauricio Hernandez", results.getString("N"),
+				"The name is wrong");
+			assertEquals("Mauricio Hernandez", results.getString(2),
+				"The name is wrong");
+			assertEquals("Project Manager", results.getString("J"),
+				"The job is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "04", results.getString("i"));
+			assertEquals("04", results.getString("i"), "The ID is wrong");
 			assertTrue(!results.next());
 		}
 	}
@@ -1189,18 +1160,18 @@ public class TestCsvDriver
 			assertEquals("ID", results.getMetaData().getColumnLabel(1).toString());
 
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "01", results.getString("id"));
+			assertEquals("01", results.getString("id"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "02", results.getString("id"));
-			assertEquals("The name is wrong", "Mauricio Hernandez", results
-					.getString("Name"));
-			assertEquals("The name is wrong", "Mauricio Hernandez", results
-					.getString(2));
-			assertEquals("The job is wrong", "Project Manager", results
-					.getString("Job"));
+			assertEquals("02", results.getString("id"), "The ID is wrong");
+			assertEquals("Mauricio Hernandez", results.getString("Name"),
+				"The name is wrong");
+			assertEquals("Mauricio Hernandez", results.getString(2),
+				"The name is wrong");
+			assertEquals("Project Manager", results.getString("Job"),
+				"The job is wrong");
 			assertTrue(results.next());
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "04", results.getString("id"));
+			assertEquals("04", results.getString("id"), "The ID is wrong");
 			assertTrue(!results.next());
 		}
 	}
@@ -1218,9 +1189,9 @@ public class TestCsvDriver
 		{
 			assertEquals("ID2", results.getMetaData().getColumnName(2));
 			assertTrue(results.next());
-			assertEquals("The ID2 is wrong", null, results.getString("id2"));
+			assertEquals(null, results.getString("id2"), "The ID2 is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID2 is wrong", null, results.getObject("id2"));
+			assertEquals(null, results.getObject("id2"), "The ID2 is wrong");
 		}
 	}
 
@@ -1235,14 +1206,14 @@ public class TestCsvDriver
 			ResultSet results = stmt
 				.executeQuery("SELECT Job j,ID i,Name n, 0 c FROM sample4"))
 		{
-			assertTrue("no results found - should be all", results.next());
-			assertTrue("no results found - should be all", results.next());
-			assertEquals("The literal c is wrong", "0", results.getString("c"));
-			assertEquals("The literal c is wrong", "0", results.getString(4));
-			assertEquals("The name is wrong", "Mauricio Hernandez", results
-					.getString("N"));
-			assertEquals("The job is wrong", "Project Manager", results
-					.getString("J"));
+			assertTrue(results.next(), "no results found - should be all");
+			assertTrue(results.next(), "no results found - should be all");
+			assertEquals("0", results.getString("c"), "The literal c is wrong");
+			assertEquals("0", results.getString(4), "The literal c is wrong");
+			assertEquals("Mauricio Hernandez", results.getString("N"),
+				"The name is wrong");
+			assertEquals("Project Manager", results.getString("J"),
+				"The job is wrong");
 		}
 	}
 
@@ -1260,12 +1231,12 @@ public class TestCsvDriver
 			ResultSet results = stmt
 				.executeQuery("SELECT 44, lower(job), ID*2, 'hello', 44 from sample4"))
 		{
-			assertTrue("no results found", results.next());
-			assertEquals("Number 44 is wrong", 44, results.getInt(1));
-			assertEquals("lower(job) is wrong", "project manager", results.getString(2));
-			assertEquals("ID*2 is wrong", 2, results.getInt(3));
-			assertEquals("String 'hello' is wrong", "hello", results.getString(4));
-			assertEquals("Number 44 is wrong", 44, results.getInt(5));
+			assertTrue(results.next(), "no results found");
+			assertEquals(44, results.getInt(1), "Number 44 is wrong");
+			assertEquals("project manager", results.getString(2), "lower(job) is wrong");
+			assertEquals(2, results.getInt(3), "ID*2 is wrong");
+			assertEquals("hello", results.getString(4), "String 'hello' is wrong");
+			assertEquals(44, results.getInt(5), "Number 44 is wrong");
 		}
 	}
 
@@ -1299,11 +1270,11 @@ public class TestCsvDriver
 				.executeQuery("SELECT * FROM sample4 WHERE Job = 'Project Manager'"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "01", results.getString("ID"));
+			assertEquals("01", results.getString("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "02", results.getString("ID"));
+			assertEquals("02", results.getString("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "04", results.getString("ID"));
+			assertEquals("04", results.getString("ID"), "The ID is wrong");
 			assertTrue(!results.next());
 		}
 	}
@@ -1320,8 +1291,8 @@ public class TestCsvDriver
 				.executeQuery("SELECT tbl.* FROM sample4 tbl"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "01", results.getString("ID"));
-			assertEquals("The Job is wrong", "Project Manager", results.getString(3));
+			assertEquals("01", results.getString("ID"), "The ID is wrong");
+			assertEquals("Project Manager", results.getString(3), "The Job is wrong");
 		}
 	}
 
@@ -1337,7 +1308,7 @@ public class TestCsvDriver
 				.executeQuery("SELECT * FROM sample4 WHERE Job = 'Project Manager' AND Name = 'Mauricio Hernandez'"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "02", results.getString("ID"));
+			assertEquals("02", results.getString("ID"), "The ID is wrong");
 			assertTrue(!results.next());
 		}
 	}
@@ -1354,9 +1325,9 @@ public class TestCsvDriver
 				.executeQuery("SELECT * FROM sample4 WHERE id BETWEEN '02' AND '03'"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 2, results.getInt("ID"));
+			assertEquals(2, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 3, results.getInt("ID"));
+			assertEquals(3, results.getInt("ID"), "The ID is wrong");
 			assertTrue(!results.next());
 		}
 	}
@@ -1377,11 +1348,11 @@ public class TestCsvDriver
 				.executeQuery("SELECT * FROM Purchase WHERE PurchaseDate BETWEEN '1/11/2013' AND '1/15/2013'"))
 		{
 			assertTrue(results.next());
-			assertEquals("The AccountNo is wrong", 58375, results.getInt("AccountNo"));
+			assertEquals(58375, results.getInt("AccountNo"), "The AccountNo is wrong");
 			assertTrue(results.next());
-			assertEquals("The AccountNo is wrong", 34625, results.getInt("AccountNo"));
+			assertEquals(34625, results.getInt("AccountNo"), "The AccountNo is wrong");
 			assertTrue(results.next());
-			assertEquals("The AccountNo is wrong", 34771, results.getInt("AccountNo"));
+			assertEquals(34771, results.getInt("AccountNo"), "The AccountNo is wrong");
 			assertTrue(!results.next());
 		}
 	}
@@ -1402,7 +1373,7 @@ public class TestCsvDriver
 				.executeQuery("SELECT * FROM Purchase WHERE PurchaseTime BETWEEN '08:30:00' AND '10:00:00'"))
 		{
 			assertTrue(results.next());
-			assertEquals("The AccountNo is wrong", 51002, results.getInt("AccountNo"));
+			assertEquals(51002, results.getInt("AccountNo"), "The AccountNo is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -1423,7 +1394,7 @@ public class TestCsvDriver
 				.executeQuery("SELECT * FROM sample5 WHERE Start BETWEEN '2003-03-01 08:30:00' AND '2003-03-02 17:30:00'"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 3, results.getInt("ID"));
+			assertEquals(3, results.getInt("ID"), "The ID is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -1440,9 +1411,9 @@ public class TestCsvDriver
 				.executeQuery("SELECT * FROM sample4 WHERE Name LIKE 'Ma%'"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 2, results.getInt("ID"));
+			assertEquals(2, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 3, results.getInt("ID"));
+			assertEquals(3, results.getInt("ID"), "The ID is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -1459,9 +1430,9 @@ public class TestCsvDriver
 				.executeQuery("select id from sample where id like '_234'"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "B234", results.getString("ID"));
+			assertEquals("B234", results.getString("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "X234", results.getString("ID"));
+			assertEquals("X234", results.getString("ID"), "The ID is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -1478,11 +1449,11 @@ public class TestCsvDriver
 				.executeQuery("select ID from escape where ID like 'index\\__'"))
 			{
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", "index_1", results.getString("ID"));
+				assertEquals("index_1", results.getString("ID"), "The ID is wrong");
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", "index_2", results.getString("ID"));
+				assertEquals("index_2", results.getString("ID"), "The ID is wrong");
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", "index_3", results.getString("ID"));
+				assertEquals("index_3", results.getString("ID"), "The ID is wrong");
 				assertFalse(results.next());
 			}
 
@@ -1490,11 +1461,11 @@ public class TestCsvDriver
 				.executeQuery("select ID from escape where ID like 'index^__' escape '^'"))
 			{
 				assertTrue(results2.next());
-				assertEquals("The ID is wrong", "index_1", results2.getString("ID"));
+				assertEquals("index_1", results2.getString("ID"), "The ID is wrong");
 				assertTrue(results2.next());
-				assertEquals("The ID is wrong", "index_2", results2.getString("ID"));
+				assertEquals("index_2", results2.getString("ID"), "The ID is wrong");
 				assertTrue(results2.next());
-				assertEquals("The ID is wrong", "index_3", results2.getString("ID"));
+				assertEquals("index_3", results2.getString("ID"), "The ID is wrong");
 				assertFalse(results2.next());
 			}
 
@@ -1502,9 +1473,9 @@ public class TestCsvDriver
 				.executeQuery("select ID from escape where ID like 'index^%%' escape '^'"))
 			{
 				assertTrue(results3.next());
-				assertEquals("The ID is wrong", "index%%", results3.getString("ID"));
+				assertEquals("index%%", results3.getString("ID"), "The ID is wrong");
 				assertTrue(results3.next());
-				assertEquals("The ID is wrong", "index%3", results3.getString("ID"));
+				assertEquals("index%3", results3.getString("ID"), "The ID is wrong");
 				assertFalse(results3.next());
 			}
 		}
@@ -1522,11 +1493,11 @@ public class TestCsvDriver
 				.executeQuery("select N from nikesh where Message like '%SSL%'"))
 		{
 			assertTrue(results.next());
-			assertEquals("N is wrong", 1, results.getInt(1));
+			assertEquals(1, results.getInt(1), "N is wrong");
 			assertTrue(results.next());
-			assertEquals("N is wrong", 2, results.getInt(1));
+			assertEquals(2, results.getInt(1), "N is wrong");
 			assertTrue(results.next());
-			assertEquals("N is wrong", 4, results.getInt(1));
+			assertEquals(4, results.getInt(1), "N is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -1552,8 +1523,8 @@ public class TestCsvDriver
 			{
 				assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidColumnName") + ": id", "" + e);
 			}
-			assertEquals("The name is wrong", "Felipe Grajales", results
-					.getString("name"));
+			assertEquals("Felipe Grajales", results.getString("name"),
+				"The name is wrong");
 			assertTrue(!results.next());
 		}
 	}
@@ -1599,7 +1570,7 @@ public class TestCsvDriver
 
 			double d = results.getDouble("c4");
 			long l = Math.round(d);
-			assertEquals("The c4 is wrong", l, 990000000000l);
+			assertEquals(l, 990000000000l, "The c4 is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -1619,16 +1590,16 @@ public class TestCsvDriver
 			try (ResultSet results = stmt.executeQuery("SELECT ID from sample8 where d = '2010-02-02'"))
 			{
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", 2, results.getInt(1));
+				assertEquals(2, results.getInt(1), "The ID is wrong");
 				assertFalse(results.next());
 			}
 
 			try (ResultSet results = stmt.executeQuery("SELECT ID from sample8 where '2010-03-24' < d"))
 			{
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", 3, results.getInt(1));
+				assertEquals(3, results.getInt(1), "The ID is wrong");
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", 6, results.getInt(1));
+				assertEquals(6, results.getInt(1), "The ID is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -1650,7 +1621,7 @@ public class TestCsvDriver
 				.executeQuery("SELECT * FROM Purchase WHERE PurchaseTime >= '12:00:00' and '12:59:59' >= PurchaseTime"))
 		{
 			assertTrue(results.next());
-			assertEquals("The AccountNo is wrong", 34771, results.getInt("AccountNo"));
+			assertEquals(34771, results.getInt("AccountNo"), "The AccountNo is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -1671,9 +1642,9 @@ public class TestCsvDriver
 				.executeQuery("SELECT * FROM sample5 WHERE Start >= '2002-01-01 00:00:00' and '2003-12-31 23:59:59' >= Start"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 2, results.getInt("ID"));
+			assertEquals(2, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 3, results.getInt("ID"));
+			assertEquals(3, results.getInt("ID"), "The ID is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -1691,11 +1662,11 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("select Name from sample5 where id in (3, 4, 5)"))
 		{
 			assertTrue(results.next());
-			assertEquals("The Name is wrong", "Maria Cristina Lucero", results.getString("Name"));
+			assertEquals("Maria Cristina Lucero", results.getString("Name"), "The Name is wrong");
 			assertTrue(results.next());
-			assertEquals("The Name is wrong", "Felipe Grajales", results.getString("Name"));
+			assertEquals("Felipe Grajales", results.getString("Name"), "The Name is wrong");
 			assertTrue(results.next());
-			assertEquals("The Name is wrong", "Melquisedec Rojas Castillo", results.getString("Name"));
+			assertEquals("Melquisedec Rojas Castillo", results.getString("Name"), "The Name is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -1726,11 +1697,11 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("select Id from sample where Id not in ('A123', 'B234', 'X234')"))
 		{
 			assertTrue(results.next());
-			assertEquals("The Id is wrong", "Q123", results.getString("Id"));
+			assertEquals("Q123", results.getString("Id"), "The Id is wrong");
 			assertTrue(results.next());
-			assertEquals("The Id is wrong", "C456", results.getString("Id"));
+			assertEquals("C456", results.getString("Id"), "The Id is wrong");
 			assertTrue(results.next());
-			assertEquals("The Id is wrong", "D789", results.getString("Id"));
+			assertEquals("D789", results.getString("Id"), "The Id is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -1772,9 +1743,9 @@ public class TestCsvDriver
 				.executeQuery("SELECT * FROM Purchase WHERE PurchaseDate IN ('1/9/2013', '1/16/2013')"))
 		{
 			assertTrue(results.next());
-			assertEquals("The AccountNo is wrong", 19685, results.getInt("AccountNo"));
+			assertEquals(19685, results.getInt("AccountNo"), "The AccountNo is wrong");
 			assertTrue(results.next());
-			assertEquals("The AccountNo is wrong", 51002, results.getInt("AccountNo"));
+			assertEquals(51002, results.getInt("AccountNo"), "The AccountNo is wrong");
 			assertTrue(!results.next());
 		}
 	}
@@ -1795,7 +1766,7 @@ public class TestCsvDriver
 				.executeQuery("SELECT * FROM Purchase WHERE PurchaseTime IN ('10:10:06', '11:10:06')"))
 		{
 			assertTrue(results.next());
-			assertEquals("The AccountNo is wrong", 22021, results.getInt("AccountNo"));
+			assertEquals(22021, results.getInt("AccountNo"), "The AccountNo is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -1818,7 +1789,7 @@ public class TestCsvDriver
 					"WHERE Start IN ('2002-02-02 12:30:00', '2004-04-02 12:00:00', '2004-04-02')"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 2, results.getInt("ID"));
+			assertEquals(2, results.getInt("ID"), "The ID is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -1847,15 +1818,14 @@ public class TestCsvDriver
 			{
 				assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidColumnName") + ": id", "" + e);
 			}
-			assertEquals("The name is wrong", "3", results.getString("rc"));
+			assertEquals("3", results.getString("rc"), "The name is wrong");
 			// would like to test the full_name_nd, but can't insert the Arabic
 			// string in the code
 			assertTrue(results.next());
-			assertEquals("The name is wrong", "3", results.getString("rc"));
+			assertEquals("3", results.getString("rc"), "The name is wrong");
 			assertTrue(results.next());
-			assertEquals("The name is wrong", "3", results.getString("rc"));
-			assertEquals("The name is wrong", "Tall Dhayl", results
-					.getString("full_name_nd"));
+			assertEquals("3", results.getString("rc"), "The name is wrong");
+			assertEquals("Tall Dhayl", results.getString("full_name_nd"), "The name is wrong");
 		}
 	}
 
@@ -1873,15 +1843,15 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT * FROM witheol"))
 		{
 			assertTrue(results.next());
-			assertEquals("The name is wrong", "1", results.getString("key"));
+			assertEquals("1", results.getString("key"), "The name is wrong");
 			// would like to test the full_name_nd, but can't insert the Arabic
 			// string in the code
 			assertTrue(results.next());
-			assertEquals("The name is wrong", "2", results.getString("key"));
+			assertEquals("2", results.getString("key"), "The name is wrong");
 			assertTrue(results.next());
-			assertEquals("The name is wrong", "3", results.getString("key"));
-			assertEquals("The name is wrong", "123\n456\n789", results
-					.getString("value"));
+			assertEquals("3", results.getString("key"), "The name is wrong");
+			assertEquals("123\n456\n789", results.getString("value"),
+				"The name is wrong");
 			assertTrue(!results.next());
 		}
 	}
@@ -1901,11 +1871,11 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT * FROM badquoted"))
 		{
 			assertTrue(results.next());
-			assertEquals("The name is wrong", "Rechtsform unbekannt", results.getString("F2"));
+			assertEquals("Rechtsform unbekannt", results.getString("F2"), "The name is wrong");
 			assertTrue(results.next());
-			assertEquals("The name is wrong", "Rechtsform \nunbekannt", results.getString("F2"));
+			assertEquals("Rechtsform \nunbekannt", results.getString("F2"), "The name is wrong");
 			assertTrue(results.next());
-			assertEquals("The name is wrong", "Rechtsform unbekannt", results.getString("F2"));
+			assertEquals("Rechtsform unbekannt", results.getString("F2"), "The name is wrong");
 			try
 			{
 				results.next();
@@ -1933,11 +1903,10 @@ public class TestCsvDriver
 				.executeQuery("SELECT datum, tijd, station, ai007.000 as value FROM test-001-20081112"))
 		{
 			assertTrue(results.next());
-			assertEquals("The name is wrong", "20-12-2007", results
-					.getString("datum"));
-			assertEquals("The name is wrong", "10:59:00", results.getString("tijd"));
-			assertEquals("The name is wrong", "007", results.getString("station"));
-			assertEquals("The name is wrong", "0.0", results.getString("value"));
+			assertEquals("20-12-2007", results.getString("datum"), "The name is wrong");
+			assertEquals("10:59:00", results.getString("tijd"), "The name is wrong");
+			assertEquals("007", results.getString("station"), "The name is wrong");
+			assertEquals("0.0", results.getString("value"), "The name is wrong");
 		}
 	}
 
@@ -1987,17 +1956,12 @@ public class TestCsvDriver
 		{
 			ResultSetMetaData metadata = results.getMetaData();
 
-			assertTrue("Incorrect Table Name", metadata.getTableName(0).equals(
-					"test"));
+			assertTrue(metadata.getTableName(0).equals("test"), "Incorrect Table Name");
 
-			assertEquals("Incorrect Column Name 1", metadata.getColumnName(1),
-					"location");
-			assertEquals("Incorrect Column Name 2", metadata.getColumnName(2),
-					"Station");
-			assertEquals("Incorrect Column Name 3", metadata.getColumnName(3),
-					"Datum");
-			assertEquals("Incorrect Column Name 4", metadata.getColumnName(4),
-					"Tijd");
+			assertEquals(metadata.getColumnName(1),	"location", "Incorrect Column Name 1");
+			assertEquals(metadata.getColumnName(2),	"Station", "Incorrect Column Name 2");
+			assertEquals(metadata.getColumnName(3),	"Datum", "Incorrect Column Name 3");
+			assertEquals(metadata.getColumnName(4),	"Tijd", "Incorrect Column Name 4");
 
 			assertTrue(results.next());
 			for (int i = 1; i < 12; i++)
@@ -2048,19 +2012,13 @@ public class TestCsvDriver
 		{
 			ResultSetMetaData metadata = results.getMetaData();
 
-			assertTrue("Incorrect Table Name", metadata.getTableName(0).equals(
-					"test"));
+			assertTrue(metadata.getTableName(0).equals("test"), "Incorrect Table Name");
 
-			assertEquals("Incorrect Column Name 1", metadata.getColumnName(1),
-					"location");
-			assertEquals("Incorrect Column Name 1", metadata.getColumnName(2),
-					"file_date");
-			assertEquals("Incorrect Column Name 1", metadata.getColumnName(3),
-					"Datum");
-			assertEquals("Incorrect Column Name 2", metadata.getColumnName(4),
-					"Tijd");
-			assertEquals("Incorrect Column Name 3", metadata.getColumnName(5),
-					"Station");
+			assertEquals(metadata.getColumnName(1),	"location", "Incorrect Column Name 1");
+			assertEquals(metadata.getColumnName(2),	"file_date", "Incorrect Column Name 1");
+			assertEquals(metadata.getColumnName(3),	"Datum", "Incorrect Column Name 1");
+			assertEquals(metadata.getColumnName(4),	"Tijd", "Incorrect Column Name 2");
+			assertEquals(metadata.getColumnName(5),	"Station", "Incorrect Column Name 3");
 
 			assertTrue(results.next());
 			for (int i = 1; i < 12; i++)
@@ -2111,7 +2069,7 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT * FROM banks"))
 		{
 			assertTrue(results.next());
-			assertEquals("The BLZ is wrong", "10000000", results.getString("BLZ"));
+			assertEquals("10000000", results.getString("BLZ"), "The BLZ is wrong");
 		}
 	}
 
@@ -2127,17 +2085,17 @@ public class TestCsvDriver
 				.executeQuery("SELECT id + ' ' + job as mix FROM sample4"))
 		{
 			assertTrue(results.next());
-			assertEquals("The mix is wrong", "01 Project Manager", results
-					.getString("mix"));
+			assertEquals("01 Project Manager", results.getString("mix"),
+				"The mix is wrong");
 			assertTrue(results.next());
-			assertEquals("The mix is wrong", "02 Project Manager", results
-					.getString("mix"));
+			assertEquals("02 Project Manager", results.getString("mix"),
+				"The mix is wrong");
 			assertTrue(results.next());
-			assertEquals("The mix is wrong", "03 Finance Manager", results
-					.getString("mix"));
+			assertEquals("03 Finance Manager", results.getString("mix"),
+				"The mix is wrong");
 			assertTrue(results.next());
-			assertEquals("The mix is wrong", "04 Project Manager", results
-					.getString("mix"));
+			assertEquals("04 Project Manager", results.getString("mix"),
+				"The mix is wrong");
 			assertTrue(!results.next());
 		}
 	}
@@ -2159,63 +2117,63 @@ public class TestCsvDriver
 		{
 			assertTrue(results.next());
 			Object expect = java.sql.Time.valueOf("12:30:00");
-			assertEquals("Time is a Time", expect.getClass(), results.getObject(
-					"timeoffset").getClass());
-			assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+			assertEquals(expect.getClass(), results.getObject("timeoffset").getClass(),
+				"Time is a Time");
+			assertEquals(expect, results.getObject("timeoffset"), "Time is a Time");
 
 			assertTrue(results.next());
 			expect = java.sql.Time.valueOf("12:35:00");
-			assertEquals("Time is a Time", expect.getClass(), results.getObject(
-					"timeoffset").getClass());
-			assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+			assertEquals(expect.getClass(), results.getObject("timeoffset").getClass(),
+				"Time is a Time");
+			assertEquals(expect, results.getObject("timeoffset"), "Time is a Time");
 
 			assertTrue(results.next());
 			expect = java.sql.Time.valueOf("12:40:00");
-			assertEquals("Time is a Time", expect.getClass(), results.getObject(
-					"timeoffset").getClass());
-			assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+			assertEquals(expect.getClass(), results.getObject("timeoffset").getClass(),
+				"Time is a Time");
+			assertEquals(expect, results.getObject("timeoffset"), "Time is a Time");
 
 			assertTrue(results.next());
 			expect = java.sql.Time.valueOf("12:45:00");
-			assertEquals("Time is a Time", expect.getClass(), results.getObject(
-					"timeoffset").getClass());
-			assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+			assertEquals(expect.getClass(), results.getObject("timeoffset").getClass(),
+				"Time is a Time");
+			assertEquals(expect, results.getObject("timeoffset"), "Time is a Time");
 
 			assertTrue(results.next());
 			expect = java.sql.Time.valueOf("01:00:00");
-			assertEquals("Time is a Time", expect.getClass(), results.getObject(
-					"timeoffset").getClass());
-			assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+			assertEquals(expect.getClass(), results.getObject("timeoffset").getClass(),
+				"Time is a Time");
+			assertEquals(expect, results.getObject("timeoffset"), "Time is a Time");
 
 			assertTrue(results.next());
 			expect = java.sql.Time.valueOf("01:00:00");
-			assertEquals("Time is a Time", expect.getClass(), results.getObject(
-					"timeoffset").getClass());
-			assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+			assertEquals(expect.getClass(), results.getObject("timeoffset").getClass(),
+				"Time is a Time");
+			assertEquals(expect, results.getObject("timeoffset"), "Time is a Time");
 
 			assertTrue(results.next());
 			expect = java.sql.Time.valueOf("01:00:00");
-			assertEquals("Time is a Time", expect.getClass(), results.getObject(
-					"timeoffset").getClass());
-			assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+			assertEquals(expect.getClass(), results.getObject("timeoffset").getClass(),
+				"Time is a Time");
+			assertEquals(expect, results.getObject("timeoffset"), "Time is a Time");
 
 			assertTrue(results.next());
 			expect = java.sql.Time.valueOf("00:00:00");
-			assertEquals("Time is a Time", expect.getClass(), results.getObject(
-					"timeoffset").getClass());
-			assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+			assertEquals(expect.getClass(), results.getObject("timeoffset").getClass(),
+				"Time is a Time");
+			assertEquals(expect, results.getObject("timeoffset"), "Time is a Time");
 
 			assertTrue(results.next());
 			expect = java.sql.Time.valueOf("00:10:00");
-			assertEquals("Time is a Time", expect.getClass(), results.getObject(
-					"timeoffset").getClass());
-			assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+			assertEquals(expect.getClass(), results.getObject("timeoffset").getClass(),
+				"Time is a Time");
+			assertEquals(expect, results.getObject("timeoffset"), "Time is a Time");
 
 			assertTrue(results.next());
 			expect = java.sql.Time.valueOf("01:23:00");
-			assertEquals("Time is a Time", expect.getClass(), results.getObject(
-					"timeoffset").getClass());
-			assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+			assertEquals(expect.getClass(), results.getObject("timeoffset").getClass(),
+				"Time is a Time");
+			assertEquals(expect, results.getObject("timeoffset"), "Time is a Time");
 
 			assertFalse(results.next());
 		}
@@ -2239,34 +2197,34 @@ public class TestCsvDriver
 		{
 			assertTrue(results.next());
 			Object expect = java.sql.Date.valueOf("2001-04-02");
-			assertEquals("Date is a Date", expect.getClass(), results.getObject(
-					"start").getClass());
-			assertEquals("Date is a Date", expect, results.getObject("start"));
+			assertEquals(expect.getClass(), results.getObject("start").getClass(),
+				"Date is a Date");
+			assertEquals(expect, results.getObject("start"), "Date is a Date");
 			expect = java.sql.Time.valueOf("12:30:00");
-			assertEquals("Time is a Time", expect.getClass(), results.getObject(
-					"timeoffset").getClass());
-			assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+			assertEquals(expect.getClass(), results.getObject("timeoffset").getClass(),
+				"Time is a Time");
+			assertEquals(expect, results.getObject("timeoffset"), "Time is a Time");
 			expect = java.sql.Timestamp.valueOf("2001-04-02 12:30:00");
-			assertEquals("adding Date to Time", expect.getClass(), results
-					.getObject("ts").getClass());
+			assertEquals(expect.getClass(), results.getObject("ts").getClass(),
+				"adding Date to Time");
 			DateFormat toUTC = getUTCDateFormat();
-			assertEquals("adding Date to Time", ((Timestamp) expect).toString(), toUTC
-					.format(results.getObject("ts")) + ".0");
+			assertEquals(((Timestamp) expect).toString(), toUTC.format(results.getObject("ts")) + ".0",
+				"adding Date to Time");
 
 			assertTrue(results.next());
 			expect = java.sql.Date.valueOf("2004-04-02");
-			assertEquals("Date is a Date", expect.getClass(), results.getObject(
-					"start").getClass());
-			assertEquals("Date is a Date", expect, results.getObject("start"));
+			assertEquals(expect.getClass(), results.getObject("start").getClass(),
+				"Date is a Date");
+			assertEquals(expect, results.getObject("start"), "Date is a Date");
 			expect = java.sql.Time.valueOf("01:00:00");
-			assertEquals("Time is a Time", expect.getClass(), results.getObject(
-					"timeoffset").getClass());
-			assertEquals("Time is a Time", expect, results.getObject("timeoffset"));
+			assertEquals(expect.getClass(), results.getObject("timeoffset").getClass(),
+				"Time is a Time");
+			assertEquals(expect, results.getObject("timeoffset"), "Time is a Time");
 			expect = java.sql.Timestamp.valueOf("2004-04-02 01:00:00");
-			assertEquals("adding Date to Time", expect.getClass(), results
-					.getObject("ts").getClass());
-			assertEquals("adding Date to Time", ((Timestamp) expect).toString(), toUTC
-					.format(results.getObject("ts")) + ".0");
+			assertEquals(expect.getClass(), results.getObject("ts").getClass(),
+				"adding Date to Time");
+			assertEquals(((Timestamp) expect).toString(), toUTC.format(results.getObject("ts")) + ".0",
+				"adding Date to Time");
 
 			assertFalse(results.next());
 		}
@@ -2292,28 +2250,28 @@ public class TestCsvDriver
 		{
 			assertTrue(results.next());
 			Object expect = java.sql.Timestamp.valueOf("2001-04-02 12:31:01");
-			assertEquals("adding Date + Time + Int", expect.getClass(), results
-					.getObject("ts").getClass());
+			assertEquals(expect.getClass(), results.getObject("ts").getClass(),
+				"adding Date + Time + Int");
 			DateFormat toUTC = getUTCDateFormat();
-			assertEquals("adding Date to Time", ((Timestamp) expect).toString(), toUTC
-					.format(results.getObject("ts")) + ".0");
+			assertEquals(((Timestamp) expect).toString(), toUTC.format(results.getObject("ts")) + ".0",
+				"adding Date to Time");
 			expect = java.sql.Timestamp.valueOf("2001-04-02 12:28:59");
-			assertEquals("adding Date + Time - Int", expect.getClass(), results
-					.getObject("ts2").getClass());
-			assertEquals("adding Date to Time", ((Timestamp) expect).toString(), toUTC
-					.format(results.getObject("ts2")) + ".0");
+			assertEquals(expect.getClass(), results.getObject("ts2").getClass(),
+				"adding Date + Time - Int");
+			assertEquals(((Timestamp) expect).toString(), toUTC.format(results.getObject("ts2")) + ".0",
+				"adding Date to Time");
 
 			assertTrue(results.next());
 			expect = java.sql.Timestamp.valueOf("2004-04-02 01:01:01");
-			assertEquals("adding Date to Time", expect.getClass(), results
-					.getObject("ts").getClass());
-			assertEquals("adding Date to Time", ((Timestamp) expect).toString(), toUTC
-					.format(results.getObject("ts")) + ".0");
+			assertEquals(expect.getClass(), results.getObject("ts").getClass(),
+				"adding Date to Time");
+			assertEquals(((Timestamp) expect).toString(), toUTC.format(results.getObject("ts")) + ".0",
+				"adding Date to Time");
 			expect = java.sql.Timestamp.valueOf("2004-04-02 00:58:59");
-			assertEquals("adding Date to Time", expect.getClass(), results
-					.getObject("ts2").getClass());
-			assertEquals("adding Date to Time", ((Timestamp) expect).toString(), toUTC
-					.format(results.getObject("ts2")) + ".0");
+			assertEquals(expect.getClass(), results.getObject("ts2").getClass(),
+				"adding Date to Time");
+			assertEquals(((Timestamp) expect).toString(), toUTC.format(results.getObject("ts2")) + ".0",
+				"adding Date to Time");
 
 			assertFalse(results.next());
 		}
@@ -2334,9 +2292,9 @@ public class TestCsvDriver
 				.executeQuery("SELECT 1 + ID * 2 as N1, ID * -3 + 1 as N2, ID+1+2*3+4 as N3 FROM sample5"))
 		{
 			assertTrue(results.next());
-			assertEquals("N1 is wrong", 83, results.getInt("N1"));
-			assertEquals("N2 is wrong", -122, results.getInt("N2"));
-			assertEquals("N3 is wrong", 52, results.getInt("N3"));
+			assertEquals(83, results.getInt("N1"), "N1 is wrong");
+			assertEquals(-122, results.getInt("N2"), "N2 is wrong");
+			assertEquals(52, results.getInt("N3"), "N3 is wrong");
 		}
 	}
 
@@ -2355,9 +2313,9 @@ public class TestCsvDriver
 				.executeQuery("SELECT ( ID + 1 ) as N1, ((ID + 2) * 3) as N2, (3) as N3 FROM sample5 where ( Job = 'Piloto' )"))
 		{
 			assertTrue(results.next());
-			assertEquals("N1 is wrong", 42, results.getInt("N1"));
-			assertEquals("N2 is wrong", 129, results.getInt("N2"));
-			assertEquals("N3 is wrong", 3, results.getInt("N3"));
+			assertEquals(42, results.getInt("N1"), "N1 is wrong");
+			assertEquals(129, results.getInt("N2"), "N2 is wrong");
+			assertEquals(3, results.getInt("N3"), "N3 is wrong");
 		}
 	}
 
@@ -2399,17 +2357,17 @@ public class TestCsvDriver
 			try (ResultSet results = stmt.executeQuery("select lower(job) as ljob, lower('AA') as CAT from sample5"))
 			{
 				assertTrue(results.next());
-				assertEquals("The JOB is wrong", "piloto", results.getString(1));
-				assertEquals("The CAT is wrong", "aa", results.getString(2));
+				assertEquals("piloto", results.getString(1), "The JOB is wrong");
+				assertEquals("aa", results.getString(2), "The CAT is wrong");
 				assertTrue(results.next());
-				assertEquals("The JOB is wrong", "project manager", results.getString(1));
-				assertEquals("The CAT is wrong", "aa", results.getString(2));
+				assertEquals("project manager", results.getString(1), "The JOB is wrong");
+				assertEquals("aa", results.getString(2), "The CAT is wrong");
 			}
 
 			try (ResultSet results = stmt.executeQuery("select ID from sample5 where lower(job) = lower('FINANCE MANAGER')"))
 			{
 				assertTrue(results.next());
-				assertEquals("The ID is wrong", 2, results.getInt(1));
+				assertEquals(2, results.getInt(1), "The ID is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -2432,15 +2390,15 @@ public class TestCsvDriver
 			try (ResultSet results = stmt.executeQuery("select UPPER(BANK_NAME) as UC, UPPER('Credit' + 'a') as N2, upper(7) as N3 from banks"))
 			{
 				assertTrue(results.next());
-				assertEquals("The BANK_NAME is wrong", "BUNDESBANK (BERLIN)", results.getString(1));
-				assertEquals("N2 is wrong", "CREDITA", results.getString(2));
-				assertEquals("N3 is wrong", "7", results.getString(3));
+				assertEquals("BUNDESBANK (BERLIN)", results.getString(1), "The BANK_NAME is wrong");
+				assertEquals("CREDITA", results.getString(2), "N2 is wrong");
+				assertEquals("7", results.getString(3), "N3 is wrong");
 			}
 
 			try (ResultSet results = stmt.executeQuery("select BLZ from banks where UPPER(BANK_NAME) = 'POSTBANK (BERLIN)'"))
 			{
 				assertTrue(results.next());
-				assertEquals("The BLZ is wrong", 10010010, results.getInt(1));
+				assertEquals(10010010, results.getInt(1), "The BLZ is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -2460,9 +2418,9 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("select length(Name) as X, length(Job) as Y, length('') as Z from sample5 where id = 8"))
 		{
 			assertTrue(results.next());
-			assertEquals("The Length is wrong", 27, results.getInt(1));
-			assertEquals("The Length is wrong", 15, results.getInt(2));
-			assertEquals("The Length is wrong", 0, results.getInt(3));
+			assertEquals(27, results.getInt(1), "The Length is wrong");
+			assertEquals(15, results.getInt(2), "The Length is wrong");
+			assertEquals(0, results.getInt(3), "The Length is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -2482,27 +2440,27 @@ public class TestCsvDriver
 			try (ResultSet results = stmt.executeQuery("select TRIM(comment), TRIM('\tfoo bar\n') from with_comments"))
 			{
 				assertTrue(results.next());
-				assertEquals("The comment is wrong", "some field", results.getString(1));
-				assertEquals("The trimmed value is wrong", "foo bar", results.getString(2));
+				assertEquals("some field", results.getString(1), "The comment is wrong");
+				assertEquals("foo bar", results.getString(2), "The trimmed value is wrong");
 				assertTrue(results.next());
-				assertEquals("The comment is wrong", "other parameter", results.getString(1));
+				assertEquals("other parameter", results.getString(1), "The comment is wrong");
 				assertTrue(results.next());
-				assertEquals("The comment is wrong", "still a field", results.getString(1));
+				assertEquals("still a field", results.getString(1), "The comment is wrong");
 				assertFalse(results.next());
 			}
 
 			try (ResultSet results = stmt.executeQuery("select TRIM(name, '#'), TRIM(name, '#h'), TRIM('00000', '0') from with_comments"))
 			{
 				assertTrue(results.next());
-				assertEquals("The trimmed value is wrong", "alpha", results.getString(1));
-				assertEquals("The trimmed value is wrong", "alpha", results.getString(2));
-				assertEquals("The trimmed value is wrong", "", results.getString(3));
+				assertEquals("alpha", results.getString(1), "The trimmed value is wrong");
+				assertEquals("alpha", results.getString(2), "The trimmed value is wrong");
+				assertEquals("", results.getString(3), "The trimmed value is wrong");
 				assertTrue(results.next());
-				assertEquals("The trimmed value is wrong", "beta", results.getString(1));
-				assertEquals("The trimmed value is wrong", "beta", results.getString(2));
+				assertEquals("beta", results.getString(1), "The trimmed value is wrong");
+				assertEquals("beta", results.getString(2), "The trimmed value is wrong");
 				assertTrue(results.next());
-				assertEquals("The trimmed value is wrong", "hash", results.getString(1));
-				assertEquals("The trimmed value is wrong", "as", results.getString(2));
+				assertEquals("hash", results.getString(1), "The trimmed value is wrong");
+				assertEquals("as", results.getString(2), "The trimmed value is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -2523,14 +2481,14 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT LTRIM(TO_ACCT,'0'), LTRIM('0000','0'), LTRIM('','0'), LTRIM('  X  ') FROM transactions"))
 		{
 			assertTrue(results.next());
-			assertEquals("The trimmed value is wrong", "27853256", results.getString(1));
-			assertEquals("The trimmed value is wrong", "", results.getString(2));
-			assertEquals("The trimmed value is wrong", "", results.getString(3));
-			assertEquals("The trimmed value is wrong", "X  ", results.getString(4));
+			assertEquals("27853256", results.getString(1), "The trimmed value is wrong");
+			assertEquals("", results.getString(2), "The trimmed value is wrong");
+			assertEquals("", results.getString(3), "The trimmed value is wrong");
+			assertEquals("X  ", results.getString(4), "The trimmed value is wrong");
 			assertTrue(results.next());
-			assertEquals("The trimmed value is wrong", "27234813", results.getString(1));
+			assertEquals("27234813", results.getString(1), "The trimmed value is wrong");
 			assertTrue(results.next());
-			assertEquals("The trimmed value is wrong", "81824588", results.getString(1));
+			assertEquals("81824588", results.getString(1), "The trimmed value is wrong");
 		}
 	}
 
@@ -2549,12 +2507,12 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT RTRIM(BLZ,'0'), RTRIM(' ZZ ') FROM banks"))
 		{
 			assertTrue(results.next());
-			assertEquals("The trimmed value is wrong", "1", results.getString(1));
-			assertEquals("The trimmed value is wrong", " ZZ", results.getString(2));
+			assertEquals("1", results.getString(1), "The trimmed value is wrong");
+			assertEquals(" ZZ", results.getString(2), "The trimmed value is wrong");
 			assertTrue(results.next());
-			assertEquals("The trimmed value is wrong", "1001001", results.getString(1));
+			assertEquals("1001001", results.getString(1), "The trimmed value is wrong");
 			assertTrue(results.next());
-			assertEquals("The trimmed value is wrong", "10010111", results.getString(1));
+			assertEquals("10010111", results.getString(1), "The trimmed value is wrong");
 		}
 	}
 
@@ -2569,9 +2527,9 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT substring(name, 2), substring(name, 3, 4), substring(name, 200) FROM sample4"))
 		{
 			assertTrue(results.next());
-			assertEquals("The substring is wrong", "uan Pablo Morales", results.getString(1));
-			assertEquals("The substring is wrong", "an P", results.getString(2));
-			assertEquals("The substring is wrong", "", results.getString(3));
+			assertEquals("uan Pablo Morales", results.getString(1), "The substring is wrong");
+			assertEquals("an P", results.getString(2), "The substring is wrong");
+			assertEquals("", results.getString(3), "The substring is wrong");
 		}
 	}
 
@@ -2587,10 +2545,10 @@ public class TestCsvDriver
 					"replace(id, '0', ''), replace('abcd0123', id, job) FROM sample4"))
 		{
 			assertTrue(results.next());
-			assertEquals("The replace is wrong", "Juan_Pablo_Morales", results.getString(1));
-			assertEquals("The replace is wrong", "Juan Pablo Morales", results.getString(2));
-			assertEquals("The replace is wrong", "1", results.getString(3));
-			assertEquals("The replace is wrong", "abcdProject Manager23", results.getString(4));
+			assertEquals("Juan_Pablo_Morales", results.getString(1), "The replace is wrong");
+			assertEquals("Juan Pablo Morales", results.getString(2), "The replace is wrong");
+			assertEquals("1", results.getString(3), "The replace is wrong");
+			assertEquals("abcdProject Manager23", results.getString(4), "The replace is wrong");
 		}
 	}
 
@@ -2615,12 +2573,12 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("select ABS(C2) as R1, ABS(C5) as R2, ABS('-123456') as R3 from numeric"))
 		{
 			assertTrue(results.next());
-			assertEquals("R1 is wrong", 1010, results.getInt(1));
-			assertTrue("R2 is wrong", fuzzyEquals(results.getDouble(2), 3.14));
-			assertTrue("R3 is wrong", fuzzyEquals(results.getDouble(3), 123456));
+			assertEquals(1010, results.getInt(1), "R1 is wrong");
+			assertTrue(fuzzyEquals(results.getDouble(2), 3.14), "R2 is wrong");
+			assertTrue(fuzzyEquals(results.getDouble(3), 123456), "R3 is wrong");
 			assertTrue(results.next());
-			assertEquals("R1 is wrong", 15, results.getInt(1));
-			assertTrue("R2 is wrong", fuzzyEquals(results.getDouble(2), 0.0));
+			assertEquals(15, results.getInt(1), "R1 is wrong");
+			assertTrue(fuzzyEquals(results.getDouble(2), 0.0), "R2 is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -2654,20 +2612,20 @@ public class TestCsvDriver
 					+ " where ROUND(C5) = 3"))
 		{
 			assertTrue(results.next());
-			assertEquals("R1 is wrong", 12, results.getInt(1));
-			assertEquals("R2 is wrong", 12, results.getInt(2));
-			assertEquals("R3 is wrong", -1010, results.getInt(3));
-			assertEquals("R4 is wrong", 42871, results.getInt(4));
-			assertEquals("R5 is wrong", 11.8, results.getDouble(5), 0.01);
-			assertEquals("R6 is wrong", 11.7, results.getDouble(6), 0.01);
-			assertEquals("R7 is wrong", 11.8, results.getDouble(7), 0.01);
-			assertEquals("R8 is wrong", 11.8, results.getDouble(8), 0.01);
-			assertEquals("R9 is wrong", -1010.0, results.getDouble(9), 0.01);
-			assertEquals("R10 is wrong", 42871.4, results.getDouble(10), 0.01);
-			assertEquals("R11 is wrong", 42871.43, results.getDouble(11), 0.001);
-			assertEquals("R12 is wrong", 42871.429, results.getDouble(12), 0.0001);
-			assertEquals("R13 is wrong", 12, results.getDouble(13), 0.01);
-			assertEquals("R14 is wrong", 10, results.getDouble(14), 0.01);
+			assertEquals(12, results.getInt(1), "R1 is wrong");
+			assertEquals(12, results.getInt(2), "R2 is wrong");
+			assertEquals(-1010, results.getInt(3), "R3 is wrong");
+			assertEquals(42871, results.getInt(4), "R4 is wrong");
+			assertEquals(11.8, results.getDouble(5), 0.01, "R5 is wrong");
+			assertEquals(11.7, results.getDouble(6), 0.01, "R6 is wrong");
+			assertEquals(11.8, results.getDouble(7), 0.01, "R7 is wrong");
+			assertEquals(11.8, results.getDouble(8), 0.01, "R8 is wrong");
+			assertEquals(-1010.0, results.getDouble(9), 0.01, "R9 is wrong");
+			assertEquals(42871.4, results.getDouble(10), 0.01, "R10 is wrong");
+			assertEquals(42871.43, results.getDouble(11), 0.001, "R11 is wrong");
+			assertEquals(42871.429, results.getDouble(12), 0.0001, "R12 is wrong");
+			assertEquals(12, results.getDouble(13), 0.01, "R13 is wrong");
+			assertEquals(10, results.getDouble(14), 0.01, "R14 is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -2687,12 +2645,12 @@ public class TestCsvDriver
 				"dayofmonth('2013-10-13') as today from sample8"))
 		{
 			assertTrue(results.next());
-			assertEquals("dom is wrong", 2, results.getInt(1));
-			assertEquals("today is wrong", 13, results.getInt(2));
+			assertEquals(2, results.getInt(1), "dom is wrong");
+			assertEquals(13, results.getInt(2), "today is wrong");
 			assertTrue(results.next());
-			assertEquals("dom is wrong", 2, results.getInt(1));
+			assertEquals(2, results.getInt(1), "dom is wrong");
 			assertTrue(results.next());
-			assertEquals("dom is wrong", 28, results.getInt(1));
+			assertEquals(28, results.getInt(1), "dom is wrong");
 		}
 	}
 
@@ -2710,12 +2668,12 @@ public class TestCsvDriver
 				"month('2013-10-13') as today from sample8"))
 		{
 			assertTrue(results.next());
-			assertEquals("month is wrong", 1, results.getInt(1));
-			assertEquals("today is wrong", 10, results.getInt(2));
+			assertEquals(1, results.getInt(1), "month is wrong");
+			assertEquals(10, results.getInt(2), "today is wrong");
 			assertTrue(results.next());
-			assertEquals("dom is wrong", 2, results.getInt(1));
+			assertEquals(2, results.getInt(1), "dom is wrong");
 			assertTrue(results.next());
-			assertEquals("dom is wrong", 3, results.getInt(1));
+			assertEquals(3, results.getInt(1), "dom is wrong");
 		}
 	}
 
@@ -2734,16 +2692,16 @@ public class TestCsvDriver
 				"year('2013-10-13') as today from sample8"))
 		{
 			assertTrue(results.next());
-			assertEquals("month is wrong", 2010, results.getInt(1));
-			assertEquals("today is wrong", 2013, results.getInt(2));
+			assertEquals(2010, results.getInt(1), "month is wrong");
+			assertEquals(2013, results.getInt(2), "today is wrong");
 			assertTrue(results.next());
-			assertEquals("dom is wrong", 2010, results.getInt(1));
+			assertEquals(2010, results.getInt(1), "dom is wrong");
 			assertTrue(results.next());
-			assertEquals("dom is wrong", 2010, results.getInt(1));
+			assertEquals(2010, results.getInt(1), "dom is wrong");
 			assertTrue(results.next());
-			assertEquals("dom is wrong", 2010, results.getInt(1));
+			assertEquals(2010, results.getInt(1), "dom is wrong");
 			assertTrue(results.next());
-			assertEquals("dom is wrong", 2009, results.getInt(1));
+			assertEquals(2009, results.getInt(1), "dom is wrong");
 		}
 	}
 
@@ -2761,14 +2719,14 @@ public class TestCsvDriver
 				"hourofday('23:41:17') as h from sample8"))
 		{
 			assertTrue(results.next());
-			assertEquals("hour is wrong", 1, results.getInt(1));
-			assertEquals("h is wrong", 23, results.getInt(2));
+			assertEquals(1, results.getInt(1), "hour is wrong");
+			assertEquals(23, results.getInt(2), "h is wrong");
 			assertTrue(results.next());
-			assertEquals("hour is wrong", 1, results.getInt(1));
+			assertEquals(1, results.getInt(1), "hour is wrong");
 			assertTrue(results.next());
-			assertEquals("hour is wrong", 1, results.getInt(1));
+			assertEquals(1, results.getInt(1), "hour is wrong");
 			assertTrue(results.next());
-			assertEquals("hour is wrong", 5, results.getInt(1));
+			assertEquals(5, results.getInt(1), "hour is wrong");
 		}
 	}
 
@@ -2786,8 +2744,8 @@ public class TestCsvDriver
 				"minute('23:41:17') as m from sample8"))
 		{
 			assertTrue(results.next());
-			assertEquals("minute is wrong", 30, results.getInt(1));
-			assertEquals("m is wrong", 41, results.getInt(2));
+			assertEquals(30, results.getInt(1), "minute is wrong");
+			assertEquals(41, results.getInt(2), "m is wrong");
 		}
 	}
 
@@ -2806,12 +2764,12 @@ public class TestCsvDriver
 				"hourofday(Start), minute(Start), second(Start) from sample5"))
 			{
 				assertTrue(results.next());
-				assertEquals("dayofmonth is wrong", 2, results.getInt(1));
-				assertEquals("month is wrong", 4, results.getInt(2));
-				assertEquals("year is wrong", 2001, results.getInt(3));
-				assertEquals("hourofday is wrong", 12, results.getInt(4));
-				assertEquals("minute is wrong", 30, results.getInt(5));
-				assertEquals("second is wrong", 0, results.getInt(6));
+				assertEquals(2, results.getInt(1), "dayofmonth is wrong");
+				assertEquals(4, results.getInt(2), "month is wrong");
+				assertEquals(2001, results.getInt(3), "year is wrong");
+				assertEquals(12, results.getInt(4), "hourofday is wrong");
+				assertEquals(30, results.getInt(5), "minute is wrong");
+				assertEquals(0, results.getInt(6), "second is wrong");
 			}
 
 			String timestamp = "2013-10-13 14:33:55";
@@ -2821,12 +2779,12 @@ public class TestCsvDriver
 				"second('" + timestamp + "') from sample5"))
 			{
 				assertTrue(results.next());
-				assertEquals("dayofmonth is wrong", 13, results.getInt(1));
-				assertEquals("month is wrong", 10, results.getInt(2));
-				assertEquals("year is wrong", 2013, results.getInt(3));
-				assertEquals("hourofday is wrong", 14, results.getInt(4));
-				assertEquals("minute is wrong", 33, results.getInt(5));
-				assertEquals("second is wrong", 55, results.getInt(6));
+				assertEquals(13, results.getInt(1), "dayofmonth is wrong");
+				assertEquals(10, results.getInt(2), "month is wrong");
+				assertEquals(2013, results.getInt(3), "year is wrong");
+				assertEquals(14, results.getInt(4), "hourofday is wrong");
+				assertEquals(33, results.getInt(5), "minute is wrong");
+				assertEquals(55, results.getInt(6), "second is wrong");
 			}
 		}
 	}
@@ -2846,12 +2804,12 @@ public class TestCsvDriver
 		{
 			assertTrue(results.next());
 			java.sql.Date expect = java.sql.Date.valueOf("2024-01-01");
-			assertEquals("start_date plus duration is wrong", expect, results.getDate(1));
-			assertEquals("duration plus start_date is wrong", expect, results.getDate(2));
+			assertEquals(expect, results.getDate(1), "start_date plus duration is wrong");
+			assertEquals(expect, results.getDate(2), "duration plus start_date is wrong");
 			assertTrue(results.next());
 			expect = java.sql.Date.valueOf("2023-04-01");
-			assertEquals("start_date plus duration is wrong", expect, results.getDate(1));
-			assertEquals("duration plus start_date is wrong", expect, results.getDate(2));
+			assertEquals(expect, results.getDate(1), "start_date plus duration is wrong");
+			assertEquals(expect, results.getDate(2), "duration plus start_date is wrong");
 		}
 	}
 
@@ -2869,14 +2827,14 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("select nullif(key, ' - ') as k2 from foodstuffs"))
 		{
 			assertTrue(results.next());
-			assertEquals("K2 is wrong", "orange", results.getString(1));
+			assertEquals("orange", results.getString(1), "K2 is wrong");
 			assertTrue(results.next());
-			assertEquals("K2 is wrong", "apple", results.getString(1));
-			assertTrue(results.next());
-			assertTrue(results.next());
+			assertEquals("apple", results.getString(1), "K2 is wrong");
 			assertTrue(results.next());
 			assertTrue(results.next());
-			assertEquals("K2 is wrong", null, results.getString(1));
+			assertTrue(results.next());
+			assertTrue(results.next());
+			assertEquals(null, results.getString(1), "K2 is wrong");
 			assertTrue(results.wasNull());
 			assertFalse(results.next());
 		}
@@ -2895,11 +2853,11 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT COALESCE(ID, 999) FROM bad_values"))
 		{
 			assertTrue(results.next());
-			assertEquals("ID is wrong", 999, results.getInt(1));
+			assertEquals(999, results.getInt(1), "ID is wrong");
 			assertTrue(results.next());
-			assertEquals("ID is wrong", 999, results.getInt(1));
+			assertEquals(999, results.getInt(1), "ID is wrong");
 			assertTrue(results.next());
-			assertEquals("ID is wrong", 3, results.getInt(1));
+			assertEquals(3, results.getInt(1), "ID is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -2990,10 +2948,10 @@ public class TestCsvDriver
 		{
 			assertTrue(results.next());
 			ResultSetMetaData metadata = results.getMetaData();
-			assertEquals("name of column 1 is incorrect", "foo", metadata.getColumnName(1));
-			assertEquals("name of column 2 is incorrect", "bar", metadata.getColumnName(2));
-			assertEquals("Incorrect value 1", "1", results.getString(1));
-			assertEquals("Incorrect value 2", "3", results.getString(2));
+			assertEquals("foo", metadata.getColumnName(1), "name of column 1 is incorrect");
+			assertEquals("bar", metadata.getColumnName(2), "name of column 2 is incorrect");
+			assertEquals("1", results.getString(1), "Incorrect value 1");
+			assertEquals("3", results.getString(2), "Incorrect value 2");
 		}
 	}
 
@@ -3210,32 +3168,32 @@ public class TestCsvDriver
 			 * Check that SQL NULL is returned for empty or invalid numeric, date and time fields,
 			 * and that zero is returned from methods that return a number.
 			 */
-			assertEquals("ID is wrong", 0, results.getInt("ID"));
+			assertEquals(0, results.getInt("ID"), "ID is wrong");
 			assertTrue(results.wasNull());
-			assertEquals("ID + 1 is wrong", 0, results.getInt(2));
+			assertEquals(0, results.getInt(2), "ID + 1 is wrong");
 			assertTrue(results.wasNull());
-			assertEquals("NAME is wrong", "Simon", results.getString(3));
+			assertEquals("Simon", results.getString(3), "NAME is wrong");
 			assertFalse(results.wasNull());
-			assertNull("START_DATE is wrong", results.getDate(4));
+			assertNull(results.getDate(4), "START_DATE is wrong");
 			assertTrue(results.wasNull());
-			assertNull("START_DATE + 1 is wrong", results.getDate(5));
+			assertNull(results.getDate(5), "START_DATE + 1 is wrong");
 			assertTrue(results.wasNull());
-			assertNull("START_TIME is wrong", results.getTime(6));
+			assertNull(results.getTime(6), "START_TIME is wrong");
 			assertTrue(results.wasNull());
 
 			assertTrue(results.next());
 
-			assertNull("ID is wrong", results.getObject("ID"));
+			assertNull(results.getObject("ID"), "ID is wrong");
 			assertTrue(results.wasNull());
-			assertNull("ID + 1 is wrong", results.getObject(2));
+			assertNull(results.getObject(2), "ID + 1 is wrong");
 			assertTrue(results.wasNull());
-			assertEquals("NAME is wrong", "Wally", results.getString(3));
+			assertEquals("Wally", results.getString(3), "NAME is wrong");
 			assertFalse(results.wasNull());
-			assertNull("START_DATE is wrong", results.getObject(4));
+			assertNull(results.getObject(4), "START_DATE is wrong");
 			assertTrue(results.wasNull());
-			assertNull("START_DATE + 1 is wrong", results.getObject(5));
+			assertNull(results.getObject(5), "START_DATE + 1 is wrong");
 			assertTrue(results.wasNull());
-			assertNull("START_TIME is wrong", results.getObject(6));
+			assertNull(results.getObject(6), "START_TIME is wrong");
 			assertTrue(results.wasNull());
 
 			assertTrue(results.next());
@@ -3384,8 +3342,8 @@ public class TestCsvDriver
 			Statement stmt = conn.createStatement();
 			ResultSet results = stmt.executeQuery("SELECT * FROM not_there"))
 		{
-			assertFalse("non existing indexed tables are seen as empty", results
-				.next());
+			assertFalse(results.next(),
+				"non existing indexed tables are seen as empty");
 		}
 	}
 
@@ -3410,8 +3368,8 @@ public class TestCsvDriver
 			}
 			catch (SQLException e)
 			{
-				assertTrue("wrong exception and/or exception text!",
-					e.toString().contains(CsvResources.getString("duplicateColumns")));
+				assertTrue(e.toString().contains(CsvResources.getString("duplicateColumns")),
+					"wrong exception and/or exception text!");
 			}
 		}
 	}
@@ -3435,10 +3393,10 @@ public class TestCsvDriver
 			assertEquals("Name", metadata.getColumnName(3));
 			assertEquals("COLUMN4", metadata.getColumnName(4));
 			assertTrue(results.next());
-			assertEquals("1:ID is wrong", "1", results.getString("ID"));
-			assertEquals("2:COLUMN2 is wrong", "2", results.getString("COLUMN2"));
-			assertEquals("3:Name is wrong", "george", results.getString("Name"));
-			assertEquals("4:COLUMN4 is wrong", "joe", results.getString("COLUMN4"));
+			assertEquals("1", results.getString("ID"), "1:ID is wrong");
+			assertEquals("2", results.getString("COLUMN2"), "2:COLUMN2 is wrong");
+			assertEquals("george", results.getString("Name"), "3:Name is wrong");
+			assertEquals("joe", results.getString("COLUMN4"), "4:COLUMN4 is wrong");
 		}
 	}
 
@@ -3460,16 +3418,16 @@ public class TestCsvDriver
 				.executeQuery("SELECT * FROM duplicate_headers"))
 		{
 			assertTrue(results.next());
-			assertEquals("1:ID is wrong", "1", results.getString(1));
-			assertEquals("2:ID is wrong", "2", results.getString(2));
-			assertEquals("3:ID is wrong", "george", results.getString(3));
-			assertEquals("4:ID is wrong", "joe", results.getString(4));
+			assertEquals("1", results.getString(1), "1:ID is wrong");
+			assertEquals("2", results.getString(2), "2:ID is wrong");
+			assertEquals("george", results.getString(3), "3:ID is wrong");
+			assertEquals("joe", results.getString(4), "4:ID is wrong");
 
 			assertTrue(results.next());
-			assertEquals("1:ID is wrong", "2", results.getString(1));
-			assertEquals("2:ID is wrong", "2", results.getString(2));
-			assertEquals("3:ID is wrong", "aworth", results.getString(3));
-			assertEquals("4:ID is wrong", "smith", results.getString(4));
+			assertEquals("2", results.getString(1), "1:ID is wrong");
+			assertEquals("2", results.getString(2), "2:ID is wrong");
+			assertEquals("aworth", results.getString(3), "3:ID is wrong");
+			assertEquals("smith", results.getString(4), "4:ID is wrong");
 
 			assertFalse(results.next());
 		}
@@ -3614,8 +3572,8 @@ public class TestCsvDriver
 		}
 		catch (SQLException e)
 		{
-			assertEquals("Wrong exception text",
-				"java.sql.SQLException: " + CsvResources.getString("invalid") + " quotechar: ()", "" + e);
+			assertEquals("java.sql.SQLException: " + CsvResources.getString("invalid") + " quotechar: ()", "" + e,
+				"Wrong exception text");
 		}
 	}
 
@@ -3634,17 +3592,17 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT * FROM uses_quotes"))
 		{
 			assertTrue(results.next());
-			assertEquals("COLUMN1 is wrong", "1", results.getString(1));
-			assertEquals("COLUMN2 is wrong", "uno", results.getString(2));
-			assertEquals("COLUMN3 is wrong", "one", results.getString(3));
+			assertEquals("1", results.getString(1), "COLUMN1 is wrong");
+			assertEquals("uno", results.getString(2), "COLUMN2 is wrong");
+			assertEquals("one", results.getString(3), "COLUMN3 is wrong");
 			assertTrue(results.next());
-			assertEquals("COLUMN1 is wrong", "2", results.getString(1));
-			assertEquals("COLUMN2 is wrong", "a 'quote' (source unknown)", results.getString(2));
-			assertEquals("COLUMN3 is wrong", "two", results.getString(3));
+			assertEquals("2", results.getString(1), "COLUMN1 is wrong");
+			assertEquals("a 'quote' (source unknown)", results.getString(2), "COLUMN2 is wrong");
+			assertEquals("two", results.getString(3), "COLUMN3 is wrong");
 			assertTrue(results.next());
-			assertEquals("COLUMN1 is wrong", "3", results.getString(1));
-			assertEquals("COLUMN2 is wrong", "another \"quote\" (also unkown)", results.getString(2));
-			assertEquals("COLUMN3 is wrong", "three", results.getString(3));
+			assertEquals("3", results.getString(1), "COLUMN1 is wrong");
+			assertEquals("another \"quote\" (also unkown)", results.getString(2), "COLUMN2 is wrong");
+			assertEquals("three", results.getString(3), "COLUMN3 is wrong");
 		}
 	}
 
@@ -3665,25 +3623,25 @@ public class TestCsvDriver
 			assertEquals("Name", metadata.getColumnName(2));
 			assertEquals("Birthday", metadata.getColumnName(3));
 			assertTrue(results.next());
-			assertEquals("1:ID is wrong", "0", results.getString(1));
-			assertEquals("2:Name is wrong", "(Florian)", results.getString(2));
-			assertEquals("3:Birthday is wrong", "01.01.1990", results.getString(3));
+			assertEquals("0", results.getString(1), "1:ID is wrong");
+			assertEquals("(Florian)", results.getString(2), "2:Name is wrong");
+			assertEquals("01.01.1990", results.getString(3), "3:Birthday is wrong");
 			assertTrue(results.next());
-			assertEquals("1:ID is wrong", "1", results.getString(1));
-			assertEquals("2:Name is wrong", "(Tobias)", results.getString(2));
-			assertEquals("3:Birthday is wrong", "01.01.1990", results.getString(3));
+			assertEquals("1", results.getString(1), "1:ID is wrong");
+			assertEquals("(Tobias)", results.getString(2), "2:Name is wrong");
+			assertEquals("01.01.1990", results.getString(3), "3:Birthday is wrong");
 			assertTrue(results.next());
-			assertEquals("1:ID is wrong", "2", results.getString(1));
-			assertEquals("2:Name is wrong", "(#Mark)", results.getString(2));
-			assertEquals("3:Birthday is wrong", "01.01.1990", results.getString(3));
+			assertEquals("2", results.getString(1), "1:ID is wrong");
+			assertEquals("(#Mark)", results.getString(2), "2:Name is wrong");
+			assertEquals("01.01.1990", results.getString(3), "3:Birthday is wrong");
 			assertTrue(results.next());
-			assertEquals("1:ID is wrong", "3", results.getString(1));
-			assertEquals("2:Name is wrong", "(@Jason)", results.getString(2));
-			assertEquals("3:Birthday is wrong", "01.01.1990", results.getString(3));
+			assertEquals("3", results.getString(1), "1:ID is wrong");
+			assertEquals("(@Jason)", results.getString(2), "2:Name is wrong");
+			assertEquals("01.01.1990", results.getString(3), "3:Birthday is wrong");
 			assertTrue(results.next());
-			assertEquals("1:ID is wrong", "4", results.getString(1));
-			assertEquals("2:Name is wrong", "Robert", results.getString(2));
-			assertEquals("3:Birthday is wrong", "01.01.1990", results.getString(3));
+			assertEquals("4", results.getString(1), "1:ID is wrong");
+			assertEquals("Robert", results.getString(2), "2:Name is wrong");
+			assertEquals("01.01.1990", results.getString(3), "3:Birthday is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -3705,9 +3663,9 @@ public class TestCsvDriver
 			assertEquals("Name", metadata.getColumnName(2));
 			assertEquals("Birthday", metadata.getColumnName(3));
 			assertTrue(results.next());
-			assertEquals("1:ID is wrong", "0", results.getString(1));
-			assertEquals("2:Name is wrong", "(Florian)", results.getString(2));
-			assertEquals("3:Birthday is wrong", "01.01.1990", results.getString(3));
+			assertEquals("0", results.getString(1), "1:ID is wrong");
+			assertEquals("(Florian)", results.getString(2), "2:Name is wrong");
+			assertEquals("01.01.1990", results.getString(3), "3:Birthday is wrong");
 		}
 	}
 
@@ -3784,8 +3742,8 @@ public class TestCsvDriver
 			}
 			catch (SQLException e)
 			{
-				assertEquals("wrong exception and/or exception text!",
-					"java.sql.SQLException: " + CsvResources.getString("closedConnection"), "" + e);
+				assertEquals("java.sql.SQLException: " + CsvResources.getString("closedConnection"), "" + e,
+					"wrong exception and/or exception text!");
 			}
 		}
 	}
@@ -3815,8 +3773,8 @@ public class TestCsvDriver
 			}
 			catch (SQLException e)
 			{
-				assertEquals("wrong exception and/or exception text!",
-					"java.sql.SQLException: " + CsvResources.getString("statementClosed"), "" + e);
+				assertEquals("java.sql.SQLException: " + CsvResources.getString("statementClosed"), "" + e,
+					"wrong exception and/or exception text!");
 			}
 		}
 	}
@@ -3858,9 +3816,8 @@ public class TestCsvDriver
 			}
 			catch (SQLException e)
 			{
-				assertEquals("wrong exception and/or exception text!",
-						"java.sql.SQLException: " + CsvResources.getString("statementCancelled"),
-						"" + e);
+				assertEquals("java.sql.SQLException: " + CsvResources.getString("statementCancelled"),
+						"" + e, "wrong exception and/or exception text!");
 			}
 		}
 	}
@@ -3878,33 +3835,33 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT * FROM foodstuffs"))
 		{
 			ResultSetMetaData metadata = results.getMetaData();
-			assertEquals("Column Count", 2, metadata.getColumnCount());
-			assertEquals("Column Name 1", "key", metadata.getColumnName(1));
-			assertEquals("Column Name 2", "value", metadata.getColumnName(2));
+			assertEquals(2, metadata.getColumnCount(), "Column Count");
+			assertEquals("key", metadata.getColumnName(1), "Column Name 1");
+			assertEquals("value", metadata.getColumnName(2), "Column Name 2");
 
 			assertTrue(results.next());
-			assertEquals("Row 1 key", "orange", results.getString(1));
-			assertEquals("Row 1 value", "fruit", results.getString(2));
+			assertEquals("orange", results.getString(1), "Row 1 key");
+			assertEquals("fruit", results.getString(2), "Row 1 value");
 
 			assertTrue(results.next());
-			assertEquals("Row 2 key", "apple", results.getString(1));
-			assertEquals("Row 2 value", "fruit", results.getString(2));
+			assertEquals("apple", results.getString(1), "Row 2 key");
+			assertEquals("fruit", results.getString(2), "Row 2 value");
 
 			assertTrue(results.next());
-			assertEquals("Row 3 key", "corn", results.getString(1));
-			assertEquals("Row 3 value", "vegetable", results.getString(2));
+			assertEquals("corn", results.getString(1), "Row 3 key");
+			assertEquals("vegetable", results.getString(2), "Row 3 value");
 
 			assertTrue(results.next());
-			assertEquals("Row 4 key", "lemon", results.getString(1));
-			assertEquals("Row 4 value", "fruit", results.getString(2));
+			assertEquals("lemon", results.getString(1), "Row 4 key");
+			assertEquals("fruit", results.getString(2), "Row 4 value");
 
 			assertTrue(results.next());
-			assertEquals("Row 5 key", "tomato", results.getString(1));
-			assertEquals("Row 5 value", "who knows?", results.getString(2));
+			assertEquals("tomato", results.getString(1), "Row 5 key");
+			assertEquals("who knows?", results.getString(2), "Row 5 value");
 
 			assertTrue(results.next());
-			assertEquals("Row 6 key", " - ", results.getString(1));
-			assertEquals("Row 6 value", " - ", results.getString(2));
+			assertEquals(" - ", results.getString(1), "Row 6 key");
+			assertEquals(" - ", results.getString(2), "Row 6 value");
 
 			assertFalse(results.next());
 		}
@@ -3930,10 +3887,10 @@ public class TestCsvDriver
 		{
 			ResultSetMetaData metadata = results.getMetaData();
 
-			assertEquals("Empty Column Name 1", "", metadata.getColumnName(1));
+			assertEquals("", metadata.getColumnName(1), "Empty Column Name 1");
 
 			assertTrue(results.next());
-			assertEquals("1 is wrong", "", results.getString(1));
+			assertEquals("", results.getString(1), "1 is wrong");
 			try
 			{
 				results.getString("");
@@ -3941,18 +3898,17 @@ public class TestCsvDriver
 			}
 			catch (SQLException e)
 			{
-				assertEquals("wrong exception and/or exception text!",
-						"java.sql.SQLException: " + CsvResources.getString("invalidColumnName") + ": ",
-						"" + e);
+				assertEquals("java.sql.SQLException: " + CsvResources.getString("invalidColumnName") + ": ",
+						"" + e, "wrong exception and/or exception text!");
 			}
 
-			assertEquals("2 is wrong", "WNS925", results.getString(2));
-			assertEquals("2 is wrong", "WNS925", results.getString("600-P1201"));
+			assertEquals("WNS925", results.getString(2), "2 is wrong");
+			assertEquals("WNS925", results.getString("600-P1201"), "2 is wrong");
 
 			assertTrue(results.next());
-			assertEquals("1 is wrong", "2010-02-21 00:00:00", results.getObject(1));
-			assertEquals("2 is wrong", "21", results.getString(2));
-			assertEquals("3 is wrong", "20", results.getString(3));
+			assertEquals("2010-02-21 00:00:00", results.getObject(1), "1 is wrong");
+			assertEquals("21", results.getString(2), "2 is wrong");
+			assertEquals("20", results.getString(3), "3 is wrong");
 		}
 	}
 
@@ -3970,21 +3926,21 @@ public class TestCsvDriver
 		{
 			ResultSetMetaData metadata = results.getMetaData();
 
-			assertEquals("Incorrect Column Name 1", "COLUMN1", metadata.getColumnName(1));
-			assertEquals("Incorrect Column Name 2", "600-P1201", metadata.getColumnName(2));
+			assertEquals("COLUMN1", metadata.getColumnName(1), "Incorrect Column Name 1");
+			assertEquals("600-P1201", metadata.getColumnName(2), "Incorrect Column Name 2");
 
 			assertTrue(results.next());
-			assertEquals("1 is wrong", "", results.getString(1));
-			assertEquals("1 is wrong", "", results.getString("COLUMN1"));
+			assertEquals("", results.getString(1), "1 is wrong");
+			assertEquals("", results.getString("COLUMN1"), "1 is wrong");
 
-			assertEquals("2 is wrong", "WNS925", results.getString(2));
-			assertEquals("2 is wrong", "WNS925", results.getString("600-P1201"));
+			assertEquals("WNS925", results.getString(2), "2 is wrong");
+			assertEquals("WNS925", results.getString("600-P1201"), "2 is wrong");
 
 			assertTrue(results.next());
-			assertEquals("1 is wrong", "2010-02-21 00:00:00", results.getObject(1));
-			assertEquals("1 is wrong", "2010-02-21 00:00:00", results.getObject("COLUMN1"));
-			assertEquals("2 is wrong", "21", results.getObject(2));
-			assertEquals("3 is wrong", "20", results.getObject(3));
+			assertEquals("2010-02-21 00:00:00", results.getObject(1), "1 is wrong");
+			assertEquals("2010-02-21 00:00:00", results.getObject("COLUMN1"), "1 is wrong");
+			assertEquals("21", results.getObject(2), "2 is wrong");
+			assertEquals("20", results.getObject(3), "3 is wrong");
 		}
 	}
 
@@ -4001,18 +3957,18 @@ public class TestCsvDriver
 		{
 			ResultSetMetaData metadata = results.getMetaData();
 
-			assertEquals("Incorrect Column Name 1", "IDX", metadata.getColumnName(1));
-			assertEquals("Incorrect Column Name 2", "COLUMN2", metadata.getColumnName(2));
-			assertEquals("Incorrect Column Name 3", "COLUMN3", metadata.getColumnName(3));
-			assertEquals("Incorrect Column Name 4", "COMMENT", metadata.getColumnName(4));
-			assertEquals("Incorrect Column Name 5", "COLUMN5", metadata.getColumnName(5));
+			assertEquals("IDX", metadata.getColumnName(1), "Incorrect Column Name 1");
+			assertEquals("COLUMN2", metadata.getColumnName(2), "Incorrect Column Name 2");
+			assertEquals("COLUMN3", metadata.getColumnName(3), "Incorrect Column Name 3");
+			assertEquals("COMMENT", metadata.getColumnName(4), "Incorrect Column Name 4");
+			assertEquals("COLUMN5", metadata.getColumnName(5), "Incorrect Column Name 5");
 
 			assertTrue(results.next());
-			assertEquals("1 is wrong", "178", results.getString(1));
-			assertEquals("2 is wrong", "AAX", results.getString("COLUMN2"));
-			assertEquals("3 is wrong", "ED+", results.getString(3));
-			assertEquals("4 is wrong", "NONE", results.getString(4));
-			assertEquals("5 is wrong", "T", results.getString("COLUMN5"));
+			assertEquals("178", results.getString(1), "1 is wrong");
+			assertEquals("AAX", results.getString("COLUMN2"), "2 is wrong");
+			assertEquals("ED+", results.getString(3), "3 is wrong");
+			assertEquals("NONE", results.getString(4), "4 is wrong");
+			assertEquals("T", results.getString("COLUMN5"), "5 is wrong");
 		}
 	}
 
@@ -4032,13 +3988,13 @@ public class TestCsvDriver
 		{
 			assertTrue(results.next());
 			DateFormat toUTC = getUTCDateFormat();
-			assertEquals("1 is wrong", "2010-02-21 00:00:00", toUTC.format(results
-					.getObject(1)));
-			assertEquals("1 is wrong", "2010-02-21 00:00:00", toUTC.format(results
-					.getObject("COLUMN1")));
-			assertEquals("2 is wrong", Double.valueOf(21), results.getObject(2));
-			assertEquals("3 is wrong", Double.valueOf(20), results.getObject(3));
-			assertEquals("4 is wrong", Double.valueOf(24), results.getObject(4));
+			assertEquals("2010-02-21 00:00:00", toUTC.format(results.getObject(1)),
+				"1 is wrong");
+			assertEquals("2010-02-21 00:00:00", toUTC.format(results.getObject("COLUMN1")),
+				"1 is wrong");
+			assertEquals(Double.valueOf(21), results.getObject(2), "2 is wrong");
+			assertEquals(Double.valueOf(20), results.getObject(3), "3 is wrong");
+			assertEquals(Double.valueOf(24), results.getObject(4), "4 is wrong");
 		}
 	}
 
@@ -4083,11 +4039,11 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT * FROM sample"))
 		{
 			assertTrue(results.next());
-			assertEquals("Incorrect ID Value", "B234", results.getString(1));
+			assertEquals("B234", results.getString(1), "Incorrect ID Value");
 			assertTrue(results.next());
-			assertEquals("Incorrect ID Value", "C456", results.getString(1));
+			assertEquals("C456", results.getString(1), "Incorrect ID Value");
 			assertTrue(results.next());
-			assertEquals("Incorrect ID Value", "D789", results.getString(1));
+			assertEquals("D789", results.getString(1), "Incorrect ID Value");
 			assertFalse(results.next());
 		}
 	}
@@ -4104,11 +4060,11 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT * FROM sample ORDER BY ID"))
 		{
 			assertTrue(results.next());
-			assertEquals("Incorrect ID Value", "A123", results.getString(1));
+			assertEquals("A123", results.getString(1), "Incorrect ID Value");
 			assertTrue(results.next());
-			assertEquals("Incorrect ID Value", "B234", results.getString(1));
+			assertEquals("B234", results.getString(1), "Incorrect ID Value");
 			assertTrue(results.next());
-			assertEquals("Incorrect ID Value", "Q123", results.getString(1));
+			assertEquals("Q123", results.getString(1), "Incorrect ID Value");
 			assertFalse(results.next());
 		}
 	}
@@ -4540,15 +4496,15 @@ public class TestCsvDriver
 				.executeQuery("SELECT name, id, 'Bananas' as t FROM sample"))
 		{
 			results.next();
-			assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
-			assertEquals("Incorrect ID Value", "Bananas", results.getString("T"));
-			assertEquals("Incorrect ID Value", "Bananas", results.getString("t"));
+			assertEquals("Q123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("Bananas", results.getString("T"), "Incorrect ID Value");
+			assertEquals("Bananas", results.getString("t"), "Incorrect ID Value");
 			results.next();
-			assertEquals("Incorrect ID Value", "Bananas", results.getString("T"));
+			assertEquals("Bananas", results.getString("T"), "Incorrect ID Value");
 			results.next();
-			assertEquals("Incorrect ID Value", "Bananas", results.getString("T"));
+			assertEquals("Bananas", results.getString("T"), "Incorrect ID Value");
 			results.next();
-			assertEquals("Incorrect ID Value", "Bananas", results.getString("T"));
+			assertEquals("Bananas", results.getString("T"), "Incorrect ID Value");
 		}
 	}
 
@@ -4563,7 +4519,7 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT sample.id FROM sample"))
 		{
 			results.next();
-			assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
+			assertEquals("Q123", results.getString("ID"), "Incorrect ID Value");
 		}
 	}
 
@@ -4579,10 +4535,10 @@ public class TestCsvDriver
 				.executeQuery("SELECT S.id, s.Extra_field FROM sample S"))
 		{
 			results.next();
-			assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
-			assertEquals("Incorrect ID Value", "F", results.getString("EXTRA_FIELD"));
-			assertEquals("Incorrect ID Value", "Q123", results.getString(1));
-			assertEquals("Incorrect ID Value", "F", results.getString(2));
+			assertEquals("Q123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("F", results.getString("EXTRA_FIELD"), "Incorrect ID Value");
+			assertEquals("Q123", results.getString(1), "Incorrect ID Value");
+			assertEquals("F", results.getString(2), "Incorrect ID Value");
 		}
 	}
 
@@ -4598,10 +4554,10 @@ public class TestCsvDriver
 				.executeQuery("SELECT * FROM sample AS S where S.ID='A123'"))
 		{
 			results.next();
-			assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
-			assertEquals("Incorrect ID Value", "A", results.getString("EXTRA_FIELD"));
-			assertEquals("Incorrect ID Value", "A123", results.getString(1));
-			assertEquals("Incorrect ID Value", "A", results.getString(3));
+			assertEquals("A123", results.getString("ID"), "Incorrect ID Value");
+			assertEquals("A", results.getString("EXTRA_FIELD"), "Incorrect ID Value");
+			assertEquals("A123", results.getString(1), "Incorrect ID Value");
+			assertEquals("A", results.getString(3), "Incorrect ID Value");
 			assertFalse(results.next());
 		}
 	}
@@ -4615,17 +4571,17 @@ public class TestCsvDriver
 			Statement stmt = conn.createStatement())
 		{
 			stmt.setMaxRows(4);
-			assertEquals("getMaxRows() incorrect", 4, stmt.getMaxRows());
+			assertEquals(4, stmt.getMaxRows(), "getMaxRows() incorrect");
 
 			ResultSet results = stmt.executeQuery("SELECT * FROM sample5");
 			// The maxRows value at the time of the query should be used, not the value below.
 			stmt.setMaxRows(7);
 
-			assertTrue("Reading row 1 failed", results.next());
-			assertTrue("Reading row 2 failed", results.next());
-			assertTrue("Reading row 3 failed", results.next());
-			assertTrue("Reading row 4 failed", results.next());
-			assertFalse("Stopping after row 4 failed", results.next());
+			assertTrue(results.next(), "Reading row 1 failed");
+			assertTrue(results.next(), "Reading row 2 failed");
+			assertTrue(results.next(), "Reading row 3 failed");
+			assertTrue(results.next(), "Reading row 4 failed");
+			assertFalse(results.next(), "Stopping after row 4 failed");
 		}
 	}
 
@@ -4638,12 +4594,12 @@ public class TestCsvDriver
 			Statement stmt = conn.createStatement())
 		{
 			stmt.setFetchSize(50);
-			assertEquals("getFetchSize() incorrect", 50, stmt.getFetchSize());
+			assertEquals(50, stmt.getFetchSize(), "getFetchSize() incorrect");
 
 			ResultSet results = stmt.executeQuery("SELECT * FROM sample5");
-			assertEquals("getFetchSize() incorrect", 50, results.getFetchSize());
+			assertEquals(50, results.getFetchSize(), "getFetchSize() incorrect");
 			results.setFetchSize(20);
-			assertEquals("getFetchSize() incorrect", 20, results.getFetchSize());
+			assertEquals(20, results.getFetchSize(), "getFetchSize() incorrect");
 		}
 	}
 
@@ -4656,13 +4612,13 @@ public class TestCsvDriver
 			Statement stmt = conn.createStatement())
 		{
 			stmt.setFetchDirection(ResultSet.FETCH_UNKNOWN);
-			assertEquals("getFetchDirection() incorrect", ResultSet.FETCH_UNKNOWN, stmt.getFetchDirection());
+			assertEquals(ResultSet.FETCH_UNKNOWN, stmt.getFetchDirection(), "getFetchDirection() incorrect");
 
 			try (ResultSet results = stmt.executeQuery("SELECT * FROM sample5"))
 			{
-				assertEquals("getFetchDirection() incorrect", ResultSet.FETCH_UNKNOWN, results.getFetchDirection());
+				assertEquals(ResultSet.FETCH_UNKNOWN, results.getFetchDirection(), "getFetchDirection() incorrect");
 				results.setFetchDirection(ResultSet.FETCH_FORWARD);
-				assertEquals("getFetchDirection() incorrect", ResultSet.FETCH_FORWARD, results.getFetchDirection());
+				assertEquals(ResultSet.FETCH_FORWARD, results.getFetchDirection(), "getFetchDirection() incorrect");
 			}
 		}
 	}
@@ -4678,15 +4634,15 @@ public class TestCsvDriver
 			// No query executed yet.
 			assertNull(stmt.getResultSet());
 			assertFalse(stmt.getMoreResults());
-			assertEquals("Update count wrong", -1, stmt.getUpdateCount());
+			assertEquals(-1, stmt.getUpdateCount(), "Update count wrong");
 
 			ResultSet results1 = stmt.executeQuery("SELECT * FROM sample5");
 			ResultSet results2 = stmt.getResultSet();
-			assertEquals("Result sets not equal", results1, results2);
-			assertEquals("Update count wrong", -1, stmt.getUpdateCount());
+			assertEquals(results1, results2, "Result sets not equal");
+			assertEquals(-1, stmt.getUpdateCount(), "Update count wrong");
 			assertFalse(stmt.getMoreResults());
-			assertNull("Result set not null", stmt.getResultSet());
-			assertTrue("Result set was not closed", results1.isClosed());
+			assertNull(stmt.getResultSet(), "Result set not null");
+			assertTrue(results1.isClosed(), "Result set was not closed");
 		}
 	}
 
@@ -4700,8 +4656,8 @@ public class TestCsvDriver
 			ResultSet results1 = stmt.executeQuery("SELECT * FROM sample5");
 			ResultSet results2 = stmt.executeQuery("SELECT * FROM sample"))
 		{
-			assertTrue("First result set is not closed", results1.isClosed());
-			assertFalse("Second result set is closed", results2.isClosed());
+			assertTrue(results1.isClosed(), "First result set is not closed");
+			assertFalse(results2.isClosed(), "Second result set is closed");
 			try
 			{
 				results1.next();
@@ -4725,7 +4681,7 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT ID FROM sample"))
 		{
 			assertTrue(results.next());
-			assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
+			assertEquals("Q123", results.getString("ID"), "Incorrect ID Value");
 			results.close();
 			try
 			{
@@ -4757,8 +4713,8 @@ public class TestCsvDriver
 			try (ResultSet results = stmt.executeQuery("SELECT * FROM banks where BANK_NAME like 'Sparkasse%'"))
 			{
 				// Check that column names from headerline are used for table banks.
-				assertEquals("BLZ wrong", "BLZ", results.getMetaData().getColumnName(1));
-				assertEquals("BANK_NAME wrong", "BANK_NAME", results.getMetaData().getColumnName(2));
+				assertEquals("BLZ", results.getMetaData().getColumnName(1), "BLZ wrong");
+				assertEquals("BANK_NAME", results.getMetaData().getColumnName(2), "BANK_NAME wrong");
 				assertFalse(results.next());
 			}
 
@@ -4767,9 +4723,9 @@ public class TestCsvDriver
 				assertTrue(results.next());
 
 				// Check that column names for table transactions are correct too.
-				assertEquals("TRANS_DATE wrong", "19-10-2011", results.getString("TRANS_DATE"));
-				assertEquals("FROM_ACCT wrong", "3670345", results.getString("FROM_ACCT"));
-				assertEquals("AMOUNT wrong", "250.00", results.getString("AMOUNT"));
+				assertEquals("19-10-2011", results.getString("TRANS_DATE"), "TRANS_DATE wrong");
+				assertEquals("3670345", results.getString("FROM_ACCT"), "FROM_ACCT wrong");
+				assertEquals("250.00", results.getString("AMOUNT"), "AMOUNT wrong");
 			}
 		}
 	}
@@ -4790,8 +4746,8 @@ public class TestCsvDriver
 		{
 			assertTrue(results.next());
 			// Check that default column names are used.
-			assertEquals("COLUMN1 wrong", "10000000", results.getString("COLUMN1"));
-			assertEquals("COLUMN2 wrong", "Bundesbank (Berlin)", results.getString("COLUMN2"));
+			assertEquals("10000000", results.getString("COLUMN1"), "COLUMN1 wrong");
+			assertEquals("Bundesbank (Berlin)", results.getString("COLUMN2"), "COLUMN2 wrong");
 		}
 	}
 
@@ -4806,9 +4762,9 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT * FROM sample"))
 		{
 			assertTrue(results.next());
-			assertNull("Warnings should be null", results.getWarnings());
+			assertNull(results.getWarnings(), "Warnings should be null");
 			results.clearWarnings();
-			assertNull("Warnings should still be null", results.getWarnings());
+			assertNull(results.getWarnings(), "Warnings should still be null");
 		}
 	}
 
@@ -4823,7 +4779,7 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT ID FROM sample"))
 		{
 			assertTrue(results.next());
-			assertEquals("ID wrong", "Q123", results.getString(1));
+			assertEquals("Q123", results.getString(1), "ID wrong");
 			assertFalse(results.wasNull());
 		}
 	}
@@ -4839,7 +4795,7 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT ID FROM sample"))
 		{
 			assertTrue(results.next());
-			assertEquals("ID wrong", "Q123", results.getObject(1));
+			assertEquals("Q123", results.getObject(1), "ID wrong");
 			assertFalse(results.wasNull());
 		}
 	}
@@ -4853,7 +4809,7 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT * FROM airline where code='BA'"))
 		{
 			assertTrue(results.next());
-			assertEquals("NAME wrong", "British Airways", results.getString("NAME"));
+			assertEquals("British Airways", results.getString("NAME"), "NAME wrong");
 		}
 	}
 
@@ -4899,9 +4855,9 @@ public class TestCsvDriver
 			ResultSet results = conn.getMetaData().getTables(null, null, "%", null))
 		{
 			assertTrue(results.next());
-			assertEquals("TABLE_NAME wrong", "AIRLINE", results.getString("TABLE_NAME"));
+			assertEquals("AIRLINE", results.getString("TABLE_NAME"), "TABLE_NAME wrong");
 			assertTrue(results.next());
-			assertEquals("TABLE_NAME wrong", "AIRPORT", results.getString("TABLE_NAME"));
+			assertEquals("AIRPORT", results.getString("TABLE_NAME"), "TABLE_NAME wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -4912,7 +4868,7 @@ public class TestCsvDriver
 		String url = "jdbc:relique:csv:class:" + TableReaderTester.class.getName();
 		try (Connection conn = DriverManager.getConnection(url))
 		{
-			assertEquals("URL is wrong", url, conn.getMetaData().getURL());
+			assertEquals(url, conn.getMetaData().getURL(), "URL is wrong");
 		}
 	}
 
@@ -4931,13 +4887,13 @@ public class TestCsvDriver
 		try (Connection conn = DriverManager.getConnection(url, props);
 			Statement stmt = conn.createStatement())
 		{
-			assertEquals("The URL is wrong", url, conn.getMetaData().getURL());
+			assertEquals(url, conn.getMetaData().getURL(), "The URL is wrong");
 
 			try (ResultSet results = stmt.executeQuery("SELECT * FROM banks"))
 			{
 				assertTrue(results.next());
-				assertEquals("The BLZ is wrong", "10000000", results.getString("BLZ"));
-				assertEquals("The NAME is wrong", "Bundesbank (Berlin)", results.getString("NAME"));
+				assertEquals("10000000", results.getString("BLZ"), "The BLZ is wrong");
+				assertEquals("Bundesbank (Berlin)", results.getString("NAME"), "The NAME is wrong");
 			}
 		}
 	}
@@ -4960,7 +4916,7 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT * FROM sample"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "Q123", results.getString("ID"));
+			assertEquals("Q123", results.getString("ID"), "The ID is wrong");
 		}
 	}
 
@@ -4978,7 +4934,7 @@ public class TestCsvDriver
 				.executeQuery("select id from sample5 where name = '\u00C9rica Jeanine M\u00e9ndez M\u00e9ndez'"))
 		{
 			assertTrue(results.next());
-			assertEquals("Incorrect ID Value", "08", results.getString(1));
+			assertEquals("08", results.getString(1), "Incorrect ID Value");
 			assertFalse(results.next());
 		}
 	}
@@ -4994,15 +4950,15 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("select distinct job from sample5"))
 		{
 			assertTrue(results.next());
-			assertEquals("Incorrect distinct value 1", "Piloto", results.getString(1));
+			assertEquals("Piloto", results.getString(1), "Incorrect distinct value 1");
 			assertTrue(results.next());
-			assertEquals("Incorrect distinct value 2", "Project Manager", results.getString(1));
+			assertEquals("Project Manager", results.getString(1), "Incorrect distinct value 2");
 			assertTrue(results.next());
-			assertEquals("Incorrect distinct value 3", "Finance Manager", results.getString(1));
+			assertEquals("Finance Manager", results.getString(1), "Incorrect distinct value 3");
 			assertTrue(results.next());
-			assertEquals("Incorrect distinct value 4", "Office Manager", results.getString(1));
+			assertEquals("Office Manager", results.getString(1), "Incorrect distinct value 4");
 			assertTrue(results.next());
-			assertEquals("Incorrect distinct value 5", "Office Employee", results.getString(1));
+			assertEquals("Office Employee", results.getString(1), "Incorrect distinct value 5");
 			assertFalse(results.next());
 		}
 	}
@@ -5018,15 +4974,15 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("select distinct S.job from sample5 S"))
 		{
 			assertTrue(results.next());
-			assertEquals("Incorrect distinct value 1", "Piloto", results.getString(1));
+			assertEquals("Piloto", results.getString(1), "Incorrect distinct value 1");
 			assertTrue(results.next());
-			assertEquals("Incorrect distinct value 2", "Project Manager", results.getString(1));
+			assertEquals("Project Manager", results.getString(1), "Incorrect distinct value 2");
 			assertTrue(results.next());
-			assertEquals("Incorrect distinct value 3", "Finance Manager", results.getString(1));
+			assertEquals("Finance Manager", results.getString(1), "Incorrect distinct value 3");
 			assertTrue(results.next());
-			assertEquals("Incorrect distinct value 4", "Office Manager", results.getString(1));
+			assertEquals("Office Manager", results.getString(1), "Incorrect distinct value 4");
 			assertTrue(results.next());
-			assertEquals("Incorrect distinct value 5", "Office Employee", results.getString(1));
+			assertEquals("Office Employee", results.getString(1), "Incorrect distinct value 5");
 			assertFalse(results.next());
 		}
 	}
@@ -5048,11 +5004,11 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("select distinct TO_ACCT, TO_BLZ from transactions where AMOUNT<50"))
 		{
 			assertTrue(results.next());
-			assertEquals("Incorrect distinct TO_ACCT value 1", 27234813, results.getInt(1));
-			assertEquals("Incorrect distinct TO_BLZ value 1", 10020500, results.getInt(2));
+			assertEquals(27234813, results.getInt(1), "Incorrect distinct TO_ACCT value 1");
+			assertEquals(10020500, results.getInt(2), "Incorrect distinct TO_BLZ value 1");
 			assertTrue(results.next());
-			assertEquals("Incorrect distinct TO_ACCT value 2", 3670345, results.getInt(1));
-			assertEquals("Incorrect distinct TO_BLZ value 2", 10010010, results.getInt(2));
+			assertEquals(3670345, results.getInt(1), "Incorrect distinct TO_ACCT value 2");
+			assertEquals(10010010, results.getInt(2), "Incorrect distinct TO_BLZ value 2");
 			assertFalse(results.next());
 		}
 	}
@@ -5066,15 +5022,15 @@ public class TestCsvDriver
 		{
 			assertTrue(results.next());
 			ResultSetMetaData metadata = results.getMetaData();
-			assertEquals("column 1 type is incorrect", Types.VARCHAR, metadata.getColumnType(1));
-			assertEquals("column 2 type is incorrect", Types.VARCHAR, metadata.getColumnType(2));
-			assertEquals("column 3 type is incorrect", Types.INTEGER, metadata.getColumnType(3));
+			assertEquals(Types.VARCHAR, metadata.getColumnType(1), "column 1 type is incorrect");
+			assertEquals(Types.VARCHAR, metadata.getColumnType(2), "column 2 type is incorrect");
+			assertEquals(Types.INTEGER, metadata.getColumnType(3), "column 3 type is incorrect");
 
-			assertEquals("column 2 name is incorrect", "W", metadata.getColumnName(2));
+			assertEquals("W", metadata.getColumnName(2), "column 2 name is incorrect");
 
-			assertEquals("column 1 value is incorrect", "Hello", results.getString(1));
-			assertEquals("column 2 value is incorrect", "World", results.getString(2));
-			assertEquals("column 3 value is incorrect", 12, results.getInt(3));
+			assertEquals("Hello", results.getString(1), "column 1 value is incorrect");
+			assertEquals("World", results.getString(2), "column 2 value is incorrect");
+			assertEquals(12, results.getInt(3), "column 3 value is incorrect");
 			assertFalse(results.next());
 		}
 	}
@@ -5111,67 +5067,67 @@ public class TestCsvDriver
 			// Select the ID and NAME columns from sample.csv
 			try (ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample"))
 			{
-				assertEquals("incorrect row #", 0, results.getRow());
+				assertEquals(0, results.getRow(), "incorrect row #");
 				assertFalse(results.isAfterLast());
 				assertTrue(results.next());
-				assertEquals("Incorrect ID Value", "Q123", results.getString("ID"));
-				assertEquals("incorrect row #", 1, results.getRow());
+				assertEquals("Q123", results.getString("ID"), "Incorrect ID Value");
+				assertEquals(1, results.getRow(), "incorrect row #");
 				assertFalse(results.isAfterLast());
 				assertTrue(results.next());
-				assertEquals("incorrect row #", 2, results.getRow());
+				assertEquals(2, results.getRow(), "incorrect row #");
 				assertTrue(results.next());
-				assertEquals("incorrect row #", 3, results.getRow());
+				assertEquals(3, results.getRow(), "incorrect row #");
 				assertTrue(results.next());
-				assertEquals("incorrect row #", 4, results.getRow());
+				assertEquals(4, results.getRow(), "incorrect row #");
 				assertTrue(results.next());
-				assertEquals("incorrect row #", 5, results.getRow());
+				assertEquals(5, results.getRow(), "incorrect row #");
 				assertTrue(results.next());
-				assertEquals("incorrect row #", 6, results.getRow());
+				assertEquals(6, results.getRow(), "incorrect row #");
 				assertFalse(results.next());
-				assertEquals("incorrect row #", 0, results.getRow());
+				assertEquals(0, results.getRow(), "incorrect row #");
 				assertTrue(results.isAfterLast());
 			}
 
 			try (ResultSet results = stmt.executeQuery("SELECT ID,NAME FROM sample ORDER BY ID"))
 			{
-				assertEquals("incorrect row #", 0, results.getRow());
+				assertEquals(0, results.getRow(), "incorrect row #");
 				assertFalse(results.isAfterLast());
 				assertTrue(results.next());
-				assertEquals("Incorrect ID Value", "A123", results.getString("ID"));
-				assertEquals("incorrect row #", 1, results.getRow());
+				assertEquals("A123", results.getString("ID"), "Incorrect ID Value");
+				assertEquals(1, results.getRow(), "incorrect row #");
 				assertFalse(results.isAfterLast());
 				assertTrue(results.next());
-				assertEquals("incorrect row #", 2, results.getRow());
+				assertEquals(2, results.getRow(), "incorrect row #");
 				assertTrue(results.next());
-				assertEquals("incorrect row #", 3, results.getRow());
+				assertEquals(3, results.getRow(), "incorrect row #");
 				assertTrue(results.next());
-				assertEquals("incorrect row #", 4, results.getRow());
+				assertEquals(4, results.getRow(), "incorrect row #");
 				assertTrue(results.next());
-				assertEquals("incorrect row #", 5, results.getRow());
+				assertEquals(5, results.getRow(), "incorrect row #");
 				assertTrue(results.next());
-				assertEquals("incorrect row #", 6, results.getRow());
+				assertEquals(6, results.getRow(), "incorrect row #");
 				assertFalse(results.next());
-				assertEquals("incorrect row #", 0, results.getRow());
+				assertEquals(0, results.getRow(), "incorrect row #");
 				assertTrue(results.isAfterLast());
 			}
 
 			try (ResultSet results = stmt.executeQuery("SELECT COUNT(*) FROM sample"))
 			{
-				assertEquals("incorrect row #", 0, results.getRow());
+				assertEquals(0, results.getRow(), "incorrect row #");
 				assertFalse(results.isAfterLast());
 				assertTrue(results.next());
-				assertEquals("Incorrect COUNT Value", 6, results.getInt(1));
-				assertEquals("incorrect row #", 1, results.getRow());
+				assertEquals(6, results.getInt(1), "Incorrect COUNT Value");
+				assertEquals(1, results.getRow(), "incorrect row #");
 				assertFalse(results.isAfterLast());
 				assertFalse(results.next());
-				assertEquals("incorrect row #", 0, results.getRow());
+				assertEquals(0, results.getRow(), "incorrect row #");
 				assertTrue(results.isAfterLast());
 			}
 
 			// Test result set returning no rows.
 			try (ResultSet results = stmt.executeQuery("SELECT * FROM sample WHERE ID = 'unknown'"))
 			{
-				assertEquals("incorrect row #", 0, results.getRow());
+				assertEquals(0, results.getRow(), "incorrect row #");
 				assertFalse(results.isAfterLast());
 				assertFalse(results.next());
 				assertFalse(results.isAfterLast());
@@ -5229,9 +5185,9 @@ public class TestCsvDriver
 
 				while (line1 != null || line2 != null)
 				{
-					assertTrue("line1 is null", line1 != null);
-					assertTrue("line2 is null", line2 != null);
-					assertEquals("lines do not match", line1, line2);
+					assertTrue(line1 != null, "line1 is null");
+					assertTrue(line2 != null, "line2 is null");
+					assertEquals(line1, line2, "lines do not match");
 					line1 = reader1.readLine();
 					line2 = reader2.readLine();
 				}
@@ -5278,14 +5234,14 @@ public class TestCsvDriver
 
 				while (line1 != null || line2 != null)
 				{
-					assertTrue("line1 is null", line1 != null);
-					assertTrue("line2 is null", line2 != null);
-					assertTrue("lines do not match", line1.equalsIgnoreCase(line2));
+					assertTrue(line1 != null, "line1 is null");
+					assertTrue(line2 != null, "line2 is null");
+					assertTrue(line1.equalsIgnoreCase(line2), "lines do not match");
 					line1 = reader1.readLine();
 					line2 = reader2.readLine();
 				}
-				assertNull("line1 not empty", line1);
-				assertNull("line2 not empty", line2);
+				assertNull(line1, "line1 not empty");
+				assertNull(line2, "line2 not empty");
 			}
 		}
 	}
@@ -5302,15 +5258,15 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT * FROM bool"))
 		{
 			assertTrue(results.next());
-			assertEquals("incorrect I", Boolean.FALSE, Boolean.valueOf(results.getBoolean(1)));
-			assertEquals("incorrect J", Boolean.TRUE, Boolean.valueOf(results.getBoolean(2)));
-			assertEquals("incorrect K", Boolean.FALSE, Boolean.valueOf(results.getBoolean(3)));
-			assertEquals("incorrect L", Boolean.TRUE, Boolean.valueOf(results.getBoolean(4)));
+			assertEquals(Boolean.FALSE, Boolean.valueOf(results.getBoolean(1)), "incorrect I");
+			assertEquals(Boolean.TRUE, Boolean.valueOf(results.getBoolean(2)), "incorrect J");
+			assertEquals(Boolean.FALSE, Boolean.valueOf(results.getBoolean(3)), "incorrect K");
+			assertEquals(Boolean.TRUE, Boolean.valueOf(results.getBoolean(4)), "incorrect L");
 			assertTrue(results.next());
-			assertEquals("incorrect I", Boolean.TRUE, Boolean.valueOf(results.getBoolean("I")));
-			assertEquals("incorrect J", Boolean.FALSE, Boolean.valueOf(results.getBoolean("J")));
-			assertEquals("incorrect K", Boolean.FALSE, Boolean.valueOf(results.getBoolean("K")));
-			assertEquals("incorrect L", Boolean.FALSE, Boolean.valueOf(results.getBoolean("L")));
+			assertEquals(Boolean.TRUE, Boolean.valueOf(results.getBoolean("I")), "incorrect I");
+			assertEquals(Boolean.FALSE, Boolean.valueOf(results.getBoolean("J")), "incorrect J");
+			assertEquals(Boolean.FALSE, Boolean.valueOf(results.getBoolean("K")), "incorrect K");
+			assertEquals(Boolean.FALSE, Boolean.valueOf(results.getBoolean("L")), "incorrect L");
 		}
 	}
 
@@ -5323,12 +5279,12 @@ public class TestCsvDriver
 			Statement stmt = conn.createStatement())
 		{
 			boolean hasResults = stmt.execute("SELECT * FROM sample");
-			assertTrue("execute hasResults", hasResults);
+			assertTrue(hasResults, "execute hasResults");
 			ResultSet results = stmt.getResultSet();
 			assertNotNull(results);
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", "Q123", results.getString(1));
-			assertFalse("getMoreResults", stmt.getMoreResults());
+			assertEquals("Q123", results.getString(1), "The ID is wrong");
+			assertFalse(stmt.getMoreResults(), "getMoreResults");
 		}
 	}
 
@@ -5341,21 +5297,21 @@ public class TestCsvDriver
 			Statement stmt = conn.createStatement())
 		{
 			boolean hasResults = stmt.execute("SELECT ID FROM sample;\nSELECT Name FROM sample2;");
-			assertTrue("execute hasResults", hasResults);
+			assertTrue(hasResults, "execute hasResults");
 			try (ResultSet results1 = stmt.getResultSet())
 			{
 				assertNotNull(results1);
 				assertTrue(results1.next());
-				assertEquals("The ID is wrong", "Q123", results1.getString(1));
+				assertEquals("Q123", results1.getString(1), "The ID is wrong");
 
-				assertTrue("getMoreResults", stmt.getMoreResults());
+				assertTrue(stmt.getMoreResults(), "getMoreResults");
 				try (ResultSet results2 = stmt.getResultSet())
 				{
 					assertNotNull(results2);
 					assertTrue(results1.isClosed());
 					assertTrue(results2.next());
-					assertEquals("The Name is wrong", "Aman", results2.getString(1));
-					assertFalse("getMoreResults", stmt.getMoreResults());
+					assertEquals("Aman", results2.getString(1), "The Name is wrong");
+					assertFalse(stmt.getMoreResults(), "getMoreResults");
 					assertTrue(results2.isClosed());
 				}
 			}
@@ -5379,34 +5335,34 @@ public class TestCsvDriver
 			try (ResultSet results = stmt.executeQuery("SELECT POW(C1, 2) FROM numeric"))
 			{
 				assertTrue(results.next());
-				assertEquals("pow is wrong", 99 * 99, Math.round(results.getDouble(1)));
+				assertEquals(99 * 99, Math.round(results.getDouble(1)), "pow is wrong");
 				assertTrue(results.next());
-				assertEquals("pow is wrong", -22 * -22, Math.round(results.getDouble(1)));
+				assertEquals(-22 * -22, Math.round(results.getDouble(1)), "pow is wrong");
 			}
 
 			try (ResultSet results = stmt.executeQuery("SELECT BITCOUNT(C1) FROM numeric"))
 			{
 				assertTrue(results.next());
-				assertEquals("bitcount is wrong", Integer.bitCount(99), results.getInt(1));
+				assertEquals(Integer.bitCount(99), results.getInt(1), "bitcount is wrong");
 				assertTrue(results.next());
-				assertEquals("bitcount is wrong", Integer.bitCount(-22), results.getInt(1));
+				assertEquals(Integer.bitCount(-22), results.getInt(1), "bitcount is wrong");
 			}
 
 			String separator = System.getProperty("file.separator");
 			try (ResultSet results = stmt.executeQuery("SELECT PROPERTY('file.separator') || ID FROM sample"))
 			{
 				assertTrue(results.next());
-				assertEquals("property is wrong", separator + "Q123", results.getString(1));
+				assertEquals(separator + "Q123", results.getString(1), "property is wrong");
 				assertTrue(results.next());
-				assertEquals("property is wrong", separator + "A123", results.getString(1));
+				assertEquals(separator + "A123", results.getString(1), "property is wrong");
 			}
 
 			try (ResultSet results = stmt.executeQuery("SELECT * FROM sample WHERE RLIKE('.*234', ID) = 'true'"))
 			{
 				assertTrue(results.next());
-				assertEquals("ID is wrong", "B234", results.getString(1));
+				assertEquals("B234", results.getString(1), "ID is wrong");
 				assertTrue(results.next());
-				assertEquals("ID is wrong", "X234", results.getString(1));
+				assertEquals("X234", results.getString(1), "ID is wrong");
 				assertFalse(results.next());
 			}
 
@@ -5416,7 +5372,7 @@ public class TestCsvDriver
 				assertTrue(results.next());
 				long t = results.getLong(1);
 				long t2 = System.currentTimeMillis();
-				assertTrue("CurrentTimeMillis is wrong", t >= t1 && t <= t2);
+				assertTrue(t >= t1 && t <= t2, "CurrentTimeMillis is wrong");
 			}
 		}
 	}
@@ -5435,9 +5391,9 @@ public class TestCsvDriver
 			ResultSet results = stmt.executeQuery("SELECT FORMAT('%04d%06d %x', C1, C2, 255) FROM numeric"))
 		{
 			assertTrue(results.next());
-			assertEquals("format is wrong", "0099-01010 ff", results.getString(1));
+			assertEquals("0099-01010 ff", results.getString(1), "format is wrong");
 			assertTrue(results.next());
-			assertEquals("format is wrong", "-022000015 ff", results.getString(1));
+			assertEquals("-022000015 ff", results.getString(1), "format is wrong");
 		}
 	}
 
@@ -5468,7 +5424,7 @@ public class TestCsvDriver
 			conn.rollback(savepoint1);
 			Savepoint savepoint2 = conn.setSavepoint("name1");
 			String name = savepoint2.getSavepointName();
-			assertEquals("Incorrect Savepoint name", "name1", name);
+			assertEquals("name1", name, "Incorrect Savepoint name");
 			conn.rollback(savepoint2);
 			conn.close();
 

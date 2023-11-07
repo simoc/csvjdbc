@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 package org.relique.jdbc.csv;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.sql.Connection;
@@ -31,8 +31,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * Tests reading of database tables from ZIP files.
@@ -43,13 +44,13 @@ public class TestZipFiles
 	private static String TEST_ZIP_FILENAME_1 = "olympic-medals.zip";
 	private static String TEST_ZIP_FILENAME_2 = "encodings.zip";
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp()
 	{
 		filePath = ".." + File.separator + "src" + File.separator + "testdata";
 		if (!new File(filePath).isDirectory())
 			filePath = "src" + File.separator + "testdata";
-		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
+		assertTrue(new File(filePath).isDirectory(), "Sample files directory not found: " + filePath);
 
 		// load CSV driver
 		try
@@ -86,15 +87,15 @@ public class TestZipFiles
 			ResultSet results = stmt.executeQuery("SELECT * FROM medals2004"))
 		{
 			assertTrue(results.next());
-			assertEquals("The YEAR is wrong", 2004, results.getShort(1));
-			assertEquals("The COUNTRY is wrong", "United States", results.getString(2));
-			assertEquals("The CODE is wrong", "USA", results.getString(3));
-			assertEquals("The GOLD is wrong", 36, results.getShort(4));
+			assertEquals(2004, results.getShort(1), "The YEAR is wrong");
+			assertEquals("United States", results.getString(2), "The COUNTRY is wrong");
+			assertEquals("USA", results.getString(3), "The CODE is wrong");
+			assertEquals(36, results.getShort(4), "The GOLD is wrong");
 			assertTrue(results.next());
-			assertEquals("The YEAR is wrong", 2004, results.getShort(1));
-			assertEquals("The COUNTRY is wrong", "China", results.getString(2));
-			assertEquals("The CODE is wrong", "CHN", results.getString(3));
-			assertEquals("The GOLD is wrong", 32, results.getShort(4));
+			assertEquals(2004, results.getShort(1), "The YEAR is wrong");
+			assertEquals("China", results.getString(2), "The COUNTRY is wrong");
+			assertEquals("CHN", results.getString(3), "The CODE is wrong");
+			assertEquals(32, results.getShort(4), "The GOLD is wrong");
 		}
 	}
 	
@@ -106,9 +107,9 @@ public class TestZipFiles
 			ResultSet results = conn.getMetaData().getTables(null, null, "%", null))
 		{
 			assertTrue(results.next());
-			assertEquals("The TABLE_NAME is wrong", "medals2004", results.getString("TABLE_NAME"));
+			assertEquals("medals2004", results.getString("TABLE_NAME"), "The TABLE_NAME is wrong");
 			assertTrue(results.next());
-			assertEquals("The TABLE_NAME is wrong", "medals2008", results.getString("TABLE_NAME"));
+			assertEquals("medals2008", results.getString("TABLE_NAME"), "The TABLE_NAME is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -161,11 +162,11 @@ public class TestZipFiles
 			ResultSet results = stmt.executeQuery("SELECT * FROM iso8859-1"))
 		{
 			assertTrue(results.next());
-			assertEquals("ISO8859-1 encoding is wrong", "K\u00D8BENHAVN", results.getString(1));
+			assertEquals("K\u00D8BENHAVN", results.getString(1), "ISO8859-1 encoding is wrong");
 			assertTrue(results.next());
-			assertEquals("ISO8859-1 encoding is wrong", "100\u00B0", results.getString(1));
+			assertEquals("100\u00B0", results.getString(1), "ISO8859-1 encoding is wrong");
 			assertTrue(results.next());
-			assertEquals("ISO8859-1 encoding is wrong", "\u00A9 Copyright", results.getString(1));
+			assertEquals("\u00A9 Copyright", results.getString(1), "ISO8859-1 encoding is wrong");
 		}
 	}
 
@@ -183,11 +184,11 @@ public class TestZipFiles
 			ResultSet results = stmt.executeQuery("SELECT * FROM utf-8"))
 		{
 			assertTrue(results.next());
-			assertEquals("UTF-8 encoding is wrong", "K\u00D8BENHAVN", results.getString(1));
+			assertEquals("K\u00D8BENHAVN", results.getString(1), "UTF-8 encoding is wrong");
 			assertTrue(results.next());
-			assertEquals("UTF-8 encoding is wrong", "100\u00B0", results.getString(1));
+			assertEquals("100\u00B0", results.getString(1), "UTF-8 encoding is wrong");
 			assertTrue(results.next());
-			assertEquals("UTF-8 encoding is wrong", "\u00A9 Copyright", results.getString(1));
+			assertEquals("\u00A9 Copyright", results.getString(1), "UTF-8 encoding is wrong");
 		}
 	}
 
@@ -205,11 +206,11 @@ public class TestZipFiles
 			ResultSet results = stmt.executeQuery("SELECT * FROM utf-16"))
 		{
 			assertTrue(results.next());
-			assertEquals("UTF-16 encoding is wrong", "K\u00D8BENHAVN", results.getString(1));
+			assertEquals("K\u00D8BENHAVN", results.getString(1), "UTF-16 encoding is wrong");
 			assertTrue(results.next());
-			assertEquals("UTF-16 encoding is wrong", "100\u00B0", results.getString(1));
+			assertEquals("100\u00B0", results.getString(1), "UTF-16 encoding is wrong");
 			assertTrue(results.next());
-			assertEquals("UTF-16 encoding is wrong", "\u00A9 Copyright", results.getString(1));
+			assertEquals("\u00A9 Copyright", results.getString(1), "UTF-16 encoding is wrong");
 		}
 	}
 }

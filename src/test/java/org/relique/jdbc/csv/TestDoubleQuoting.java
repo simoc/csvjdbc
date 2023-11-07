@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 package org.relique.jdbc.csv;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.sql.Connection;
@@ -30,20 +30,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class TestDoubleQuoting
 {
 	private static String filePath;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp()
 	{
 		filePath = ".." + File.separator + "src" + File.separator + "testdata";
 		if (!new File(filePath).isDirectory())
 			filePath = "src" + File.separator + "testdata";
-		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
+		assertTrue(new File(filePath).isDirectory(), "Sample files directory not found: " + filePath);
 
 		// load CSV driver
 		try
@@ -83,22 +83,22 @@ public class TestDoubleQuoting
 
 			ResultSet rs1 = stmt.executeQuery("SELECT \"A\", \"B\" + 100, \"[A]\", \"A-B\", \"A B\" FROM \"C D\""))
 		{
-			assertEquals("Column name A is wrong", "A", rs1.getMetaData().getColumnName(1));
+			assertEquals("A", rs1.getMetaData().getColumnName(1), "Column name A is wrong");
 
-			assertEquals("Column name [A] is wrong", "[A]", rs1.getMetaData().getColumnName(3));
-			assertEquals("Column name A-B is wrong", "A-B", rs1.getMetaData().getColumnName(4));
-			assertEquals("Column name A B is wrong", "A B", rs1.getMetaData().getColumnName(5));
+			assertEquals("[A]", rs1.getMetaData().getColumnName(3), "Column name [A] is wrong");
+			assertEquals("A-B", rs1.getMetaData().getColumnName(4), "Column name A-B is wrong");
+			assertEquals("A B", rs1.getMetaData().getColumnName(5), "Column name A B is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The A is wrong", 1, rs1.getInt("A"));
-			assertEquals("The [A] is wrong", 3, rs1.getInt("[A]"));
-			assertEquals("The A-B is wrong", 4, rs1.getInt("A-B"));
-			assertEquals("The A-B is wrong", 5, rs1.getInt("A B"));
+			assertEquals(1, rs1.getInt("A"), "The A is wrong");
+			assertEquals(3, rs1.getInt("[A]"), "The [A] is wrong");
+			assertEquals(4, rs1.getInt("A-B"), "The A-B is wrong");
+			assertEquals(5, rs1.getInt("A B"), "The A-B is wrong");
 			assertTrue(rs1.next());
-			assertEquals("The A is wrong", 6, rs1.getInt(1));
-			assertEquals("The B + 100 is wrong", 7 + 100, rs1.getInt(2));
-			assertEquals("The [A] is wrong", 8, rs1.getInt(3));
-			assertEquals("The A-B is wrong", 9, rs1.getInt(4));
-			assertEquals("The A-B is wrong", 10, rs1.getInt(5));
+			assertEquals(6, rs1.getInt(1), "The A is wrong");
+			assertEquals(7 + 100, rs1.getInt(2), "The B + 100 is wrong");
+			assertEquals(8, rs1.getInt(3), "The [A] is wrong");
+			assertEquals(9, rs1.getInt(4), "The A-B is wrong");
+			assertEquals(10, rs1.getInt(5), "The A-B is wrong");
 		}
 	}
 
@@ -117,8 +117,8 @@ public class TestDoubleQuoting
 				"FROM sample AS " + alias))
 		{
 			assertTrue(rs1.next());
-			assertEquals("The ID is wrong", "Q123", rs1.getString(1));
-			assertEquals("The EXTRA_FIELD is wrong", "F", rs1.getString(2));
+			assertEquals("Q123", rs1.getString(1), "The ID is wrong");
+			assertEquals("F", rs1.getString(2), "The EXTRA_FIELD is wrong");
 		}
 	}
 }

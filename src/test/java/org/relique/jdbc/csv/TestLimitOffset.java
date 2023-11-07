@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 package org.relique.jdbc.csv;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.sql.Connection;
@@ -31,8 +31,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * This class tests SQL LIMIT OFFSET keywords in the CsvJdbc driver.
@@ -41,13 +41,13 @@ public class TestLimitOffset
 {
 	private static String filePath;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp()
 	{
 		filePath = ".." + File.separator + "src" + File.separator + "testdata";
 		if (!new File(filePath).isDirectory())
 			filePath = "src" + File.separator + "testdata";
-		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
+		assertTrue(new File(filePath).isDirectory(), "Sample files directory not found: " + filePath);
 
 		// load CSV driver
 		try
@@ -74,13 +74,13 @@ public class TestLimitOffset
 				.executeQuery("select id from sample5 limit 4"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 41, results.getInt("ID"));
+			assertEquals(41, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 1, results.getInt("ID"));
+			assertEquals(1, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 2, results.getInt("ID"));
+			assertEquals(2, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 3, results.getInt("ID"));
+			assertEquals(3, results.getInt("ID"), "The ID is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -99,13 +99,13 @@ public class TestLimitOffset
 				.executeQuery("select id from sample4 limit 999"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 1, results.getInt("ID"));
+			assertEquals(1, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 2, results.getInt("ID"));
+			assertEquals(2, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 3, results.getInt("ID"));
+			assertEquals(3, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 4, results.getInt("ID"));
+			assertEquals(4, results.getInt("ID"), "The ID is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -124,11 +124,11 @@ public class TestLimitOffset
 				.executeQuery("select id from sample5 where id > 6 limit 3"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 41, results.getInt("ID"));
+			assertEquals(41, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 7, results.getInt("ID"));
+			assertEquals(7, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 8, results.getInt("ID"));
+			assertEquals(8, results.getInt("ID"), "The ID is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -147,9 +147,9 @@ public class TestLimitOffset
 				.executeQuery("select id, name from sample5 order by id desc limit 2"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 41, results.getInt("ID"));
+			assertEquals(41, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 9, results.getInt("ID"));
+			assertEquals(9, results.getInt("ID"), "The ID is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -168,9 +168,9 @@ public class TestLimitOffset
 				.executeQuery("select id from sample5 limit 9 offset 8"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 8, results.getInt("ID"));
+			assertEquals(8, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 9, results.getInt("ID"));
+			assertEquals(9, results.getInt("ID"), "The ID is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -206,11 +206,11 @@ public class TestLimitOffset
 				.executeQuery("select id from sample5 where id > 2 limit 3 offset 4"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 6, results.getInt("ID"));
+			assertEquals(6, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 7, results.getInt("ID"));
+			assertEquals(7, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 8, results.getInt("ID"));
+			assertEquals(8, results.getInt("ID"), "The ID is wrong");
 			assertFalse(results.next());
 		}
 	}
@@ -229,15 +229,15 @@ public class TestLimitOffset
 				.executeQuery("select * from sample5 order by id limit 99 offset 5"))
 		{
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 6, results.getInt("ID"));
+			assertEquals(6, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 7, results.getInt("ID"));
+			assertEquals(7, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 8, results.getInt("ID"));
+			assertEquals(8, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 9, results.getInt("ID"));
+			assertEquals(9, results.getInt("ID"), "The ID is wrong");
 			assertTrue(results.next());
-			assertEquals("The ID is wrong", 41, results.getInt("ID"));
+			assertEquals(41, results.getInt("ID"), "The ID is wrong");
 			assertFalse(results.next());
 		}
 	}

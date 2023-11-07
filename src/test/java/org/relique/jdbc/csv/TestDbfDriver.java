@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 package org.relique.jdbc.csv;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.sql.Connection;
@@ -37,8 +37,8 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.relique.jdbc.dbf.DbfClassNotFoundException;
 
 /**
@@ -50,13 +50,13 @@ public class TestDbfDriver
 {
 	private static String filePath;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp()
 	{
 		filePath = ".." + File.separator + "src" + File.separator + "testdata";
 		if (!new File(filePath).isDirectory())
 			filePath = "src" + File.separator + "testdata";
-		assertTrue("Sample files directory not found: " + filePath, new File(filePath).isDirectory());
+		assertTrue(new File(filePath).isDirectory(), "Sample files directory not found: " + filePath);
 
 		// load CSV driver
 		try
@@ -91,20 +91,15 @@ public class TestDbfDriver
 					.executeQuery("SELECT * FROM sample"))
 			{
 				assertTrue(results.next());
-				assertEquals("The name is wrong", "Gianni", results
-						.getString("Name"));
+				assertEquals("Gianni", results.getString("Name"), "The name is wrong");
 				assertTrue(results.next());
-				assertEquals("The name is wrong", "Reinout", results
-						.getString("Name"));
+				assertEquals("Reinout", results.getString("Name"), "The name is wrong");
 				assertTrue(results.next());
-				assertEquals("The name is wrong", "Alex", results
-						.getString("Name"));
+				assertEquals("Alex", results.getString("Name"), "The name is wrong");
 				assertTrue(results.next());
-				assertEquals("The name is wrong", "Gianni", results
-						.getString("Name"));
+				assertEquals("Gianni", results.getString("Name"), "The name is wrong");
 				assertTrue(results.next());
-				assertEquals("The name is wrong", "Mario", results
-						.getString("Name"));
+				assertEquals("Mario", results.getString("Name"), "The name is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -133,20 +128,14 @@ public class TestDbfDriver
 					.executeQuery("SELECT * FROM sample WHERE key = 'op'"))
 			{
 				assertTrue(results.next());
-				assertEquals("The name is wrong", "Gianni", results
-						.getString("Name"));
-				assertEquals("The name is wrong", "debian", results
-						.getString("value"));
+				assertEquals("Gianni", results.getString("Name"), "The name is wrong");
+				assertEquals("debian", results.getString("value"), "The name is wrong");
 				assertTrue(results.next());
-				assertEquals("The name is wrong", "Reinout", results
-						.getString("Name"));
-				assertEquals("The name is wrong", "ubuntu", results
-						.getString("value"));
+				assertEquals("Reinout", results.getString("Name"), "The name is wrong");
+				assertEquals("ubuntu", results.getString("value"), "The name is wrong");
 				assertTrue(results.next());
-				assertEquals("The name is wrong", "Alex", results
-						.getString("Name"));
-				assertEquals("The name is wrong", "windows", results
-						.getString("value"));
+				assertEquals("Alex", results.getString("Name"), "The name is wrong");
+				assertEquals("windows", results.getString("value"), "The name is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -175,15 +164,11 @@ public class TestDbfDriver
 					.executeQuery("SELECT * FROM sample WHERE key = 'todo'"))
 			{
 				assertTrue(results.next());
-				assertEquals("The name is wrong", "Gianni", results
-						.getString("Name"));
-				assertEquals("The name is wrong", "none", results
-						.getString("value"));
+				assertEquals("Gianni", results.getString("Name"), "The name is wrong");
+				assertEquals("none", results.getString("value"), "The name is wrong");
 				assertTrue(results.next());
-				assertEquals("The name is wrong", "Mario", results
-						.getString("Name"));
-				assertEquals("The name is wrong", "sleep", results
-						.getString("value"));
+				assertEquals("Mario", results.getString("Name"), "The name is wrong");
+				assertEquals("sleep", results.getString("value"), "The name is wrong");
 				assertFalse(results.next());
 			}
 		}
@@ -236,12 +221,11 @@ public class TestDbfDriver
 			assertTrue(results.next());
 			ResultSetMetaData metadata = results.getMetaData();
 
-			assertEquals("Incorrect Table Name", "fox_samp", metadata
-					.getTableName(0));
-			assertEquals("Incorrect Column Count", 57, metadata.getColumnCount());
-			assertEquals("Incorrect Column Type", Types.VARCHAR, metadata.getColumnType(1));
-			assertEquals("Incorrect Column Type", Types.BOOLEAN, metadata.getColumnType(2));
-			assertEquals("Incorrect Column Type", Types.DOUBLE, metadata.getColumnType(3));
+			assertEquals("fox_samp", metadata.getTableName(0), "Incorrect Table Name");
+			assertEquals(57, metadata.getColumnCount(), "Incorrect Column Count");
+			assertEquals(Types.VARCHAR, metadata.getColumnType(1), "Incorrect Column Type");
+			assertEquals(Types.BOOLEAN, metadata.getColumnType(2), "Incorrect Column Type");
+			assertEquals(Types.DOUBLE, metadata.getColumnType(3), "Incorrect Column Type");
 		}
 		catch (DbfClassNotFoundException e)
 		{
@@ -264,11 +248,11 @@ public class TestDbfDriver
 			ResultSet results = stmt.executeQuery("SELECT NOTE FROM xbase"))
 		{
 			assertTrue(results.next());
-			assertEquals("The NOTE is wrong", "This is a memo fore record no one", results.getString(1));
+			assertEquals("This is a memo fore record no one", results.getString(1), "The NOTE is wrong");
 			assertTrue(results.next());
-			assertEquals("The NOTE is wrong", "This is memo for record 2", results.getString(1));
+			assertEquals("This is memo for record 2", results.getString(1), "The NOTE is wrong");
 			assertTrue(results.next());
-			assertEquals("The NOTE is wrong", "This is memo 3", results.getString(1));
+			assertEquals("This is memo 3", results.getString(1), "The NOTE is wrong");
 			assertFalse(results.next());
 		}
 		catch (DbfClassNotFoundException e)
@@ -293,7 +277,7 @@ public class TestDbfDriver
 		{
 			assertTrue(results.next());
 			long l = Math.round(7.63 * 1000);
-			assertEquals("The floatfield is wrong", l, Math.round(results.getDouble(1) * 1000));
+			assertEquals(l, Math.round(results.getDouble(1) * 1000), "The floatfield is wrong");
 			assertFalse(results.next());
 		}
 		catch (DbfClassNotFoundException e)
@@ -321,9 +305,9 @@ public class TestDbfDriver
 			assertTrue(results.next());
 			ResultSetMetaData metadata = results.getMetaData();
 
-			assertEquals("Incorrect Column Size", 11, metadata.getColumnDisplaySize(1));
-			assertEquals("Incorrect Column Size", 1, metadata.getColumnDisplaySize(2));
-			assertEquals("Incorrect Column Size", 4, metadata.getColumnDisplaySize(3));
+			assertEquals(11, metadata.getColumnDisplaySize(1), "Incorrect Column Size");
+			assertEquals(1, metadata.getColumnDisplaySize(2), "Incorrect Column Size");
+			assertEquals(4, metadata.getColumnDisplaySize(3), "Incorrect Column Size");
 		}
 		catch (DbfClassNotFoundException e)
 		{
@@ -363,7 +347,7 @@ public class TestDbfDriver
 			current.add(results.getString("TABLE_NAME"));
 			assertFalse(results.next());
 
-			assertEquals("Incorrect table names", target, current);
+			assertEquals(target, current, "Incorrect table names");
 		}
 		catch (DbfClassNotFoundException e)
 		{
@@ -385,7 +369,7 @@ public class TestDbfDriver
 			ResultSet results = conn.getMetaData().getTables(null, null, "x%", new String[]{"TABLE"}))
 		{
 			assertTrue(results.next());
-			assertEquals("Incorrect table name", "xbase", results.getString("TABLE_NAME"));
+			assertEquals("xbase", results.getString("TABLE_NAME"), "Incorrect table name");
 			assertFalse(results.next());
 		}
 		catch (DbfClassNotFoundException e)
@@ -407,13 +391,13 @@ public class TestDbfDriver
 			ResultSet results = conn.getMetaData().getColumns(null, null, "sample", "%"))
 		{
 			assertTrue(results.next());
-			assertEquals("Incorrect table name", "sample", results.getString("TABLE_NAME"));
-			assertEquals("Incorrect column name", "NAME", results.getString("COLUMN_NAME"));
-			assertEquals("Incorrect column type", Types.VARCHAR, results.getInt("DATA_TYPE"));
-			assertEquals("Incorrect column type", "String", results.getString("TYPE_NAME"));
-			assertEquals("Incorrect ordinal position", 1, results.getInt("ORDINAL_POSITION"));
+			assertEquals("sample", results.getString("TABLE_NAME"), "Incorrect table name");
+			assertEquals("NAME", results.getString("COLUMN_NAME"), "Incorrect column name");
+			assertEquals(Types.VARCHAR, results.getInt("DATA_TYPE"), "Incorrect column type");
+			assertEquals("String", results.getString("TYPE_NAME"), "Incorrect column type");
+			assertEquals(1, results.getInt("ORDINAL_POSITION"), "Incorrect ordinal position");
 			assertTrue(results.next());
-			assertEquals("Incorrect column name", "KEY", results.getString(4));
+			assertEquals("KEY", results.getString(4), "Incorrect column name");
 		}
 		catch (DbfClassNotFoundException e)
 		{
@@ -434,11 +418,11 @@ public class TestDbfDriver
 			ResultSet results = conn.getMetaData().getColumns(null, null, "x%", "M%"))
 		{
 			assertTrue(results.next());
-			assertEquals("Incorrect table name", "xbase", results.getString("TABLE_NAME"));
-			assertEquals("Incorrect column name", "MSG", results.getString("COLUMN_NAME"));
-			assertEquals("Incorrect column type", Types.VARCHAR, results.getInt("DATA_TYPE"));
-			assertEquals("Incorrect column type", "String", results.getString("TYPE_NAME"));
-			assertEquals("Incorrect ordinal position", 2, results.getInt("ORDINAL_POSITION"));
+			assertEquals("xbase", results.getString("TABLE_NAME"), "Incorrect table name");
+			assertEquals("MSG", results.getString("COLUMN_NAME"), "Incorrect column name");
+			assertEquals(Types.VARCHAR, results.getInt("DATA_TYPE"), "Incorrect column type");
+			assertEquals("String", results.getString("TYPE_NAME"), "Incorrect column type");
+			assertEquals(2, results.getInt("ORDINAL_POSITION"), "Incorrect ordinal position");
 			assertFalse(results.next());
 		}
 		catch (DbfClassNotFoundException e)
@@ -462,12 +446,12 @@ public class TestDbfDriver
 			ResultSet results = stmt.executeQuery("SELECT * FROM fox_samp"))
 		{
 			assertTrue(results.next());
-			assertEquals("The NCOUNTYCOD is wrong", 33, results.getByte("NCOUNTYCOD"));
-			assertEquals("The NCOUNTYCOD is wrong", 33, results.getShort("NCOUNTYCOD"));
-			assertEquals("The NTAXYEAR is wrong", 2011, results.getInt("NTAXYEAR"));
-			assertEquals("The NNOTFCV is wrong", 0, results.getLong("NNOTFCV"));
-			assertEquals("The NASSASSRAT is wrong", 7250, Math.round(results.getFloat("NASSASSRAT") * 1000));
-			assertEquals("The NASSASSRAT is wrong", 7250, Math.round(results.getDouble("NASSASSRAT") * 1000));
+			assertEquals(33, results.getByte("NCOUNTYCOD"), "The NCOUNTYCOD is wrong");
+			assertEquals(33, results.getShort("NCOUNTYCOD"), "The NCOUNTYCOD is wrong");
+			assertEquals(2011, results.getInt("NTAXYEAR"), "The NTAXYEAR is wrong");
+			assertEquals(0, results.getLong("NNOTFCV"), "The NNOTFCV is wrong");
+			assertEquals(7250, Math.round(results.getFloat("NASSASSRAT") * 1000), "The NASSASSRAT is wrong");
+			assertEquals(7250, Math.round(results.getDouble("NASSASSRAT") * 1000), "The NASSASSRAT is wrong");
 			assertFalse(results.next());
 		}
 		catch (DbfClassNotFoundException e)
@@ -491,7 +475,7 @@ public class TestDbfDriver
 			ResultSet results = stmt.executeQuery("SELECT DASSDATE FROM fox_samp"))
 		{
 			assertTrue(results.next());
-			assertEquals("The DASSDATE is wrong", Date.valueOf("2012-12-25"), results.getDate(1));
+			assertEquals(Date.valueOf("2012-12-25"), results.getDate(1), "The DASSDATE is wrong");
 		}
 		catch (DbfClassNotFoundException e)
 		{
@@ -514,8 +498,8 @@ public class TestDbfDriver
 			ResultSet results = stmt.executeQuery("SELECT DASSDATE FROM fox_samp"))
 		{
 			assertTrue(results.next());
-			assertEquals("The DASSDATE is wrong", Timestamp.valueOf("2012-12-25 00:00:00"),
-					results.getTimestamp(1));
+			assertEquals(Timestamp.valueOf("2012-12-25 00:00:00"),
+					results.getTimestamp(1), "The DASSDATE is wrong");
 		}
 		catch (DbfClassNotFoundException e)
 		{
@@ -539,13 +523,13 @@ public class TestDbfDriver
 			ResultSet results = stmt.executeQuery("SELECT HOTELNAME FROM hotel"))
 		{
 			assertTrue(results.next());
-			assertEquals("The HOTELNAME is wrong", "M\u00DCNCHEN HOTEL", results.getString(1));
+			assertEquals("M\u00DCNCHEN HOTEL", results.getString(1), "The HOTELNAME is wrong");
 			assertTrue(results.next());
-			assertEquals("The HOTELNAME is wrong", "MALM\u00D6 INN", results.getString(1));
+			assertEquals("MALM\u00D6 INN", results.getString(1), "The HOTELNAME is wrong");
 			assertTrue(results.next());
-			assertEquals("The HOTELNAME is wrong", "K\u00D8BENHAVN HOTEL", results.getString(1));
+			assertEquals("K\u00D8BENHAVN HOTEL", results.getString(1), "The HOTELNAME is wrong");
 			assertTrue(results.next());
-			assertEquals("The HOTELNAME is wrong", "C\u00F3rdoba Hotel", results.getString(1));
+			assertEquals("C\u00F3rdoba Hotel", results.getString(1), "The HOTELNAME is wrong");
 			assertFalse(results.next());
 		}
 		catch (DbfClassNotFoundException e)
