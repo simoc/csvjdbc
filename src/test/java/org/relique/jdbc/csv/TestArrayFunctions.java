@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 package org.relique.jdbc.csv;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -198,6 +199,96 @@ public class TestArrayFunctions
 			try
 			{
 				array.getArray(-1, 2);
+				fail("Array index out of bounds should throw SQLException");
+			}
+			catch (SQLException e)
+			{
+				assertTrue(e.toString().startsWith("java.sql.SQLException: " +
+					CsvResources.getString("arraySubListOutOfBounds")));
+			}
+		}
+	}
+
+	@Test
+	public void testToArrayWithResultSet() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT TO_ARRAY(role_1, role_2) AS roles FROM arrays_sample"))
+		{
+			assertTrue(results.next());
+			Array array = results.getArray(1);
+			ResultSet arrayResults = array.getResultSet();
+			assertEquals(2, arrayResults.getMetaData().getColumnCount(), "Incorrect column count");
+			assertTrue(arrayResults.next());
+			assertEquals(1, arrayResults.getInt(1));
+			assertEquals("teacher", arrayResults.getString(2));
+			assertTrue(arrayResults.next());
+			assertEquals(2, arrayResults.getInt(1));
+			assertEquals("grader", arrayResults.getString(2));
+			assertFalse(arrayResults.next());
+			arrayResults.close();
+
+			assertTrue(results.next());
+			array = results.getArray(1);
+			arrayResults = array.getResultSet();
+			assertEquals(2, arrayResults.getMetaData().getColumnCount(), "Incorrect column count");
+			assertTrue(arrayResults.next());
+			assertEquals(1, arrayResults.getInt(1));
+			assertEquals("", arrayResults.getString(2));
+			assertTrue(arrayResults.next());
+			assertEquals(2, arrayResults.getInt(1));
+			assertEquals("admin", arrayResults.getString(2));
+			assertFalse(arrayResults.next());
+			arrayResults.close();
+		}
+	}
+
+	@Test
+	public void testToArrayWithResultSetWithSubList() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT TO_ARRAY(name, role_1, role_2) AS roles FROM arrays_sample"))
+		{
+			assertTrue(results.next());
+			Array array = results.getArray(1);
+			ResultSet arrayResults = array.getResultSet(2, 2);
+			assertTrue(arrayResults.next());
+			assertEquals("teacher", arrayResults.getString(2));
+			assertTrue(arrayResults.next());
+			assertEquals("grader", arrayResults.getString(2));
+			assertFalse(arrayResults.next());
+			arrayResults.close();
+		}
+	}
+
+	@Test
+	public void testToArrayWithResultSetWithSubListOutOfBounds() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT TO_ARRAY(name, role_1, role_2) AS roles FROM arrays_sample"))
+		{
+			assertTrue(results.next());
+			Array array = results.getArray(1);
+			ResultSet arrayResults = array.getResultSet(1, 0);
+			assertFalse(arrayResults.next());
+
+			try
+			{
+				array.getResultSet(5, 2);
+				fail("Array index out of bounds should throw SQLException");
+			}
+			catch (SQLException e)
+			{
+				assertTrue(e.toString().startsWith("java.sql.SQLException: " +
+					CsvResources.getString("arraySubListOutOfBounds")));
+			}
+
+			try
+			{
+				array.getResultSet(-1, 2);
 				fail("Array index out of bounds should throw SQLException");
 			}
 			catch (SQLException e)
