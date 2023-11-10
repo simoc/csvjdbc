@@ -19,13 +19,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 package org.relique.jdbc.csv;
 
 import java.sql.Array;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.relique.io.ListDataReader;
 
 
 public class SqlArray implements Array 
@@ -34,8 +39,10 @@ public class SqlArray implements Array
 	private final String baseTypeName;
 	private final int baseType;
 	private boolean freed;
+	Connection createdByConnection;
+	CsvStatement internalStatement;
 
-	public SqlArray(List<Object> values, StringConverter converter) 
+	public SqlArray(List<Object> values, StringConverter converter, Connection connection)
 	{
 		String[] inferredTypes = converter.inferColumnTypes(values.toArray());
 		baseTypeName = getBaseTypeNameImpl(values, Arrays.asList(inferredTypes));
@@ -44,6 +51,7 @@ public class SqlArray implements Array
 		this.values = values.stream()
 				.map(o -> converter.convert(baseTypeName, o.toString()))
 				.collect(Collectors.toList());
+		this.createdByConnection = connection;
 	}
 
 	protected void checkFreed() throws SQLException
@@ -137,8 +145,7 @@ public class SqlArray implements Array
 	@Override
 	public ResultSet getResultSet() throws SQLException 
 	{
-		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
-				": SqlArray.getResultSet()");
+		return getResultSet(1, values.size());
 	}
 
 	@Override
@@ -151,8 +158,60 @@ public class SqlArray implements Array
 	@Override
 	public ResultSet getResultSet(long index, int count) throws SQLException 
 	{
-		throw new UnsupportedOperationException(CsvResources.getString("methodNotSupported") +
-				": SqlArray.getResultSet(long, int)");
+		checkFreed();
+
+		if (index < 1 || index > values.size() || count < 0)
+		{
+			throw new SQLException(CsvResources.getString("arraySubListOutOfBounds") + ": " +
+				index + ": " + count);
+		}
+
+		String[] columnNames = {"INDEX", "VALUE"};
+		String[] columnTypes = {"Integer", getBaseTypeName()};
+		String joinedColumnTypes = columnTypes[0] + "," + columnTypes[1];
+		ArrayList<Object[]> columnValues = new ArrayList<>();
+		for (int i = 0; i < count; i++)
+		{
+			// The first array element has index 1.
+			Object[] o = {Integer.valueOf(i + (int)index), values.get(i + (int)index - 1)};
+			columnValues.add(o);
+		}
+
+		ListDataReader reader = new ListDataReader(columnNames,
+			columnTypes, columnValues);
+		ArrayList<Object[]> queryEnvironment = new ArrayList<>();
+		queryEnvironment.add(new Object[]{"*", new AsteriskExpression("*")});
+		ResultSet retval = null;
+
+		try
+		{
+			if (internalStatement == null)
+			{
+				internalStatement = (CsvStatement)createdByConnection.createStatement();
+			}
+
+			retval = new CsvResultSet(internalStatement,
+				reader,
+				"",
+				queryEnvironment,
+				false,
+				ResultSet.TYPE_FORWARD_ONLY,
+				null,
+				null,
+				null,
+				null,
+				-1,
+				0,
+				joinedColumnTypes,
+				0,
+				0,
+				new HashMap<>());
+		}
+		catch (ClassNotFoundException e)
+		{
+			throw new SQLException(e.getMessage());
+		}
+		return retval;
 	}
 
 	@Override
@@ -166,6 +225,11 @@ public class SqlArray implements Array
 	public void free() throws SQLException 
 	{
 		values.clear();
+		if (internalStatement != null)
+		{
+			internalStatement.close();
+			internalStatement = null;
+		}
 		freed = true;
 	}
 }

@@ -65,7 +65,8 @@ public class SQLArrayAggFunction extends AggregateFunction
 			}
 		}
 		StringConverter converter = (StringConverter)env.get(StringConverter.COLUMN_NAME);
-		return new SqlArray(values, converter);
+		CsvStatement statement = (CsvStatement)env.get(CsvStatement.STATEMENT_COLUMN_NAME);
+		return new SqlArray(values, converter, statement.getConnection());
 
 	}
 

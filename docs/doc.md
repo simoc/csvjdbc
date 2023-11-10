@@ -91,10 +91,10 @@ all records up to the furthest accessed record are held into memory. For other
 queries, CsvJdbc holds only one record at a time in memory.
 
 Notes on functions returning an array:
-* `ResultSet.getArray(...)` will return an `org.relique.jdbc.csv.SqlArray`
-* SqlArray has working getArray(...) methods, but getResultSet(...) methods are not implemented
-* SqlArray tries to infer the type of the values for its `getBaseTypeName()` and `getBaseType()` 
-methods; an `IllegalStateException` will be thrown if it detects values of different types
+* `ResultSet.getArray(...)` returns an object of type `org.relique.jdbc.csv.SqlArray`, that implements interface `java.sql.Array`
+* Both `java.sql.Array.getArray(...)` and `getResultSet(...)` methods are implemented
+* `SqlArray` tries to infer the type of the values for its `getBaseTypeName()` and `getBaseType()`
+methods; an `IllegalStateException` is thrown if values of different types are detected
 
 ## Dependencies
 
