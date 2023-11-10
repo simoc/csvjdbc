@@ -298,4 +298,18 @@ public class TestArrayFunctions
 			}
 		}
 	}
+
+	@Test
+	public void testToArrayInWhereClause() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT name, TO_ARRAY(role_1, role_2) AS roles FROM arrays_sample " +
+			 "WHERE roles = TO_ARRAY('', 'admin')"))
+		{
+			assertTrue(results.next());
+			assertEquals("bob", results.getString(1), "Incorrect row");
+			assertFalse(results.next());
+		}
+	}
 }
