@@ -942,7 +942,7 @@ public class StringConverter
 			intZero, intZero, intZero });
 
 		retval.add(new Object[]
-		{ "Array", Integer.valueOf(Types.ARRAY), null, null, null,
+		{ "Array", Integer.valueOf(Types.ARRAY), shortMax, null, null,
 			null, nullable, Boolean.TRUE, searchable, Boolean.FALSE,
 			Boolean.FALSE, Boolean.FALSE, null, shortZero, shortMax,
 			intZero, intZero, intZero });
