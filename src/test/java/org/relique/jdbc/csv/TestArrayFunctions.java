@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.sql.*;
+import java.util.Properties;
 
 public class TestArrayFunctions
 {
@@ -300,7 +301,7 @@ public class TestArrayFunctions
 	}
 
 	@Test
-	public void testToArrayInWhereClause() throws SQLException
+	public void testToArrayWithWhere() throws SQLException
 	{
 		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
 			 Statement stmt = conn.createStatement();
@@ -309,6 +310,56 @@ public class TestArrayFunctions
 		{
 			assertTrue(results.next());
 			assertEquals("bob", results.getString(1), "Incorrect row");
+			assertFalse(results.next());
+		}
+	}
+
+	@Test
+	public void testToArrayWithWhereWrongColumnType() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT name, TO_ARRAY(role_1, role_2) AS roles FROM arrays_sample " +
+			 "WHERE roles = 66"))
+		{
+			assertFalse(results.next());
+		}
+	}
+
+	@Test
+	public void testToArrayWithOrderBy() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT name, TO_ARRAY(role_1, role_2) AS roles FROM arrays_sample " +
+			 "ORDER BY roles"))
+		{
+			assertTrue(results.next());
+			assertEquals("bob", results.getString(1), "Incorrect row");
+			assertTrue(results.next());
+			assertEquals("eve", results.getString(1), "Incorrect row");
+
+			Array array = results.getArray(2);
+			ResultSet arrayResults = array.getResultSet();
+			assertTrue(arrayResults.next());
+			assertEquals("", arrayResults.getString(2));
+			assertTrue(arrayResults.next());
+			assertEquals("teacher", arrayResults.getString(2));
+			assertFalse(arrayResults.next());
+
+			assertTrue(results.next());
+			assertEquals("alice", results.getString(1), "Incorrect row");
+			assertTrue(results.next());
+			assertEquals("eve", results.getString(1), "Incorrect row");
+
+			array = results.getArray(2);
+			arrayResults = array.getResultSet();
+			assertTrue(arrayResults.next());
+			assertEquals("teacher", arrayResults.getString(2));
+			assertTrue(arrayResults.next());
+			assertEquals("teacher", arrayResults.getString(2));
+			assertFalse(arrayResults.next());
+
 			assertFalse(results.next());
 		}
 	}
