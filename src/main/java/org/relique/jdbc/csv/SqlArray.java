@@ -33,12 +33,13 @@ import java.util.stream.Collectors;
 import org.relique.io.ListDataReader;
 
 
-public class SqlArray implements Array 
+public class SqlArray implements Array, Comparable<SqlArray>
 {
 	private final List<Object> values;
 	private final String baseTypeName;
 	private final int baseType;
 	private boolean freed;
+	StringConverter converter;
 	Connection createdByConnection;
 	CsvStatement internalStatement;
 
@@ -51,6 +52,7 @@ public class SqlArray implements Array
 		this.values = values.stream()
 				.map(o -> converter.convert(baseTypeName, o.toString()))
 				.collect(Collectors.toList());
+		this.converter = converter;
 		this.createdByConnection = connection;
 	}
 
@@ -231,5 +233,57 @@ public class SqlArray implements Array
 			internalStatement = null;
 		}
 		freed = true;
+	}
+
+	@Override
+	public int compareTo(SqlArray other)
+	{
+		// Compare elements in arrays
+		int minSize = Math.min(values.size(), other.values.size());
+		for (int i = 0; i < minSize; i++)
+		{
+			Comparable left = (Comparable)values.get(i);
+			Comparable right = (Comparable)other.values.get(i);
+			Map<String, Object> env = new HashMap<>();
+			env.put(StringConverter.COLUMN_NAME, converter);
+			try
+			{
+				Integer compared = RelopExpression.compare(left, right, env);
+				if (compared == null)
+				{
+					throw new ClassCastException(CsvResources.getString("arrayElementTypes") + ": " +
+						(i + 1) + ": " + left.toString() + ": " + right.toString());
+				}
+				if (compared.intValue() != 0)
+				{
+					return compared.intValue();
+				}
+			}
+			catch (SQLException e)
+			{
+				throw new ClassCastException(e.getMessage() + ": " +
+					(i + 1) + ": " + left.toString() + ": " + right.toString());
+			}
+		}
+		// All elements are equal, choose largest array instead.
+		int sign = values.size() - other.values.size();
+		return sign;
+	}
+
+	@Override
+	public String toString()
+	{
+		StringBuffer sb = new StringBuffer();
+		sb.append("TO_ARRAY(");
+		for (int i = 0; i < values.size(); i++)
+		{
+			if (i > 0)
+			{
+				sb.append(", ");
+			}
+			sb.append(values.get(i));
+		}
+		sb.append(")");
+		return sb.toString();
 	}
 }

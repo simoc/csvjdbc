@@ -315,6 +315,29 @@ public class TestArrayFunctions
 	}
 
 	@Test
+	public void testToArrayNumericWithWhere() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,Integer,Integer,Long,Float,Double,BigDecimal");
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT TO_ARRAY(C1, C2, C3) AS c FROM numeric " +
+			 "WHERE c = TO_ARRAY(-22, 15, 2147483647)"))
+		{
+			assertTrue(results.next());
+			Array array = results.getArray(1);
+			Object[] data = (Object[]) array.getArray();
+			assertEquals(3, data.length);
+			assertEquals(Integer.valueOf(-22), data[0]);
+			assertEquals(Integer.valueOf(15), data[1]);
+			assertEquals(Integer.valueOf(2147483647), data[2]);
+			array.free();
+			assertFalse(results.next());
+		}
+	}
+
+	@Test
 	public void testToArrayWithWhereWrongColumnType() throws SQLException
 	{
 		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
