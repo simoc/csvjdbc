@@ -24,11 +24,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.relique.io.ListDataReader;
 
@@ -45,13 +43,16 @@ public class SqlArray implements Array, Comparable<SqlArray>
 
 	public SqlArray(List<Object> values, StringConverter converter, Connection connection)
 	{
-		String[] inferredTypes = converter.inferColumnTypes(values.toArray());
-		baseTypeName = getBaseTypeNameImpl(values, Arrays.asList(inferredTypes));
+		ArrayList<String> inferredTypes = new ArrayList<String>();
+		for (int i = 0; i < values.size(); i++)
+		{
+			inferredTypes.add(StringConverter.getTypeNameForLiteral(values.get(i)));
+		}
+		baseTypeName = getBaseTypeNameImpl(values, inferredTypes);
 		baseType = getBaseTypeImpl(baseTypeName);
 
-		this.values = values.stream()
-				.map(o -> converter.convert(baseTypeName, o.toString()))
-				.collect(Collectors.toList());
+		this.values = new ArrayList<Object>();
+		this.values.addAll(values);
 		this.converter = converter;
 		this.createdByConnection = connection;
 	}
