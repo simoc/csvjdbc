@@ -85,7 +85,10 @@ public class TestArrayFunctions
 	@Test
 	public void testToArrayWithIntegerData() throws SQLException
 	{
-		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+		Properties props = new Properties();
+		props.put("columnTypes", "String,String,String,Int,Int");
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 			 Statement stmt = conn.createStatement();
 			 ResultSet results = stmt.executeQuery("SELECT name,TO_ARRAY(role_id_1, role_id_2) AS roles FROM arrays_sample"))
 		{
@@ -107,6 +110,31 @@ public class TestArrayFunctions
 			assertEquals(2, data.length);
 			assertNull(data[0]);
 			assertEquals(1, data[1]);
+		}
+	}
+
+	@Test
+	public void testToArrayWithDateData() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,Int,Int,Date,Time");
+		props.put("dateFormat", "M/D/YYYY");
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT TO_ARRAY(PurchaseDate, PurchaseDate + 28) AS date_range FROM Purchase"))
+		{
+			assertTrue(results.next());
+			Array array = results.getArray(1);
+			assertEquals("Date", array.getBaseTypeName(), "Not an array of dates");
+			assertEquals(Types.DATE, array.getBaseType(), "Not an array of dates");
+			ResultSet arrayResults = array.getResultSet();
+			assertTrue(arrayResults.next());
+			assertEquals(Date.valueOf("2013-01-09"), arrayResults.getDate(2));
+			assertTrue(arrayResults.next());
+			assertEquals(Date.valueOf("2013-02-06"), arrayResults.getDate(2));
+			array.free();
+			assertTrue(results.next());
 		}
 	}
 
