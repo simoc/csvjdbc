@@ -178,6 +178,7 @@ public class CsvResultSetMetaData implements ResultSetMetaData
 			put("Timestamp", Integer.valueOf(Types.TIMESTAMP));
 			put("Blob", Integer.valueOf(Types.BLOB));
 			put("Clob", Integer.valueOf(Types.CLOB));
+			put("Array", Integer.valueOf(Types.ARRAY));
 			put("expression", Integer.valueOf(Types.BLOB));
 		}
 	};

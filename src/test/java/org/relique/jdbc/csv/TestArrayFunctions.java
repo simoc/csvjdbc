@@ -55,6 +55,20 @@ public class TestArrayFunctions
 	}
 
 	@Test
+	public void testToArrayColumnType() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT name, TO_ARRAY(role_1, role_2) AS roles FROM arrays_sample"))
+		{
+			assertTrue(results.next());
+			ResultSetMetaData meta = results.getMetaData();
+			int type = meta.getColumnType(2);
+			assertEquals(Types.ARRAY, type);
+		}
+	}
+
+	@Test
 	public void testToArrayWithStringData() throws SQLException
 	{
 		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
