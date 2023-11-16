@@ -19,6 +19,7 @@ package org.relique.jdbc.csv;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.sql.Array;
 import java.sql.DatabaseMetaData;
 import java.sql.Date;
 import java.sql.Time;
@@ -846,6 +847,8 @@ public class StringConverter
 			retval = "Timestamp";
 		else if (literal instanceof InputStream)
 			retval = "AsciiStream";
+		else if (literal instanceof Array)
+			retval = "Array";
 		return retval;
 	}
 
