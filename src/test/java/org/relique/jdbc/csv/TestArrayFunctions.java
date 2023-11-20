@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.sql.*;
+import java.util.Properties;
 
 public class TestArrayFunctions
 {
@@ -98,7 +99,10 @@ public class TestArrayFunctions
 	@Test
 	public void testToArrayWithIntegerData() throws SQLException
 	{
-		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+		Properties props = new Properties();
+		props.put("columnTypes", "String,String,String,Int,Int");
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
 			 Statement stmt = conn.createStatement();
 			 ResultSet results = stmt.executeQuery("SELECT name,TO_ARRAY(role_id_1, role_id_2) AS roles FROM arrays_sample"))
 		{
@@ -120,6 +124,31 @@ public class TestArrayFunctions
 			assertEquals(2, data.length);
 			assertNull(data[0]);
 			assertEquals(1, data[1]);
+		}
+	}
+
+	@Test
+	public void testToArrayWithDateData() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,Int,Int,Date,Time");
+		props.put("dateFormat", "M/D/YYYY");
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT TO_ARRAY(PurchaseDate, PurchaseDate + 28) AS date_range FROM Purchase"))
+		{
+			assertTrue(results.next());
+			Array array = results.getArray(1);
+			assertEquals("Date", array.getBaseTypeName(), "Not an array of dates");
+			assertEquals(Types.DATE, array.getBaseType(), "Not an array of dates");
+			ResultSet arrayResults = array.getResultSet();
+			assertTrue(arrayResults.next());
+			assertEquals(Date.valueOf("2013-01-09"), arrayResults.getDate(2));
+			assertTrue(arrayResults.next());
+			assertEquals(Date.valueOf("2013-02-06"), arrayResults.getDate(2));
+			array.free();
+			assertTrue(results.next());
 		}
 	}
 
@@ -310,6 +339,93 @@ public class TestArrayFunctions
 				assertTrue(e.toString().startsWith("java.sql.SQLException: " +
 					CsvResources.getString("arraySubListOutOfBounds")));
 			}
+		}
+	}
+
+	@Test
+	public void testToArrayWithWhere() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT name, TO_ARRAY(role_1, role_2) AS roles FROM arrays_sample " +
+			 "WHERE roles = TO_ARRAY('', 'admin')"))
+		{
+			assertTrue(results.next());
+			assertEquals("bob", results.getString(1), "Incorrect row");
+			assertFalse(results.next());
+		}
+	}
+
+	@Test
+	public void testToArrayNumericWithWhere() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Integer,Integer,Integer,Long,Float,Double,BigDecimal");
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT TO_ARRAY(C1, C2, C3) AS c FROM numeric " +
+			 "WHERE c = TO_ARRAY(-22, 15, 2147483647)"))
+		{
+			assertTrue(results.next());
+			Array array = results.getArray(1);
+			Object[] data = (Object[]) array.getArray();
+			assertEquals(3, data.length);
+			assertEquals(Integer.valueOf(-22), data[0]);
+			assertEquals(Integer.valueOf(15), data[1]);
+			assertEquals(Integer.valueOf(2147483647), data[2]);
+			array.free();
+			assertFalse(results.next());
+		}
+	}
+
+	@Test
+	public void testToArrayWithWhereWrongColumnType() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT name, TO_ARRAY(role_1, role_2) AS roles FROM arrays_sample " +
+			 "WHERE roles = 66"))
+		{
+			assertFalse(results.next());
+		}
+	}
+
+	@Test
+	public void testToArrayWithOrderBy() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT name, TO_ARRAY(role_1, role_2) AS roles FROM arrays_sample " +
+			 "ORDER BY roles"))
+		{
+			assertTrue(results.next());
+			assertEquals("bob", results.getString(1), "Incorrect row");
+			assertTrue(results.next());
+			assertEquals("eve", results.getString(1), "Incorrect row");
+
+			Array array = results.getArray(2);
+			ResultSet arrayResults = array.getResultSet();
+			assertTrue(arrayResults.next());
+			assertEquals("", arrayResults.getString(2));
+			assertTrue(arrayResults.next());
+			assertEquals("teacher", arrayResults.getString(2));
+			assertFalse(arrayResults.next());
+
+			assertTrue(results.next());
+			assertEquals("alice", results.getString(1), "Incorrect row");
+			assertTrue(results.next());
+			assertEquals("eve", results.getString(1), "Incorrect row");
+
+			array = results.getArray(2);
+			arrayResults = array.getResultSet();
+			assertTrue(arrayResults.next());
+			assertEquals("teacher", arrayResults.getString(2));
+			assertTrue(arrayResults.next());
+			assertEquals("teacher", arrayResults.getString(2));
+			assertFalse(arrayResults.next());
+
+			assertFalse(results.next());
 		}
 	}
 }
