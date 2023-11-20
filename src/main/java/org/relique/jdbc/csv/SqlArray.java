@@ -41,7 +41,7 @@ public class SqlArray implements Array, Comparable<SqlArray>
 	Connection createdByConnection;
 	CsvStatement internalStatement;
 
-	public SqlArray(List<Object> values, StringConverter converter, Connection connection)
+	public SqlArray(List<Object> values, StringConverter converter, Connection connection) throws SQLException
 	{
 		ArrayList<String> inferredTypes = new ArrayList<String>();
 		for (int i = 0; i < values.size(); i++)
@@ -64,32 +64,35 @@ public class SqlArray implements Array, Comparable<SqlArray>
 	}
 
 	@Override
-	public String getBaseTypeName() throws SQLException 
+	public String getBaseTypeName() throws SQLException
 	{
 		return baseTypeName;
 	}
 
-	private String getBaseTypeNameImpl(List<Object> values, List<String> inferredTypes) 
+	private String getBaseTypeNameImpl(List<Object> values, List<String> inferredTypes) throws SQLException
 	{
 		int index = 0;
-		String result = null;
-		for (Object value : values) 
+		String firstType = null;
+		for (String type : inferredTypes)
 		{
-			if (value == null || value.toString().isEmpty()) 
+			if (type == null)
 			{
-				index++;
-			} 
-			else if (result == null) 
-			{
-				result = inferredTypes.get(index++);
-			} 
-			else if (!result.equals(inferredTypes.get(index++))) 
-			{
-				throw new IllegalStateException("type of element at index " + index
-						+ "(1 based) does not match the element(s) in front");
+				// Skip NULL values
 			}
+			else if (firstType == null)
+			{
+				// Save first non-NULL type
+				firstType = type;
+			}
+			else if (!type.equals(firstType))
+			{
+				// Every other type must match the first type
+				throw new SQLException(CsvResources.getString("arrayElementTypes") + ": " +
+					"1: " + firstType + " " + (index + 1) + ": " + type);
+			}
+			index++;
 		}
-		return result;
+		return firstType;
 	}
 
 	@Override

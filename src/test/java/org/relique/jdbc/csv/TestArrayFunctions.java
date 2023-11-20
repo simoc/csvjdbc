@@ -392,6 +392,31 @@ public class TestArrayFunctions
 	}
 
 	@Test
+	public void testToArrayWithTypeMismatch() throws SQLException
+	{
+		Properties props = new Properties();
+		props.put("columnTypes", "Int,Int,Int,Date,Time");
+		props.put("dateFormat", "M/D/YYYY");
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath, props);
+			 Statement stmt = conn.createStatement();
+			 ResultSet rs = stmt.executeQuery("SELECT TO_ARRAY(AccountNo, PurchaseDate) FROM Purchase"))
+		{
+			try
+			{
+				assertTrue(rs.next());
+				rs.getArray(1);
+				fail("Array type mismatch should throw SQLException");
+			}
+			catch (SQLException e)
+			{
+				assertTrue(e.toString().startsWith("java.sql.SQLException: " +
+					CsvResources.getString("arrayElementTypes")));
+			}
+		}
+	}
+
+	@Test
 	public void testToArrayWithOrderBy() throws SQLException
 	{
 		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
