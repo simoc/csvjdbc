@@ -73,6 +73,7 @@ public class SqlArray implements Array, Comparable<SqlArray>
 	{
 		int index = 0;
 		String firstType = null;
+		int firstIndex = 0;
 		for (String type : inferredTypes)
 		{
 			if (type == null)
@@ -83,12 +84,14 @@ public class SqlArray implements Array, Comparable<SqlArray>
 			{
 				// Save first non-NULL type
 				firstType = type;
+				firstIndex = index;
 			}
 			else if (!type.equals(firstType))
 			{
 				// Every other type must match the first type
 				throw new SQLException(CsvResources.getString("arrayElementTypes") + ": " +
-					"1: " + firstType + " " + (index + 1) + ": " + type);
+					(firstIndex + 1) + ": " + firstType + " " +
+					(index + 1) + ": " + type);
 			}
 			index++;
 		}
