@@ -27,7 +27,7 @@ a constant value,
 a sub-query,
 or an expression including functions, aggregate functions,
 operations `+`, `-`,
-`/`, `*`, `%`, `||`,
+`/`, `*`, `%` (modulo), `||` (string concatentation),
 conditional `CASE` expressions
 and parentheses.
 
