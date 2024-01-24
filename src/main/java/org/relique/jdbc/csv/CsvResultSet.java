@@ -122,6 +122,8 @@ public class CsvResultSet implements ResultSet
 
 	private int limit;
 
+	private int offset;
+
 	private int maxDataLines;
 
 	private boolean isClosed = false;
@@ -236,6 +238,7 @@ public class CsvResultSet implements ResultSet
 		fetchSize = statement.getFetchSize();
 		fetchDirection = statement.getFetchDirection();
 		this.limit = sqlLimit;
+		this.offset = sqlOffset;
 		this.resultSetType = resultSetType;
 		this.reader = reader;
 		this.tableName = tableName;
@@ -933,6 +936,15 @@ public class CsvResultSet implements ResultSet
 			{
 				recordEnvironment = reader.getEnvironment();
 				recordEnvironment.put(CsvStatement.STATEMENT_COLUMN_NAME, statement);
+
+				/*
+				 * Always include line number in CSV file, so it can be evaluated later.
+				 */
+				String key = SQLLineNumberFunction.LINE_NUMBER_COLUMN_NAME;
+				int lineNumber = this.currentRow + 1;
+				if (this.offset > 0)
+					lineNumber += this.offset;
+				recordEnvironment.put(key, Integer.valueOf(lineNumber));
 			}
 			else
 			{
