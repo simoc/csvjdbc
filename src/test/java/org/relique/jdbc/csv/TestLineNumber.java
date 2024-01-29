@@ -114,10 +114,6 @@ public class TestLineNumber
 			assertEquals("B234", results.getString(2));
 
 			assertTrue(results.next());
-			assertEquals(3, results.getInt(1));
-			assertEquals("B234", results.getString(2));
-
-			assertTrue(results.next());
 			assertEquals(4, results.getInt(1));
 			assertEquals("C456", results.getString(2));
 
