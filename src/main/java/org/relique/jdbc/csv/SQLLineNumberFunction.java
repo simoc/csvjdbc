@@ -39,7 +39,6 @@ class SQLLineNumberFunction extends Expression
 	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
-		//return new ColumnName(CsvStatement.LINE_NUMBER_COLUMN_NAME).eval(env);
 		return expression.eval(env);
 	}
 	@Override
