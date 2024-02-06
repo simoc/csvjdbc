@@ -109,6 +109,9 @@ public class CsvResultSet implements ResultSet
 
 	private int currentRow;
 
+	/** Number of rows that have not matched the where clause and have been skipped */
+	private int nonMatchingRows;
+
 	private boolean hitTail = false;
 
 	/** Result of last call to next() */
@@ -941,7 +944,7 @@ public class CsvResultSet implements ResultSet
 				 * Always include line number in CSV file, so it can be evaluated later.
 				 */
 				String key = SQLLineNumberFunction.LINE_NUMBER_COLUMN_NAME;
-				int lineNumber = this.currentRow + 1;
+				int lineNumber = this.currentRow + this.nonMatchingRows + 1;
 				if (this.offset > 0)
 					lineNumber += this.offset;
 				recordEnvironment.put(key, Integer.valueOf(lineNumber));
@@ -972,11 +975,21 @@ public class CsvResultSet implements ResultSet
 							}
 						}
 					}
+					this.nonMatchingRows++;
 					thereWasAnAnswer = reader.next();
 					if(thereWasAnAnswer)
 					{
 						recordEnvironment = reader.getEnvironment();
 						recordEnvironment.put(CsvStatement.STATEMENT_COLUMN_NAME, statement);
+
+						/*
+						 * Always include line number in CSV file, so it can be evaluated later.
+						 */
+						String key = SQLLineNumberFunction.LINE_NUMBER_COLUMN_NAME;
+						int lineNumber = this.currentRow + this.nonMatchingRows + 1;
+						if (this.offset > 0)
+							lineNumber += this.offset;
+						recordEnvironment.put(key, Integer.valueOf(lineNumber));
 					}
 					else
 					{
@@ -991,6 +1004,16 @@ public class CsvResultSet implements ResultSet
 				{
 					Map<String, Object> env = reader.getEnvironment();
 					env.put(CsvStatement.STATEMENT_COLUMN_NAME, statement);
+
+					/*
+					 * Always include line number in CSV file, so it can be evaluated later.
+					 */
+					String key = SQLLineNumberFunction.LINE_NUMBER_COLUMN_NAME;
+					int lineNumber = this.currentRow + this.nonMatchingRows + 1;
+					if (this.offset > 0)
+						lineNumber += this.offset;
+					env.put(key, Integer.valueOf(lineNumber));
+
 					bufferedRecordEnvironments.add(env);
 					currentRow++;
 				}
