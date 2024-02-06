@@ -169,4 +169,33 @@ public class TestLineNumber
 			assertFalse(results.next());
 		}
 	}
+
+	@Test
+	public void testLineNumbersScrollable() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+
+			Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+				ResultSet.CONCUR_READ_ONLY);
+
+			ResultSet results = stmt
+				.executeQuery("SELECT ID, LINE_NUMBER() FROM sample"))
+		{
+			assertTrue(results.last());
+			assertEquals("X234", results.getString(1));
+			assertEquals(6, results.getInt(2));
+
+			assertTrue(results.previous());
+			assertEquals("D789", results.getString(1));
+			assertEquals(5, results.getInt(2));
+
+			assertTrue(results.first());
+			assertEquals("Q123", results.getString(1));
+			assertEquals(1, results.getInt(2));
+
+			assertTrue(results.next());
+			assertEquals("A123", results.getString(1));
+			assertEquals(2, results.getInt(2));
+		}
+	}
 }
