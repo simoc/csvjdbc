@@ -943,11 +943,7 @@ public class CsvResultSet implements ResultSet
 				/*
 				 * Always include line number in CSV file, so it can be evaluated later.
 				 */
-				String key = SQLLineNumberFunction.LINE_NUMBER_COLUMN_NAME;
-				int lineNumber = this.currentRow + this.nonMatchingRows + 1;
-				if (this.offset > 0)
-					lineNumber += this.offset;
-				recordEnvironment.put(key, Integer.valueOf(lineNumber));
+				addLineNumberEnvironment(recordEnvironment);
 			}
 			else
 			{
@@ -985,11 +981,7 @@ public class CsvResultSet implements ResultSet
 						/*
 						 * Always include line number in CSV file, so it can be evaluated later.
 						 */
-						String key = SQLLineNumberFunction.LINE_NUMBER_COLUMN_NAME;
-						int lineNumber = this.currentRow + this.nonMatchingRows + 1;
-						if (this.offset > 0)
-							lineNumber += this.offset;
-						recordEnvironment.put(key, Integer.valueOf(lineNumber));
+						addLineNumberEnvironment(recordEnvironment);
 					}
 					else
 					{
@@ -1008,11 +1000,7 @@ public class CsvResultSet implements ResultSet
 					/*
 					 * Always include line number in CSV file, so it can be evaluated later.
 					 */
-					String key = SQLLineNumberFunction.LINE_NUMBER_COLUMN_NAME;
-					int lineNumber = this.currentRow + this.nonMatchingRows + 1;
-					if (this.offset > 0)
-						lineNumber += this.offset;
-					env.put(key, Integer.valueOf(lineNumber));
+					addLineNumberEnvironment(env);
 
 					bufferedRecordEnvironments.add(env);
 					currentRow++;
@@ -1094,6 +1082,15 @@ public class CsvResultSet implements ResultSet
 			objectEnvironment.put(key, statement);
 
 		return objectEnvironment;
+	}
+
+	private void addLineNumberEnvironment(Map<String, Object> recordEnvironment) throws SQLException
+	{
+		String key = SQLLineNumberFunction.LINE_NUMBER_COLUMN_NAME;
+		int lineNumber = this.currentRow + this.nonMatchingRows + 1;
+		if (this.offset > 0)
+			lineNumber += this.offset;
+		recordEnvironment.put(key, Integer.valueOf(lineNumber));
 	}
 
 	private boolean addDistinctEnvironment(Map<String, Object> objectEnvironment) throws SQLException
