@@ -134,6 +134,29 @@ public class TestLineNumber
 	}
 
 	@Test
+	public void testLineNumbersWhereOrderBy() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt
+				.executeQuery("SELECT LINE_NUMBER(), EXTRA_FIELD FROM sample " +
+					"WHERE ID = 'C456' OR ID = 'Q123' ORDER BY ID"))
+		{
+			assertTrue(results.next());
+			assertEquals(4, results.getInt(1));
+			assertEquals("C", results.getString(2));
+
+			assertTrue(results.next());
+			assertEquals(1, results.getInt(1));
+			assertEquals("F", results.getString(2));
+
+			assertFalse(results.next());
+		}
+	}
+
+	@Test
 	public void testLineNumbersOffset() throws SQLException
 	{
 		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
