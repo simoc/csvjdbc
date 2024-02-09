@@ -188,6 +188,7 @@ public class TestLineNumber
 		{
 			assertTrue(results.next());
 			assertEquals(0, results.getInt(2));
+			assertTrue(results.wasNull());
 
 			assertFalse(results.next());
 		}
