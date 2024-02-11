@@ -978,6 +978,11 @@ Expression simpleExpression():
 	{
 		return new SQLRandomFunction();
 	}
+	| <ROUND> <OPENPARENTHESIS> arg = binaryOperation() (<COMMA>
+		arg2 = binaryOperation())? <CLOSEPARENTHESIS>
+	{
+		return new SQLRoundFunction(arg, arg2);
+	}
 	| <DAYOFMONTH> <OPENPARENTHESIS> arg = binaryOperation() <CLOSEPARENTHESIS>
 	{
 		return new SQLDayOfMonthFunction(arg);
