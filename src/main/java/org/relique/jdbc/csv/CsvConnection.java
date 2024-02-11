@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
@@ -149,6 +150,8 @@ public class CsvConnection implements Connection
 	private HashMap<String, Method> sqlFunctions = new HashMap<>();
 
 	private int savepointCounter = 0;
+
+	private Random random = new Random();
 
 	/**
 	 * Set defaults for connection.
@@ -502,6 +505,12 @@ public class CsvConnection implements Connection
 			CsvDriver.DEFAULT_IGNORE_UNPARSEABLE_LINES)));
 		setMissingValue(info.getProperty(CsvDriver.MISSING_VALUE,
 				CsvDriver.DEFAULT_MISSING_VALUE));
+		if (info.getProperty(CsvDriver.RANDOM_SEED) != null)
+		{
+			prop = info.getProperty(CsvDriver.RANDOM_SEED);
+			long seed = Long.parseLong(prop);
+			random.setSeed(seed);
+		}
 	}
 
 	/**
@@ -1500,5 +1509,10 @@ public class CsvConnection implements Connection
 		 */
 		Collections.sort(tableNames);
 		return tableNames;
+	}
+
+	public Random getRandom()
+	{
+		return random;
 	}
 }

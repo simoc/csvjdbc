@@ -35,6 +35,7 @@ import org.junit.platform.suite.api.Suite;
 	TestZipFiles.class,
 	TestAggregateFunctions.class,
 	TestArrayFunctions.class,
+	TestRandomFunction.class,
 	TestOrderBy.class,
 	TestGroupBy.class,
 	TestLimitOffset.class,

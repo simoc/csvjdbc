@@ -62,6 +62,7 @@ LTRIM(S [, T])       |Removes leading characters from S that occur in T
 MINUTE(T)            |Extracts minute of hour from time or timestamp T
 MONTH(D)             |Extracts month from date or timestamp D (first month is 1)
 NULLIF(X, Y)         |Returns NULL if X and Y are equal, otherwise X
+RANDOM()             |Returns random number in the range 0 to 1
 REPLACE(S, FROM, TO) |Replaces all occurrences of string FROM in S with TO
 ROUND(N [, D])       |Rounds N to the specified number of decimal places D (`0` by default)
 RTRIM(S, [, T])      |Removes trailing characters from S that occur in T
@@ -531,6 +532,11 @@ words such as `December` which vary depending on the locale. Call method
 + when non-zero, defines the maximum number of lines of data to read from the
 file.  Using this property together with `skipLeadingDataLines` enables a
 limited number of lines to be read from the middle of a very large file.
+
+### randomSeed
++ type: Long
++ default: None
++ Defines seed value for random number generation. Using the same seed value will repeat the same sequence of random numbers.
 
 ### separator
 + type: String
