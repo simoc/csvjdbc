@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Properties;
 
 public class TestRandomFunction
@@ -103,5 +104,33 @@ public class TestRandomFunction
 		
 		// Expect same sequence of random numbers when using same random seed.
 		assertEquals(random1, random2);
+	}
+
+	@Test
+	public void testOrderByRandomFunction() throws SQLException
+	{
+		HashSet<String> ids = new HashSet<>();
+		ArrayList<Double> randoms = new ArrayList<>();
+
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT ID, RANDOM() R FROM sample ORDER BY R"))
+		{
+			while (results.next())
+			{
+				ids.add(String.valueOf(results.getString(1)));
+				randoms.add(Double.valueOf(results.getDouble(2)));
+			}
+
+			// Expect each unique ID once.
+			assertEquals(ids.size(), 6);
+
+			// Expect random values in increasing order.
+			assertEquals(randoms.size(), 6);
+			for (int i = 1; i < randoms.size(); i++)
+			{
+				assertTrue(randoms.get(i) >= randoms.get(i - 1));
+			}
+		}
 	}
 }
