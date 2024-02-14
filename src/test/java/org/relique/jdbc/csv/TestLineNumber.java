@@ -195,6 +195,32 @@ public class TestLineNumber
 	}
 
 	@Test
+	public void testLineNumbersGroupBy() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+
+			Statement stmt = conn.createStatement();
+
+			ResultSet results = stmt
+				.executeQuery("SELECT NAME, COUNT(NAME), LINE_NUMBER() FROM scores GROUP BY NAME"))
+		{
+			assertTrue(results.next());
+			assertEquals(0, results.getInt(3));
+			assertTrue(results.wasNull());
+
+			assertTrue(results.next());
+			assertEquals(0, results.getInt(3));
+			assertTrue(results.wasNull());
+
+			assertTrue(results.next());
+			assertEquals(0, results.getInt(3));
+			assertTrue(results.wasNull());
+
+			assertFalse(results.next());
+		}
+	}
+
+	@Test
 	public void testLineNumbersScrollable() throws SQLException
 	{
 		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);

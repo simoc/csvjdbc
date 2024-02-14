@@ -1086,6 +1086,12 @@ public class CsvResultSet implements ResultSet
 
 	private void addLineNumberEnvironment(Map<String, Object> recordEnvironment) throws SQLException
 	{
+		/*
+		 * No line numbers if rows are grouped.
+		 */
+		if (this.groupByColumns != null)
+			return;
+
 		String key = SQLLineNumberFunction.LINE_NUMBER_COLUMN_NAME;
 		int lineNumber = this.currentRow + this.nonMatchingRows + 1;
 		if (this.offset > 0)
