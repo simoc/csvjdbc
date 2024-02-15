@@ -109,6 +109,9 @@ public class CsvResultSet implements ResultSet
 
 	private int currentRow;
 
+	/** Number of rows that have not matched the where clause and have been skipped */
+	private int nonMatchingRows;
+
 	private boolean hitTail = false;
 
 	/** Result of last call to next() */
@@ -121,6 +124,8 @@ public class CsvResultSet implements ResultSet
 	private int fetchDirection;
 
 	private int limit;
+
+	private int offset;
 
 	private int maxDataLines;
 
@@ -236,6 +241,7 @@ public class CsvResultSet implements ResultSet
 		fetchSize = statement.getFetchSize();
 		fetchDirection = statement.getFetchDirection();
 		this.limit = sqlLimit;
+		this.offset = sqlOffset;
 		this.resultSetType = resultSetType;
 		this.reader = reader;
 		this.tableName = tableName;
@@ -933,6 +939,11 @@ public class CsvResultSet implements ResultSet
 			{
 				recordEnvironment = reader.getEnvironment();
 				recordEnvironment.put(CsvStatement.STATEMENT_COLUMN_NAME, statement);
+
+				/*
+				 * Always include line number in CSV file, so it can be evaluated later.
+				 */
+				addLineNumberEnvironment(recordEnvironment);
 			}
 			else
 			{
@@ -960,11 +971,17 @@ public class CsvResultSet implements ResultSet
 							}
 						}
 					}
+					this.nonMatchingRows++;
 					thereWasAnAnswer = reader.next();
 					if(thereWasAnAnswer)
 					{
 						recordEnvironment = reader.getEnvironment();
 						recordEnvironment.put(CsvStatement.STATEMENT_COLUMN_NAME, statement);
+
+						/*
+						 * Always include line number in CSV file, so it can be evaluated later.
+						 */
+						addLineNumberEnvironment(recordEnvironment);
 					}
 					else
 					{
@@ -979,6 +996,12 @@ public class CsvResultSet implements ResultSet
 				{
 					Map<String, Object> env = reader.getEnvironment();
 					env.put(CsvStatement.STATEMENT_COLUMN_NAME, statement);
+
+					/*
+					 * Always include line number in CSV file, so it can be evaluated later.
+					 */
+					addLineNumberEnvironment(env);
+
 					bufferedRecordEnvironments.add(env);
 					currentRow++;
 				}
@@ -1059,6 +1082,21 @@ public class CsvResultSet implements ResultSet
 			objectEnvironment.put(key, statement);
 
 		return objectEnvironment;
+	}
+
+	private void addLineNumberEnvironment(Map<String, Object> recordEnvironment) throws SQLException
+	{
+		/*
+		 * No line numbers if rows are grouped.
+		 */
+		if (this.groupByColumns != null)
+			return;
+
+		String key = SQLLineNumberFunction.LINE_NUMBER_COLUMN_NAME;
+		int lineNumber = this.currentRow + this.nonMatchingRows + 1;
+		if (this.offset > 0)
+			lineNumber += this.offset;
+		recordEnvironment.put(key, Integer.valueOf(lineNumber));
 	}
 
 	private boolean addDistinctEnvironment(Map<String, Object> objectEnvironment) throws SQLException
