@@ -39,6 +39,7 @@ import org.junit.platform.suite.api.Suite;
 	TestOrderBy.class,
 	TestGroupBy.class,
 	TestLimitOffset.class,
+	TestLineNumber.class,
 	TestFixedWidthFiles.class,
 	TestDoubleQuoting.class,
 	TestSubQuery.class,

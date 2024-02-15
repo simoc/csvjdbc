@@ -57,6 +57,7 @@ TO_ARRAY([DISTINCT] N1, N2, ...) | Returns java.sql.Array containing (optionally
 DAYOFMONTH(D)        |Extracts day of month from date or timestamp D (first day of month is 1)
 HOUROFDAY(T)         |Extracts hour of day from time or timestamp T
 LENGTH(S)            |Returns length of string
+LINE_NUMBER()        |Returns line number of row in CSV file (NULL if row not corresponding to a line)
 LOWER(S)             |Converts string to lower case
 LTRIM(S [, T])       |Removes leading characters from S that occur in T
 MINUTE(T)            |Extracts minute of hour from time or timestamp T
