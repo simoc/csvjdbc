@@ -67,6 +67,10 @@ public class TestRandomFunction
 			assertTrue(results.next());
 			double random2 = results.getDouble(2);
 			assertTrue(random2 >= 0.0 && random2 < 1.0);
+
+			// Ensure that a second access returns the same value, not a new random value.
+			double random3 = results.getDouble(2);
+			assertEquals(random2, random3);
 		}
 	}
 
