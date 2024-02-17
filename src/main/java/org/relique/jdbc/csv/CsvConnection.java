@@ -49,7 +49,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
@@ -151,7 +150,7 @@ public class CsvConnection implements Connection
 
 	private int savepointCounter = 0;
 
-	private Random random = new Random();
+	private Long randomSeed = null;
 
 	/**
 	 * Set defaults for connection.
@@ -508,8 +507,7 @@ public class CsvConnection implements Connection
 		if (info.getProperty(CsvDriver.RANDOM_SEED) != null)
 		{
 			prop = info.getProperty(CsvDriver.RANDOM_SEED);
-			long seed = Long.parseLong(prop);
-			random.setSeed(seed);
+			randomSeed = Long.valueOf(prop);
 		}
 	}
 
@@ -1511,8 +1509,8 @@ public class CsvConnection implements Connection
 		return tableNames;
 	}
 
-	public Random getRandom()
+	public Long getRandomSeed()
 	{
-		return random;
+		return randomSeed;
 	}
 }
