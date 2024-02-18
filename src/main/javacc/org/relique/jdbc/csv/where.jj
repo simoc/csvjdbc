@@ -284,6 +284,10 @@ TOKEN:
 }
 TOKEN:
 {
+	<RANDOM:"RANDOM">
+}
+TOKEN:
+{
 	<ROUND:"ROUND">
 }
 TOKEN:
@@ -974,6 +978,10 @@ Expression simpleExpression():
 	{
 		return new SQLLengthFunction(arg);
 	}
+	| <RANDOM> <OPENPARENTHESIS> <CLOSEPARENTHESIS>
+	{
+		return new SQLRandomFunction();
+	}
 	| <ROUND> <OPENPARENTHESIS> arg = binaryOperation() (<COMMA>
 		arg2 = binaryOperation())? <CLOSEPARENTHESIS>
 	{
@@ -1154,7 +1162,7 @@ Expression columnName():
 	Token t;
 }
 {
-	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>t=<STRING_AGG>|t=<ARRAY_AGG>|t=<TO_ARRAY>|t=<LINE_NUMBER>)
+	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<RANDOM>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>t=<STRING_AGG>|t=<ARRAY_AGG>|t=<TO_ARRAY>|t=<LINE_NUMBER>)
 	{
 		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}
@@ -1220,7 +1228,7 @@ Expression columnAlias():
 	Token t;
 }
 {
-	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>|t=<STRING_AGG>|t=<ARRAY_AGG>|t=<TO_ARRAY>|t=<LINE_NUMBER>)
+	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<RANDOM>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>|t=<STRING_AGG>|t=<ARRAY_AGG>|t=<TO_ARRAY>|t=<LINE_NUMBER>)
 	{
 		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}

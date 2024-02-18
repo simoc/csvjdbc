@@ -150,6 +150,8 @@ public class CsvConnection implements Connection
 
 	private int savepointCounter = 0;
 
+	private Long randomSeed = null;
+
 	/**
 	 * Set defaults for connection.
 	 */
@@ -502,6 +504,11 @@ public class CsvConnection implements Connection
 			CsvDriver.DEFAULT_IGNORE_UNPARSEABLE_LINES)));
 		setMissingValue(info.getProperty(CsvDriver.MISSING_VALUE,
 				CsvDriver.DEFAULT_MISSING_VALUE));
+		if (info.getProperty(CsvDriver.RANDOM_SEED) != null)
+		{
+			prop = info.getProperty(CsvDriver.RANDOM_SEED);
+			randomSeed = Long.valueOf(prop);
+		}
 	}
 
 	/**
@@ -1500,5 +1507,10 @@ public class CsvConnection implements Connection
 		 */
 		Collections.sort(tableNames);
 		return tableNames;
+	}
+
+	public Long getRandomSeed()
+	{
+		return randomSeed;
 	}
 }
