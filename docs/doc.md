@@ -70,7 +70,7 @@ RTRIM(S, [, T])      |Removes trailing characters from S that occur in T
 SECOND(T)            |Extracts seconds value from time or timestamp T
 SUBSTRING(S, N [, L])|Extracts substring from S starting at index N (counting from 1) with length L
 TRIM(S, [, T])       |Removes leading and trailing characters from S that occur in T
-UPPER(S)             |Converts string to lower case
+UPPER(S)             |Converts string to upper case
 YEAR(D)              |Extracts year from date or timestamp D
 
 Additional functions are defined from java methods using the
