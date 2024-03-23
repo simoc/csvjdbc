@@ -18,6 +18,7 @@ package org.relique.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 /**
  * Example encryption filter that XOR's the all data with a secret seed value.
@@ -69,14 +70,8 @@ public class XORCipher implements CryptoFilter
 	{
 		StringBuilder sb = new StringBuilder("XORCipher(");
 		sb.append(scrambleKey.length);
-		sb.append("):'");
-		for (int i = 0; i < scrambleKey.length; i++)
-		{
-			if (i > 0)
-				sb.append(' ');
-			sb.append(i);
-		}
-		sb.append("'");
+		sb.append("):");
+		sb.append(Arrays.toString(scrambleKey));
 		return sb.toString();
 	}
 
