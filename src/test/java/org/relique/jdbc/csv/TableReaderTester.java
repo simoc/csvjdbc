@@ -24,7 +24,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Vector;
 
 import org.relique.io.TableReader;
 
@@ -47,9 +46,6 @@ public class TableReaderTester implements TableReader
 	@Override
 	public List<String> getTableNames(Connection connection) throws SQLException
 	{
-		Vector<String> v = new Vector<>();
-		v.add("AIRLINE");
-		v.add("AIRPORT");
-		return v;
+		return List.of("AIRLINE", "AIRPORT");
 	}		
 }
