@@ -321,9 +321,7 @@ public class MyHTTPReader implements TableReader
   public List getTableNames(Connection connection)
   {
     // Return list of available table names
-    Vector v = new Vector();
-    v.add("sample");
-    return v;
+    return List.of("sample");
   }
 }
 
