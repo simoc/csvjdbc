@@ -37,7 +37,7 @@ add the following lines to the `pom.xml` file.
         <dependency>
           <groupId>net.sourceforge.csvjdbc</groupId>
           <artifactId>csvjdbc</artifactId>
-          <version>1.0.35</version>
+          <version>1.0.41</version>
         </dependency>
       </dependencies>
 
