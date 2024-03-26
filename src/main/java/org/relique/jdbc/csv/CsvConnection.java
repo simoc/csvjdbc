@@ -1499,7 +1499,7 @@ public class CsvConnection implements Connection
 			 */
 			List<String> list = tableReader.getTableNames(this);
 			if (list != null)
-				tableNames = list;
+				tableNames.addAll(list);
 		}
 
 		/*

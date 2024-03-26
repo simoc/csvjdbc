@@ -100,7 +100,7 @@ methods; an `IllegalStateException` is thrown if values of different types are d
 
 ## Dependencies
 
-CsvJdbc requires Java version 8, or later. For reading DBF files,
+CsvJdbc requires Java version 11, or later. For reading DBF files,
 [DANS DBF Library](http://dans-dbf-lib.sourceforge.net/)
 must be downloaded and included in the CLASSPATH.
 
@@ -321,9 +321,7 @@ public class MyHTTPReader implements TableReader
   public List getTableNames(Connection connection)
   {
     // Return list of available table names
-    Vector v = new Vector();
-    v.add("sample");
-    return v;
+    return List.of("sample");
   }
 }
 
