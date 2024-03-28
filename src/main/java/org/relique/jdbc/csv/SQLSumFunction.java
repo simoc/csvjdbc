@@ -151,7 +151,7 @@ class SQLSumFunction extends AggregateFunction
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		return new LinkedList<>();
+		return List.of();
 	}
 	@Override
 	public List<String> aggregateColumns(Set<String> availableColumns)
