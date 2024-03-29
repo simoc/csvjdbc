@@ -18,7 +18,6 @@
  */
 package org.relique.jdbc.csv;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,6 +47,6 @@ class Placeholder extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		return new LinkedList<>();
+		return List.of();
 	}
 }

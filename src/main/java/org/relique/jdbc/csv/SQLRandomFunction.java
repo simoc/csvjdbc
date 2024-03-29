@@ -20,7 +20,6 @@ package org.relique.jdbc.csv;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -104,12 +103,12 @@ class SQLRandomFunction extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		return new LinkedList<>();
+		return List.of();
 	}
 
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		return new LinkedList<>();
+		return List.of();
 	}
 }
