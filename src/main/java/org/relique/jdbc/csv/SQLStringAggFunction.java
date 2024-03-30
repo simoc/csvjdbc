@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -98,23 +97,17 @@ class SQLStringAggFunction extends AggregateFunction
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<>();
-		result.addAll(delimiter.usedColumns(availableColumns));
-		return result;
+		return List.copyOf(delimiter.usedColumns(availableColumns));
 	}
 	@Override
 	public List<String> aggregateColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<>();
-		result.addAll(expression.usedColumns(availableColumns));
-		return result;
+		return List.copyOf(expression.usedColumns(availableColumns));
 	}
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<>();
-		result.add(this);
-		return result;
+		return List.of(this);
 	}
 	@Override
 	public void resetAggregateFunctions()

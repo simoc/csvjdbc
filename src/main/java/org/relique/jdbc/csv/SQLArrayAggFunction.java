@@ -73,21 +73,19 @@ public class SQLArrayAggFunction extends AggregateFunction
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		return Collections.emptyList();
+		return List.of();
 	}
 
 	@Override
 	public List<String> aggregateColumns(Set<String> availableColumns)
 	{
-		return new LinkedList<>(expression.usedColumns(availableColumns));
+		return List.copyOf(expression.usedColumns(availableColumns));
 	}
 
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<>();
-		result.add(this);
-		return result;
+		return List.of(this);
 	}
 
 	@Override

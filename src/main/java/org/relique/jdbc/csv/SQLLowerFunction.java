@@ -19,7 +19,6 @@
 package org.relique.jdbc.csv;
 
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,15 +46,11 @@ class SQLLowerFunction extends Expression
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
 	{
-		List<String> result = new LinkedList<>();
-		result.addAll(expression.usedColumns(availableColumns));
-		return result;
+		return List.copyOf(expression.usedColumns(availableColumns));
 	}
 	@Override
 	public List<AggregateFunction> aggregateFunctions()
 	{
-		List<AggregateFunction> result = new LinkedList<>();
-		result.addAll(expression.aggregateFunctions());
-		return result;
+		return List.copyOf(expression.aggregateFunctions());
 	}
 }

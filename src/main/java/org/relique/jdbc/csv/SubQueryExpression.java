@@ -123,6 +123,6 @@ class SubQueryExpression extends Expression
 		 * Aggregate functions are internal to this sub-query SQL statement,
 		 * and not the parent SQL statement, so do not return them.
 		 */
-		return new LinkedList<>();
+		return List.of();
 	}
 }
