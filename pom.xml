@@ -50,7 +50,7 @@
   <repositories>
     <repository>
       <id>SourceForge</id>
-      <url>http://csvjdbc.sourceforge.net/maven2</url>
+      <url>https://csvjdbc.sourceforge.net/maven2</url>
     </repository>
   </repositories>
 
