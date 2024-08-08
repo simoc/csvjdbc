@@ -46,6 +46,7 @@ public class DemoDriver
     // A single connection is thread-safe for use by several threads.
     String url = "jdbc:relique:csv:" + args[0] + "?" +
       "separator=;" + "&" + "fileExtension=.txt";
+    Class.forName("org.relique.jdbc.csv.CsvDriver");
     try (Connection conn = DriverManager.getConnection(url);
 
       // Create a Statement object to execute the query with.
