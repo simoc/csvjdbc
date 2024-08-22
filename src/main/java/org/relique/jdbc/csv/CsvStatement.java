@@ -395,6 +395,7 @@ public class CsvStatement implements Statement
 								fileNamePattern,
 								nameParts,
 								connection.getSeparator(),
+								connection.getQuotechar(),
 								connection.isFileTailPrepend(),
 								connection.isSuppressHeaders(),
 								filter,
