@@ -278,4 +278,30 @@ public class TestFileSetInputStream
 			assertEquals("value spread across three lines\",three,011020182", line);
 		}
 	}
+
+	@Test
+	public void testFileSetInputStreamMultilinePrepend() throws IOException
+	{
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(
+					new FileSetInputStream(filePath,
+						"Hutchenson_(\\d+).txt", new String[] {
+						"Date"}, ",", Character.valueOf('"'), true, false, null, 0, null))))
+		{
+			// Check that fileTail is correctly prepended to records spread across multiple lines
+			String line = in.readLine();
+			assertEquals("Date,Col1,Col2", line);
+			line = in.readLine();
+			assertEquals("011020182,\"1", line);
+			line = in.readLine();
+			assertEquals("value spread across multiple lines\",one", line);
+			line = in.readLine();
+			assertEquals("011020182,\"2 value on single a line\",\"two\"", line);
+			line = in.readLine();
+			assertEquals("011020182,\"3", line);
+			line = in.readLine();
+			assertEquals("3", line);
+			line = in.readLine();
+			assertEquals("value spread across three lines\",three", line);
+		}
+	}
 }
