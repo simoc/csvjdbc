@@ -68,7 +68,7 @@ public class TestFileSetInputStream
 			BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ",", Character.valueOf('"'), false, false, null, 0, null))))
+								"location", "file_date" }, ",", Character.valueOf('"'), "SQL", false, false, null, 0, null))))
 		{
 			Set<String> refSet = new HashSet<>();
 			Set<String> testSet = new HashSet<>();
@@ -97,7 +97,7 @@ public class TestFileSetInputStream
 			BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ",", Character.valueOf('"'), true, false, null, 0, null))))
+								"location", "file_date" }, ",", Character.valueOf('"'), "SQL", true, false, null, 0, null))))
 		{
 			Set<String> refSet = new HashSet<>();
 			Set<String> testSet = new HashSet<>();
@@ -126,7 +126,7 @@ public class TestFileSetInputStream
 			BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"headerless-([0-9]{3})-([0-9]{8}).txt", new String[] {
-								"location", "file_date" }, ",", Character.valueOf('"'), true, true, null, 0, null))))
+								"location", "file_date" }, ",", Character.valueOf('"'), "SQL", true, true, null, 0, null))))
 		{
 			Set<String> refSet = new HashSet<>();
 			Set<String> testSet = new HashSet<>();
@@ -153,7 +153,7 @@ public class TestFileSetInputStream
 			BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"empty-([0-9]+).txt", new String[] {
-							"EMPTY_ID"}, ",", Character.valueOf('"'), false, false, null, 0, null))))
+							"EMPTY_ID"}, ",", Character.valueOf('"'), "SQL", false, false, null, 0, null))))
 		{
 			Set<String> refSet = new HashSet<>();
 			Set<String> testSet = new HashSet<>();
@@ -180,7 +180,7 @@ public class TestFileSetInputStream
 		try (BufferedReader inputTest = new BufferedReader(new InputStreamReader(
 				new FileSetInputStream(filePath,
 						"petr-([0-9]{3})-([0-9]{3}).csv", new String[] {
-								"part1", "part2" }, separator, Character.valueOf('"'), true, true, null, 0, null))))
+								"part1", "part2" }, separator, Character.valueOf('"'), "SQL", true, true, null, 0, null))))
 		{
 			String lineTest = inputTest.readLine();
 			while (lineTest != null)
@@ -200,7 +200,7 @@ public class TestFileSetInputStream
 	{
 		try (FileSetInputStream in = new FileSetInputStream(filePath,
 					"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-					"location", "file_date"}, ",", Character.valueOf('"'), false, false, null, 0, null))
+					"location", "file_date"}, ",", Character.valueOf('"'), "SQL", false, false, null, 0, null))
 		{
 			in.read();
 			in.read();
@@ -224,7 +224,7 @@ public class TestFileSetInputStream
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(
 					new FileSetInputStream(filePath,
 						"utf16le_(\\d+).txt", new String[] {
-						"date"}, "|", Character.valueOf('"'), false, false, null, 0, charset), charset)))
+						"date"}, "|", Character.valueOf('"'), "SQL", false, false, null, 0, charset), charset)))
 		{
 			String line = in.readLine();
 			assertEquals("Col1|Col2|Some third|4th|date", line);
@@ -242,7 +242,7 @@ public class TestFileSetInputStream
 		{
 		    try (FileSetInputStream in = new FileSetInputStream("????",
 			"test-([0-9]{3})-([0-9]{8}).txt", new String[] {
-			"location", "file_date"}, ",", Character.valueOf('"'), false, false, null, 0, null))
+			"location", "file_date"}, ",", Character.valueOf('"'), "SQL", false, false, null, 0, null))
 		    {
 			fail("expected exception java.io.IOException");
 		    }
@@ -259,7 +259,7 @@ public class TestFileSetInputStream
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(
 					new FileSetInputStream(filePath,
 						"Hutchenson_(\\d+).txt", new String[] {
-						"Date"}, ",", Character.valueOf('"'), false, false, null, 0, null))))
+						"Date"}, ",", Character.valueOf('"'), "SQL", false, false, null, 0, null))))
 		{
 			// Check that fileTail is correctly added to records spread across multiple lines
 			String line = in.readLine();
@@ -285,7 +285,7 @@ public class TestFileSetInputStream
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(
 					new FileSetInputStream(filePath,
 						"Hutchenson_(\\d+).txt", new String[] {
-						"Date"}, ",", Character.valueOf('"'), true, false, null, 0, null))))
+						"Date"}, ",", Character.valueOf('"'), "SQL", true, false, null, 0, null))))
 		{
 			// Check that fileTail is correctly prepended to records spread across multiple lines
 			String line = in.readLine();

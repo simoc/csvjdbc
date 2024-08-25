@@ -51,11 +51,12 @@ public class FileSetInputStream extends InputStream
 	private Pattern fileNameRE;
 	private String separator;
 	private Character quotechar;
+	private String quoteStyle;
 	private String dataTail;
 	private boolean prepend;
 	private int lookahead = '\n';
 	private int lookahead2 = -1;
-	private boolean inQuotedValue = false;
+	private int quoteCountForRecord = 0;
 	private boolean doingTail;
 	private int currentLineLength;
 	private CryptoFilter filter;
@@ -75,6 +76,7 @@ public class FileSetInputStream extends InputStream
 	 * @param separator
 	 *            the separator to use when faking output (typically the ",").
 	 * @param quotechar the character used to quote column values containing the separator, or null for no quoting.
+	 * @param quoteStyle either "SQL" or "C" for rule for escaping quote characters in column values.
 	 * @param prepend
 	 *            whether the extra fields should precede the ones from the file
 	 *            content.
@@ -84,7 +86,7 @@ public class FileSetInputStream extends InputStream
 	 * @throws IOException if a file cannot be opened or read.
 	 */
 	public FileSetInputStream(String dirName, String fileNamePattern,
-			String[] fieldsInName, String separator, Character quotechar, boolean prepend,
+			String[] fieldsInName, String separator, Character quotechar, String quoteStyle, boolean prepend,
 			boolean headerless, CryptoFilter filter, int skipLeadingDataLines,
 			String charset)
 			throws IOException
@@ -100,6 +102,7 @@ public class FileSetInputStream extends InputStream
 		this.prepend = prepend;
 		this.separator = separator;
 		this.quotechar = quotechar;
+		this.quoteStyle = quoteStyle;
 		tail = "";
 		if (prepend)
 		{
@@ -224,7 +227,7 @@ public class FileSetInputStream extends InputStream
 			}
 			doingTail = false;
 			currentLineLength = 0;
-			inQuotedValue = false;
+			quoteCountForRecord = 0;
 		}
 
 		// shift the lookahead into the current char and get the new lookahead.
@@ -260,19 +263,29 @@ public class FileSetInputStream extends InputStream
 		}
 		while (lookahead == '\r');
 
-		if (quotechar != null && ch == quotechar.charValue())
+		if (quotechar != null)
 		{
-			// Keep track of whether we are in a quoted column value, so we can
-			// avoid adding the file tail to a column value spread across multiple
-			// lines.
-			inQuotedValue = !inQuotedValue;
+			// Keep a count of the number of quotes in current record, so we can
+			// detect whether the record is split across multiple lines (an odd
+			// number of quotes when the end of the line is reached), and avoid
+			// adding the file tail in this situation.
+			if (ch == quotechar.charValue())
+			{
+				quoteCountForRecord++;
+			}
+			else if (ch == '\\' && lookahead == quotechar.charValue() && "C".equals(quoteStyle))
+			{
+				// Also count both '\' and '"' as quote characters, so that quote
+				// count remains even and escaped quote does not count as a quote.
+				quoteCountForRecord++;
+			}
 		}
 
 		// if we met a line border we have to output the lead/tail
 		if (prepend)
 		{
 			// prepending a non empty line...
-			if (ch == '\n' && !(lookahead == '\n' || lookahead == -1) && !inQuotedValue)
+			if (ch == '\n' && !(lookahead == '\n' || lookahead == -1) && quoteCountForRecord % 2 == 0)
 			{
 				doingTail = true;
 				ch = readFromTail();
@@ -289,7 +302,7 @@ public class FileSetInputStream extends InputStream
 		else
 		{
 			// appending to the end of just any line
-			if (currentLineLength > 0 && (ch == '\n' || ch == -1) && !inQuotedValue)
+			if (currentLineLength > 0 && (ch == '\n' || ch == -1) && quoteCountForRecord % 2 == 0)
 			{
 				doingTail = true;
 				if (ch == '\n' && lookahead == 0 &&
@@ -341,6 +354,7 @@ public class FileSetInputStream extends InputStream
 				}
 				while (ch2 != '\n' && ch2 != -1);
 			}
+			quoteCountForRecord = 0;
 			doingTail = prepend;
 			if (doingTail)
 				pos = 1;
