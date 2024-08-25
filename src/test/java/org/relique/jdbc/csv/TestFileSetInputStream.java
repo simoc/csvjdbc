@@ -276,6 +276,8 @@ public class TestFileSetInputStream
 			assertEquals("3", line);
 			line = in.readLine();
 			assertEquals("value spread across three lines\",three,011020182", line);
+			line = in.readLine();
+			assertEquals("\"4 value containing \"\"quotes\"\"\",four,011020182", line);
 		}
 	}
 
@@ -302,6 +304,8 @@ public class TestFileSetInputStream
 			assertEquals("3", line);
 			line = in.readLine();
 			assertEquals("value spread across three lines\",three", line);
+			line = in.readLine();
+			assertEquals("011020182,\"4 value containing \"\"quotes\"\"\",four", line);
 		}
 	}
 }

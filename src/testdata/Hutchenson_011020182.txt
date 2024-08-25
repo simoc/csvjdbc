@@ -5,3 +5,4 @@ value spread across multiple lines",one
 "3
 3
 value spread across three lines",three
+"4 value containing ""quotes""",four
