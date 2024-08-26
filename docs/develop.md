@@ -2,8 +2,10 @@
 
 To checkout and build the latest source code from the
 [CsvJdbc git repository](https://github.com/simoc/csvjdbc.git),
-use the following commands ([git](http://git-scm.com/) and
+use the following commands ([git](http://git-scm.com/), [gpg](https://www.gnupg.org/download/) and
 [Maven](http://maven.apache.org/) must first be installed).
+
+Before building the project, ensure that you have [generated a GPG key](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key#generating-a-gpg-key).
 
     cd $HOME
     mkdir workspace1
