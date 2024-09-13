@@ -524,7 +524,8 @@ as a single quote character.
 + default: Java default
 + Defines locale to use when parsing timestamps and when parsing numbers
 with the `TO_NUMBER` function. This is important when parsing
-words such as `December` which vary depending on the locale. Call method
+words in a timestamp such as `December`, or parsing numbers such
+as `1.234,56` with `TO_NUMBER`, which vary depending on the locale. Call method
 `java.util.Locale.toString()` to convert a locale to a string.
 
 ### maxDataLines
