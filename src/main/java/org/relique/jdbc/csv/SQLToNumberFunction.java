@@ -19,6 +19,7 @@
 package org.relique.jdbc.csv;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.*;
 
 public class SQLToNumberFunction extends Expression
@@ -32,12 +33,6 @@ public class SQLToNumberFunction extends Expression
 		this.pattern = pattern;
 	}
 
-	private Object convert(String value, String pattern) throws SQLException
-	{
-		// TODO: implement parsing of value, following the numeric pattern.
-		return Double.valueOf(0);
-	}
-
 	@Override
 	public Object eval(Map<String, Object> env) throws SQLException
 	{
@@ -49,9 +44,20 @@ public class SQLToNumberFunction extends Expression
 			Object patternObj = pattern.eval(env);
 			if (patternObj != null)
 			{
+				Expression stringConverter = new ColumnName(StringConverter.COLUMN_NAME);
+				StringConverter sc = (StringConverter)stringConverter.eval(env);
+
 				String exprStr = exprObj.toString();
 				String patternStr = patternObj.toString();
-				retval = convert(exprStr, patternStr);
+				try
+				{
+					retval = sc.parseNumberPattern(exprStr, patternStr);
+				}
+				catch (ParseException e)
+				{
+					throw new SQLException(CsvResources.getString("parsingNumberFailed") + ": " +
+						e.getMessage() + ": " + exprStr + ": " + patternStr, e);
+				}
 			}
 		}
 		

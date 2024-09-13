@@ -522,7 +522,8 @@ as a single quote character.
 ### locale
 + type: String
 + default: Java default
-+ Defines locale to use when parsing timestamps. This is important when parsing
++ Defines locale to use when parsing timestamps and when parsing numbers
+with the `TO_NUMBER` function. This is important when parsing
 words such as `December` which vary depending on the locale. Call method
 `java.util.Locale.toString()` to convert a locale to a string.
 
