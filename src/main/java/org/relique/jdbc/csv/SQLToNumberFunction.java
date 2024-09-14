@@ -49,15 +49,7 @@ public class SQLToNumberFunction extends Expression
 
 				String exprStr = exprObj.toString();
 				String patternStr = patternObj.toString();
-				try
-				{
-					retval = sc.parseNumberPattern(exprStr, patternStr);
-				}
-				catch (ParseException e)
-				{
-					throw new SQLException(CsvResources.getString("parsingNumberFailed") + ": " +
-						e.getMessage() + ": " + exprStr + ": " + patternStr, e);
-				}
+				retval = sc.parseNumberPattern(exprStr, patternStr);
 			}
 		}
 		
