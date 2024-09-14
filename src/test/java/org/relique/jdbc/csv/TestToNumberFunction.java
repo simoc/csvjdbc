@@ -121,4 +121,19 @@ public class TestToNumberFunction
 			assertTrue(results.wasNull());
 		}
 	}
+
+	@Test
+	public void testToNumberFunctionEmptyString() throws SQLException
+	{
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			 Statement stmt = conn.createStatement();
+			 ResultSet results = stmt.executeQuery("SELECT TO_NUMBER('', '000.00') FROM sample"))
+		{
+			assertTrue(results.next());
+			double n1 = results.getDouble(1);
+			assertTrue(fuzzyEquals(n1, 0));
+			// Expect null because empty string cannot be parsed
+			assertTrue(results.wasNull());
+		}
+	}
 }
