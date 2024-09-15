@@ -69,7 +69,7 @@ ROUND(N [, D])       |Rounds N to the specified number of decimal places D (`0` 
 RTRIM(S, [, T])      |Removes trailing characters from S that occur in T
 SECOND(T)            |Extracts seconds value from time or timestamp T
 SUBSTRING(S, N [, L])|Extracts substring from S starting at index N (counting from 1) with length L
-TO_NUMBER(S, P)      |Converts string S to a number, using non-localized pattern P and Java class [DecimalFormat](https://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html)
+TO_NUMBER(S, P)      |Converts string S to a number in current locale, using locale-independent pattern P and Java class [DecimalFormat](https://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html)
 TRIM(S, [, T])       |Removes leading and trailing characters from S that occur in T
 UPPER(S)             |Converts string to upper case
 YEAR(D)              |Extracts year from date or timestamp D
