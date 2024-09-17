@@ -526,7 +526,8 @@ as a single quote character.
 with the `TO_NUMBER` function. This is important when parsing
 words in a timestamp such as `December`, or parsing numbers such
 as `1.234,56` with `TO_NUMBER`, which vary depending on the locale. Call method
-`java.util.Locale.toString()` to convert a locale to a string.
+`java.util.Locale.toString()` to convert a locale into a string for this
+property, such as `de` or `de_AT`.
 
 ### maxDataLines
 + type: Integer
