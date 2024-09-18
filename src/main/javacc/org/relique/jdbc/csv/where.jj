@@ -336,6 +336,10 @@ TOKEN:
 }
 TOKEN:
 {
+	<TO_NUMBER:"TO_NUMBER">
+}
+TOKEN:
+{
 	<LINE_NUMBER:"LINE_NUMBER">
 }
 TOKEN:
@@ -1032,6 +1036,11 @@ Expression simpleExpression():
 	{
 		return new SQLToArrayFunction(isDistinct, args);
 	}
+	| <TO_NUMBER> <OPENPARENTHESIS> arg = binaryOperation()
+		<COMMA> arg2 = binaryOperation() <CLOSEPARENTHESIS>
+	{
+		return new SQLToNumberFunction(arg, arg2);
+	}
 	| <LINE_NUMBER> <OPENPARENTHESIS> <CLOSEPARENTHESIS>
 	{
 		return new SQLLineNumberFunction();
@@ -1162,7 +1171,7 @@ Expression columnName():
 	Token t;
 }
 {
-	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<RANDOM>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>t=<STRING_AGG>|t=<ARRAY_AGG>|t=<TO_ARRAY>|t=<LINE_NUMBER>)
+	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<RANDOM>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>t=<STRING_AGG>|t=<ARRAY_AGG>|t=<TO_ARRAY>|t=<TO_NUMBER>|t=<LINE_NUMBER>)
 	{
 		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}
@@ -1228,7 +1237,7 @@ Expression columnAlias():
 	Token t;
 }
 {
-	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<RANDOM>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>|t=<STRING_AGG>|t=<ARRAY_AGG>|t=<TO_ARRAY>|t=<LINE_NUMBER>)
+	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<RANDOM>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>|t=<STRING_AGG>|t=<ARRAY_AGG>|t=<TO_ARRAY>|t=<TO_NUMBER>|t=<LINE_NUMBER>)
 	{
 		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}

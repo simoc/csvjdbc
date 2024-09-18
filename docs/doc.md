@@ -69,6 +69,7 @@ ROUND(N [, D])       |Rounds N to the specified number of decimal places D (`0` 
 RTRIM(S, [, T])      |Removes trailing characters from S that occur in T
 SECOND(T)            |Extracts seconds value from time or timestamp T
 SUBSTRING(S, N [, L])|Extracts substring from S starting at index N (counting from 1) with length L
+TO_NUMBER(S, P)      |Converts string S to a number in current locale, using locale-independent pattern P and Java class [DecimalFormat](https://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html)
 TRIM(S, [, T])       |Removes leading and trailing characters from S that occur in T
 UPPER(S)             |Converts string to upper case
 YEAR(D)              |Extracts year from date or timestamp D
@@ -521,9 +522,12 @@ as a single quote character.
 ### locale
 + type: String
 + default: Java default
-+ Defines locale to use when parsing timestamps. This is important when parsing
-words such as `December` which vary depending on the locale. Call method
-`java.util.Locale.toString()` to convert a locale to a string.
++ Defines locale to use when parsing timestamps and when parsing numbers
+with the `TO_NUMBER` function. This is important when parsing
+words in a timestamp such as `December`, or parsing numbers such
+as `1.234,56` with `TO_NUMBER`, which vary depending on the locale. Call method
+`java.util.Locale.toString()` to convert a locale into a string for this
+property, such as `de` or `de_AT`.
 
 ### maxDataLines
 + type: Integer

@@ -26,7 +26,10 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.DateFormatSymbols;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -62,6 +65,7 @@ public class StringConverter
 	private SimpleDateFormat timestampFormat;
 	private SimpleDateFormat simpleDateFormat;
 	private int currentYear;
+	private DecimalFormatSymbols decimalFormatSymbols;
 
 	// Alternative Java 8 classes for parsing and formatting dates, times, timestamps.
 	DateTimeFormatter dateFormatter;
@@ -198,6 +202,11 @@ public class StringConverter
 				timestampPattern = Pattern
 					.compile("([0-9][0-9][0-9][0-9])-([0-9]?[0-9])-([0-9]?[0-9])[ T]([0-9]?[0-9]):([0-9]?[0-9]):([0-9]?[0-9]).*");
 			}
+		}
+
+		if (locale != null)
+		{
+			decimalFormatSymbols = new DecimalFormatSymbols(locale);
 		}
 	}
 
@@ -1004,5 +1013,33 @@ public class StringConverter
 			columnTypes[i] = typeName;
 		}
 		return columnTypes;
+	}
+
+	/**
+	 * Parse number from string using a java.text.DecimalFormat pattern.
+	 * @param value string to parse.
+	 * @param pattern a java.text.DecimalFormat pattern for parsing string.
+	 * @return parsed number, or NULL if complete string cannot be parsed to a number.
+	 */
+	public Number parseNumberPattern(String value, String pattern)
+	{
+		Number result;
+		ParsePosition pos = new ParsePosition(0);
+		if (decimalFormatSymbols != null)
+		{
+			result = new DecimalFormat(pattern, decimalFormatSymbols).parse(value, pos);
+		}
+		else
+		{
+			result = new DecimalFormat(pattern).parse(value, pos);
+		}
+
+		// Also fail if we do not parse the whole string.
+		if (pos.getIndex() != value.length())
+		{
+			result = null;
+		}
+
+		return result;
 	}
 }
