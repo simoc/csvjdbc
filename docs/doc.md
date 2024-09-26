@@ -49,6 +49,10 @@ Supported comparisons in the optional WHERE clause are
 Use double quotes around table names or column names containing spaces
 or other special characters.
 
+Both C-style comments `/* a comment */` and single line comments following
+two dashes and a space until the end of the line `-- a comment` are
+ignored in SQL statements.
+
 Function             |Description
 -----------          |-------------------
 ABS(N)               |Returns absolute value of N
