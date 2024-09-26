@@ -51,7 +51,7 @@ or other special characters.
 
 Both C-style comments `/* a comment */` and single line comments following
 two dashes and a space until the end of the line `-- a comment` are
-ignored in SQL statements.
+skipped in SQL statements.
 
 Function             |Description
 -----------          |-------------------
