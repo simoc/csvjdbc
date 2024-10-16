@@ -22,7 +22,10 @@ Before building the project, ensure that you have [generated a GPG key](https://
 2. Install the JavaCC Eclipse Plug-in from the Help ->
 Eclipse Marketplace... menu option
 3. Create a new project named `csvjdbc` using menu option
-File -> New -> Java Project
+File -> Import -> Maven Project -> Existing Maven Projects,
+select directory `workspace1` as the Root Directory, then
+`csvjdbc/pom.xml` as the Project and select the Add project
+to working set checkbox.
 4. Open `src/main/javacc/org/relique/jdbc/csv/where.jj` in the Eclipse
 Editor and then select menu option JavaCC -> Compile with javacc
 
