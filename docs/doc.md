@@ -31,6 +31,9 @@ operations `+`, `-`,
 conditional `CASE` expressions
 and parentheses.
 
+Arithmetic involving date values has units of days.
+Arithmetic involving timestamp values has units of milliseconds.
+
 Supported comparisons in the optional WHERE clause are
 `<`,
 `>`,
