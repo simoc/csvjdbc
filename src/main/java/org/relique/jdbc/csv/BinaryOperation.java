@@ -25,6 +25,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -240,6 +241,25 @@ class BinaryOperation extends Expression
 		}
 		catch (ClassCastException e)
 		{
+			if ((op == '+' || op == '-') && leftEval instanceof Time)
+			{
+				Time leftT = (Time)leftEval;
+
+				if (rightEval instanceof Number)
+				{
+					Number rightN = (Number)rightEval;
+					long rightMillis = rightN.longValue();
+					if (op == '-')
+						rightMillis = -rightMillis;
+					Time result = Time.valueOf(leftT.toLocalTime().plus(rightMillis, ChronoUnit.MILLIS));
+					return result;
+				}
+				if (op == '-' && rightEval instanceof Time)
+				{
+					Time rightT = (Time)rightEval;
+					return Long.valueOf(leftT.getTime() - rightT.getTime());
+				}
+			}
 		}
 		if(op == '+' || op == '|')
 			return ""+leftEval+rightEval;
