@@ -44,7 +44,8 @@ import org.junit.platform.suite.api.Suite;
 	TestFixedWidthFiles.class,
 	TestDoubleQuoting.class,
 	TestSubQuery.class,
-	TestClasspathResources.class
+	TestClasspathResources.class,
+	TestTime.class
 })
 
 /**
