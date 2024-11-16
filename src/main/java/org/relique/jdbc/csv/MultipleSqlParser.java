@@ -32,7 +32,8 @@ public class MultipleSqlParser
 		sql = sql + "\n";
 
 		ExpressionParser cs2 = new ExpressionParser(new StringReader(sql));
-		List<ParsedStatement> statements = cs2.parseMultipleStatements();
+		PlaceholderFactory placeholderFactory = new PlaceholderFactory();
+		List<ParsedStatement> statements = cs2.parseMultipleStatements(placeholderFactory);
 		LinkedList<SqlParser> retval = new LinkedList<>();
 		for (ParsedStatement parsedStatement : statements)
 		{

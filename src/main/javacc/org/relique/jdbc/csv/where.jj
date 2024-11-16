@@ -40,6 +40,7 @@ public class ExpressionParser
 	private ParsedExpression content;
 	private Date currentDate;
 	private Time currentTime;
+	private PlaceholderFactory placeholderFactory;
 
 	public void parseLogicalExpression()throws ParseException
 	{
@@ -57,17 +58,17 @@ public class ExpressionParser
 	{
 		content = queryEnvEntry();
 	}
-	public ParsedStatement parseSingleStatement()throws ParseException
+	public ParsedStatement parseSingleStatement(PlaceholderFactory factory)throws ParseException
 	{
-		/* Reset prepared statement place-holder counter */
-		Placeholder.nextIndex = 1;
+		/* Keep prepared statement place-holder counter */
+		this.placeholderFactory = factory;
 		ParsedStatement parsedStatement = singleStatement();
 		return parsedStatement;
 	}
-	public List<ParsedStatement> parseMultipleStatements()throws ParseException
+	public List<ParsedStatement> parseMultipleStatements(PlaceholderFactory factory)throws ParseException
 	{
-		/* Reset prepared statement place-holder counter */
-		Placeholder.nextIndex = 1;
+		/* Keep prepared statement place-holder counter */
+		this.placeholderFactory = factory;
 		List<ParsedStatement> statements = multipleStatements();
 		return statements;
 	}
@@ -1127,7 +1128,7 @@ Expression simpleExpression():
 	}
 	| <PLACEHOLDER>
 	{
-		return new Placeholder();
+		return this.placeholderFactory.createPlaceholder();
 	}
 }
 Expression searchedCaseExpression():
