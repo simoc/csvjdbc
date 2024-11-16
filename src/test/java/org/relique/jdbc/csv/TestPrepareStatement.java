@@ -212,6 +212,27 @@ public class TestPrepareStatement
 	}
 
 	@Test
+	public void testTooManyParameters() throws SQLException
+	{
+		String queryString = "SELECT * FROM sample WHERE id = ? OR id = ?";
+		try (Connection conn = DriverManager.getConnection("jdbc:relique:csv:" + filePath);
+			PreparedStatement prepstmt = conn.prepareStatement(queryString))
+		{
+			try
+			{
+				prepstmt.setString(1, "A123");
+				prepstmt.setString(2, "B234");
+				prepstmt.setString(3, "C456");
+				fail("Setting too many parameters should fail");
+			}
+			catch (SQLException e)
+			{
+				assertTrue(e.getMessage().contains(CsvResources.getString("parameterIndex")));
+			}
+		}
+	}
+
+	@Test
 	public void testLike() throws SQLException
 	{
 		Properties props = new Properties();
