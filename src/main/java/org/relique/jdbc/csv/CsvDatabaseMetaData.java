@@ -246,7 +246,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	@Override
 	public String getDriverVersion() throws SQLException
 	{
-		return "1";
+		return CsvResources.getString("versionString");
 	}
 
 	@Override
