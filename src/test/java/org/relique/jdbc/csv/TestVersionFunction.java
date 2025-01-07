@@ -66,7 +66,14 @@ public class TestVersionFunction
 			assertEquals(version, conn.getMetaData().getDriverVersion());
 
 			Pattern semverPattern = Pattern.compile("^(\\d+\\.\\d+|\\d+\\.\\d+\\.\\d+)(?:-SNAPSHOT)?$");
-			assertTrue(semverPattern.asMatchPredicate().test(version), "Version is not valid semver version: "+version);
+			assertTrue(semverPattern.asMatchPredicate().test(version),
+					"Version is not valid semver version: "+version);
+
+			int major = conn.getMetaData().getDriverMajorVersion();
+			int minor = conn.getMetaData().getDriverMinorVersion();
+
+			assertTrue(version.startsWith(major+"."+minor),
+					"Driver version '"+major+"."+minor+"' does not match "+version);
 		}
 	}
 
