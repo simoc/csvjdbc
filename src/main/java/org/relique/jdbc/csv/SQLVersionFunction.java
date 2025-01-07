@@ -28,7 +28,7 @@ class SQLVersionFunction extends Expression
 
 	public SQLVersionFunction()
 	{
-		this.version = CsvResources.getString("versionString");
+		this.version = CsvResources.getVersionString();
 	}
 
 	@Override
