@@ -37,6 +37,7 @@ import org.junit.platform.suite.api.Suite;
 	TestArrayFunctions.class,
 	TestRandomFunction.class,
 	TestToNumberFunction.class,
+	TestVersionFunction.class,
 	TestOrderBy.class,
 	TestGroupBy.class,
 	TestLimitOffset.class,
