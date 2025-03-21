@@ -29,7 +29,7 @@ class ColumnName extends Expression
 
 	public ColumnName(String columnName)
 	{
-		this.columnName = columnName.toUpperCase();
+		this.columnName = columnName;
 	}
 
 	public String getColumnName()
