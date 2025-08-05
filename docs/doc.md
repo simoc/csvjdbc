@@ -50,7 +50,9 @@ Supported comparisons in the optional WHERE clause are
 `EXISTS`.
 
 Use double quotes around table names or column names containing spaces
-or other special characters.
+or other special characters. To query a CSV file in a subdirectory,
+use the relative path as the table name and double quotes
+`"subdir/table"`.
 
 Both C-style comments `/* a comment */` and single line comments following
 two dashes and a space until the end of the line `-- a comment` are
