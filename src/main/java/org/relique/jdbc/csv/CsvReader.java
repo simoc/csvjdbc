@@ -205,14 +205,6 @@ public class CsvReader extends DataReader
 		return this.aliasedColumnNames;
 	}
 
-	private Object getField(int i)
-	{
-		if (isPlainReader())
-			return rawReader.getField(i);
-		else
-			return null;
-	}
-
 	@Override
 	public void close()
 	{
