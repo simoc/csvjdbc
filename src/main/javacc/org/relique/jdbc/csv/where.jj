@@ -40,6 +40,7 @@ public class ExpressionParser
 	private ParsedExpression content;
 	private Date currentDate;
 	private Time currentTime;
+	private PlaceholderFactory placeholderFactory;
 
 	public void parseLogicalExpression()throws ParseException
 	{
@@ -57,17 +58,17 @@ public class ExpressionParser
 	{
 		content = queryEnvEntry();
 	}
-	public ParsedStatement parseSingleStatement()throws ParseException
+	public ParsedStatement parseSingleStatement(PlaceholderFactory factory)throws ParseException
 	{
-		/* Reset prepared statement place-holder counter */
-		Placeholder.nextIndex = 1;
+		/* Keep prepared statement place-holder counter */
+		this.placeholderFactory = factory;
 		ParsedStatement parsedStatement = singleStatement();
 		return parsedStatement;
 	}
-	public List<ParsedStatement> parseMultipleStatements()throws ParseException
+	public List<ParsedStatement> parseMultipleStatements(PlaceholderFactory factory)throws ParseException
 	{
-		/* Reset prepared statement place-holder counter */
-		Placeholder.nextIndex = 1;
+		/* Keep prepared statement place-holder counter */
+		this.placeholderFactory = factory;
 		List<ParsedStatement> statements = multipleStatements();
 		return statements;
 	}
@@ -285,6 +286,10 @@ TOKEN:
 TOKEN:
 {
 	<RANDOM:"RANDOM">
+}
+TOKEN:
+{
+	<VERSION:"VERSION">
 }
 TOKEN:
 {
@@ -986,6 +991,10 @@ Expression simpleExpression():
 	{
 		return new SQLRandomFunction();
 	}
+	| <VERSION> <OPENPARENTHESIS> <CLOSEPARENTHESIS>
+	{
+		return new SQLVersionFunction();
+	}
 	| <ROUND> <OPENPARENTHESIS> arg = binaryOperation() (<COMMA>
 		arg2 = binaryOperation())? <CLOSEPARENTHESIS>
 	{
@@ -1127,7 +1136,7 @@ Expression simpleExpression():
 	}
 	| <PLACEHOLDER>
 	{
-		return new Placeholder();
+		return this.placeholderFactory.createPlaceholder();
 	}
 }
 Expression searchedCaseExpression():
@@ -1171,7 +1180,7 @@ Expression columnName():
 	Token t;
 }
 {
-	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<RANDOM>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>t=<STRING_AGG>|t=<ARRAY_AGG>|t=<TO_ARRAY>|t=<TO_NUMBER>|t=<LINE_NUMBER>)
+	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<RANDOM>|t=<VERSION>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>t=<STRING_AGG>|t=<ARRAY_AGG>|t=<TO_ARRAY>|t=<TO_NUMBER>|t=<LINE_NUMBER>)
 	{
 		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}
@@ -1237,7 +1246,7 @@ Expression columnAlias():
 	Token t;
 }
 {
-	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<RANDOM>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>|t=<STRING_AGG>|t=<ARRAY_AGG>|t=<TO_ARRAY>|t=<TO_NUMBER>|t=<LINE_NUMBER>)
+	(t=<NAME>|t=<DAYOFMONTH>|t=<MONTH>|t=<YEAR>|t=<HOUROFDAY>|t=<MINUTE>|t=<SECOND>|t=<LOWER>|t=<RANDOM>|t=<VERSION>|t=<ROUND>|t=<UPPER>|t=<TRIM>|t=<LTRIM>|t=<RTRIM>|t=<SUBSTRING>|t=<REPLACE>|t=<LENGTH>|t=<NULLIF>|t=<ABS>|t=<COALESCE>|t=<AVG>|t=<COUNT>|t=<MAX>|t=<MIN>|t=<SUM>|t=<STRING_AGG>|t=<ARRAY_AGG>|t=<TO_ARRAY>|t=<TO_NUMBER>|t=<LINE_NUMBER>)
 	{
 		return new ColumnName(StringConverter.removeQuotes(t.image));
 	}

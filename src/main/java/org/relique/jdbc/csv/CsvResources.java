@@ -38,4 +38,33 @@ public class CsvResources
 			return "[" + key + "]";
 		}
 	}
+
+	public static int getMajorVersion()
+	{
+		return parseVersion(getVersionString(), 0,1);
+	}
+
+	public static int getMinorVersion()
+	{
+		return parseVersion(getVersionString(), 1,0);
+	}
+
+	public static String getVersionString()
+	{
+		return messages.containsKey("versionString") ? CsvResources.getString("versionString"): "1.0";
+	}
+
+	public  static int parseVersion(String versionString, int index, int defaultValue)
+	{
+		try {
+			if (versionString != null) {
+				return Integer.parseInt(versionString.split("\\.")[index]);
+			}
+		} catch (NumberFormatException e)
+		{
+			// We just return the default
+		}
+		return defaultValue;
+	}
+
 }

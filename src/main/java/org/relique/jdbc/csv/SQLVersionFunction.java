@@ -1,6 +1,6 @@
 /*
  *  CsvJdbc - a JDBC driver for CSV files
- *  Copyright (C) 2008  Mario Frasca
+ *  Copyright (C) 2024 Simon Chenery
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -18,40 +18,39 @@
  */
 package org.relique.jdbc.csv;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.sql.SQLException;
+import java.util.*;
 
-/**
- * A place holder for a parameter in a prepared statement.
- * Each parameter is identified by its position in the prepared statement,
- * counting from 1.
- */
-class Placeholder extends Expression
+class SQLVersionFunction extends Expression
 {
-	/** position of this place holder, counting from 1. */
-	private int position;
 
-	/**
-	 * create a new placeholder, with the next available position number.
-	 */
-	public Placeholder(int position)
+	private final String version;
+
+	public SQLVersionFunction()
 	{
-		this.position = position;
+		this.version = CsvResources.getVersionString();
 	}
 
 	@Override
-	public Object eval(Map<String, Object> env)
+	public Object eval(Map<String, Object> env) throws SQLException
 	{
-		return env.get("?" + position);
+		return this.version;
 	}
+
 	@Override
 	public String toString()
 	{
-		return "?";
+		return "VERSION";
 	}
+
 	@Override
 	public List<String> usedColumns(Set<String> availableColumns)
+	{
+		return List.of();
+	}
+
+	@Override
+	public List<AggregateFunction> aggregateFunctions()
 	{
 		return List.of();
 	}

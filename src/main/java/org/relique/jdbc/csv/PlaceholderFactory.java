@@ -1,6 +1,6 @@
 /*
  *  CsvJdbc - a JDBC driver for CSV files
- *  Copyright (C) 2008  Mario Frasca
+ *  Copyright (C) 2024  Simon Chenery
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -18,41 +18,22 @@
  */
 package org.relique.jdbc.csv;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 /**
- * A place holder for a parameter in a prepared statement.
- * Each parameter is identified by its position in the prepared statement,
+ * Generates sequential placeholder positions in a prepared statement,
  * counting from 1.
  */
-class Placeholder extends Expression
+public class PlaceholderFactory
 {
-	/** position of this place holder, counting from 1. */
-	private int position;
+	private int count = 0;
 
-	/**
-	 * create a new placeholder, with the next available position number.
-	 */
-	public Placeholder(int position)
+	public Placeholder createPlaceholder()
 	{
-		this.position = position;
+		count++;
+		return new Placeholder(count);
 	}
 
-	@Override
-	public Object eval(Map<String, Object> env)
+	public int getPlaceholderCount()
 	{
-		return env.get("?" + position);
-	}
-	@Override
-	public String toString()
-	{
-		return "?";
-	}
-	@Override
-	public List<String> usedColumns(Set<String> availableColumns)
-	{
-		return List.of();
+		return count;
 	}
 }

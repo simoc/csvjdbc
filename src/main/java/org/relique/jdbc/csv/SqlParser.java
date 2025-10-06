@@ -53,6 +53,8 @@ public class SqlParser
 
 	private boolean isDistinct;
 
+	private PlaceholderFactory placeHolderFactory;
+
 	public void setPlaceholdersValues(Object[] values)
 	{
 
@@ -76,7 +78,7 @@ public class SqlParser
 
 	public int getPlaceholdersCount()
 	{
-		return Placeholder.nextIndex - 1;
+		return this.placeHolderFactory.getPlaceholderCount();
 	}
 
 	/**
@@ -122,7 +124,8 @@ public class SqlParser
 
 		// parse the SQL statement
 		ExpressionParser cs2 = new ExpressionParser(new StringReader(sql));
-		ParsedStatement parsedStatement = cs2.parseSingleStatement();
+		this.placeHolderFactory = new PlaceholderFactory();
+		ParsedStatement parsedStatement = cs2.parseSingleStatement(this.placeHolderFactory);
 		setParsedStatement(parsedStatement);
 	}
 

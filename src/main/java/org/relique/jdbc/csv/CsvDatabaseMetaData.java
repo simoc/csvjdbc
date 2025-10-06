@@ -228,13 +228,13 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	@Override
 	public int getDriverMajorVersion()
 	{
-		return 1;
+		return CsvResources.getMajorVersion();
 	}
 
 	@Override
 	public int getDriverMinorVersion()
 	{
-		return 0;
+		return CsvResources.getMinorVersion();
 	}
 
 	@Override
@@ -246,7 +246,7 @@ public class CsvDatabaseMetaData implements DatabaseMetaData
 	@Override
 	public String getDriverVersion() throws SQLException
 	{
-		return "1";
+		return CsvResources.getString("versionString");
 	}
 
 	@Override

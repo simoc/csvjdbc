@@ -32,7 +32,7 @@ conditional `CASE` expressions
 and parentheses.
 
 Arithmetic involving date values has units of days.
-Arithmetic involving timestamp values has units of milliseconds.
+Arithmetic involving timestamp or time values has units of milliseconds.
 
 Supported comparisons in the optional WHERE clause are
 `<`,
@@ -80,6 +80,7 @@ TO_NUMBER(S, P)      |Converts string S to a number in current locale, using loc
 TRIM(S, [, T])       |Removes leading and trailing characters from S that occur in T
 UPPER(S)             |Converts string to upper case
 YEAR(D)              |Extracts year from date or timestamp D
+VERSION()            |Returns a string containing the CsvJdbc version number
 
 Additional functions are defined from java methods using the
 `function.NAME` driver property.

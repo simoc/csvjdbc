@@ -37,6 +37,7 @@ import org.junit.platform.suite.api.Suite;
 	TestArrayFunctions.class,
 	TestRandomFunction.class,
 	TestToNumberFunction.class,
+	TestVersionFunction.class,
 	TestOrderBy.class,
 	TestGroupBy.class,
 	TestLimitOffset.class,
@@ -44,7 +45,8 @@ import org.junit.platform.suite.api.Suite;
 	TestFixedWidthFiles.class,
 	TestDoubleQuoting.class,
 	TestSubQuery.class,
-	TestClasspathResources.class
+	TestClasspathResources.class,
+	TestTime.class
 })
 
 /**
