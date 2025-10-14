@@ -491,6 +491,13 @@ be ignored. Each ignored line is logged. Call method
 `java.sql.DriverManager.setLogWriter` before executing a query to capture a
 list of ignored lines.
 
+### includeDirectories
++ type: Boolean
++ default: `False`
++ when True, files in subdirectories are included in the list of files
+returned by method `java.sql.DatabaseMetaData.getTables`. Database tools
+call this method to list the available tables.
+
 ### indexedFiles
 + type: Boolean
 + default: `False`
