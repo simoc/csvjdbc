@@ -34,7 +34,7 @@ class SQLUserFunction extends Expression
 
 	public SQLUserFunction(String name, List<Expression> expressions)
 	{
-		this.name = name.toUpperCase();
+		this.name = name;
 		this.expressions = expressions;
 	}
 
