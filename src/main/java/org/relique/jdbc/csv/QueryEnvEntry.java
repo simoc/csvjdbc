@@ -28,7 +28,7 @@ class QueryEnvEntry extends Expression
 
 	public QueryEnvEntry(String fieldName, Expression exp)
 	{
-		this.key = fieldName.toUpperCase();
+		this.key = fieldName;
 		this.expression = exp;
 	}
 

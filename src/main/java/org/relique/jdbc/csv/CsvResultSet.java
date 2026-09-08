@@ -282,7 +282,7 @@ public class CsvResultSet implements ResultSet
 		HashSet<String> allReaderColumns = new HashSet<>();
 		for (int i = 0; i < columnNames.length; i++)
 		{
-			String columnName = columnNames[i].toUpperCase();
+			String columnName = columnNames[i];
 			allReaderColumns.add(columnName);
 			if (tableName != null)
 				allReaderColumns.add(tableName.toUpperCase() + "." + columnName);
@@ -513,7 +513,7 @@ public class CsvResultSet implements ResultSet
 						List<String> copy = new LinkedList<>();
 						for (String usedColumn : exprUsedColumns)
 						{
-							if (allReaderColumns.contains(usedColumn.toUpperCase()))
+							if (allReaderColumns.contains(usedColumn))
 								copy.add(usedColumn);
 						}
 						exprUsedColumns = copy;
@@ -1044,12 +1044,12 @@ public class CsvResultSet implements ResultSet
 			Object[] o = queryEnvironment.get(i);
 			String key = (String) o[0];
 			Object value = ((Expression) o[1]).eval(recordEnvironment);
-			objectEnvironment.put(key.toUpperCase(), value);
+			objectEnvironment.put(key, value);
 		}
 		for (int i=0; i<usedColumns.size(); i++)
 		{
 			String key = usedColumns.get(i);
-			key = key.toUpperCase();
+			//key = key.toUpperCase();
 			if (recordEnvironment.containsKey(key))
 					objectEnvironment.put(key, recordEnvironment.get(key));
 		}
@@ -1481,7 +1481,7 @@ public class CsvResultSet implements ResultSet
 			for(int i=0; i<readerTypeNames.length; i++)
 			{
 				Object literal = StringConverter.getLiteralForTypeName(readerTypeNames[i]);
-				String columnName = readerColumnNames[i].toUpperCase();
+				String columnName = readerColumnNames[i];
 				env.put(columnName, literal);
 				allReaderColumns.add(columnName);
 				if (tableName != null)
@@ -1505,7 +1505,7 @@ public class CsvResultSet implements ResultSet
 				columnNames[i] = (String)o[0];
 				for (int j = 0; j < readerColumnNames.length; j++)
 				{
-					if (columnNames[i].equalsIgnoreCase(readerColumnNames[j]))
+					if (columnNames[i].equals(readerColumnNames[j]))
 					{
 						/*
 						 * Use original case of column name in CSV file.
